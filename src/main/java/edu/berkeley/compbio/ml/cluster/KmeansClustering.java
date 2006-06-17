@@ -1,7 +1,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import edu.berkeley.compbio.bugbags.BugbagsException;
-import edu.berkeley.compbio.bugbags.distancemeasure.DistanceMeasure;
+import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class KmeansClustering<T extends Clusterable<T>> extends OnlineClustering
 		}
 
 
-	public boolean batchUpdate() throws BugbagsException
+	public boolean batchUpdate() throws ClusterException
 		{
 		List<Cluster<T>> oldClusters = theClusters;
 		theClusters = new ArrayList<Cluster<T>>();

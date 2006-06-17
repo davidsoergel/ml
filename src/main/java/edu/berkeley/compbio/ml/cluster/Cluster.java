@@ -1,7 +1,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import edu.berkeley.compbio.bugbags.BugbagsException;
-import edu.berkeley.compbio.bugbags.distancemeasure.DistanceMeasure;
+import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
 import java.util.HashSet;
@@ -39,7 +38,7 @@ public class Cluster<T extends Clusterable<T>> extends HashSet<T>
 		theDistanceMeasure = dm;
 		}
 
-	public boolean recalculateCentroid() throws BugbagsException
+	public boolean recalculateCentroid() throws ClusterException
 		{
 		// TODO
 		// works because Kcounts are "nonscaling additive", but it's not generic
