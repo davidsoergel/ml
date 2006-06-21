@@ -1,11 +1,14 @@
 package edu.berkeley.compbio.ml.cluster;
 
+import org.apache.log4j.Logger;
+
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Date;
 
 /**
  * @author lorax
@@ -13,6 +16,7 @@ import java.util.List;
  */
 public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	{
+	private static Logger logger = Logger.getLogger(OnlineClusteringMethod.class);
 	//private Iterator<T> theDataPointProvider;
 
 	List<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
@@ -29,9 +33,19 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 	public void runOnce(Iterator<T> theDataPointProvider)
 		{
+		int c = 0;
+		Date starttime = new Date();
 		while (theDataPointProvider.hasNext())
 			{
 			addAndRecenter(theDataPointProvider.next());
+			if(c++ % 10 == 0)
+				{
+
+				Date endtime = new Date();
+				double realtime = (endtime.getTime() - starttime.getTime()) / (double) 1000;
+
+				logger.info("Processed " + c + " data points in " + realtime + " seconds; average " + (c / realtime) + " points/sec");
+				}
 			}
 		}
 

@@ -43,6 +43,7 @@ public class Cluster<T extends Clusterable<T>> extends HashSet<T>
 		// TODO
 		// works because Kcounts are "nonscaling additive", but it's not generic
 
+		assert size() > 0;
 		Iterator<T> i = iterator();
 		T sum = i.next();
 		while (i.hasNext())

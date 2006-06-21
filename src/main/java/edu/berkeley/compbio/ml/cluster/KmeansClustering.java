@@ -30,6 +30,7 @@ public class KmeansClustering<T extends Clusterable<T>> extends OnlineClustering
 			c.add(t);
 			theClusters.add(c);
 			}
+		logger.debug("initialized " + k + " clusters");
 		}
 
 
@@ -41,6 +42,7 @@ public class KmeansClustering<T extends Clusterable<T>> extends OnlineClustering
 
 	public void addAndRecenter(T p)
 		{
+		assert p != null;
 		bestCluster(theClusters, p).addAndRecenter(p);  // this will automatically recalculate the centroid, etc.
 		}
 
@@ -80,15 +82,18 @@ public class KmeansClustering<T extends Clusterable<T>> extends OnlineClustering
 		double bestDistance = Double.MAX_VALUE;
 		Cluster<T> bestCluster = null;
 
+		logger.debug("Chosing best cluster for " + p);
 		for (Cluster<T> c : theClusters)
 			{
 			double d = c.distanceToCentroid(p);
+			logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + bestDistance);
 			if (d < bestDistance)
 				{
 				bestDistance = d;
 				bestCluster = c;
 				}
 			}
+		logger.debug("Chose " + bestCluster);
 		return bestCluster;
 		}
 
