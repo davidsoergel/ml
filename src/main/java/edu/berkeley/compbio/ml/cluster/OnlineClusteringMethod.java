@@ -110,6 +110,11 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 				}
 			}
 		logger.debug("Chose " + bestCluster);
+		if(bestCluster == null)
+			{
+			logger.warn("Can't classify: " + p);
+			}
+		assert bestCluster != null;
 		return bestCluster;
 		}
 
