@@ -25,6 +25,7 @@ public class KmeansClustering<T extends Clusterable<T>> extends OnlineClustering
 			// initialize the clusters with the first k points
 
 			Cluster<T> c = new Cluster<T>(dm, dpp.next());
+			c.setId(i);
 
 			theClusters.add(c);
 			}
@@ -34,6 +35,7 @@ public class KmeansClustering<T extends Clusterable<T>> extends OnlineClustering
 
 	public void add(T p)
 		{
+		assert p != null;
 		n++;
 		bestCluster(p).recenterByAdding(p);  // this will automatically recalculate the centroid, etc.
 		}

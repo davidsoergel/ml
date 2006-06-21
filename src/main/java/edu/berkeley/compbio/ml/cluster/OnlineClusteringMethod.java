@@ -32,7 +32,9 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	//public abstract void addAndRecenter(T v);
 	//public abstract void reassign(T v);
 
-	/** adjust the centroids by considering each of the incoming data points exactly once */
+	/**
+	 * adjust the centroids by considering each of the incoming data points exactly once
+	 */
 	public void runOnce(Iterator<T> theDataPointProvider)
 		{
 		int c = 0;
@@ -40,18 +42,22 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		while (theDataPointProvider.hasNext())
 			{
 			add(theDataPointProvider.next());
-			if(c++ % 10 == 0)
+			c++;
+			if (c % 10 == 0)
 				{
 
 				Date endtime = new Date();
 				double realtime = (endtime.getTime() - starttime.getTime()) / (double) 1000;
 
-				logger.info("Processed " + c + " data points in " + realtime + " seconds; average " + (c / realtime) + " points/sec");
+				logger.info("Processed " + c + " data points in " + realtime + " seconds; average " + (c / realtime)
+						+ " points/sec");
 				}
 			}
 		}
 
-	/** choose the best cluster for each incoming data point and report it */
+	/**
+	 * choose the best cluster for each incoming data point and report it
+	 */
 	public void writeAssignmentsAsTextToStream(Iterator<T> theDataPointProvider, OutputStream outf)
 		{
 		int c = 0;
@@ -63,21 +69,22 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 			T point = theDataPointProvider.next();
 			Cluster<T> best = bestCluster(point);
 			p.println(point.getId() + " " + best.getId());
-
-			if(c++ % 10 == 0)
+			logger.debug(point.getId() + " " + best.getId());
+			c++;
+			if (c % 10 == 0)
 				{
-
 				Date endtime = new Date();
 				double realtime = (endtime.getTime() - starttime.getTime()) / (double) 1000;
 
-				logger.info("Assigned " + c + " data points in " + realtime + " seconds; average " + (c / realtime) + " points/sec");
+				logger.info("Assigned " + c + " data points in " + realtime + " seconds; average " + (c / realtime)
+						+ " points/sec");
 				}
 			}
+		p.flush();
 		}
 
-
 /*
-	*/
+   */
 
 	public List<Cluster<T>> getClusters()
 		{
@@ -91,7 +98,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		double bestDistance = Double.MAX_VALUE;
 		Cluster<T> bestCluster = null;
 
-		logger.debug("Chosing best cluster for " + p);
+		logger.debug("Choosing best cluster for " + p);
 		for (Cluster<T> c : theClusters)
 			{
 			double d = c.distanceToCentroid(p);
