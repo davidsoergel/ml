@@ -1,9 +1,5 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import org.apache.log4j.Logger;
-
-import java.util.Set;
-
 /**
  * @author lorax
  * @version 1.0
@@ -11,7 +7,7 @@ import java.util.Set;
 @Deprecated
 public abstract class BatchClustering<T extends Clusterable<T>>
 	{
-	private static Logger logger = Logger.getLogger(BatchClustering.class);
+/*	private static Logger logger = Logger.getLogger(BatchClustering.class);
 
 	private Set<T> theDataPoints;
 
@@ -35,5 +31,73 @@ public abstract class BatchClustering<T extends Clusterable<T>>
 		return theClusters;
 		}
 
+private void rerunExisting(int steps)
+		{
+		// going through these in cluster order sucks...
+		while (steps > 0)
+			{
+			for (Cluster<T> c : theClusters)
+				{
+				for (T t : new HashSet<T>(c))
+					{
+					if (c.size() == 1)
+						{
+						steps--;
+						continue;
+						}
+					c.removeAndRecenter(t);
+					addAndRecenter(t);
+					if (--steps < 0)
+						{
+						return;
+						}
+					}
+				}
+			}
+		}
 
+		public void reassignAll()
+		{
+			for (Cluster<T> c : theClusters)
+				{
+				for (T t : new HashSet<T>(c))
+					{
+					c.remove(t);
+					add(t);
+					}
+				}
+
+		}
+
+
+	public void writeTextToStream(OutputStream out)
+		{
+
+		PrintWriter p = new PrintWriter(out);
+
+		for (Cluster<T> c : theClusters)
+			{
+			p.println("<cluster id=\"" + c.getId() + "\" centroid=\"" + c.getCentroid() + "\">");
+			for (T t : c)
+				{
+				p.println("\t" + t);
+				}
+			p.println("</cluster>");
+			}
+		p.flush();
+		}
+
+
+	public void run(Iterator<T> theDataPointProvider, int steps)
+		{
+		for (int i = 0; i < steps; i++)
+			{
+			if (!theDataPointProvider.hasNext())
+				{
+				//rerunExisting(steps - i);
+				return;
+				}
+			addAndRecenter(theDataPointProvider.next());
+			}
+		}*/
 	}

@@ -5,10 +5,9 @@ import org.apache.log4j.Logger;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Date;
 
 /**
  * @author lorax
@@ -21,6 +20,8 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 	List<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
 
+	protected int n = 0;
+
 	/*public OnlineClustering(Iterator<T> vp)
 		{
 		theDataPointProvider = vp;
@@ -28,16 +29,17 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 */
 
 	public abstract void add(T v);
-	public abstract void addAndRecenter(T v);
+	//public abstract void addAndRecenter(T v);
 	//public abstract void reassign(T v);
 
+	/** adjust the centroids by considering each of the incoming data points exactly once */
 	public void runOnce(Iterator<T> theDataPointProvider)
 		{
 		int c = 0;
 		Date starttime = new Date();
 		while (theDataPointProvider.hasNext())
 			{
-			addAndRecenter(theDataPointProvider.next());
+			add(theDataPointProvider.next());
 			if(c++ % 10 == 0)
 				{
 
@@ -49,77 +51,63 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 			}
 		}
 
-	public void run(Iterator<T> theDataPointProvider, int steps)
+	/** choose the best cluster for each incoming data point and report it */
+	public void writeAssignmentsAsTextToStream(Iterator<T> theDataPointProvider, OutputStream outf)
 		{
-		for (int i = 0; i < steps; i++)
+		int c = 0;
+		Date starttime = new Date();
+		PrintWriter p = new PrintWriter(outf);
+
+		while (theDataPointProvider.hasNext())
 			{
-			if (!theDataPointProvider.hasNext())
+			T point = theDataPointProvider.next();
+			Cluster<T> best = bestCluster(point);
+			p.println(point.getId() + " " + best.getId());
+
+			if(c++ % 10 == 0)
 				{
-				rerunExisting(steps - i);
-				return;
+
+				Date endtime = new Date();
+				double realtime = (endtime.getTime() - starttime.getTime()) / (double) 1000;
+
+				logger.info("Assigned " + c + " data points in " + realtime + " seconds; average " + (c / realtime) + " points/sec");
 				}
-			addAndRecenter(theDataPointProvider.next());
 			}
 		}
 
 
-	public void reassignAll()
-		{
-			for (Cluster<T> c : theClusters)
-				{
-				for (T t : new HashSet<T>(c))
-					{
-					c.remove(t);
-					add(t);
-					}
-				}
-
-		}
-
-	private void rerunExisting(int steps)
-		{
-		// going through these in cluster order sucks...
-		while (steps > 0)
-			{
-			for (Cluster<T> c : theClusters)
-				{
-				for (T t : new HashSet<T>(c))
-					{
-					if (c.size() == 1)
-						{
-						steps--;
-						continue;
-						}
-					c.removeAndRecenter(t);
-					addAndRecenter(t);
-					if (--steps < 0)
-						{
-						return;
-						}
-					}
-				}
-			}
-		}
+/*
+	*/
 
 	public List<Cluster<T>> getClusters()
 		{
 		return theClusters;
 		}
 
-	public void writeTextToStream(OutputStream out)
+	//public static <T extends Clusterable<T>> Cluster<T> bestCluster(List<Cluster<T>> theClusters, T p)
+
+	public Cluster<T> bestCluster(T p)
 		{
+		double bestDistance = Double.MAX_VALUE;
+		Cluster<T> bestCluster = null;
 
-		PrintWriter p = new PrintWriter(out);
-
+		logger.debug("Chosing best cluster for " + p);
 		for (Cluster<T> c : theClusters)
 			{
-			p.println("<cluster id=\"" + c.getId() + "\" centroid=\"" + c.getCentroid() + "\">");
-			for (T t : c)
+			double d = c.distanceToCentroid(p);
+			logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + bestDistance);
+			if (d < bestDistance)
 				{
-				p.println("\t" + t);
+				bestDistance = d;
+				bestCluster = c;
 				}
-			p.println("</cluster>");
 			}
-		p.flush();
+		logger.debug("Chose " + bestCluster);
+		return bestCluster;
+		}
+
+	public int getN()
+		{
+		return n;
 		}
 	}

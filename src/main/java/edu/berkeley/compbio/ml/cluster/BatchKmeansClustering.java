@@ -1,9 +1,5 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import org.apache.log4j.Logger;
-
-import java.util.Set;
-
 /**
  * @author lorax
  * @version 1.0
@@ -11,7 +7,7 @@ import java.util.Set;
 @Deprecated
 public class BatchKmeansClustering<T extends Clusterable<T>> extends BatchClustering<T>
 	{
-	private static Logger logger = Logger.getLogger(BatchKmeansClustering.class);
+/*	private static Logger logger = Logger.getLogger(BatchKmeansClustering.class);
 
 	private int k;
 
@@ -19,7 +15,7 @@ public class BatchKmeansClustering<T extends Clusterable<T>> extends BatchCluste
 		{
 		super(dataPointSet);
 		}
-/*
+
 	public BatchKmeansClustering(Set<T> dataPointSet, int k, DistanceMeasure<T> dm)
 		{
 		super(dataPointSet);
@@ -30,6 +26,37 @@ public class BatchKmeansClustering<T extends Clusterable<T>> extends BatchCluste
 			Cluster<T> c = new Cluster<T>(dm, da.next()); // initialize the clusters with the first k points
 			theClusters.add(c);
 			}
-		}*/
+		}
 
+
+	public boolean batchUpdate() throws ClusterException
+		{
+		List<Cluster<T>> oldClusters = theClusters;
+		theClusters = new ArrayList<Cluster<T>>();
+
+		// what if a cluster ends up empty??
+
+		for (Cluster<T> c : oldClusters)
+			{
+			Cluster<T> n = new Cluster<T>(c.getTheDistanceMeasure(), c.getCentroid());
+			logger.debug(theClusters.add(n));  // this just fails when theClusters is a HashSet. ???
+			assert theClusters.contains(n);
+			//c.clear();
+			//new Cluster<T>(c.getTheDistanceMeasure(), c.getCentroid()));
+			}
+		for (Cluster<T> o : oldClusters)
+			{
+			for (T point : o)
+				{
+				bestCluster(theClusters, point).add(point);
+				}
+			}
+		boolean changed = false;
+		for (Cluster<T> o : theClusters)
+			{
+			changed = changed || o.recalculateCentroid();
+			}
+		return changed;
+		}
+*/
 	}
