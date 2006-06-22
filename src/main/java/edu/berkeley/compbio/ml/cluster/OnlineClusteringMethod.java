@@ -98,19 +98,29 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		double bestDistance = Double.MAX_VALUE;
 		Cluster<T> bestCluster = null;
 
-		logger.debug("Choosing best cluster for " + p);
+
+		if (logger.isDebugEnabled())
+			{
+			logger.debug("Choosing best cluster for " + p);
+			}
 		for (Cluster<T> c : theClusters)
 			{
 			double d = c.distanceToCentroid(p);
-			logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + bestDistance);
+			if (logger.isDebugEnabled())
+				{
+				logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + bestDistance);
+				}
 			if (d < bestDistance)
 				{
 				bestDistance = d;
 				bestCluster = c;
 				}
 			}
-		logger.debug("Chose " + bestCluster);
-		if(bestCluster == null)
+		if (logger.isDebugEnabled())
+			{
+			logger.debug("Chose " + bestCluster);
+			}
+		if (bestCluster == null)
 			{
 			logger.warn("Can't classify: " + p);
 			}
