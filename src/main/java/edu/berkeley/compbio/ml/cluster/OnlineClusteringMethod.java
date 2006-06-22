@@ -43,7 +43,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 			{
 			add(theDataPointProvider.next());
 			c++;
-			if (c % 10 == 0)
+			if (c % 1000 == 0)
 				{
 
 				Date endtime = new Date();
@@ -71,7 +71,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 			p.println(point.getId() + " " + best.getId());
 			logger.debug(point.getId() + " " + best.getId());
 			c++;
-			if (c % 10 == 0)
+			if (c % 1000 == 0)
 				{
 				Date endtime = new Date();
 				double realtime = (endtime.getTime() - starttime.getTime()) / (double) 1000;
