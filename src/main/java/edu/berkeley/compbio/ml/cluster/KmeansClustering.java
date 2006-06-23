@@ -33,12 +33,6 @@ public class KmeansClustering<T extends Clusterable<T>> extends OnlineClustering
 		}
 
 
-	public void add(T p)
-		{
-		assert p != null;
-		n++;
-		bestCluster(p).recenterByAdding(p);  // this will automatically recalculate the centroid, etc.
-		}
 
 
 /*	public void addAndRecenter(T p)

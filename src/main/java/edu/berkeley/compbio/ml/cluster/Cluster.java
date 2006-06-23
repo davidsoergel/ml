@@ -14,6 +14,7 @@ public class Cluster<T extends Clusterable<T>>
 
 	protected T centroid;
 	protected int n = 0;
+	protected double sumSquareDistances = 0;
 
 	public int getId()
 		{
@@ -42,27 +43,25 @@ public class Cluster<T extends Clusterable<T>>
 		return theDistanceMeasure.distanceBetween(centroid, p);
 		}
 
-	public boolean recenterByAdding(T point)
+	public boolean recenterByAdding(T point, double distance)
 		{
-
 		n++;
+		sumSquareDistances += distance * distance;
 		logger.debug("Cluster added " + point);
 		centroid.incrementBy(point);  // works because Kcounts are "nonscaling additive", but it's not generic
 		//times((double)n/n+1).plus(point.times(1/((double)n+1)));
 		return true;
-
 		}
 
 
-	public boolean recenterByRemoving(T point)
+	public boolean recenterByRemoving(T point, double distance)
 		{
-
 		n--;
+		sumSquareDistances -= distance * distance;
 		logger.debug("Cluster removed " + point);
 		centroid.decrementBy(point);  // works because Kcounts are "nonscaling additive", but it's not generic
 		//times((double)n/n+1).plus(point.times(1/((double)n+1)));
 		return true;
-
 		}
 
 	public DistanceMeasure<T> getTheDistanceMeasure()
@@ -89,6 +88,11 @@ public class Cluster<T extends Clusterable<T>>
 		{
 		return n;
 		}
+
+	public double getStdDev()
+		{
+		return Math.sqrt(sumSquareDistances);
+		}
 /*
 	public Cluster<T> clone()
 		{
@@ -101,7 +105,7 @@ public class Cluster<T extends Clusterable<T>>
 	public String toString()
 		{
 		StringBuffer sb = new StringBuffer("\nCluster:");
-		sb.append(" ").append(centroid).append("\n");
+		sb.append(id).append(" ").append(n).append(" ").append(getStdDev());
 
 		return sb.toString();
 		}
