@@ -3,6 +3,8 @@ package edu.berkeley.compbio.ml.cluster;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
+import java.util.Formatter;
+
 /**
  * @author lorax
  * @version 1.0
@@ -14,7 +16,8 @@ public class Cluster<T extends Clusterable<T>>
 
 	protected T centroid;
 	protected int n = 0;
-	protected double sumSquareDistances = 0;
+	protected double sumOfSquareDistances = 0;
+	/* Note there can be no online method of updating the sum of squares, because the centroid keeps moving */
 
 	public int getId()
 		{
@@ -43,10 +46,10 @@ public class Cluster<T extends Clusterable<T>>
 		return theDistanceMeasure.distanceBetween(centroid, p);
 		}
 
-	public boolean recenterByAdding(T point, double distance)
+	public boolean recenterByAdding(T point) //, double distance)
 		{
 		n++;
-		sumSquareDistances += distance * distance;
+		//sumSquareDistances += (distance * distance);  // ** WRONG
 		logger.debug("Cluster added " + point);
 		centroid.incrementBy(point);  // works because Kcounts are "nonscaling additive", but it's not generic
 		//times((double)n/n+1).plus(point.times(1/((double)n+1)));
@@ -54,10 +57,10 @@ public class Cluster<T extends Clusterable<T>>
 		}
 
 
-	public boolean recenterByRemoving(T point, double distance)
+	public boolean recenterByRemoving(T point) //, double distance)
 		{
 		n--;
-		sumSquareDistances -= distance * distance;
+		//sumSquareDistances -= (distance * distance);  // ** WRONG
 		logger.debug("Cluster removed " + point);
 		centroid.decrementBy(point);  // works because Kcounts are "nonscaling additive", but it's not generic
 		//times((double)n/n+1).plus(point.times(1/((double)n+1)));
@@ -89,10 +92,21 @@ public class Cluster<T extends Clusterable<T>>
 		return n;
 		}
 
+	public void setSumOfSquareDistances(double v)
+		{
+		sumOfSquareDistances = v;
+		}
+
+	public void addToSumOfSquareDistances(double v)
+		{
+		sumOfSquareDistances += v;
+		}
+
 	public double getStdDev()
 		{
-		return Math.sqrt(sumSquareDistances);
+		return Math.sqrt(sumOfSquareDistances);
 		}
+
 /*
 	public Cluster<T> clone()
 		{
@@ -104,10 +118,10 @@ public class Cluster<T extends Clusterable<T>>
 
 	public String toString()
 		{
-		StringBuffer sb = new StringBuffer("\nCluster:");
-		sb.append(id).append(" ").append(n).append(" ").append(getStdDev());
+		Formatter f = new Formatter();
+		f.format("\n[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
 
-		return sb.toString();
+		return f.out().toString();
 		}
 
 

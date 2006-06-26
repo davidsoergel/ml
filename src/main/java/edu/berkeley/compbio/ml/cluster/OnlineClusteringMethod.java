@@ -46,13 +46,13 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 			{
 			try
 				{
-				cm.oldCluster.recenterByRemoving(p, cm.oldDistance);
+				cm.oldCluster.recenterByRemoving(p); //, cm.oldDistance);
 				}
 			catch (NullPointerException e)
 				{ // probably just the first round
 				}
 			cm.bestCluster
-					.recenterByAdding(p, cm.bestDistance);  // this will automatically recalculate the centroid, etc.
+					.recenterByAdding(p); //, cm.bestDistance);  // this will automatically recalculate the centroid, etc.
 			assignments.put(id, cm.bestCluster);
 			return true;
 			}
@@ -91,6 +91,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 					}
 				}
 			logger.info("Changed cluster assignment of " + changed + " points (" + (int) (100 * changed / c) + "%)\n");
+			computeClusterStdDevs(theDataPointProvider);  // ** Slow, should be optional
 			logger.info("\n" + clusteringStats());
 			if (changed == 0)
 				{
@@ -114,6 +115,26 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		p.flush();
 		}
 
+	/** for each cluster, compute the standard deviation of the distance of each point to the centroid.
+	 *  This does not reassign points or move the centroids.
+	 * @param theDataPointProvider
+	 */
+	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+		{
+		theDataPointProvider.reset();
+		for(Cluster<T> c : theClusters)
+			{
+			c.setSumOfSquareDistances(0);
+			}
+		while (theDataPointProvider.hasNext())
+				{
+				T p = theDataPointProvider.next();
+				Cluster<T> c = assignments.get(p.getId());
+				double dist = c.distanceToCentroid(p);
+				c.addToSumOfSquareDistances(dist * dist);
+				}
+		}
+
 /*
    */
 
@@ -135,7 +156,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 		if (logger.isDebugEnabled())
 			{
-			logger.debug("Choosing best cluster for " + p);
+			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
 		for (Cluster<T> c : theClusters)
 			{
@@ -166,7 +187,6 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		{
 		Cluster<T> bestCluster;
 		double bestDistance = Double.MAX_VALUE;
-		;
 		Cluster<T> oldCluster;
 		double oldDistance;
 //
@@ -179,7 +199,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 		public boolean changed()
 			{
-			return (oldCluster == null || bestCluster.equals(oldCluster));
+			return (oldCluster == null || (! bestCluster.equals(oldCluster)));
 			}
 		}
 
@@ -205,11 +225,12 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 			for (Cluster<T> d : theClusters)
 				{
 				double distance = c.distanceToCentroid(d.getCentroid());
+				if(c == d) { assert distance == 0; }  
 				double stddev2 = d.getStdDev();
 				double margin1 = distance - (stddev1 + stddev2);
 				double margin2 = distance - 2 * (stddev1 + stddev2);
 
-				p.print("     " + distance + "(" + margin1 + ", " + margin2 + ")");
+				p.printf("\t%.2f (%.2f)", distance, margin1); //,  margin2);
 				}
 			p.println();
 			}
