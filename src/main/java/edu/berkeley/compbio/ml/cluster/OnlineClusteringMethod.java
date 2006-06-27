@@ -1,11 +1,12 @@
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.MathUtils;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -225,7 +226,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 			for (Cluster<T> d : theClusters)
 				{
 				double distance = c.distanceToCentroid(d.getCentroid());
-				if(c == d) { assert distance == 0; }  
+				if(c == d) { assert MathUtils.equalWithinFPError(distance, 0); }
 				double stddev2 = d.getStdDev();
 				double margin1 = distance - (stddev1 + stddev2);
 				double margin2 = distance - 2 * (stddev1 + stddev2);
