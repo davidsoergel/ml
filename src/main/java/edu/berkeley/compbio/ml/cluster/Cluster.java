@@ -46,6 +46,11 @@ public class Cluster<T extends Clusterable<T>>
 		return theDistanceMeasure.distanceBetween(centroid, p);
 		}
 
+/*	public void normalize()
+		{
+		centroid.normalize(n);
+		}*/
+
 	public boolean recenterByAdding(T point) //, double distance)
 		{
 		n++;
@@ -104,7 +109,7 @@ public class Cluster<T extends Clusterable<T>>
 
 	public double getStdDev()
 		{
-		return Math.sqrt(sumOfSquareDistances);
+		return Math.sqrt(sumOfSquareDistances / n);
 		}
 
 /*

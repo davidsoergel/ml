@@ -22,4 +22,6 @@ public interface Clusterable<T extends Clusterable>
 	//public T times(double d);
 
 	//public T weightedAverage(T object, double weight);
+
+	//void normalize(int n);
 	}
