@@ -26,7 +26,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 	List<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
 
-	private Map<String, Cluster<T>> assignments = new HashMap<String, Cluster<T>>();  // see whether anything changed
+	protected Map<String, Cluster<T>> assignments = new HashMap<String, Cluster<T>>();  // see whether anything changed
 
 	protected int n = 0;
 
@@ -38,31 +38,8 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 	//public abstract void add(T v);
 
+	public abstract boolean add(T p, List<Double> secondBestDistances);
 
-	public boolean add(T p, List<Double> secondBestDistances)
-		{
-		assert p != null;
-		//n++;
-		String id = p.getId();
-		ClusterMove cm = bestClusterMove(p);
-		secondBestDistances.add(cm.secondBestDistance);
-		if (cm.changed())
-			{
-			try
-				{
-				cm.oldCluster.recenterByRemoving(p); //, cm.oldDistance);
-				}
-			catch (NullPointerException e)
-				{ // probably just the first round
-				}
-			cm.bestCluster
-					.recenterByAdding(
-							p); //, cm.bestDistance);  // this will automatically recalculate the centroid, etc.
-			assignments.put(id, cm.bestCluster);
-			return true;
-			}
-		return false;
-		}
 	//public abstract void addAndRecenter(T v);
 	//public abstract void reassign(T v);
 
@@ -75,7 +52,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		}*/
 
 	/**
-	 * adjust the centroids by considering each of the incoming data points exactly once per iteration
+	 * consider each of the incoming data points exactly once per iteration.  Note iterations > 1 only makes sense for unsupervised clustering.
 	 */
 	public void run(ClusterableIterator<T> theDataPointProvider, int iterations)
 			throws IOException //, int maxpoints) throws IOException
@@ -185,50 +162,11 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 	//public static <T extends Clusterable<T>> Cluster<T> bestCluster(List<Cluster<T>> theClusters, T p)
 
-	public ClusterMove bestClusterMove(T p)
-		{
-		ClusterMove result = new ClusterMove();
-		//double bestDistance = Double.MAX_VALUE;
-		//Cluster<T> bestCluster = null;
 
-		String id = p.getId();
-		result.oldCluster = assignments.get(id);
+	public abstract ClusterMove bestClusterMove(T p);
 
-		if (logger.isDebugEnabled())
-			{
-			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
-			}
-		for (Cluster<T> c : theClusters)
-			{
-			double d = c.distanceToCentroid(p);
-			if (logger.isDebugEnabled())
-				{
-				logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);
-				}
-			if (d < result.bestDistance)
-				{
-				result.secondBestDistance = result.bestDistance;
-				result.bestDistance = d;
-				result.bestCluster = c;
-				}
-			else if (d < result.secondBestDistance)
-				{
-				result.secondBestDistance = d;
-				}
-			}
-		if (logger.isDebugEnabled())
-			{
-			logger.debug("Chose " + result.bestCluster);
-			}
-		if (result.bestCluster == null)
-			{
-			logger.warn("Can't classify: " + p);
-			assert false;
-			}
-		return result;
-		}
 
-	private class ClusterMove
+	protected class ClusterMove
 		{
 		Cluster<T> bestCluster;
 		double bestDistance = Double.MAX_VALUE;
