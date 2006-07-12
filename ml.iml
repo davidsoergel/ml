@@ -42,15 +42,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/com/davidsoergel/dsutils/1.1-SNAPSHOT/dsutils-1.1-SNAPSHOT.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -75,6 +66,8 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="dsutils" />
+    <orderEntry type="module" module-name="stats" />
     <orderEntryProperties />
   </component>
   <component name="copyright">
