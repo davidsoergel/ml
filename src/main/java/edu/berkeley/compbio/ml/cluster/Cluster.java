@@ -31,7 +31,7 @@ public class Cluster<T extends Clusterable<T>>
 
 	private int id;
 
-	public Cluster(DistanceMeasure<T> dm, T centroid) throws CloneNotSupportedException
+	public Cluster(DistanceMeasure<T> dm, T centroid)
 		{
 		this.centroid = centroid.clone();
 		n++;
