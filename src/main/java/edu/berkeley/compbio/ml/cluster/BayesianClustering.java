@@ -37,6 +37,17 @@ public class BayesianClustering<T extends Clusterable<T>> extends OnlineClusteri
 
 	public boolean add(T p, List<Double> secondBestDistances)
 		{
+		theClusters.get(getBestCluster(p, secondBestDistances)).recenterByAdding(p);
+		return true;
+		}
+
+	public OnlineClusteringMethod<T>.ClusterMove bestClusterMove(T p)
+		{
+		return null;
+		}
+
+	public int getBestCluster(T p, List<Double> secondBestDistances)
+		{
 		int i;
 		double secondbestdistance = Double.MAX_VALUE;
 		double bestdistance = Double.MAX_VALUE;
@@ -55,13 +66,7 @@ public class BayesianClustering<T extends Clusterable<T>> extends OnlineClusteri
 				secondbestdistance = temp;
 				}
 			}
-		theClusters.get(j).recenterByAdding(p);
 		secondBestDistances.add(secondbestdistance);
-		return true;
-		}
-
-	public OnlineClusteringMethod<T>.ClusterMove bestClusterMove(T p)
-		{
-		return null;
+		return j;
 		}
 	}
