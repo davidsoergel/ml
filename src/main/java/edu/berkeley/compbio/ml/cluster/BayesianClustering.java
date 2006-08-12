@@ -7,9 +7,8 @@ import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import java.util.List;
 
 /**
- * User: David
- * Date: Jul 11, 2006
- * Time: 4:14:05 PM
+ * Performs cluster classification with a naive bayesian classifier
+ * @author David Tulga
  */
 public class BayesianClustering<T extends Clusterable<T>> extends OnlineClusteringMethod<T>
 	{
@@ -19,6 +18,12 @@ public class BayesianClustering<T extends Clusterable<T>> extends OnlineClusteri
 	private DistanceMeasure<T> measure;
 	private double[] priors;
 
+	/**
+	 * Creates a new BayesianClustering with the following parameters
+	 * @param theCentroids Centroids of the clusters
+	 * @param thePriors Prior expectations for the clusters
+	 * @param dm The distance measure to use
+	 */
 	public BayesianClustering(T[] theCentroids, double[] thePriors, DistanceMeasure<T> dm)
 		{
 		centroids = theCentroids;
@@ -46,6 +51,11 @@ public class BayesianClustering<T extends Clusterable<T>> extends OnlineClusteri
 		return null;
 		}
 
+	/**
+	 * Returns the best cluster without adding the point
+	 * @param p Point to find the best cluster of
+	 * @param secondBestDistances List of second-best distances to add to
+	 */
 	public int getBestCluster(T p, List<Double> secondBestDistances)
 		{
 		int i;
