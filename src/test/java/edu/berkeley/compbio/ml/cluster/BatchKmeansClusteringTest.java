@@ -1,4 +1,4 @@
-package edu.berkeley.compbio.bugbags.cluster;
+package edu.berkeley.compbio.msensr.cluster;
 
 import junit.framework.TestCase;
 import org.apache.log4j.Logger;
