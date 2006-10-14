@@ -12,15 +12,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/org/testng/testng/4.7/testng-4.7-jdk15.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="module" module-name="stats" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -33,7 +25,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/qdox/qdox/1.5/qdox-1.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../.m2/repository/org/testng/testng/5.1/testng-5.1-jdk15.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -51,15 +43,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/bsh/bsh/2.0b1/bsh-2.0b1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -67,7 +50,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="dsutils" />
-    <orderEntry type="module" module-name="stats" />
     <orderEntryProperties />
   </component>
   <component name="copyright">
