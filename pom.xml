@@ -36,6 +36,18 @@
 			<version>1.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.davidsoergel</groupId>
+			<artifactId>runutils</artifactId>
+			<version>1.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.davidsoergel</groupId>
+			<artifactId>stats</artifactId>
+			<version>1.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<scm>
