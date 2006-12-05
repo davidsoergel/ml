@@ -12,9 +12,9 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="dsutils" exported="" />
-    <orderEntry type="module" module-name="runutils" exported="" />
-    <orderEntry type="module" module-name="stats" exported="" />
+    <orderEntry type="module" module-name="dsutils" />
+    <orderEntry type="module" module-name="runutils" />
+    <orderEntry type="module" module-name="stats" />
     <orderEntry type="module-library" exported="">
       <library name="Maven Dependency: log4j:log4j:1.2.13::jar:compile">
         <CLASSES>
