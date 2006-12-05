@@ -54,7 +54,7 @@
 	<distributionManagement>
 		<site>
 			<id>website</id>
-			<url>scpexe://dev.davidsoergel.com/home/continuum/domains/dev.davidsoergel.com/ml</url>
+			<url>scpexe://dev.davidsoergel.com/home/continuum/domains/dev.davidsoergel.com/ml/site</url>
 		</site>
 	</distributionManagement>
 
