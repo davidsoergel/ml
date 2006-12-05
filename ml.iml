@@ -12,36 +12,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="stats" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/org/testng/testng/5.1/testng-5.1-jdk15.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
+    <orderEntry type="module" module-name="dsutils" exported="" />
+    <orderEntry type="module" module-name="runutils" exported="" />
+    <orderEntry type="module" module-name="stats" exported="" />
+    <orderEntry type="module-library" exported="">
+      <library name="Maven Dependency: log4j:log4j:1.2.13::jar:compile">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar!/" />
         </CLASSES>
@@ -49,8 +24,33 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="dsutils" />
-    <orderEntry type="module" module-name="runutils" />
+    <orderEntry type="module-library" exported="">
+      <library name="Maven Dependency: org.testng:testng:5.1:jdk15:jar:test">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../.m2/repository/org/testng/testng/5.1/testng-5.1-jdk15.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Maven Dependency: junit:junit:3.8.1::jar:compile">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="Maven Dependency: ant:ant:1.6.5::jar:compile">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../.m2/repository/ant/ant/1.6.5/ant-1.6.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntryProperties />
   </component>
   <component name="copyright">
