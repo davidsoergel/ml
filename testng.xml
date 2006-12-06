@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="TestAll" verbose="1" parallel="false" thread-count="1">
+	<test name="TestAll">
+		<packages>
+			<package name="edu.berkeley.compbio.ml"/>
+		</packages>
+	</test>
+</suite>
