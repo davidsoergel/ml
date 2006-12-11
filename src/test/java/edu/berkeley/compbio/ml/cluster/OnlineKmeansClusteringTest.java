@@ -18,7 +18,7 @@ public class OnlineKmeansClusteringTest
 	@BeforeSuite
 	public void setUp()
 		{
-		MathUtils.initApproximateLog(1000000, 10000);
+		MathUtils.initApproximateLog(-12, +12, 3, 100000);
 		}
 
 	@Test
