@@ -12,9 +12,17 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="dsutils" exported="" />
-    <orderEntry type="module" module-name="stats" exported="" />
     <orderEntry type="module" module-name="runutils" exported="" />
+    <orderEntry type="module" module-name="stats" exported="" />
+    <orderEntry type="module-library" exported="">
+      <library name="Maven Dependency: com.davidsoergel:dsutils:jar:1.1-SNAPSHOT:compile">
+        <CLASSES>
+          <root url="jar:///h/soergel/.m2/repository/com/davidsoergel/dsutils/1.1-SNAPSHOT/dsutils-1.1-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="Maven Dependency: com.martiansoftware:JSAP:jar:2.0a-ds1:compile">
         <CLASSES>
