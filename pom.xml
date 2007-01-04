@@ -83,6 +83,7 @@
 		</developer>
 	</developers>
 
+
 	<repositories>
 		<repository>
 			<id>dev.davidsoergel.com</id>
@@ -96,7 +97,7 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>dev.davidsoergel.com</id>
+			<id>dev.davidsoergel.com.snapshots</id>
 			<name>David Soergel Snapshot Repository</name>
 			<url>http://dev.davidsoergel.com/maven2-snapshots</url>
 			<releases>
@@ -118,6 +119,4 @@
 			</snapshots>
 		</repository>
 	</repositories>
-
-
 </project>

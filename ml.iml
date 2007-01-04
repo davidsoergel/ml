@@ -13,51 +13,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="dsutils" exported="" />
-    <orderEntry type="module-library" exported="">
-      <library name="Maven Dependency: com.martiansoftware:JSAP:jar:2.0a-ds1:compile">
-        <CLASSES>
-          <root url="jar:///h/soergel/.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="Maven Dependency: commons-lang:commons-lang:jar:2.1:compile">
-        <CLASSES>
-          <root url="jar:///h/soergel/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="Maven Dependency: junit:junit:jar:3.8.1:test">
-        <CLASSES>
-          <root url="jar:///h/soergel/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="Maven Dependency: log4j:log4j:jar:1.2.13:compile">
-        <CLASSES>
-          <root url="jar:///h/soergel/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library name="Maven Dependency: org.testng:testng:jar:jdk15:5.4:test">
-        <CLASSES>
-          <root url="jar:///h/soergel/.m2/repository/org/testng/testng/5.4/testng-5.4-jdk15.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntryProperties />
   </component>
   <component name="copyright">
