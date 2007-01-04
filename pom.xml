@@ -8,7 +8,9 @@
 	<name>ml</name>
 	<version>1.0-SNAPSHOT</version>
 	<url>http://dev.davidsoergel.com/ml</url>
-	<description>Generic implementations of various Machine Learning algorithms. Includes an online clustering framework with a K-means implementation, and a Markov Chain Monte Carlo (MCMC) framework with a Metropolis-coupled (MCMCMC) option.
+	<description>Generic implementations of various Machine Learning algorithms. Includes an online clustering framework
+		with a K-means implementation, and a Markov Chain Monte Carlo (MCMC) framework with a Metropolis-coupled
+		(MCMCMC) option.
 	</description>
 
 	<parent>
@@ -84,8 +86,36 @@
 	<repositories>
 		<repository>
 			<id>dev.davidsoergel.com</id>
-			<name>David Soergel Dev Repository</name>
+			<name>David Soergel Release Repository</name>
 			<url>http://dev.davidsoergel.com/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>dev.davidsoergel.com</id>
+			<name>David Soergel Snapshot Repository</name>
+			<url>http://dev.davidsoergel.com/maven2-snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>dev.davidsoergel.com.xtra</id>
+			<name>David Soergel Xtra Repository</name>
+			<url>http://dev.davidsoergel.com/maven2-xtra</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 
