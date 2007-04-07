@@ -19,7 +19,8 @@ import java.util.List;
  * @author lorax
  * @version 1.0
  */
-public class MoveTypeSet implements PropertyConsumer
+@PropertyConsumer
+public class MoveTypeSet
 	{
 	private static Logger logger = Logger.getLogger(MoveTypeSet.class);
 
@@ -127,7 +128,7 @@ public class MoveTypeSet implements PropertyConsumer
 			}
 		catch (Exception e)
 			{
-//e.printStackTrace();
+			//e.printStackTrace();
 			logger.debug(e);
 			throw new Error(e);
 			}

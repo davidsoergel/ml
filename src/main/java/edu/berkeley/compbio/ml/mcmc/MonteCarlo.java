@@ -11,7 +11,8 @@ import java.util.Arrays;
  * @author lorax
  * @version 1.0
  */
-public abstract class MonteCarlo implements PropertyConsumer
+@PropertyConsumer
+public abstract class MonteCarlo
 	{
 	private static Logger logger = Logger.getLogger(MonteCarlo.class);
 	protected MoveTypeSet movetypes;
@@ -23,7 +24,7 @@ public abstract class MonteCarlo implements PropertyConsumer
 	@Property(helpmessage = "Collect data to disk every n samples", defaultvalue = "100")
 	public int collectDataToDiskInterval;
 
-	protected double heatFactor = 1;  //  = beta = kT.  Must be >= 1.  1 is cold chain
+	protected double heatFactor = 1;//  = beta = kT.  Must be >= 1.  1 is cold chain
 	protected String id;
 	protected int[] accepted;
 	protected int[] proposed;
@@ -145,10 +146,10 @@ public abstract class MonteCarlo implements PropertyConsumer
 		mc.resetAcceptedCount();
 		for (int i = 0; i < numSteps; i++)
 			{
-/*
-			if (i % writeToConsoleInterval == 0)
-				{
-				}*/
+			/*
+		   if (i % writeToConsoleInterval == 0)
+			   {
+			   }*/
 			mc.doStep(i);
 			//System.err.println("Step: " + i);
 			}
