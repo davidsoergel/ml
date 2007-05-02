@@ -16,6 +16,15 @@
     <orderEntry type="module" module-name="runutils" exported="" />
     <orderEntry type="module" module-name="stats" exported="" />
     <orderEntry type="module-library" exported="">
+      <library name="Maven Dependency: com.intellij:annotations:jar:6.0.3:compile">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
       <library name="Maven Dependency: com.martiansoftware:JSAP:jar:2.0a-ds1:compile">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1.jar!/" />
