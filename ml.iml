@@ -12,10 +12,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="dsutils" exported="" />
-    <orderEntry type="module" module-name="runutils" exported="" />
     <orderEntry type="module" module-name="springjpautils" exported="" />
     <orderEntry type="module" module-name="stats" exported="" />
+    <orderEntry type="module" module-name="runutils" exported="" />
+    <orderEntry type="module" module-name="dsutils" exported="" />
     <orderEntry type="module-library" exported="">
       <library name="M2 Dep: antlr:antlr:jar:2.7.6:compile">
         <CLASSES>
@@ -410,6 +410,15 @@
       <library name="M2 Dep: xml-apis:xml-apis:jar:1.3.03:compile">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../.m2/repository/xml-apis/xml-apis/1.3.03/xml-apis-1.3.03.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library name="M2 Dep: com.davidsoergel:springjpautils:jar:2.0-SNAPSHOT:compile">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/davidsoergel/springjpautils/2.0-SNAPSHOT/springjpautils-2.0-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
