@@ -17,6 +17,8 @@ public abstract class MonteCarlo
 	private static Logger logger = Logger.getLogger(MonteCarlo.class);
 	protected MoveTypeSet movetypes;
 	protected int acceptedCount;
+	private int proposedCount;
+
 
 	@Property(helpmessage = "Write status to the console every n samples", defaultvalue = "1000")
 	public int writeToConsoleInterval;
@@ -34,7 +36,6 @@ public abstract class MonteCarlo
 
 	protected MonteCarloState currentState;
 	protected MonteCarloState newState;
-
 
 	public MonteCarlo()
 		{
@@ -85,12 +86,11 @@ public abstract class MonteCarlo
 		{
 		accepted = new int[movetypes.size()];
 		proposed = new int[movetypes.size()];
-		Arrays.fill(proposed, 0);
-		Arrays.fill(accepted, 0);
 
 		//writeToConsoleInterval = (writeToConsoleInterval));
 		//collectDataToDiskInterval = (new Integer(Run.getProps().getProperty("collectDataToDiskInterval")));
-		acceptedCount = writeToConsoleInterval;
+		//acceptedCount = writeToConsoleInterval;
+		resetCounts();
 		currentState.init();
 		}
 
@@ -143,7 +143,7 @@ public abstract class MonteCarlo
 			//System.err.println("Burnin step: " + i);
 			}
 
-		mc.resetAcceptedCount();
+		mc.resetCounts();
 		for (int i = 0; i < numSteps; i++)
 			{
 			/*
@@ -174,14 +174,12 @@ public abstract class MonteCarlo
 
 		int movetype = m.getType();
 
+		proposedCount++;
 		proposed[movetype]++;
 
-		if (currentState == newState)
+		if (currentState != newState)
 			{
-			acceptedCount--;
-			}
-		else
-			{
+			acceptedCount++;
 			accepted[movetype]++;
 			}
 
@@ -195,8 +193,8 @@ public abstract class MonteCarlo
 			//System.out.print("\033c");
 
 			logger.info("Step " + step);
-			logger.info("[ " + id + " ] Accepted " + acceptedCount + " out of " + writeToConsoleInterval
-					+ " proposed total moves.");
+			logger.info(
+					"[ " + id + " ] Accepted " + acceptedCount + " out of " + proposedCount + " proposed total moves.");
 
 			for (int i = 0; i < movetypes.size(); i++)
 				{
@@ -204,17 +202,19 @@ public abstract class MonteCarlo
 						+ movetypes.getName(i) + " moves.");
 				}
 			//System.out.println("\n\n");
-			acceptedCount = writeToConsoleInterval;
-			Arrays.fill(proposed, 0);
-			Arrays.fill(accepted, 0);
+			//acceptedCount = writeToConsoleInterval;
+			resetCounts();
 
 			System.out.println(currentState);
 			System.out.println(dc.toString());
 			}
 		}
 
-	public void resetAcceptedCount()
+	public void resetCounts()
 		{
-		acceptedCount = writeToConsoleInterval;
+		proposedCount = 0;
+		acceptedCount = 0;//writeToConsoleInterval;
+		Arrays.fill(proposed, 0);
+		Arrays.fill(accepted, 0);
 		}
 	}

@@ -8,11 +8,8 @@ import org.apache.log4j.Logger;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lorax
- * Date: Apr 29, 2004
- * Time: 4:46:42 PM
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: lorax Date: Apr 29, 2004 Time: 4:46:42 PM To change this template use File | Settings
+ * | File Templates.
  */
 public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	{
@@ -50,7 +47,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 
 		MetropolisCoupledMonteCarlo couplingChain = new MetropolisCoupledMonteCarlo();
 		couplingChain.setCurrentChainList(chains);
-		couplingChain.setColdest(true); // suppress any output
+		couplingChain.setColdest(true);// suppress any output
 		couplingChain.init();
 
 		logger.info("Initialized MCMCMC: " + heatFactors);
@@ -64,9 +61,9 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		// reset counts
 		for (MonteCarlo chain : chains)
 			{
-			chain.resetAcceptedCount();
+			chain.resetCounts();
 			}
-		couplingChain.resetAcceptedCount();
+		couplingChain.resetCounts();
 
 		// do the real run
 		for (int i = 0; i < (numSteps / swapInterval); i++)
