@@ -1,8 +1,6 @@
 package edu.berkeley.compbio.ml.mcmc;
 
 import com.davidsoergel.dsutils.SubclassFinder;
-import com.davidsoergel.runutils.Property;
-import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.runutils.ThreadLocalRun;
 import com.davidsoergel.stats.MultinomialDistribution;
 import org.apache.log4j.Logger;
@@ -19,7 +17,7 @@ import java.util.List;
  * @author lorax
  * @version 1.0
  */
-@PropertyConsumer
+//@PropertyConsumer
 public class MoveTypeSet
 	{
 	private static Logger logger = Logger.getLogger(MoveTypeSet.class);
@@ -27,15 +25,15 @@ public class MoveTypeSet
 	private static ThreadLocal<HashMap<Object, MoveTypeSet>> _instance_tl =
 			new ThreadLocal<HashMap<Object, MoveTypeSet>>();
 
-	@Property(helpmessage = "Map of move type names to move probabilities", defaultvalue = "")
-	public HashMap<String, Double> moveProbabilities;
+	//	@Property(helpmessage = "Map of move type names to move probabilities", defaultvalue = "")
+	//	public HashMap<String, Double> moveProbabilities;
 
 
 	public MoveTypeSet(String movePackage)
 		{
-		ThreadLocalRun.getProps().injectProperties(this);
+		//		ThreadLocalRun.getProps().injectProperties(this);
 
-		double prob;
+		Double prob;
 		for (Class movetype : SubclassFinder.find(movePackage, Move.class))
 			{
 			if (Modifier.isAbstract(movetype.getModifiers()))
@@ -47,9 +45,11 @@ public class MoveTypeSet
 			shortname = shortname.substring(shortname.lastIndexOf(".") + 1);
 
 			// ** eliminate dependency (huh?  looks OK)
-			prob = moveProbabilities.get(shortname);
-			//Run.getProps().getPropertyDouble("moveProbability." + shortname);
-			if (Double.isNaN(prob))
+			//prob = moveProbabilities.get(shortname);
+			// ** hack because we can't inject into a Map
+			prob = ThreadLocalRun.getProps()
+					.getDouble("edu.berkeley.compbio.ml.mcmc.MoveTypeSet.moveProbabilities." + shortname);
+			if (prob == null || Double.isNaN(prob))
 				{
 				logger.warn("No move probability found for " + shortname + "; assigning probability zero.");
 				}
