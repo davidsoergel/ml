@@ -11,83 +11,73 @@ import java.util.List;
  * Created by IntelliJ IDEA. User: lorax Date: Apr 29, 2004 Time: 4:46:42 PM To change this template use File | Settings
  * | File Templates.
  */
-public class MetropolisCoupledMonteCarlo extends MonteCarlo
-	{
-	private static Logger logger = Logger.getLogger(MetropolisCoupledMonteCarlo.class);
+public class MetropolisCoupledMonteCarlo extends MonteCarlo {
+    private static Logger logger = Logger.getLogger(MetropolisCoupledMonteCarlo.class);
 
-	public ChainList getCurrentChainList()
-		{
-		return (ChainList) currentState;
-		}
+    public ChainList getCurrentChainList() {
+        return (ChainList) currentState;
+    }
 
-	public void setCurrentChainList(ChainList currentChainList)
-		{
-		this.currentState = currentChainList;
-		}
+    public void setCurrentChainList(ChainList currentChainList) {
+        this.currentState = currentChainList;
+    }
 
-	public MetropolisCoupledMonteCarlo()
-		{
-		super();
-		movetypes = MoveTypeSet.getInstance("edu.berkeley.compbio.ml.mcmc.mcmcmc");
-		logger.debug("Coupling chain: got move types " + movetypes.toString());
-		}
+    public MetropolisCoupledMonteCarlo() {
+        super();
+        movetypes = MoveTypeSet.getInstance("edu.berkeley.compbio.ml.mcmc.mcmcmc");
+        logger.debug("Coupling chain: got move types " + movetypes.toString());
+    }
 
 
-	public static void run(MonteCarloFactory mcf, int burnIn, int numSteps, List<Double> heatFactors, int swapInterval)
-		{
-		assert heatFactors.get(0) == 1;
-		ChainList chains = new ChainList();
-		for (double hf : heatFactors)
-			{
-			chains.add(mcf.newChain(hf));
-			}
+    public static void run(MonteCarloFactory mcf, int burnIn, int numSteps, List<Double> heatFactors, int swapInterval) {
+        assert heatFactors.get(0) == 1;
+        ChainList chains = new ChainList();
+        for (double hf : heatFactors) {
+            chains.add(mcf.newChain(hf));
+        }
 
-		MonteCarlo mc = chains.get(0);
-		mc.setColdest(true);
+        MonteCarlo mc = chains.get(0);
+        mc.setColdest(true);
 
-		MetropolisCoupledMonteCarlo couplingChain = new MetropolisCoupledMonteCarlo();
-		couplingChain.setCurrentChainList(chains);
-		couplingChain.setColdest(true);// suppress any output
-		couplingChain.init();
+        MetropolisCoupledMonteCarlo couplingChain = new MetropolisCoupledMonteCarlo();
+        couplingChain.setCurrentChainList(chains);
+        couplingChain.setColdest(true);// suppress any output
+        couplingChain.init();
 
-		logger.info("Initialized MCMCMC: " + heatFactors);
+        logger.info("Initialized MCMCMC: " + heatFactors);
 
-		// burn in
-		for (int i = 0; i < burnIn; i++)
-			{
-			couplingChain.doStep(0, swapInterval);
-			}
+        // burn in
+        for (int i = 0; i < burnIn; i++) {
+            couplingChain.doStep(0, swapInterval);
+        }
 
-		// reset counts
-		for (MonteCarlo chain : chains)
-			{
-			chain.resetCounts();
-			}
-		couplingChain.resetCounts();
+        // reset counts
+        for (MonteCarlo chain : chains) {
+            chain.resetCounts();
+        }
+        couplingChain.resetCounts();
 
-		// do the real run
-		for (int i = 0; i < (numSteps / swapInterval); i++)
-			{
-			couplingChain.doStep(i, swapInterval);
-			}
-		}
+        // do the real run
+        for (int i = 0; i < (numSteps / swapInterval); i++) {
+            couplingChain.doStep(i, swapInterval);
+        }
+    }
 
 
-	public void doStep(int step, int swapInterval)
-		{
+    public void doStep(int step, int swapInterval) {
 
-		// run each chain independently for a while
-		// ** parallelizable
-		for (MonteCarlo chain : getCurrentChainList())
-			{
-			int maxStep = step + swapInterval;
-			for (int i = step; i < maxStep; i++)
-				{
-				chain.doStep(i);
-				}
-			}
+        // run each chain independently for a while
+        // ** parallelizable
+        for (MonteCarlo chain : getCurrentChainList()) {
+            int minStep = swapInterval * step;
+            int maxStep = minStep + swapInterval;
+            // CHANGED: now i indexes number of MC steps, rather than sort-of the number of MCMC steps
+            for (int i = minStep; i < maxStep; i++) {
+                chain.doStep(i);
+            }
+        }
 
-		// do the temperature swap attempt
-		super.doStep(1);
-		}
-	}
+        // do the temperature swap attempt
+        super.doStep(1);
+    }
+}
