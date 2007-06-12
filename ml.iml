@@ -13,9 +13,9 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="springjpautils" exported="" />
-    <orderEntry type="module" module-name="dsutils" exported="" />
-    <orderEntry type="module" module-name="stats" exported="" />
     <orderEntry type="module" module-name="runutils" exported="" />
+    <orderEntry type="module" module-name="stats" exported="" />
+    <orderEntry type="module" module-name="dsutils" exported="" />
     <orderEntry type="module-library" exported="">
       <library name="M2 Dep: antlr:antlr:jar:2.7.6:compile">
         <CLASSES>
