@@ -83,11 +83,13 @@ public class MoveTypeSet {
     public Move newMove(MonteCarloState currentMonteCarloState) {
         Class[] argTypes = {currentMonteCarloState.getClass()};
         try {
+            logger.debug("Creating class.");
             Class c = (Class) (theTypes.get(typeProbabilities.sample()));
+            logger.debug("Class created.");
             Object[] args = {currentMonteCarloState};
-            //logger.debug("New Move: " + c.getName());
+            logger.debug("New Move: " + c.getName());
             Move theMove = (Move) (c.getConstructor(argTypes).newInstance(args));
-            //logger.debug("...Move created.");
+            logger.debug("...Move created.");
             return theMove;
         }
         catch (Exception e) {
