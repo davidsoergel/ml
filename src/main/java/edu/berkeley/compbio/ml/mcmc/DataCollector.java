@@ -1,3 +1,35 @@
+/* $Id$ */
+
+/*
+ * Copyright (c) 2007 Regents of the University of California
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the University of California, Berkeley nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package edu.berkeley.compbio.ml.mcmc;
 
 import com.davidsoergel.stats.DoubleTimecourse;
@@ -14,6 +46,8 @@ import java.util.Locale;
  */
 public class DataCollector
 	{
+	// ------------------------------ FIELDS ------------------------------
+
 	protected static Logger logger = Logger.getLogger(DataCollector.class);
 	private DoubleTimecourse[] timecourses;
 	private int lastStep;
@@ -23,6 +57,8 @@ public class DataCollector
 	private FileWriter trajectoryWriter;
 	private FileWriter ensembleWriter;
 
+
+	// --------------------------- CONSTRUCTORS ---------------------------
 
 	public DataCollector(String trajectoryFilename, String ensembleFilename, Enum[] tcnames)
 		{
@@ -40,36 +76,27 @@ public class DataCollector
 		catch (IOException e)
 			{
 			logger.error(e);
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			e.printStackTrace();//To change body of catch statement use File | Settings | File Templates.
 			}
 		}
-/*
-	public void setChainTo(DataCollector dc)
-		{
-		chainTo = dc;
-		}*/
 
-	public int getStep()
+	// ------------------------ CANONICAL METHODS ------------------------
+
+	public String toString()
 		{
-		return lastStep;
+		StringBuffer sb = new StringBuffer();
+		Formatter formatter = new Formatter(sb, Locale.US);
+
+		//sb.append(getStep()).append("\n");
+		for (DoubleTimecourse t : timecourses)
+			{
+			formatter.format("%1$20s = %2$10s, %3$10s\n", t.name(), t.last(), t.runningaverage());
+			}
+
+		return sb.toString();
 		}
 
-	public void setStep(int lastStep)
-		{
-		this.lastStep = lastStep;
-		}
-
-
-	public void setTimecourse(Enum name, double val)
-		{
-		DoubleTimecourse t = timecourses[name.ordinal()];
-		t.set(val);
-
-//		if (chainTo != null)
-//			{
-//			chainTo.setTimecourse(name, val);
-//			}
-		}
+	// -------------------------- OTHER METHODS --------------------------
 
 	public void close()
 		{
@@ -85,10 +112,50 @@ public class DataCollector
 		catch (IOException e)
 			{
 			logger.error(e);
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			e.printStackTrace();//To change body of catch statement use File | Settings | File Templates.
 			}
 		}
 
+	/*
+   public void setChainTo(DataCollector dc)
+	   {
+	   chainTo = dc;
+	   }*/
+
+	public int getStep()
+		{
+		return lastStep;
+		}
+
+	public void setStep(int lastStep)
+		{
+		this.lastStep = lastStep;
+		}
+
+	public void setTimecourse(Enum name, double val)
+		{
+		DoubleTimecourse t = timecourses[name.ordinal()];
+		t.set(val);
+
+		//		if (chainTo != null)
+		//			{
+		//			chainTo.setTimecourse(name, val);
+		//			}
+		}
+
+	public void writeSample(String s)
+		{
+		try
+			{
+			ensembleWriter.write(s);
+			ensembleWriter.flush();
+			}
+		catch (IOException e)
+			{
+			logger.error(e);
+			e.printStackTrace();//To change body of catch statement use File | Settings | File Templates.
+			}
+		}
 
 	public void writeTrajectory()
 		{
@@ -113,36 +180,7 @@ public class DataCollector
 		catch (IOException e)
 			{
 			logger.error(e);
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-			}
-
-		}
-
-	public String toString()
-		{
-		StringBuffer sb = new StringBuffer();
-		Formatter formatter = new Formatter(sb, Locale.US);
-
-		//sb.append(getStep()).append("\n");
-		for (DoubleTimecourse t : timecourses)
-			{
-			formatter.format("%1$20s = %2$10s, %3$10s\n", t.name(), t.last(), t.runningaverage());
-			}
-
-		return sb.toString();
-		}
-
-	public void writeSample(String s)
-		{
-		try
-			{
-			ensembleWriter.write(s);
-			ensembleWriter.flush();
-			}
-		catch (IOException e)
-			{
-			logger.error(e);
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			e.printStackTrace();//To change body of catch statement use File | Settings | File Templates.
 			}
 		}
 	}

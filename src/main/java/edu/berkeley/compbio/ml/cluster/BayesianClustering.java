@@ -1,28 +1,66 @@
+/* $Id$ */
+
+/*
+ * Copyright (c) 2007 Regents of the University of California
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the University of California, Berkeley nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package edu.berkeley.compbio.ml.cluster;
 
-import org.apache.log4j.Logger;
-
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
+import org.apache.log4j.Logger;
 
 import java.util.List;
 
 /**
  * Performs cluster classification with a naive bayesian classifier
+ *
  * @author David Tulga
  */
-public class BayesianClustering<T extends Clusterable<T>> extends OnlineClusteringMethod<T>
+public class BayesianClustering<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T>
 	{
+	// ------------------------------ FIELDS ------------------------------
+
 	private static Logger logger = Logger.getLogger(BayesianClustering.class);
 
 	private T[] centroids;
 	private DistanceMeasure<T> measure;
 	private double[] priors;
 
+
+	// --------------------------- CONSTRUCTORS ---------------------------
+
 	/**
 	 * Creates a new BayesianClustering with the following parameters
+	 *
 	 * @param theCentroids Centroids of the clusters
-	 * @param thePriors Prior expectations for the clusters
-	 * @param dm The distance measure to use
+	 * @param thePriors    Prior expectations for the clusters
+	 * @param dm           The distance measure to use
 	 */
 	public BayesianClustering(T[] theCentroids, double[] thePriors, DistanceMeasure<T> dm)
 		{
@@ -32,13 +70,15 @@ public class BayesianClustering<T extends Clusterable<T>> extends OnlineClusteri
 
 		for (int i = 0; i < centroids.length; i++)
 			{
-			Cluster<T> c = new Cluster<T>(dm, theCentroids[i]);
+			Cluster<T> c = new AdditiveCluster<T>(dm, theCentroids[i]);
 			c.setId(i);
 
 			theClusters.add(c);
 			}
 		logger.debug("initialized " + centroids.length + " clusters");
 		}
+
+	// -------------------------- OTHER METHODS --------------------------
 
 	public boolean add(T p, List<Double> secondBestDistances)
 		{
@@ -53,7 +93,8 @@ public class BayesianClustering<T extends Clusterable<T>> extends OnlineClusteri
 
 	/**
 	 * Returns the best cluster without adding the point
-	 * @param p Point to find the best cluster of
+	 *
+	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to
 	 */
 	public int getBestCluster(T p, List<Double> secondBestDistances)
@@ -63,15 +104,15 @@ public class BayesianClustering<T extends Clusterable<T>> extends OnlineClusteri
 		double bestdistance = Double.MAX_VALUE;
 		double temp;
 		int j = -1;
-		for(i = 0; i < theClusters.size(); i++)
+		for (i = 0; i < theClusters.size(); i++)
 			{
-			if((temp = measure.distanceBetween(centroids[i], p) * priors[i]) <= bestdistance)
+			if ((temp = measure.distanceFromTo(p, centroids[i]) * priors[i]) <= bestdistance)
 				{
 				secondbestdistance = bestdistance;
 				bestdistance = temp;
 				j = i;
 				}
-			else if(temp <= secondbestdistance)
+			else if (temp <= secondbestdistance)
 				{
 				secondbestdistance = temp;
 				}

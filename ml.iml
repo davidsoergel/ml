@@ -14,6 +14,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="dsutils" exported="" />
     <orderEntry type="module" module-name="runutils" exported="" />
+    <orderEntry type="module" module-name="sequtils" exported="" />
     <orderEntry type="module" module-name="springjpautils" exported="" />
     <orderEntry type="module" module-name="stats" exported="" />
     <orderEntry type="module-library" exported="">
@@ -115,13 +116,15 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="M2 Dep: commons-collections:commons-collections:jar:3.2:compile">
+      <library name="M2 Dep: commons-collections:commons-collections:jar:2.1:compile">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/2.1/commons-collections-2.1.jar!/" />
         </CLASSES>
-        <JAVADOC />
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/2.1/commons-collections-2.1-javadoc.jar!/" />
+        </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/2.1/commons-collections-2.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -280,6 +283,17 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
+      <library name="M2 Dep: org.easymock:easymock:jar:2.0:test">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
       <library name="M2 Dep: org.hibernate:hibernate-annotations:jar:3.2.1.ga:compile">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-annotations/3.2.1.ga/hibernate-annotations-3.2.1.ga.jar!/" />
@@ -419,7 +433,7 @@
   </component>
   <component name="copyright">
     <Base>
-      <setting name="state" value="2" />
+      <setting name="state" value="0" />
     </Base>
     <LanguageOptions name="$TEMPLATE$">
       <option name="templateOptions">
@@ -434,10 +448,10 @@
           <option name="filler" value=" " />
         </value>
       </option>
-      <option name="notice" value="Copyright (c) &amp;#36;today.year, Your Corporation. All Rights Reserved." />
+      <option name="notice" value="Copyright (c) &amp;#36;today.year Regents of the University of California&#10;&#10;All rights reserved.&#10;&#10;Redistribution and use in source and binary forms, with or without &#10;modification, are permitted provided that the following conditions are met:&#10;&#10;    * Redistributions of source code must retain the above copyright notice, &#10;      this list of conditions and the following disclaimer.&#10;    * Redistributions in binary form must reproduce the above copyright&#10;      notice, this list of conditions and the following disclaimer in the &#10;      documentation and/or other materials provided with the distribution.&#10;    * Neither the name of the University of California, Berkeley nor the&#10;      names of its contributors may be used to endorse or promote products &#10;      derived from this software without specific prior written permission.&#10;&#10;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS&#10;&quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT&#10;LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR&#10;A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR&#10;CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,&#10;EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,&#10;PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR&#10;PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF&#10;LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING&#10;NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS&#10;SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE." />
       <option name="keyword" value="Copyright" />
       <option name="fileTypeOverride" value="4" />
-      <option name="relativeBefore" value="true" />
+      <option name="relativeBefore" value="false" />
       <option name="addBlankAfter" value="true" />
       <option name="fileLocation" value="1" />
       <option name="useAlternate" value="false" />

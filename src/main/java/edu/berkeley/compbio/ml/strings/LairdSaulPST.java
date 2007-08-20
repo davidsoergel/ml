@@ -30,60 +30,20 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster;
+package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.MathUtils;
-import org.apache.log4j.Logger;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
-
-import java.io.IOException;
+import java.io.Reader;
 
 /**
- * @author lorax
- * @version 1.0
+ * Created by IntelliJ IDEA. User: soergel Date: Jun 8, 2007 Time: 4:48:38 PM To change this template use File |
+ * Settings | File Templates.
  */
-public class OnlineKmeansClusteringTest
+public class LairdSaulPST
 	{
-	// ------------------------------ FIELDS ------------------------------
+	// --------------------------- CONSTRUCTORS ---------------------------
 
-	private static Logger logger = Logger.getLogger(OnlineKmeansClusteringTest.class);
-
-
-	// -------------------------- OTHER METHODS --------------------------
-
-	@BeforeSuite
-	public void setUp()
+	public LairdSaulPST(Reader in)
 		{
-		MathUtils.initApproximateLog(-12, +12, 3, 100000);
-		}
 
-	@Test
-	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
-		{
-		/*
-			  ClusterableIterator ci;
-
-			  ci = new MockClusterableIterator().init();
-
-			  KmeansClustering<ClusterableDoubleArray> oc = new KmeansClustering<ClusterableDoubleArray>(ci, 5, EuclideanDistance.getInstance());
-
-			  oc.run(ci, 7);
-
-			  //	batchUpdateAndPrint(oc);
-			  //	batchUpdateAndPrint(oc);
-
-			  List<Cluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
-
-			  for (Cluster<ClusterableDoubleArray> c : theClusters)
-				  {
-				  logger.debug(c);
-
-				  }
-
-			  oc.writeAssignmentsAsTextToStream(System.err);
-
-			  assert true; // this test doesn't assert anything,but looks good
-  */
 		}
 	}

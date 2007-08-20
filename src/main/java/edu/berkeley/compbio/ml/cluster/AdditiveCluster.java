@@ -32,58 +32,46 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.MathUtils;
+import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
-
-import java.io.IOException;
 
 /**
- * @author lorax
- * @version 1.0
+ * Created by IntelliJ IDEA. User: lorax Date: Jun 24, 2007 Time: 7:20:33 PM To change this template use File | Settings
+ * | File Templates.
  */
-public class OnlineKmeansClusteringTest
+public class AdditiveCluster<T extends AdditiveClusterable<T>> extends Cluster<T>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(OnlineKmeansClusteringTest.class);
+	private static Logger logger = Logger.getLogger(AdditiveCluster.class);
 
+
+	// --------------------------- CONSTRUCTORS ---------------------------
+
+	public AdditiveCluster(DistanceMeasure<T> dm, T centroid)
+		{
+		super(dm, centroid);
+		}
 
 	// -------------------------- OTHER METHODS --------------------------
 
-	@BeforeSuite
-	public void setUp()
+	public boolean recenterByAdding(T point)//, double distance)
 		{
-		MathUtils.initApproximateLog(-12, +12, 3, 100000);
+		n++;
+		//sumSquareDistances += (distance * distance);  // ** WRONG
+		logger.debug("Cluster added " + point);
+		centroid.incrementBy(point);// works because Kcounts are "nonscaling additive", but it's not generic
+		//times((double)n/n+1).plus(point.times(1/((double)n+1)));
+		return true;
 		}
 
-	@Test
-	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
+	public boolean recenterByRemoving(T point)//, double distance)
 		{
-		/*
-			  ClusterableIterator ci;
-
-			  ci = new MockClusterableIterator().init();
-
-			  KmeansClustering<ClusterableDoubleArray> oc = new KmeansClustering<ClusterableDoubleArray>(ci, 5, EuclideanDistance.getInstance());
-
-			  oc.run(ci, 7);
-
-			  //	batchUpdateAndPrint(oc);
-			  //	batchUpdateAndPrint(oc);
-
-			  List<Cluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
-
-			  for (Cluster<ClusterableDoubleArray> c : theClusters)
-				  {
-				  logger.debug(c);
-
-				  }
-
-			  oc.writeAssignmentsAsTextToStream(System.err);
-
-			  assert true; // this test doesn't assert anything,but looks good
-  */
+		n--;
+		//sumSquareDistances -= (distance * distance);  // ** WRONG
+		logger.debug("Cluster removed " + point);
+		centroid.decrementBy(point);// works because Kcounts are "nonscaling additive", but it's not generic
+		//times((double)n/n+1).plus(point.times(1/((double)n+1)));
+		return true;
 		}
 	}

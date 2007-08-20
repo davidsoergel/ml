@@ -11,7 +11,7 @@
  *     * Redistributions of source code must retain the above copyright notice,
  *       this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
+ *       notice, this list of conditions and the following disclaimer in the 
  *       documentation and/or other materials provided with the distribution.
  *     * Neither the name of the University of California, Berkeley nor the
  *       names of its contributors may be used to endorse or promote products
@@ -30,60 +30,35 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster;
+package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.MathUtils;
+import com.davidsoergel.dsutils.ChainedException;
 import org.apache.log4j.Logger;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
-
-import java.io.IOException;
 
 /**
- * @author lorax
- * @version 1.0
+ * Thrown when something involving a SequenceSpectrum goes wrong, such as when a requested spectrum cannot be computed.
  */
-public class OnlineKmeansClusteringTest
+public class SequenceSpectrumException extends ChainedException
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(OnlineKmeansClusteringTest.class);
+	private static Logger logger = Logger.getLogger(SequenceSpectrumException.class);
 
 
-	// -------------------------- OTHER METHODS --------------------------
+	// --------------------------- CONSTRUCTORS ---------------------------
 
-	@BeforeSuite
-	public void setUp()
+	public SequenceSpectrumException(String s)
 		{
-		MathUtils.initApproximateLog(-12, +12, 3, 100000);
+		super(s);
 		}
 
-	@Test
-	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
+	public SequenceSpectrumException(Exception e)
 		{
-		/*
-			  ClusterableIterator ci;
+		super(e);
+		}
 
-			  ci = new MockClusterableIterator().init();
-
-			  KmeansClustering<ClusterableDoubleArray> oc = new KmeansClustering<ClusterableDoubleArray>(ci, 5, EuclideanDistance.getInstance());
-
-			  oc.run(ci, 7);
-
-			  //	batchUpdateAndPrint(oc);
-			  //	batchUpdateAndPrint(oc);
-
-			  List<Cluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
-
-			  for (Cluster<ClusterableDoubleArray> c : theClusters)
-				  {
-				  logger.debug(c);
-
-				  }
-
-			  oc.writeAssignmentsAsTextToStream(System.err);
-
-			  assert true; // this test doesn't assert anything,but looks good
-  */
+	public SequenceSpectrumException(Exception e, String s)
+		{
+		super(e, s);
 		}
 	}

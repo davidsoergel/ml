@@ -32,58 +32,50 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.MathUtils;
-import org.apache.log4j.Logger;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
-
-import java.io.IOException;
-
 /**
- * @author lorax
- * @version 1.0
+ * Interface for classes that can be clustered, and that have the property that the centroid of a set of objects is
+ * simply the sum of the objects.  Making objects have this property obviates the need for special centroid-calculation
+ * methods and thus makes it easier to write abstract clustering algorithms.  In particular, this makes it possible to
+ * store only the centroids of each cluster rather than the list of all members.  That is, additivity (for some concept
+ * of "addition") is required for it to be possible to construct clusters in an online manner.
  */
-public class OnlineKmeansClusteringTest
+public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clusterable<T>
 	{
-	// ------------------------------ FIELDS ------------------------------
-
-	private static Logger logger = Logger.getLogger(OnlineKmeansClusteringTest.class);
-
-
 	// -------------------------- OTHER METHODS --------------------------
 
-	@BeforeSuite
-	public void setUp()
-		{
-		MathUtils.initApproximateLog(-12, +12, 3, 100000);
-		}
+	/**
+	 * updates this object by subtracting another one from it.
+	 *
+	 * @param object the object to subtract from this one
+	 */
+	public void decrementBy(T object);
 
-	@Test
-	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
-		{
-		/*
-			  ClusterableIterator ci;
+	/**
+	 * updates this object by adding another one to it.
+	 *
+	 * @param object the object to add to this one
+	 */
+	public void incrementBy(T object);
 
-			  ci = new MockClusterableIterator().init();
+	/**
+	 * Returns a new object representing the difference between this one and the given argument.
+	 *
+	 * @param object the object to be subtracted from this one
+	 * @return the difference between this object and the argument
+	 */
+	public T minus(T object);
 
-			  KmeansClustering<ClusterableDoubleArray> oc = new KmeansClustering<ClusterableDoubleArray>(ci, 5, EuclideanDistance.getInstance());
+	/**
+	 * Returns a new object representing the sum of this one and the given argument.
+	 *
+	 * @param object the object to be added to this one
+	 * @return the sum of this object and the argument
+	 */
+	public T plus(T object);
 
-			  oc.run(ci, 7);
+	//public T times(double d);
 
-			  //	batchUpdateAndPrint(oc);
-			  //	batchUpdateAndPrint(oc);
+	//public T weightedAverage(T object, double weight);
 
-			  List<Cluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
-
-			  for (Cluster<ClusterableDoubleArray> c : theClusters)
-				  {
-				  logger.debug(c);
-
-				  }
-
-			  oc.writeAssignmentsAsTextToStream(System.err);
-
-			  assert true; // this test doesn't assert anything,but looks good
-  */
-		}
+	//void normalize(int n);
 	}

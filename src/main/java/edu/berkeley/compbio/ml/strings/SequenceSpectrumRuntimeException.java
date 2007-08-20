@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /*
  * Copyright (c) 2007 Regents of the University of California
  *
@@ -30,60 +28,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster;
+package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.MathUtils;
+import com.davidsoergel.dsutils.ChainedRuntimeException;
 import org.apache.log4j.Logger;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 
-import java.io.IOException;
+/* $Id$ */
 
 /**
- * @author lorax
- * @version 1.0
+ * Thrown when something involving a SequenceSpectrum goes wrong, such as when a requested spectrum cannot be computed.
  */
-public class OnlineKmeansClusteringTest
+public class SequenceSpectrumRuntimeException extends ChainedRuntimeException
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(OnlineKmeansClusteringTest.class);
+	private static Logger logger = Logger.getLogger(SequenceSpectrumRuntimeException.class);
 
 
-	// -------------------------- OTHER METHODS --------------------------
+	// --------------------------- CONSTRUCTORS ---------------------------
 
-	@BeforeSuite
-	public void setUp()
+	public SequenceSpectrumRuntimeException(String s)
 		{
-		MathUtils.initApproximateLog(-12, +12, 3, 100000);
+		super(s);
 		}
 
-	@Test
-	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
+	public SequenceSpectrumRuntimeException(Exception e)
 		{
-		/*
-			  ClusterableIterator ci;
+		super(e);
+		}
 
-			  ci = new MockClusterableIterator().init();
-
-			  KmeansClustering<ClusterableDoubleArray> oc = new KmeansClustering<ClusterableDoubleArray>(ci, 5, EuclideanDistance.getInstance());
-
-			  oc.run(ci, 7);
-
-			  //	batchUpdateAndPrint(oc);
-			  //	batchUpdateAndPrint(oc);
-
-			  List<Cluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
-
-			  for (Cluster<ClusterableDoubleArray> c : theClusters)
-				  {
-				  logger.debug(c);
-
-				  }
-
-			  oc.writeAssignmentsAsTextToStream(System.err);
-
-			  assert true; // this test doesn't assert anything,but looks good
-  */
+	public SequenceSpectrumRuntimeException(Exception e, String s)
+		{
+		super(e, s);
 		}
 	}

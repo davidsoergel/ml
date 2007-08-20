@@ -30,60 +30,40 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster;
+package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.MathUtils;
-import org.apache.log4j.Logger;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
+import edu.berkeley.compbio.sequtils.FilterException;
+import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
+import edu.berkeley.compbio.sequtils.SequenceReader;
 
 import java.io.IOException;
 
 /**
- * @author lorax
- * @version 1.0
+ * Provides an interface for classes that can scan sequences to count the occurrences of substrings
+ *
+ * @author David Soergel
+ * @version $Id
  */
-public class OnlineKmeansClusteringTest
+public interface KcountScanner
 	{
-	// ------------------------------ FIELDS ------------------------------
-
-	private static Logger logger = Logger.getLogger(OnlineKmeansClusteringTest.class);
-
-
 	// -------------------------- OTHER METHODS --------------------------
 
-	@BeforeSuite
-	public void setUp()
-		{
-		MathUtils.initApproximateLog(-12, +12, 3, 100000);
-		}
+	/**
+	 * Scan a sequence to count pattern frequencies.
+	 *
+	 * @param sequenceReader the SequenceReader providing the sequence to be scanned
+	 * @param desiredLength  the number of symbols to read before returning
+	 * @return a Kcount containing the counts of all patterns being scanned for
+	 * @throws IOException                when an input/output error occurs on the reader
+	 * @throws FilterException            when the scanner is filtering the sequence while reading it, but the filter
+	 *                                    throws an exception
+	 * @throws NotEnoughSequenceException when the reader cannot supply the desired amound of sequence (some scanners may
+	 *                                    not throw this exception, but instead simply return a Kcount based on the short
+	 *                                    sequence)
+	 */
+	Kcount scanSequence(SequenceReader sequenceReader, int desiredLength)//, SequenceFragment fragment)
+			throws IOException, FilterException, NotEnoughSequenceException;
 
-	@Test
-	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
-		{
-		/*
-			  ClusterableIterator ci;
-
-			  ci = new MockClusterableIterator().init();
-
-			  KmeansClustering<ClusterableDoubleArray> oc = new KmeansClustering<ClusterableDoubleArray>(ci, 5, EuclideanDistance.getInstance());
-
-			  oc.run(ci, 7);
-
-			  //	batchUpdateAndPrint(oc);
-			  //	batchUpdateAndPrint(oc);
-
-			  List<Cluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
-
-			  for (Cluster<ClusterableDoubleArray> c : theClusters)
-				  {
-				  logger.debug(c);
-
-				  }
-
-			  oc.writeAssignmentsAsTextToStream(System.err);
-
-			  assert true; // this test doesn't assert anything,but looks good
-  */
-		}
+	/*	Kcount scanSequence(SequenceReader in, int desiredlength, List<byte[]> firstWords) //, int firstWordLength)
+				throws IOException, FilterException, NotEnoughSequenceException;*/
 	}

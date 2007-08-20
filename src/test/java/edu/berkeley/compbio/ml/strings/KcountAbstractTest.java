@@ -30,60 +30,60 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster;
+package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.MathUtils;
-import org.apache.log4j.Logger;
-import org.testng.annotations.BeforeSuite;
+import com.davidsoergel.dsutils.TestInstanceFactory;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
+import java.util.Arrays;
 
 /**
- * @author lorax
- * @version 1.0
+ * @Author David Soergel
+ * @Version 1.0
  */
-public class OnlineKmeansClusteringTest
+public abstract class KcountAbstractTest
 	{
-	// ------------------------------ FIELDS ------------------------------
+	//public abstract Kcount createInstance() throws Exception;
 
-	private static Logger logger = Logger.getLogger(OnlineKmeansClusteringTest.class);
+	private TestInstanceFactory tif;
 
-
-	// -------------------------- OTHER METHODS --------------------------
-
-	@BeforeSuite
-	public void setUp()
+	public KcountAbstractTest(TestInstanceFactory tif)
 		{
-		MathUtils.initApproximateLog(-12, +12, 3, 100000);
+		this.tif = tif;
 		}
 
 	@Test
-	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
+	public void addUnknownIncrementsLength() throws Exception
 		{
-		/*
-			  ClusterableIterator ci;
+		Kcount kc = (Kcount) tif.createInstance();
+		int l = kc.getLength();
+		kc.addUnknown();
+		assert kc.getLength() == l + 1;
+		}
 
-			  ci = new MockClusterableIterator().init();
+	@Test
+	public void idForSequenceIdAndSequenceForIdAreInverses() throws Exception
+		{
+		Kcount kc = (Kcount) tif.createInstance();
+		int id1 = kc.idForSequence(new byte[]{
+				'a',
+				'c',
+				'g',
+				't'
+		});
+		byte[] a1 = kc.sequenceForId(id1);
+		for (int rep = 0; rep < 10; rep++)
+			{
+			byte[] seq = new byte[kc.getK()];
+			for (int i = 0; i < kc.getK(); i++)
+				{
+				seq[i] = kc.getRandom(new byte[0]);
+				}
+			int id = kc.idForSequence(seq);
+			byte[] a = kc.sequenceForId(id);
+			assert Arrays.equals(a, seq);
 
-			  KmeansClustering<ClusterableDoubleArray> oc = new KmeansClustering<ClusterableDoubleArray>(ci, 5, EuclideanDistance.getInstance());
+			}
 
-			  oc.run(ci, 7);
-
-			  //	batchUpdateAndPrint(oc);
-			  //	batchUpdateAndPrint(oc);
-
-			  List<Cluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
-
-			  for (Cluster<ClusterableDoubleArray> c : theClusters)
-				  {
-				  logger.debug(c);
-
-				  }
-
-			  oc.writeAssignmentsAsTextToStream(System.err);
-
-			  assert true; // this test doesn't assert anything,but looks good
-  */
 		}
 	}
