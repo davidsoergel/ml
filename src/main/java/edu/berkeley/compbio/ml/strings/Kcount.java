@@ -32,6 +32,8 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.stats.DiscreteDistribution1D;
+import com.davidsoergel.stats.IntArrayContainer;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
 import java.util.Arrays;
@@ -51,7 +53,8 @@ import java.util.Arrays;
  * @author David Soergel
  * @version $Id$
  */
-public abstract class Kcount<T extends Kcount> implements AdditiveClusterable<T>, SequenceSpectrum<T>
+public abstract class Kcount<T extends Kcount>
+		implements AdditiveClusterable<T>, SequenceSpectrum<T>, IntArrayContainer, DiscreteDistribution1D
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -80,7 +83,7 @@ public abstract class Kcount<T extends Kcount> implements AdditiveClusterable<T>
 	 *
 	 * @return The array of counts
 	 */
-	public int[] getCounts()
+	public int[] getArray()
 		{
 		return counts;
 		}

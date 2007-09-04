@@ -377,7 +377,7 @@ public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>
 		   }*/
 
 
-		int[] counts = kc.getCounts();
+		int[] counts = kc.getArray();
 
 		for (int id = 0; id < counts.length; id++)
 			{

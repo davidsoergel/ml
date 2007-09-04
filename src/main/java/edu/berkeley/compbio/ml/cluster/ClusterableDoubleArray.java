@@ -33,13 +33,14 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.stats.DoubleArrayContainer;
 import org.apache.log4j.Logger;
 
 /**
  * @author lorax
  * @version 1.0
  */
-public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDoubleArray>
+public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDoubleArray>, DoubleArrayContainer
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -116,5 +117,10 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	public int length()
 		{
 		return data.length;
+		}
+
+	public double[] getArray()
+		{
+		return data;
 		}
 	}

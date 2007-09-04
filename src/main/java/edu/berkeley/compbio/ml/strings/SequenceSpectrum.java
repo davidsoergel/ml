@@ -155,5 +155,5 @@ public interface SequenceSpectrum<T extends SequenceSpectrum> extends AdditiveCl
 	 */
 	double totalProbability(byte[] s) throws SequenceSpectrumException;// throws SequenceSpectrumException;
 
-	void addPseudocounts();
+	//void addPseudocounts();
 	}
