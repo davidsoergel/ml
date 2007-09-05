@@ -116,15 +116,13 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="M2 Dep: commons-collections:commons-collections:jar:2.1:compile">
+      <library name="M2 Dep: commons-collections:commons-collections:jar:3.2:compile">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/2.1/commons-collections-2.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar!/" />
         </CLASSES>
-        <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/2.1/commons-collections-2.1-javadoc.jar!/" />
-        </JAVADOC>
+        <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/2.1/commons-collections-2.1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

@@ -215,7 +215,7 @@ public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>
 		MarkovTreeNode node = get(prefix);
 		if (node == null || node.probs == null)
 			{
-			throw new SequenceSpectrumRuntimeException("Unknown probabilities at " + prefix);
+			throw new SequenceSpectrumException("Unknown probabilities at " + prefix);
 			}
 		return node.probs;
 		}
@@ -445,9 +445,12 @@ public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>
 			}
 		catch (SequenceSpectrumException e)
 			{
+			return sample(ArrayUtils.suffix(prefix, 1));
+			/*
 			logger.debug(e);
 			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
+			throw new SequenceSpectrumRuntimeException(e);*/
+
 			}
 		catch (DistributionException e)
 			{
