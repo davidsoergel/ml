@@ -61,8 +61,8 @@ public abstract class SequenceSpectrumAbstractTest
 		int multipliedConditionals = 0;
 		for (int count = 0; count < 100; count++)
 			{
-			byte b = ss.getRandom(new byte[0]);
-			byte c = ss.getRandom(new byte[]{b});
+			byte b = ss.sample(new byte[0]);
+			byte c = ss.sample(new byte[]{b});
 			assert ss.conditionalProbability(b, new byte[0]) == ss.conditionalsFrom(new byte[0]).get(b);
 
 			double d1, d2;
@@ -126,7 +126,7 @@ public abstract class SequenceSpectrumAbstractTest
 		byte[] alphabet = ss.getAlphabet();
 		for (int count = 0; count < 100; count++)
 			{
-			byte b = ss.getRandom(new byte[0]);
+			byte b = ss.sample(new byte[0]);
 			assert ArrayUtils.contains(alphabet, b);
 			}
 		}

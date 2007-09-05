@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
@@ -130,7 +131,15 @@ public interface SequenceSpectrum<T extends SequenceSpectrum> extends AdditiveCl
 	 * @param prefix a byte array providing the conditioning prefix
 	 * @return the chosen symbol
 	 */
-	public byte getRandom(byte[] prefix) throws SequenceSpectrumException;
+	public byte sample(byte[] prefix) throws SequenceSpectrumException;
+
+	/**
+	 * Chooses a random string according to the conditional probabilities of symbols.
+	 *
+	 * @param length the length of the desired random string
+	 * @return a byte[] of the desired length sampled from this distribution
+	 */
+	public byte[] sample(int length) throws SequenceSpectrumException;
 
 	/**
 	 * Test whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
@@ -156,4 +165,6 @@ public interface SequenceSpectrum<T extends SequenceSpectrum> extends AdditiveCl
 	double totalProbability(byte[] s) throws SequenceSpectrumException;// throws SequenceSpectrumException;
 
 	//void addPseudocounts();
+
+	void runInitializationProcessor() throws DistributionProcessorException;
 	}

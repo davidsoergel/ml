@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
@@ -407,8 +408,15 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		return firstWordProvider;
 		}
 
-	public void addPseudocounts()
+	/*
+   public void addPseudocounts()
+	   {
+	   baseSpectrum.addPseudocounts();
+	   }*/
+
+	public void runInitializationProcessor() throws DistributionProcessorException
 		{
-		baseSpectrum.addPseudocounts();
+		baseSpectrum.runInitializationProcessor();
+
 		}
 	}

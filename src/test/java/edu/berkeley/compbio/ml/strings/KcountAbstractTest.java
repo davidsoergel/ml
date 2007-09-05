@@ -65,19 +65,14 @@ public abstract class KcountAbstractTest
 	public void idForSequenceIdAndSequenceForIdAreInverses() throws Exception
 		{
 		Kcount kc = (Kcount) tif.createInstance();
-		int id1 = kc.idForSequence(new byte[]{
-				'a',
-				'c',
-				'g',
-				't'
-		});
+		int id1 = kc.idForSequence(new byte[]{'a', 'c', 'g', 't'});
 		byte[] a1 = kc.sequenceForId(id1);
 		for (int rep = 0; rep < 10; rep++)
 			{
 			byte[] seq = new byte[kc.getK()];
 			for (int i = 0; i < kc.getK(); i++)
 				{
-				seq[i] = kc.getRandom(new byte[0]);
+				seq[i] = kc.sample(new byte[0]);
 				}
 			int id = kc.idForSequence(seq);
 			byte[] a = kc.sequenceForId(id);

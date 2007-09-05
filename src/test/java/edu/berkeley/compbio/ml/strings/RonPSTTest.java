@@ -35,6 +35,7 @@ import com.davidsoergel.runutils.OverridingPropertiesAggregator;
 import com.davidsoergel.runutils.RunUnsuccessfulException;
 import com.davidsoergel.runutils.ThreadLocalRun;
 import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
@@ -317,7 +318,7 @@ public class RonPSTTest
 			return 50;
 			}
 
-		public byte getRandom(byte[] prefix) throws SequenceSpectrumException
+		public byte sample(byte[] prefix) throws SequenceSpectrumException
 			{
 			try
 				{
@@ -336,6 +337,18 @@ public class RonPSTTest
 				logger.debug(e);
 				throw new SequenceSpectrumException(e);
 				}
+			}
+
+		/**
+		 * Chooses a random string according to the conditional probabilities of symbols.
+		 *
+		 * @param length the length of the desired random string
+		 * @return a byte[] of the desired length sampled from this distribution
+		 */
+		public byte[] sample(int length) throws SequenceSpectrumException
+			{
+			throw new NotImplementedException();
+
 			}
 
 		public boolean spectrumEquals(SequenceSpectrum spectrum)
@@ -358,6 +371,11 @@ public class RonPSTTest
 				return conditionalProbability(s[0], new byte[0]) * conditionalProbability(s[1], new byte[]{s[0]});
 				}
 			throw new SequenceSpectrumException("depth oops");
+			}
+
+		public void runInitializationProcessor() throws DistributionProcessorException
+			{
+			//do nothing
 			}
 
 		public void decrementBy(AdditiveClusterable object)

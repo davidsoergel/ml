@@ -35,6 +35,7 @@ package edu.berkeley.compbio.ml.strings;
 import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.dsutils.MathUtils;
 import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
@@ -435,11 +436,18 @@ public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>
 	 * @param prefix a byte array providing the conditioning prefix
 	 * @return the chosen symbol
 	 */
-	public byte getRandom(byte[] prefix) throws SequenceSpectrumRuntimeException
+	public byte sample(byte[] prefix) throws SequenceSpectrumRuntimeException
 		{
 		try
 			{
-			return probs.sample();
+			return conditionalsFrom(prefix).sample();
+			//return probs.sample();
+			}
+		catch (SequenceSpectrumException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (DistributionException e)
 			{
@@ -447,6 +455,23 @@ public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>
 			e.printStackTrace();
 			throw new SequenceSpectrumRuntimeException(e);
 			}
+		}
+
+	/**
+	 * Chooses a random string according to the conditional probabilities of symbols.
+	 *
+	 * @param length the length of the desired random string
+	 * @return a byte[] of the desired length sampled from this distribution
+	 */
+	public byte[] sample(int length) throws SequenceSpectrumException
+		{
+		throw new NotImplementedException();
+		/*
+		byte[] result = new byte[length];
+		for (int i = 0; i < length; i++)
+			{
+
+			}*/
 		}
 
 	/**
@@ -480,6 +505,11 @@ public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>
 			return 1;
 			}
 		return conditionalProbability(s, new byte[0]);
+		}
+
+	public void runInitializationProcessor() throws DistributionProcessorException
+		{
+		// do nothing
 		}
 
 	public void addPseudocounts()
