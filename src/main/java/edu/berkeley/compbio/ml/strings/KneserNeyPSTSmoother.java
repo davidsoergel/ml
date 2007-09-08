@@ -34,6 +34,7 @@ import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.runutils.ThreadLocalRun;
 import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
@@ -41,7 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @PropertyConsumer
-public class KneserNeyPSTSmoother
+public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
 	{
 	private static Logger logger = Logger.getLogger(KneserNeyPSTSmoother.class);
 
@@ -56,7 +57,7 @@ public class KneserNeyPSTSmoother
 		smoothFactorTimesFour = smoothFactor * 4;
 		}
 
-	public void smooth(RonPST ronPST)
+	public void process(RonPST ronPST)
 		{
 		// mix the root with the uniform distribution
 		Multinomial<Byte> uniform = new Multinomial<Byte>();

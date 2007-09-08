@@ -37,6 +37,7 @@ import com.davidsoergel.dsutils.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
+import com.davidsoergel.stats.MutableDistribution;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
@@ -53,7 +54,7 @@ import java.util.Map;
  * if you think about it properly.  The only remaining difficulty is how to add strings recursively; in the case of
  * PSTs, the recursion should walk all suffixes, not prefixes.
  */
-public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>
+public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>, MutableDistribution
 	{
 	// ------------------------------ FIELDS ------------------------------
 

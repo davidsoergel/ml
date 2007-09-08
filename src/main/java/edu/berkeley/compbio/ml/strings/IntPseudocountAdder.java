@@ -31,6 +31,7 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.runutils.Property;
+import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.IntArrayContainer;
 
@@ -40,6 +41,7 @@ import com.davidsoergel.stats.IntArrayContainer;
  * @Author David Soergel
  * @Version 1.0
  */
+@PropertyConsumer
 public class IntPseudocountAdder implements DistributionProcessor<IntArrayContainer>//extends DoubleArrayProcessor
 	{
 	@Property(helpmessage = "Pseudocounts to add to every bin", defaultvalue = "0")

@@ -33,7 +33,10 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
+import com.davidsoergel.stats.DistributionProcessor;
+import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
@@ -50,7 +53,7 @@ import java.util.Set;
  *
  * @Author David Soergel (soergel@compbio.berkeley.edu)
  */
-@PropertyConsumer(allowsPropertiesFrom = {"edu.berkeley.compbio.ml.strings.KneserNeyPSTSmoother"})
+@PropertyConsumer
 public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslator
 	{
 	// ------------------------------ FIELDS ------------------------------
@@ -69,6 +72,11 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	 gammaMin
 	 pRatioMinMax = p_ratio = (1 + (3 * eta2))
  */
+
+	@Property(helpmessage = "A distribution processor to run on this NucleotideKtrie",
+	          defaultvalue = "", isNullable = true)
+	//isPlugin = true,
+			DistributionProcessor<RonPST> completionProcessor;
 
 	public RonPST()
 		{
@@ -104,6 +112,19 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		//throws SequenceSpectrumException//DistributionException,
 		{
 		learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
+		if (completionProcessor != null)
+			{
+			try
+				{
+				completionProcessor.process(this);
+				}
+			catch (DistributionProcessorException e)
+				{
+				logger.debug(e);
+				e.printStackTrace();
+				throw new SequenceSpectrumRuntimeException(e);
+				}
+			}
 		}
 
 	public void learn(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
@@ -223,7 +244,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		// in this framework, smoothing is accomplished simply by constructing a new
 		// SequenceSpectrum of the appropriate type, i.e. KneserNeySmoothedSpectrum
 
-		new KneserNeyPSTSmoother().smooth(this);
+		//new KneserNeyPSTSmoother().smooth(this);
 		/*	for (MarkovTreeNode n : thePST)
 		   {
 		   n.setGamma();
