@@ -511,7 +511,13 @@ public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>, Mutable
 		return conditionalProbability(s, new byte[0]);
 		}
 
-	public void runInitializationProcessor() throws DistributionProcessorException
+
+	public void runBeginTrainingProcessor() throws DistributionProcessorException
+		{
+		// do nothing
+		}
+
+	public void runFinishTrainingProcessor() throws DistributionProcessorException
 		{
 		// do nothing
 		}

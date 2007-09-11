@@ -166,5 +166,12 @@ public interface SequenceSpectrum<T extends SequenceSpectrum> extends AdditiveCl
 
 	//void addPseudocounts();
 
-	void runInitializationProcessor() throws DistributionProcessorException;
+
+	// ** really the lifecycle of a SequenceSpectrum should be managed more carefully, i.e. as a Builder
+
+	void runBeginTrainingProcessor() throws DistributionProcessorException;
+
+	void runFinishTrainingProcessor() throws DistributionProcessorException;
+
+	//void runCompletionProcessor() throws DistributionProcessorException;
 	}

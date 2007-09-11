@@ -114,7 +114,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 */
 	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, int startPosition, SequenceReader in,
 	                        int desiredlength, KcountScanner scanner)
-			throws NotEnoughSequenceException, IOException, FilterException
+			throws NotEnoughSequenceException, IOException, FilterException, DistributionProcessorException
 		{
 		this(parent, sequenceName, startPosition, 0);// length = 0 because nothing is scanned so far
 
@@ -414,9 +414,22 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	   baseSpectrum.addPseudocounts();
 	   }*/
 
-	public void runInitializationProcessor() throws DistributionProcessorException
+	public void runBeginTrainingProcessor() throws DistributionProcessorException
 		{
-		baseSpectrum.runInitializationProcessor();
+		baseSpectrum.runBeginTrainingProcessor();
 
 		}
+
+
+	public void runFinishTrainingProcessor() throws DistributionProcessorException
+		{
+		baseSpectrum.runFinishTrainingProcessor();
+
+		}
+
+	/*	public void runCompletionProcessor() throws DistributionProcessorException
+	   {
+	   baseSpectrum.runCompletionProcessor();
+
+	   }*/
 	}
