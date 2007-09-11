@@ -356,7 +356,7 @@ public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>, Mutable
 	 */
 	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
 		{
-		Kcount kc = (Kcount) sequenceFragment.getSpectrum(Kcount.class);
+		IntKcount kc = (IntKcount) sequenceFragment.getSpectrum(IntKcount.class);
 		int k = kc.getK();
 
 		double result = 0;
