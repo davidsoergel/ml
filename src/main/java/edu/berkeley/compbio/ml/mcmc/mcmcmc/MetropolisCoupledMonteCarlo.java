@@ -37,6 +37,7 @@ import edu.berkeley.compbio.ml.mcmc.MonteCarloFactory;
 import edu.berkeley.compbio.ml.mcmc.MoveTypeSet;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -53,6 +54,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	// -------------------------- STATIC METHODS --------------------------
 
 	public static void run(MonteCarloFactory mcf, int burnIn, int numSteps, List<Double> heatFactors, int swapInterval)
+			throws IOException
 		{
 		assert heatFactors.get(0) == 1;
 		ChainList chains = new ChainList();
@@ -121,7 +123,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
-	public MetropolisCoupledMonteCarlo()
+	public MetropolisCoupledMonteCarlo() throws IOException
 		{
 		super();
 		movetypes = MoveTypeSet.getInstance("edu.berkeley.compbio.ml.mcmc.mcmcmc");

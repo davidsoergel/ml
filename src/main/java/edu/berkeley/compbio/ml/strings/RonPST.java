@@ -35,6 +35,7 @@ package edu.berkeley.compbio.ml.strings;
 import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
+import com.davidsoergel.runutils.ThreadLocalRun;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
@@ -76,10 +77,11 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	@Property(helpmessage = "A distribution processor to run on this NucleotideKtrie",
 	          defaultvalue = "", isNullable = true)
 	//isPlugin = true,
-			DistributionProcessor<RonPST> completionProcessor;
+	public DistributionProcessor<RonPST> completionProcessor;
 
 	public RonPST()
 		{
+		ThreadLocalRun.getProps().injectProperties(this);
 		}
 
 	/**
@@ -111,6 +113,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	public RonPST(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
 		//throws SequenceSpectrumException//DistributionException,
 		{
+		this();
 		learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
 		if (completionProcessor != null)
 			{

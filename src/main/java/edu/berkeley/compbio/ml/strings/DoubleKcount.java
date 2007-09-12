@@ -63,6 +63,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	 */
 	public DoubleKcount()
 		{
+		super();
 		}
 
 	// --------------------- GETTER / SETTER METHODS ---------------------
@@ -136,4 +137,22 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	 */
 	public abstract T clone();
 
+	public double[] getLevelOneArray()
+		{
+		DoubleKcount<T> a = this;
+		DoubleKcount<T> b = a.getParent();
+		if (b == null)
+			{
+			return null;
+			}
+
+		DoubleKcount c = b.getParent();
+		while (c != null)
+			{
+			a = b;
+			b = c;
+			c = b.getParent();
+			}
+		return a.getArray();
+		}
 	}

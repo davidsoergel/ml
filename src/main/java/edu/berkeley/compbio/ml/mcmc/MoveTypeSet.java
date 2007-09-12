@@ -38,6 +38,7 @@ import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.MultinomialDistribution;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +73,7 @@ public class MoveTypeSet
 
 	// -------------------------- STATIC METHODS --------------------------
 
-	public static MoveTypeSet getInstance(String movePackage)
+	public static MoveTypeSet getInstance(String movePackage) throws IOException
 		{
 		HashMap<Object, MoveTypeSet> instances = _instance_tl.get();
 		if (instances == null)
@@ -94,7 +95,7 @@ public class MoveTypeSet
 	//	@Property(helpmessage = "Map of move type names to move probabilities", defaultvalue = "")
 	//	public HashMap<String, Double> moveProbabilities;
 
-	public MoveTypeSet(String movePackage)
+	public MoveTypeSet(String movePackage) throws IOException
 		{
 		//		ThreadLocalRun.getProps().injectProperties(this);
 
