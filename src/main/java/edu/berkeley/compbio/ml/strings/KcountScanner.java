@@ -67,4 +67,7 @@ public interface KcountScanner
 
 	/*	Kcount scanSequence(SequenceReader in, int desiredlength, List<byte[]> firstWords) //, int firstWordLength)
 				throws IOException, FilterException, NotEnoughSequenceException;*/
+
+	void checkSequenceAvailable(SequenceReader theReader, int desiredlength)
+			throws IOException, FilterException, NotEnoughSequenceException;
 	}
