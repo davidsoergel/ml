@@ -77,9 +77,9 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 * @param sequenceName  a String identifier for this sequence
 	 * @param startPosition the index in the parent sequence of the first symbol in this sequence
 	 */
-	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, int startPosition)
+	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, Integer taxid, int startPosition)
 		{
-		super(parent, sequenceName, startPosition);
+		super(parent, sequenceName, taxid, startPosition);
 		}
 
 	/**
@@ -92,7 +92,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 */
 	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, int startPosition, int length)
 		{
-		super(parent, sequenceName, startPosition, length);
+		super(parent, sequenceName, null, startPosition, length);
 		}
 
 	/**
