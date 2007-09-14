@@ -747,4 +747,8 @@ public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>, Mutable
 
 		}
 
+	public void setIgnoreEdges(boolean ignoreEdges)
+		{
+		// not relevant here...
+		}
 	}

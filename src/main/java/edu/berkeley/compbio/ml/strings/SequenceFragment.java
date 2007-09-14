@@ -467,17 +467,24 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	public void setIgnoreEdges(boolean b)
 		{
 		ignoreEdges = b;
+		scanIfNeeded();
+		baseSpectrum.setIgnoreEdges(b);
 		if (ignoreEdges)
 			{
 			firstWordProvider = null;
 			}
 		}
 
+	public boolean isIgnoreEdges()
+		{
+		return ignoreEdges;
+		}
+
 	/*
-   public void addPseudocounts()
-	   {
-	   baseSpectrum.addPseudocounts();
-	   }*/
+	   public void addPseudocounts()
+		   {
+		   baseSpectrum.addPseudocounts();
+		   }*/
 
 	public void runBeginTrainingProcessor() throws DistributionProcessorException
 		{

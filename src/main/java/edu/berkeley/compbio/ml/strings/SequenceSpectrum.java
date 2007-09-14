@@ -174,4 +174,6 @@ public interface SequenceSpectrum<T extends SequenceSpectrum> extends AdditiveCl
 	void runFinishTrainingProcessor() throws DistributionProcessorException;
 
 	//void runCompletionProcessor() throws DistributionProcessorException;
+
+	void setIgnoreEdges(boolean b);
 	}
