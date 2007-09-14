@@ -65,6 +65,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	private SequenceReader theReader;
 	private KcountScanner theScanner;
 	private int desiredlength;
+	private boolean ignoreEdges;
 
 	//private List<byte[]> firstWords;//prefix;
 	//private final int FIRSTWORD_LENGTH = 10;
@@ -184,11 +185,14 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		{
 		theSpectra.clear();
 		baseSpectrum = spectrum;
-		if (!(spectrum instanceof FirstWordProvider))
+		if (!ignoreEdges)
 			{
-			throw new SequenceSpectrumRuntimeException("Base spectrum must implement FirstWordProvider");
+			if (!(spectrum instanceof FirstWordProvider))
+				{
+				throw new SequenceSpectrumRuntimeException("Base spectrum must implement FirstWordProvider");
+				}
+			firstWordProvider = (FirstWordProvider) spectrum;
 			}
-		firstWordProvider = (FirstWordProvider) spectrum;
 		theSpectra.put(baseSpectrum.getClass(), baseSpectrum);
 		}
 
@@ -443,16 +447,30 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	   return result;
 	   }*/
 
-	public List<byte[]> getFirstWords(int k)
+	public List<byte[]> getFirstWords(int k) throws SequenceSpectrumException
 		{
+
 		return getFirstWordProvider().getFirstWords(k);
 		}
 
 
-	public FirstWordProvider getFirstWordProvider()
+	public FirstWordProvider getFirstWordProvider() throws SequenceSpectrumException
 		{
+		if (ignoreEdges)
+			{
+			throw new SequenceSpectrumException("We're ignoring edges");
+			}
 		scanIfNeeded();
 		return firstWordProvider;
+		}
+
+	public void setIgnoreEdges(boolean b)
+		{
+		ignoreEdges = b;
+		if (ignoreEdges)
+			{
+			firstWordProvider = null;
+			}
 		}
 
 	/*
