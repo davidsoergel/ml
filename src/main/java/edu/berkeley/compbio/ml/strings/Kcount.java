@@ -33,13 +33,12 @@ package edu.berkeley.compbio.ml.strings;
 import com.davidsoergel.stats.DiscreteDistribution1D;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
-public abstract class Kcount<T extends Kcount>
+public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		implements AdditiveClusterable<T>, SequenceSpectrum<T>, DiscreteDistribution1D
 	{
 	protected int k;
 	protected int numberOfBins;
 	protected int length;
-	protected T parent = null;
 
 	/**
 	 * Returns the pattern length K that this Kcount handles (i.e. the number of symbols per word being counted)
@@ -49,6 +48,12 @@ public abstract class Kcount<T extends Kcount>
 	public int getK()
 		{
 		return k;
+		}
+
+
+	public boolean hasParent()
+		{
+		return k > 0;
 		}
 
 	/**
@@ -76,29 +81,6 @@ public abstract class Kcount<T extends Kcount>
 		}
 
 	/**
-	 * Returns the parent of this Kcount.
-	 *
-	 * @return the parent of this Kcount.
-	 */
-	public T getParent()// aggregateUp()
-		{
-		if (k == 0)
-			{
-			return null;
-			}
-		if (parent == null)
-			{
-			newParent();
-			}
-		return parent;
-		}
-
-	/**
-	 * Generates a new Kcount based on this one and stores it as the parent
-	 */
-	protected abstract void newParent();
-
-	/**
 	 * Returns the number of samples, which equals the sum of the counts.
 	 *
 	 * @return The number of samples
@@ -112,18 +94,6 @@ public abstract class Kcount<T extends Kcount>
 		{
 		//metadata.length++;//incrementLength();
 		length++;
-		}
-
-	/**
-	 * Recursively generalize thisKcount, creating a chain of "parents" until no further generalization is possible
-	 */
-	protected void ensureAllParentsExist()
-		{
-		T kc = getParent();
-		if (kc != null)
-			{
-			kc.ensureAllParentsExist();
-			}
 		}
 
 	public abstract int idForSequence(byte[] seq);
@@ -141,16 +111,6 @@ public abstract class Kcount<T extends Kcount>
 
 	// ------------------------ CANONICAL METHODS ------------------------
 
-	/**
-	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
-	 * requires no cast.  Also, we insist that is method be implemented in inheriting classes, so it does not throw
-	 * CloneNotSupportedException.
-	 *
-	 * @return a clone of this instance.
-	 * @see Object#clone
-	 * @see java.lang.Cloneable
-	 */
-	public abstract T clone();
 
 	// --------------------- Interface AdditiveClusterable ---------------------
 
