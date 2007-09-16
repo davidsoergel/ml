@@ -80,7 +80,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	// -------------------------- OTHER METHODS --------------------------
 
-	public boolean add(T p, List<Double> secondBestDistances)
+	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException
 		{
 		theClusters.get(getBestCluster(p, secondBestDistances)).recenterByAdding(p);
 		return true;
@@ -97,7 +97,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to
 	 */
-	public int getBestCluster(T p, List<Double> secondBestDistances)
+	public int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException
 		{
 		int i;
 		double secondbestdistance = Double.MAX_VALUE;
@@ -118,6 +118,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 				}
 			}
 		secondBestDistances.add(secondbestdistance);
+		if (j == -1)
+			{
+			throw new ClusterException("Found no cluster at all, that's impossible");
+			}
 		return j;
 		}
 	}

@@ -44,4 +44,22 @@ public class ClusterException extends ChainedException
 	// ------------------------------ FIELDS ------------------------------
 
 	private static Logger logger = Logger.getLogger(ClusterException.class);
+
+
+	// --------------------------- CONSTRUCTORS ---------------------------
+
+	public ClusterException(String s)
+		{
+		super(s);
+		}
+
+	public ClusterException(Exception e)
+		{
+		super(e);
+		}
+
+	public ClusterException(Exception e, String s)
+		{
+		super(e, s);
+		}
 	}

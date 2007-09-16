@@ -124,7 +124,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	 * unsupervised clustering.
 	 */
 	public void run(ClusterableIterator<T> theDataPointProvider, int iterations)
-			throws IOException//, int maxpoints) throws IOException
+			throws IOException, ClusterException//, int maxpoints) throws IOException
 		{
 		//Date totalstarttime = new Date();
 		List<Double> secondBestDistances = new ArrayList<Double>();
@@ -180,7 +180,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 	//public abstract void add(T v);
 
-	public abstract boolean add(T p, List<Double> secondBestDistances);
+	public abstract boolean add(T p, List<Double> secondBestDistances) throws ClusterException;
 
 
 	public String shortClusteringStats()
