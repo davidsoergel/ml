@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
@@ -63,7 +64,8 @@ public interface KcountScanner
 	 *                                    sequence)
 	 */
 	Kcount scanSequence(SequenceReader sequenceReader, int desiredLength)//, SequenceFragment fragment)
-			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException;
+			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
+			GenericFactoryException;
 
 	/*	Kcount scanSequence(SequenceReader in, int desiredlength, List<byte[]> firstWords) //, int firstWordLength)
 				throws IOException, FilterException, NotEnoughSequenceException;*/

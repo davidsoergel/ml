@@ -30,6 +30,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.runutils.OverridingPropertiesAggregator;
 import com.davidsoergel.runutils.RunUnsuccessfulException;
@@ -135,11 +136,26 @@ public class RonPSTTest
 		{
 		RonPST pst = createSimplePST();
 
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'d', 'a', 'b', 'a', 'b'}) == pst
-				.conditionalProbability((byte) 'a', new byte[]{'a', 'b'});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) != pst
+		assert pst.conditionalProbability((byte) 'a', new byte[]{
+				'd',
+				'a',
+				'b',
+				'a',
+				'b'
+		}) == pst
+				.conditionalProbability((byte) 'a', new byte[]{
+						'a',
+						'b'
+				});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{
+				'a',
+				'b'
+		}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{'b'});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) != pst
+		assert pst.conditionalProbability((byte) 'a', new byte[]{
+				'a',
+				'b'
+		}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{'a'});
 		}
 
@@ -203,7 +219,7 @@ public class RonPSTTest
 		return ss;*/
 		}
 
-	public static class StubSequenceSpectrum implements SequenceSpectrum
+	public static class StubSequenceSpectrum extends AbstractGenericFactoryAware implements SequenceSpectrum
 		{
 		Map<Byte, Double> counts = new HashMap<Byte, Double>();
 		Map<Byte, Map<Byte, Double>> counts2 = new HashMap<Byte, Map<Byte, Double>>();
@@ -305,7 +321,12 @@ public class RonPSTTest
 
 		public byte[] getAlphabet()
 			{
-			return new byte[]{'a', 'b', 'c', 'd'};
+			return new byte[]{
+					'a',
+					'b',
+					'c',
+					'd'
+			};
 			}
 
 		public int getMaxDepth()

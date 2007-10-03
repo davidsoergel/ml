@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
@@ -176,4 +177,12 @@ public interface SequenceSpectrum<T extends SequenceSpectrum> extends AdditiveCl
 	//void runCompletionProcessor() throws DistributionProcessorException;
 
 	void setIgnoreEdges(boolean b);
+
+	/**
+	 * Returns the factory that produced this SequenceSpectrum.  This is useful because the factory may have some
+	 * configuration parameters, and we may want to construct a new SequenceSpectrum using the same parameters.
+	 *
+	 * @return
+	 */
+	GenericFactory getFactory();
 	}

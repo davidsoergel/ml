@@ -32,6 +32,8 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.sequtils.FilterException;
@@ -41,7 +43,6 @@ import edu.berkeley.compbio.sequtils.SequenceReader;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +140,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			//prefixValid = Math.min(PREFIX_LENGTH, s.getNumberOfSamples() + s.getK() - 1);
 			length = s.getLength();// how much sequence was actually read
 			setBaseSpectrum(s);
+			}
+		catch (GenericFactoryException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (IOException e)
 			{
@@ -241,7 +248,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		try
 			{
 			length -= object.getLength();
-			baseSpectrum.decrementBy(object.getSpectrum(baseSpectrum.getClass()));
+			baseSpectrum.decrementBy(object.getSpectrum(baseSpectrum.getClass(), baseSpectrum.getFactory()));
 			}
 		catch (SequenceSpectrumException e)
 			{
@@ -258,7 +265,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		try
 			{
 			length += object.getLength();
-			baseSpectrum.incrementBy(object.getSpectrum(baseSpectrum.getClass()));
+			baseSpectrum.incrementBy(object.getSpectrum(baseSpectrum.getClass(), baseSpectrum.getFactory()));
 			}
 		catch (SequenceSpectrumException e)
 			{
@@ -298,7 +305,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		scanIfNeeded();
 		try
 			{
-			return baseSpectrum.spectrumEquals(other.getSpectrum(baseSpectrum.getClass()));
+			return baseSpectrum.spectrumEquals(other.getSpectrum(baseSpectrum.getClass(), baseSpectrum.getFactory()));
 			}
 		catch (SequenceSpectrumException e)
 			{
@@ -344,18 +351,19 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	/**
 	 * Provides a SequenceSpectrum of the requested type.  If the spectrum has already been computed, it is returned.  If
-	 * not, a new SequenceSpectrum of the requested type is created with this SequenceFragment as the constructor argument.
-	 * Thus, the specific SequenceSpectrum constructor can call this method again to request a SequenceSpectrum of a
-	 * different type, from which the requested one is then derived.  This mechanism assumes that a spectrum of a given
-	 * class always has the same value-- that is, that it doesn't make sense to store multiple spectra of the same class
-	 * associated with the same SequenceFragment.  If in fact the spectra have someparameters associated with their
-	 * computation, then this isn't really true, and can create confusion.
+	 * not, a new SequenceSpectrum of the requested type is created using the given factory with this SequenceFragment as
+	 * the constructor argument. Thus, the specific SequenceSpectrum constructor can call this method again to request a
+	 * SequenceSpectrum of a different type, from which the requested one is then derived.  This mechanism assumes that a
+	 * spectrum of a given class always has the same value-- that is, that it doesn't make sense to store multiple spectra
+	 * of the same class associated with the same SequenceFragment.  If in fact the spectra have some parameters associated
+	 * with their computation, then this isn't really true, and can create confusion.
 	 *
 	 * @param c the Class of a SequenceSpectrum implementation that is requested
 	 * @return the SequenceSpectrum of the requested type describing statistics of this sequence
 	 * @throws SequenceSpectrumException when a spectrum of the requested type cannot be found or generated
 	 */
-	public SequenceSpectrum getSpectrum(Class<? extends SequenceSpectrum> c) throws SequenceSpectrumException
+	public <X extends SequenceSpectrum> SequenceSpectrum getSpectrum(Class<X> c, GenericFactory<X> factory)
+			throws SequenceSpectrumException
 		{
 		scanIfNeeded();
 		SequenceSpectrum s = theSpectra.get(c);
@@ -371,33 +379,46 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 			try
 				{
-				s = c.getConstructor(SequenceFragment.class).newInstance(this);
+				s = factory.create(this);
+				//s = c.getConstructor(SequenceFragment.class).newInstance(this);
 				theSpectra.put(c, s);
 				}
-			catch (NoSuchMethodException e)
+			catch (GenericFactoryException e)
 				{
 				logger.debug(e);
 				e.printStackTrace();
 				throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 				}
-			catch (IllegalAccessException e)
+			catch (NullPointerException e)
 				{
 				logger.debug(e);
 				e.printStackTrace();
 				throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 				}
-			catch (InvocationTargetException e)
-				{
-				logger.debug(e);
-				e.printStackTrace();
-				throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
-				}
-			catch (InstantiationException e)
-				{
-				logger.debug(e);
-				e.printStackTrace();
-				throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
-				}
+			/*	catch (NoSuchMethodException e)
+			   {
+			   logger.debug(e);
+			   e.printStackTrace();
+			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
+			   }
+		   catch (IllegalAccessException e)
+			   {
+			   logger.debug(e);
+			   e.printStackTrace();
+			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
+			   }
+		   catch (InvocationTargetException e)
+			   {
+			   logger.debug(e);
+			   e.printStackTrace();
+			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
+			   }
+		   catch (InstantiationException e)
+			   {
+			   logger.debug(e);
+			   e.printStackTrace();
+			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
+			   }*/
 			}
 		return s;
 		}
@@ -416,7 +437,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		{
 		try
 			{
-			return getSpectrum(spectrum.getClass()).spectrumEquals(spectrum);
+			return getSpectrum(spectrum.getClass(), spectrum.getFactory()).spectrumEquals(spectrum);
 			}
 		catch (SequenceSpectrumException e)
 			{

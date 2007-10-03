@@ -32,7 +32,6 @@ package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
-import com.davidsoergel.runutils.ThreadLocalRun;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.Multinomial;
@@ -50,10 +49,14 @@ public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
 	public Double smoothFactor;
 	private double smoothFactorTimesFour;// = smoothFactor * 4;
 
-	public KneserNeyPSTSmoother()//double smoothFactor)
+	public KneserNeyPSTSmoother()//String injectorId)//double smoothFactor)
 		{
 		//this.smoothFactor = smoothFactor;
-		ThreadLocalRun.getProps().injectProperties(this);
+		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
+		}
+
+	public void init()
+		{
 		smoothFactorTimesFour = smoothFactor * 4;
 		}
 

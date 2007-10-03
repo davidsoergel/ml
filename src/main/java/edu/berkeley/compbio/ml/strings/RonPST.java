@@ -35,7 +35,6 @@ package edu.berkeley.compbio.ml.strings;
 import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
-import com.davidsoergel.runutils.ThreadLocalRun;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
@@ -79,9 +78,9 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	//isPlugin = true,
 	public DistributionProcessor<RonPST> completionProcessor;
 
-	public RonPST()
+	public RonPST()//String injectorId)
 		{
-		ThreadLocalRun.getProps().injectProperties(this);
+		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
 		}
 
 	/**

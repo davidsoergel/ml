@@ -97,7 +97,7 @@ public class MoveTypeSet
 
 	public MoveTypeSet(String movePackage) throws IOException
 		{
-		//		ThreadLocalRun.getProps().injectProperties(this);
+		//		ThreadLocalRun.getProps().injectProperties(injectorId, this);
 
 		Double prob;
 		for (Class movetype : SubclassFinder.find(movePackage, Move.class))

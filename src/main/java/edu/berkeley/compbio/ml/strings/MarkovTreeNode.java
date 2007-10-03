@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.dsutils.MathUtils;
 import com.davidsoergel.stats.DistributionException;
@@ -54,7 +55,8 @@ import java.util.Map;
  * if you think about it properly.  The only remaining difficulty is how to add strings recursively; in the case of
  * PSTs, the recursion should walk all suffixes, not prefixes.
  */
-public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>, MutableDistribution
+public class MarkovTreeNode extends AbstractGenericFactoryAware
+		implements SequenceSpectrum<MarkovTreeNode>, MutableDistribution
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -356,7 +358,7 @@ public class MarkovTreeNode implements SequenceSpectrum<MarkovTreeNode>, Mutable
 	 */
 	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
 		{
-		IntKcount kc = (IntKcount) sequenceFragment.getSpectrum(IntKcount.class);
+		IntKcount kc = (IntKcount) sequenceFragment.getSpectrum(IntKcount.class, null);
 		int k = kc.getK();
 
 		double result = 0;

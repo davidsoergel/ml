@@ -32,7 +32,6 @@ package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
-import com.davidsoergel.runutils.ThreadLocalRun;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DoubleArrayContainer;
 
@@ -46,10 +45,10 @@ public class DoublePseudocountAdder implements DistributionProcessor<DoubleArray
 	@Property(helpmessage = "Pseudocounts to add to every bin", defaultvalue = "0")
 	public double uniformPseudoCount;
 
-	public DoublePseudocountAdder()//double smoothFactor)
+	public DoublePseudocountAdder()//String injectorId)//double smoothFactor)
 		{
 		//this.smoothFactor = smoothFactor;
-		ThreadLocalRun.getProps().injectProperties(this);
+		//	ThreadLocalRun.getProps().injectProperties(injectorId, this);
 		}
 
 	public void process(DoubleArrayContainer c)

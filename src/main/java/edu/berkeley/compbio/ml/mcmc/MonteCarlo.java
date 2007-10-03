@@ -34,7 +34,6 @@ package edu.berkeley.compbio.ml.mcmc;
 
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
-import com.davidsoergel.runutils.ThreadLocalRun;
 import org.apache.log4j.Logger;
 
 import java.util.Arrays;
@@ -163,9 +162,9 @@ public abstract class MonteCarlo
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
-	public MonteCarlo()
+	public MonteCarlo()//String injectorId)
 		{
-		ThreadLocalRun.getProps().injectProperties(this);
+		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
 		}
 
 	// --------------------- GETTER / SETTER METHODS ---------------------
