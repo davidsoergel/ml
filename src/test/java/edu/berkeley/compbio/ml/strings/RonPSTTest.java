@@ -33,8 +33,6 @@ package edu.berkeley.compbio.ml.strings;
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.runutils.OverridingPropertiesAggregator;
-import com.davidsoergel.runutils.RunUnsuccessfulException;
-import com.davidsoergel.runutils.ThreadLocalRun;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
@@ -56,7 +54,7 @@ public class RonPSTTest
 	@BeforeMethod
 	public void setUp() throws Exception
 		{
-		ThreadLocalRun.removeInstance();
+		/*	ThreadLocalRun.removeInstance();
 		new ThreadLocalRun()
 		{
 		public String getVersion()
@@ -68,14 +66,14 @@ public class RonPSTTest
 			{
 			//To change body of implemented methods use File | Settings | File Templates.
 			}
-		};
+		};*/
 		Map<String, Object> props = new HashMap<String, Object>();
 
 		props.put("edu.berkeley.compbio.ml.strings.KneserNeyPSTSmoother.smoothFactor", "0.1");
 
 		OverridingPropertiesAggregator opa = new OverridingPropertiesAggregator();
 		opa.addSource(props);
-		ThreadLocalRun.getInstance().setProps(opa);
+		//ThreadLocalRun.getInstance().setProps(opa);
 		}
 
 	@Test
@@ -136,26 +134,11 @@ public class RonPSTTest
 		{
 		RonPST pst = createSimplePST();
 
-		assert pst.conditionalProbability((byte) 'a', new byte[]{
-				'd',
-				'a',
-				'b',
-				'a',
-				'b'
-		}) == pst
-				.conditionalProbability((byte) 'a', new byte[]{
-						'a',
-						'b'
-				});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{
-				'a',
-				'b'
-		}) != pst
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'d', 'a', 'b', 'a', 'b'}) == pst
+				.conditionalProbability((byte) 'a', new byte[]{'a', 'b'});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{'b'});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{
-				'a',
-				'b'
-		}) != pst
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{'a'});
 		}
 
@@ -321,12 +304,7 @@ public class RonPSTTest
 
 		public byte[] getAlphabet()
 			{
-			return new byte[]{
-					'a',
-					'b',
-					'c',
-					'd'
-			};
+			return new byte[]{'a', 'b', 'c', 'd'};
 			}
 
 		public int getMaxDepth()
