@@ -30,11 +30,16 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> implements SequenceSpectrum<T>
 	{
+	private static final Logger logger = Logger.getLogger(HierarchicalSpectrum.class);
+
 	protected T parent = null;
 
 	/**
@@ -42,6 +47,7 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> imple
 	 *
 	 * @return the parent of this Kcount.
 	 */
+	@Nullable
 	public T getParent()//throws SequenceSpectrumException// aggregateUp()
 		{
 		if (!hasParent())
@@ -55,12 +61,12 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> imple
 		return parent;
 		}
 
-	public List<HierarchicalSpectrum> getAncestryList()
+	public List<HierarchicalSpectrum<T>> getAncestryList()
 		{
-		List<HierarchicalSpectrum> result;
+		List<HierarchicalSpectrum<T>> result;
 		if (parent == null)
 			{
-			result = new ArrayList<HierarchicalSpectrum>();
+			result = new ArrayList<HierarchicalSpectrum<T>>();
 			}
 		else
 			{
@@ -96,8 +102,9 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> imple
 	 *
 	 * @return a clone of this instance.
 	 * @see Object#clone
-	 * @see java.lang.Cloneable
+	 * @see Cloneable
 	 */
+	@Override
 	public abstract T clone();
 
 	}
