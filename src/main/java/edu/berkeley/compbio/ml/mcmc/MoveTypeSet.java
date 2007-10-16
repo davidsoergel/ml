@@ -33,7 +33,6 @@
 package edu.berkeley.compbio.ml.mcmc;
 
 import com.davidsoergel.dsutils.SubclassFinder;
-import com.davidsoergel.runutils.ThreadLocalRun;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.MultinomialDistribution;
 import org.apache.log4j.Logger;
@@ -112,9 +111,13 @@ public class MoveTypeSet
 
 			// ** eliminate dependency (huh?  looks OK)
 			//prob = moveProbabilities.get(shortname);
-			// ** hack because we can't inject into a Map
+			// ** injection completely broken
+			/* **** commented out only due to refactoring; need to fix ****
+			// hack because we can't inject into a Map
 			prob = ThreadLocalRun.getProps()
 					.getDouble("edu.berkeley.compbio.ml.mcmc.MoveTypeSet.moveProbabilities." + shortname);
+					*/
+			prob = null;
 			if (prob == null || Double.isNaN(prob))
 				{
 				logger.warn("No move probability found for " + shortname + "; assigning probability zero.");
