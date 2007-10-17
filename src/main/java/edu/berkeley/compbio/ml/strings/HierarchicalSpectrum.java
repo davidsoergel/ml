@@ -30,13 +30,15 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> implements SequenceSpectrum<T>
+public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> extends AbstractGenericFactoryAware
+		implements SequenceSpectrum<T>
 	{
 	private static final Logger logger = Logger.getLogger(HierarchicalSpectrum.class);
 

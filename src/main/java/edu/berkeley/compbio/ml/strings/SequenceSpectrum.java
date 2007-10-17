@@ -33,9 +33,11 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryAware;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a statistical model of a sequence of bytes.  The generic type tells what other kinds of SequenceSpecturm
@@ -47,7 +49,8 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
  * @author David Soergel
  * @version $Id
  */
-public interface SequenceSpectrum<T extends SequenceSpectrum> extends AdditiveClusterable<T>, Cloneable
+public interface SequenceSpectrum<T extends SequenceSpectrum>
+		extends AdditiveClusterable<T>, Cloneable, GenericFactoryAware
 	{
 	// ------------------------ CANONICAL METHODS ------------------------
 
@@ -184,5 +187,6 @@ public interface SequenceSpectrum<T extends SequenceSpectrum> extends AdditiveCl
 	 *
 	 * @return
 	 */
+	@NotNull
 	GenericFactory getFactory();
 	}
