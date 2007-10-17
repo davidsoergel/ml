@@ -85,9 +85,9 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	// --------------------- Interface Clusterable ---------------------
 
 	/**
-	 * Test whether the given pattern counts are equal to those stored here.  Differs from equals() in that implementations
-	 * of this interface may contain additional state which make them not strictly equal; here we're only interested in
-	 * whether they're equal as far as this interface is concerned.
+	 * Tests whether the given pattern counts are equal to those stored here.  Differs from equals() in that
+	 * implementations of this interface may contain additional state which make them not strictly equal; here we're only
+	 * interested in whether they're equal as far as this interface is concerned.
 	 *
 	 * @param other The Kcount to compare against
 	 * @return True if they are equivalent, false otherwise
@@ -110,7 +110,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	//	public abstract List<Integer> getLastWords();
 
 	/**
-	 * Test whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
+	 * Tests whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
 	 * implementations of this interface may contain additional state which make them not strictly equal; here we're only
 	 * interested in whether they're equal as far as this interface is concerned.  Equivalent to {@link
 	 * #equalValue(DoubleKcount)} in this case.
@@ -127,7 +127,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
-	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
+	 * Clones this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
 	 * requires no cast.  Also, we insist that is method be implemented in inheriting classes, so it does not throw
 	 * CloneNotSupportedException.
 	 *

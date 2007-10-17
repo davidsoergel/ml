@@ -32,7 +32,6 @@ package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import com.davidsoergel.dsutils.ArrayUtils;
-import com.davidsoergel.runutils.OverridingPropertiesAggregator;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
@@ -67,13 +66,14 @@ public class RonPSTTest
 			//To change body of implemented methods use File | Settings | File Templates.
 			}
 		};*/
-		Map<String, Object> props = new HashMap<String, Object>();
+		//	Map<String, Object> props = new HashMap<String, Object>();
 
-		props.put("edu.berkeley.compbio.ml.strings.KneserNeyPSTSmoother.smoothFactor", "0.1");
+		////props.put("edu.berkeley.compbio.ml.strings.KneserNeyPSTSmoother.smoothFactor", "0.1");
 
-		OverridingPropertiesAggregator opa = new OverridingPropertiesAggregator();
-		opa.addSource(props);
-		//ThreadLocalRun.getInstance().setProps(opa);
+		//	HierarchicalTypedPropertyNode n = PropertyConsumerClassParser.parseClass(StubSequenceFragmentIterator.class);
+		//	MapToHierarchicalTypedPropertyNodeAdapter.mergeInto(n, props);
+		//	stubSequenceFragmentIteratorFactory = new PropertyConsumerFactory<StubSequenceFragmentIterator>(n);
+
 		}
 
 	@Test
