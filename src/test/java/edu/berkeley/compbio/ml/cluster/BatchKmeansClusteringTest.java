@@ -32,14 +32,13 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 
 /**
  * @author lorax
  * @version 1.0
  */
-public class BatchKmeansClusteringTest extends TestCase
+public class BatchKmeansClusteringTest//extends TestCase
 	{
 	// ------------------------------ FIELDS ------------------------------
 
