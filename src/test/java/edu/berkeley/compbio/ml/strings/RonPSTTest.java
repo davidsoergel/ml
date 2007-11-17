@@ -70,7 +70,7 @@ public class RonPSTTest
 
 		////props.put("edu.berkeley.compbio.ml.strings.KneserNeyPSTSmoother.smoothFactor", "0.1");
 
-		//	HierarchicalTypedPropertyNode n = PropertyConsumerClassParser.parseClass(StubSequenceFragmentIterator.class);
+		//	HierarchicalTypedPropertyNode n = PropertyConsumerClassParser.parseRootContextClass(StubSequenceFragmentIterator.class);
 		//	MapToHierarchicalTypedPropertyNodeAdapter.mergeInto(n, props);
 		//	stubSequenceFragmentIteratorFactory = new PropertyConsumerFactory<StubSequenceFragmentIterator>(n);
 
