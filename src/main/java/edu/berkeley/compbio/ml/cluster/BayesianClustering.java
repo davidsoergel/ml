@@ -41,6 +41,7 @@ import java.util.List;
  * Performs cluster classification with a naive bayesian classifier
  *
  * @author David Tulga
+ * @author David Soergel
  */
 public class BayesianClustering<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T>
 	{
@@ -52,21 +53,24 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	private DistanceMeasure<T> measure;
 	private double[] priors;
 
+	private double unknownThreshold;
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * Creates a new BayesianClustering with the following parameters
 	 *
-	 * @param theCentroids Centroids of the clusters
-	 * @param thePriors    Prior expectations for the clusters
-	 * @param dm           The distance measure to use
+	 * @param theCentroids     Centroids of the clusters
+	 * @param thePriors        Prior expectations for the clusters
+	 * @param dm               The distance measure to use
+	 * @param unknownThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public BayesianClustering(T[] theCentroids, double[] thePriors, DistanceMeasure<T> dm)
+	public BayesianClustering(T[] theCentroids, double[] thePriors, DistanceMeasure<T> dm, double unknownThreshold)
 		{
 		centroids = theCentroids;
 		measure = dm;
 		priors = thePriors;
+		this.unknownThreshold = unknownThreshold;
 
 		for (int i = 0; i < centroids.length; i++)
 			{
@@ -80,7 +84,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	// -------------------------- OTHER METHODS --------------------------
 
-	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException
+	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
 		theClusters.get(getBestCluster(p, secondBestDistances)).recenterByAdding(p);
 		return true;
@@ -97,7 +101,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to
 	 */
-	public int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException
+	public int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
 		int i;
 		double secondbestdistance = Double.MAX_VALUE;
@@ -121,6 +125,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		if (j == -1)
 			{
 			throw new ClusterException("Found no cluster at all, that's impossible");
+			}
+		if (bestdistance > unknownThreshold)
+			{
+			throw new NoGoodClusterException("Best distance " + bestdistance + " > threshold " + unknownThreshold);
 			}
 		return j;
 		}

@@ -138,9 +138,18 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 			secondBestDistances.clear();
 			while (theDataPointProvider.hasNext())
 				{
-				if (add(theDataPointProvider.next(), secondBestDistances))
+				try
 					{
-					changed++;
+					if (add(theDataPointProvider.next(), secondBestDistances))
+						{
+						changed++;
+						}
+					}
+				catch (NoGoodClusterException e)
+					{
+					// too bad, just ignore this unclassifiable point.
+					// it may be classifiable in a future iteration.
+					// if no other points get changed, then this one will stay unclassified.
 					}
 
 				c++;
@@ -180,7 +189,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 	//public abstract void add(T v);
 
-	public abstract boolean add(T p, List<Double> secondBestDistances) throws ClusterException;
+	public abstract boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
 
 
 	public String shortClusteringStats()
