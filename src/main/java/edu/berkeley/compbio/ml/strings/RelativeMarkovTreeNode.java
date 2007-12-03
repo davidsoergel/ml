@@ -90,4 +90,8 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 			}
 		}
 
+	public Multinomial<Byte> getTarget()
+		{
+		return target;
+		}
 	}

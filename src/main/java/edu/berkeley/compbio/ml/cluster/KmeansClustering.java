@@ -72,6 +72,12 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 
 	// -------------------------- OTHER METHODS --------------------------
 
+	public int getBestCluster(T p, List<Double> secondBestDistances)
+		{
+		ClusterMove cm = bestClusterMove(p);
+		return theClusters.indexOf(cm.bestCluster);
+		}
+
 	public boolean add(T p, List<Double> secondBestDistances)
 		{
 		assert p != null;

@@ -286,7 +286,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		return getLongestSuffix(prefix).conditionalProbability(sigma);
 		}
 
-	private MarkovTreeNode getLongestSuffix(byte[] suffix)
+	public MarkovTreeNode getLongestSuffix(byte[] suffix)
 		{
 		byte[] prefix = ArrayUtils.clone(suffix);
 		ArrayUtils.reverse(prefix);

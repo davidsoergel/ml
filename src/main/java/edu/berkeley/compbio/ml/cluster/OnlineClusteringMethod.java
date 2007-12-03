@@ -79,6 +79,15 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	public abstract ClusterMove bestClusterMove(T p);
 
 	/**
+	 * Returns the best cluster without adding the point
+	 *
+	 * @param p                   Point to find the best cluster of
+	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
+	 */
+	public abstract int getBestCluster(T p, List<Double> secondBestDistances)
+			throws ClusterException, NoGoodClusterException;
+
+	/**
 	 * for each cluster, compute the standard deviation of the distance of each point to the centroid. This does not
 	 * reassign points or move the centroids.
 	 *
@@ -107,6 +116,18 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		{
 		return theClusters;
 		}
+
+
+	public List<T> getCentroids()
+		{
+		List<T> result = new ArrayList<T>();
+		for (Cluster<T> c : theClusters)
+			{
+			result.add(c.getCentroid());
+			}
+		return result;
+		}
+
 
 	//public abstract void addAndRecenter(T v);
 	//public abstract void reassign(T v);
