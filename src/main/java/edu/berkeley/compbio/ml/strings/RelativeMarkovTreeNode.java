@@ -38,7 +38,7 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 	{
 	private static Logger logger = Logger.getLogger(RelativeMarkovTreeNode.class);
 	protected MarkovTreeNode backoffParent;
-	Multinomial<Byte> target;
+	Multinomial<Byte> target = new Multinomial<Byte>();
 	double mixingProportion;
 
 
