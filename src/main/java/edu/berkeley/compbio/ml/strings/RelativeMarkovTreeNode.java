@@ -55,7 +55,7 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 		{
 		this.backoffParent = backoffParent;
 		Multinomial<Byte> childProbs = currentNode.getProbs();
-		Multinomial<Byte> parentProbs = currentNode.getProbs();
+		Multinomial<Byte> parentProbs = backoffParent.getProbs();
 
 		// see which symbol probability would hit zero first if we keep going in the same direction
 
@@ -76,22 +76,40 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 					}
 				}
 
-			for (byte b : childProbs.getElements())
+			if (mixingProportion == 0)
 				{
-				double targetVal =
-						(-1 / mixingProportion) * childProbs.get(b) + (1 / mixingProportion - 1) * parentProbs.get(b);
-
-				target.put(b, targetVal);
+				// distributions are identical
+				target = null;
+				}
+			else
+				{
+				for (byte b : childProbs.getElements())
+					{
+					/*	double targetVal =
+								 (-1 / mixingProportion) * childProbs.get(b) + (1 / mixingProportion - 1) * parentProbs
+										 .get(b);
+	 */
+					double targetVal = (parentProbs.get(b) - parentProbs.get(b)) / mixingProportion;
+					aggaaga
+					target.put(b, targetVal);
+					}
 				}
 			}
 		catch (DistributionException e)
 			{
-			logger.debug(e);
+			logger.error(e);
+			e.printStackTrace();
+			//	throw new Error(e);
 			}
 		}
 
 	public Multinomial<Byte> getTarget()
 		{
 		return target;
+		}
+
+	public double getMixingProportion()
+		{
+		return mixingProportion;
 		}
 	}

@@ -680,7 +680,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				}
 			}
 
-		return this;
+		return result;
 		}
 
 	/**
