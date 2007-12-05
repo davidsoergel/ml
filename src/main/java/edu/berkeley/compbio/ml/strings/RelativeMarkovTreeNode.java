@@ -57,17 +57,15 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 		Multinomial<Byte> childProbs = currentNode.getProbs();
 		Multinomial<Byte> parentProbs = backoffParent.getProbs();
 
-		// see which symbol probability would hit zero first if we keep going in the same direction
 
 		mixingProportion = 0;
 		//double maxSymbol = 0;
 		try
 			{
+			// see which symbol probability would hit zero first if we keep going in the same direction
 			for (byte b : childProbs.getElements())
 				{
-				double alpha = 0;
-
-				alpha = (childProbs.get(b) / parentProbs.get(b)) - 1;
+				double alpha = 1 - (childProbs.get(b) / parentProbs.get(b));
 
 				if (mixingProportion < alpha && alpha <= 1)
 					{
@@ -76,6 +74,7 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 					}
 				}
 
+			// then find the target probabilities
 			if (mixingProportion == 0)
 				{
 				// distributions are identical
@@ -85,13 +84,15 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 				{
 				for (byte b : childProbs.getElements())
 					{
-					/*	double targetVal =
-								 (-1 / mixingProportion) * childProbs.get(b) + (1 / mixingProportion - 1) * parentProbs
-										 .get(b);
-	 */
-					double targetVal = (parentProbs.get(b) - parentProbs.get(b)) / mixingProportion;
-					aggaaga
+					double targetVal =
+							(1 / mixingProportion) * childProbs.get(b) + (1 - (1 / mixingProportion)) * parentProbs
+									.get(b);
+
 					target.put(b, targetVal);
+					}
+				if (!target.isAlreadyNormalized())
+					{
+					throw new DistributionException("Failed to compute conditional bias target distribution correctly");
 					}
 				}
 			}
