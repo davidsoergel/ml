@@ -30,6 +30,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
@@ -57,7 +58,7 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 		Multinomial<Byte> childProbs = currentNode.getProbs();
 		Multinomial<Byte> parentProbs = backoffParent.getProbs();
 
-
+		//byte zeroSymbol = 0;
 		mixingProportion = 0;
 		//double maxSymbol = 0;
 		try
@@ -70,6 +71,7 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 				if (mixingProportion < alpha && alpha <= 1)
 					{
 					mixingProportion = alpha;
+					//	zeroSymbol = b;
 					//maxSymbol = b;
 					}
 				}
@@ -84,10 +86,22 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 				{
 				for (byte b : childProbs.getElements())
 					{
-					double targetVal =
-							(1 / mixingProportion) * childProbs.get(b) + (1 - (1 / mixingProportion)) * parentProbs
-									.get(b);
+					double targetVal;
+					/*	if (b == zeroSymbol)
+					   {
 
+					   targetVal = 0;
+					   }
+				   else
+					   {*/
+					targetVal = (1 / mixingProportion) * childProbs.get(b) + (1 - (1 / mixingProportion)) * parentProbs
+							.get(b);
+					//	}
+					// avoid infinitesimal negative values due to numerical imprecision
+					if (MathUtils.equalWithinFPError(targetVal, 0))
+						{
+						targetVal = 0;
+						}
 					target.put(b, targetVal);
 					}
 				if (!target.isAlreadyNormalized())
