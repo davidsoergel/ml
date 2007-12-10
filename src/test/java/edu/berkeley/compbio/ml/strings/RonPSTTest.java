@@ -134,10 +134,14 @@ public class RonPSTTest
 		{
 		RonPST pst = createSimplePST();
 
+		// really should use a 3-level pst for this
+
 		assert pst.conditionalProbability((byte) 'a', new byte[]{'d', 'a', 'b', 'a', 'b'}) == pst
 				.conditionalProbability((byte) 'a', new byte[]{'a', 'b'});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) != pst
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) == pst
 				.conditionalProbability((byte) 'a', new byte[]{'b'});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'b'}) != pst
+				.conditionalProbability((byte) 'a', new byte[]{});
 		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{'a'});
 		}
