@@ -72,4 +72,6 @@ public interface KcountScanner
 
 	void checkSequenceAvailable(SequenceReader theReader, int desiredlength)
 			throws IOException, FilterException, NotEnoughSequenceException;
+
+	Kcount scanSequence(SequenceReader resetReader, int desiredLength, String prefix);
 	}

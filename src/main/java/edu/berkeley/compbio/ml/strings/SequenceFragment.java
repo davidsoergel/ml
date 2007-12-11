@@ -173,15 +173,30 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		}
 
-	/*byte[] getPrefix(int length) throws NotEnoughSequenceException
+	public SequenceReader getResetReader()
 		{
-		if (length > prefixValid)
+		try
 			{
-			throw new NotEnoughSequenceException(
-					"Only " + prefixValid + " symbols available; " + length + " requested");
+			theReader.seek(parentMetadata, startPosition);
+			return theReader;
 			}
-		return ArrayUtils.prefix(prefix, length);
-		}*/
+		catch (IOException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		}
+
+	/*byte[] getPrefix(int length) throws NotEnoughSequenceException
+	   {
+	   if (length > prefixValid)
+		   {
+		   throw new NotEnoughSequenceException(
+				   "Only " + prefixValid + " symbols available; " + length + " requested");
+		   }
+	   return ArrayUtils.prefix(prefix, length);
+	   }*/
 
 	/**
 	 * Sets the base spectrum from which all other spectra are derived
@@ -551,5 +566,18 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			e.printStackTrace();
 			throw new SequenceSpectrumRuntimeException(e);
 			}
+		}
+
+	public SequenceSpectrum scan(String prefix)
+		{
+		if (prefix == null || prefix.length() == 0)
+			{
+			scanIfNeeded();
+			return getBaseSpectrum();
+			}
+
+		// now we're guaranteed that length has been set
+
+		return theScanner.scanSequence(getResetReader(), length, prefix);
 		}
 	}
