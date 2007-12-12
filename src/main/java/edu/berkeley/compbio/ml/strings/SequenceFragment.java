@@ -128,6 +128,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	public void scanIfNeeded()
 		{
+		bbNTheu
 		if (baseSpectrum != null)
 			{
 			return;
@@ -136,7 +137,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			theReader.seek(parentMetadata, startPosition);
 			//prefix = new byte[PREFIX_LENGTH];
-			Kcount s = theScanner.scanSequence(theReader, desiredlength);//, firstWords, FIRSTWORD_LENGTH);
+			SequenceSpectrum s = theScanner.scanSequence(theReader, desiredlength);//, firstWords, FIRSTWORD_LENGTH);
 			//prefixValid = Math.min(PREFIX_LENGTH, s.getNumberOfSamples() + s.getK() - 1);
 			length = s.getLength();// how much sequence was actually read
 			setBaseSpectrum(s);
@@ -568,9 +569,9 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		}
 
-	public SequenceSpectrum scan(String prefix)
+	public SequenceSpectrum scan(byte[] prefix)
 		{
-		if (prefix == null || prefix.length() == 0)
+		if (prefix == null || prefix.length == 0)
 			{
 			scanIfNeeded();
 			return getBaseSpectrum();
@@ -578,6 +579,39 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 		// now we're guaranteed that length has been set
 
-		return theScanner.scanSequence(getResetReader(), length, prefix);
+		try
+			{
+			return theScanner.scanSequence(getResetReader(), length, prefix);
+			}
+		catch (IOException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		catch (FilterException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		catch (NotEnoughSequenceException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		catch (DistributionProcessorException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		catch (GenericFactoryException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
+			}
 		}
 	}

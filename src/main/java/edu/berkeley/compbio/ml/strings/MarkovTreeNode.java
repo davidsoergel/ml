@@ -39,9 +39,14 @@ import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
 import com.davidsoergel.stats.MutableDistribution;
+import edu.berkeley.compbio.sequtils.FilterException;
+import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
+import edu.berkeley.compbio.sequtils.SequenceReader;
+import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
@@ -358,6 +363,68 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 */
 	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
 		{
+		SequenceReader in = sequenceFragment.getResetReader();
+		int requiredPrefixLength = getMaxDepth();
+		double logprob = 0;
+		CircularFifoBuffer prefix = new CircularFifoBuffer(requiredPrefixLength);
+
+		while (true)
+			{
+			try
+				{
+				byte c = in.read();
+
+				try
+					{
+					// this is probably terribly inefficient
+					byte[] prefixAsBytes = ArrayUtils.toPrimitive((Byte[]) prefix.toArray(new Byte[]{}));
+
+					// these log probabilities could be cached, e.g. logConditionalProbability(c, prefix)
+					logprob += MathUtils.approximateLog(conditionalProbability(c, prefixAsBytes));
+					prefix.add(c);
+					}
+				catch (SequenceSpectrumException e)
+					{
+					// probably just an invalid character
+					logger.debug("Invalid character " + (char) c);
+					// ignore this character as far as the probability is concerned
+					prefix.clear();
+					}
+				}
+			catch (NotEnoughSequenceException e)
+				{
+				break;
+				}
+			catch (IOException e)
+				{
+				logger.debug(e);
+				e.printStackTrace();
+				throw new SequenceSpectrumException(e);
+				}
+			catch (FilterException e)
+				{
+				logger.debug(e);
+				e.printStackTrace();
+				throw new SequenceSpectrumException(e);
+				}
+			}
+		return logprob;
+		}
+
+
+	/**
+	 * Computes the total log probability of generating the given sequence fragment under the model.  This differs from
+	 * {@link #totalProbability(byte[])} in that the sequence fragment is not given explicitly but only as metadata.  Thus
+	 * its probability may be computed from summary statistics that are already available in the given SequenceFragment
+	 * rather than from the raw sequence.  Also, because these probabilities are typically very small, the result is
+	 * returned in log space (indeed implementations will likely compute them in log space).
+	 *
+	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
+	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
+	 */
+	public double fragmentLogProbabilityFromIntKcount(SequenceFragment sequenceFragment)
+			throws SequenceSpectrumException
+		{
 		IntKcount kc = (IntKcount) sequenceFragment.getSpectrum(IntKcount.class, null);
 		int k = kc.getK();
 
@@ -450,9 +517,9 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			{
 			return sample(ArrayUtils.suffix(prefix, 1));
 			/*
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);*/
+						logger.debug(e);
+						e.printStackTrace();
+						throw new SequenceSpectrumRuntimeException(e);*/
 
 			}
 		catch (DistributionException e)
@@ -473,11 +540,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		{
 		throw new NotImplementedException();
 		/*
-		byte[] result = new byte[length];
-		for (int i = 0; i < length; i++)
-			{
+			 byte[] result = new byte[length];
+			 for (int i = 0; i < length; i++)
+				 {
 
-			}*/
+				 }*/
 		}
 
 	/**
@@ -582,18 +649,18 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * node has any children at all, ensures that there is a child for each symbol in the alphabet.
 	 */
 	/*	public void complete()
-	   {
-	   if (children == null || children.size() == 0)
 		   {
-		   return;
-		   }
+		   if (children == null || children.size() == 0)
+			   {
+			   return;
+			   }
 
-	   // we only get here if there is at least one child.  In that case, the get() calls will create all the other children, as needed.
-	   for (byte sigma : getAlphabet())
-		   {
-		   add(sigma).complete();
-		   }
-	   }*/
+		   // we only get here if there is at least one child.  In that case, the get() calls will create all the other children, as needed.
+		   for (byte sigma : getAlphabet())
+			   {
+			   add(sigma).complete();
+			   }
+		   }*/
 
 	/**
 	 * Recursively fills out the tree so that each node has either a complete set of children or none at all, and assigns
@@ -630,13 +697,13 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			// But we only want a full-fledged node if tha child itself has children.
 			/*
 
-			// if there are any children, make sure there are all children
-		   if (children != null && children.size() != 0)
-			   {
-			   add(sigma).completeAndCopyProbsFrom(spectrum);
-			   }
+								// if there are any children, make sure there are all children
+							   if (children != null && children.size() != 0)
+								   {
+								   add(sigma).completeAndCopyProbsFrom(spectrum);
+								   }
 
-			   */
+								   */
 			}
 		try
 			{
@@ -754,5 +821,13 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		// not relevant here...
 		}
 
-
+	public int getSubtreeNodes()
+		{
+		int result = 1;// this
+		for (MarkovTreeNode child : children.values())
+			{
+			result += child.getSubtreeNodes();
+			}
+		return result;
+		}
 	}

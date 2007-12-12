@@ -253,6 +253,9 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		   }*/
 
 		//return root;
+
+		logger.info("Learned Ron PST with " + getSubtreeNodes() + " nodes, max depth " + getMaxDepth());
+		logger.info("\n" + toLongString());
 		}
 
 	/**

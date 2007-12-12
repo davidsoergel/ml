@@ -38,7 +38,6 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	{
 	protected int k;
 	protected int numberOfBins;
-	protected int length;
 
 	/**
 	 * Returns the pattern length K that this Kcount handles (i.e. the number of symbols per word being counted)
@@ -56,8 +55,10 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		return k > 0;
 		}
 
+	protected int length;
+
 	/**
-	 * Returns the length of the sequence that was scanned to produce this Kcount.  This number may be greater than that
+	 * Returns the length of the sequence that was scanned to produce this spectrum.  This number may be greater than that
 	 * given by {@link #getNumberOfSamples()} because every symbol is not necessarily counted as a sample, depending on the
 	 * implementation.
 	 *

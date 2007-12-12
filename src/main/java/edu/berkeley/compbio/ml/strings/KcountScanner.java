@@ -46,7 +46,7 @@ import java.io.IOException;
  * @author David Soergel
  * @version $Id
  */
-public interface KcountScanner
+public interface KcountScanner extends SequenceSpectrumScanner
 	{
 	// -------------------------- OTHER METHODS --------------------------
 
@@ -70,8 +70,9 @@ public interface KcountScanner
 	/*	Kcount scanSequence(SequenceReader in, int desiredlength, List<byte[]> firstWords) //, int firstWordLength)
 				throws IOException, FilterException, NotEnoughSequenceException;*/
 
-	void checkSequenceAvailable(SequenceReader theReader, int desiredlength)
-			throws IOException, FilterException, NotEnoughSequenceException;
+	/*	void checkSequenceAvailable(SequenceReader theReader, int desiredlength)
+				throws IOException, FilterException, NotEnoughSequenceException;*/
 
-	Kcount scanSequence(SequenceReader resetReader, int desiredLength, String prefix);
+	Kcount scanSequence(SequenceReader resetReader, int desiredLength, byte[] prefix) throws IOException,
+			FilterException, NotEnoughSequenceException, DistributionProcessorException, GenericFactoryException;
 	}

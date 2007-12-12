@@ -129,6 +129,16 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	public int getNumberOfSamples();
 
 	/**
+	 * Returns the length of the sequence that was scanned to produce this spectrum.  This number may be greater than that
+	 * given by {@link #getNumberOfSamples()} because every symbol is not necessarily counted as a sample, depending on the
+	 * implementation.
+	 *
+	 * @return the length (type int) of this Kcount object.
+	 * @see #addUnknown()
+	 */
+	public int getLength();
+
+	/**
 	 * Chooses a random symbol according to the conditional probabilities of symbols following the given prefix.  Shortcut
 	 * equivalent to conditionalsFrom(prefix).sample().byteValue()
 	 *
