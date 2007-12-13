@@ -64,7 +64,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	private SequenceSpectrum baseSpectrum;
 	private FirstWordProvider firstWordProvider;
 	private SequenceReader theReader;
-	private KcountScanner theScanner;
+	private SequenceSpectrumScanner theScanner;
 	private int desiredlength;
 	private boolean ignoreEdges;
 
@@ -82,11 +82,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 * @param sequenceName  a String identifier for this sequence
 	 * @param startPosition the index in the parent sequence of the first symbol in this sequence
 	 */
-	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, Integer taxid, int startPosition)
-		{
-		super(parent, sequenceName, taxid, startPosition);
-		}
-
+	/*	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, Integer taxid, int startPosition)
+		 {
+		 super(parent, sequenceName, taxid, startPosition);
+		 }
+ */
 	/**
 	 * Constructs a new SequenceFragment by specifying its coordinates with respect to a containing parent sequence.
 	 *
@@ -101,15 +101,15 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		}
 
 	/**
-	 * Convenience constructor, creates a new SequenceFragment by applying a KcountScanner to an input stream, and using
-	 * the resulting Kcount as the base spectrum.
+	 * Convenience constructor, creates a new SequenceFragment by applying a SequenceSpectrumScanner to an input stream,
+	 * and using the resulting SequenceSpectrum as the base spectrum.
 	 *
 	 * @param parent        the SequenceFragmentMetadata representing a larger sequence in which this one is contained
 	 * @param sequenceName  a String identifier for this sequence
 	 * @param startPosition the index in the parent sequence of the first symbol in this sequence
 	 * @param in            the SequenceReader providing the input sequence
 	 * @param desiredlength the number of symbols to attempt to read from the input stream
-	 * @param scanner       the KcountScanner to use
+	 * @param scanner       the SequenceSpectrumScanner to use
 	 * @throws IOException                when an input/output error occurs on the reader
 	 * @throws FilterException            when the scanner is filtering the sequence while reading it, but the filter
 	 *                                    throws an exception
@@ -118,7 +118,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *                                    sequence)
 	 */
 	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, int startPosition, SequenceReader in,
-	                        int desiredlength, KcountScanner scanner)
+	                        int desiredlength, SequenceSpectrumScanner scanner)
 		{
 		this(parent, sequenceName, startPosition, 0);// length = 0 because nothing is scanned so far
 		theReader = in;
@@ -126,9 +126,9 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		this.desiredlength = desiredlength;
 		}
 
+
 	public void scanIfNeeded()
 		{
-		bbNTheu
 		if (baseSpectrum != null)
 			{
 			return;
@@ -137,7 +137,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			theReader.seek(parentMetadata, startPosition);
 			//prefix = new byte[PREFIX_LENGTH];
-			SequenceSpectrum s = theScanner.scanSequence(theReader, desiredlength);//, firstWords, FIRSTWORD_LENGTH);
+			SequenceSpectrum s =
+					theScanner.scanSequence(this);//theReader, desiredlength);//, firstWords, FIRSTWORD_LENGTH);
 			//prefixValid = Math.min(PREFIX_LENGTH, s.getNumberOfSamples() + s.getK() - 1);
 			length = s.getLength();// how much sequence was actually read
 			setBaseSpectrum(s);
@@ -173,6 +174,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		}
+
 
 	public SequenceReader getResetReader()
 		{
@@ -212,9 +214,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			if (!(spectrum instanceof FirstWordProvider))
 				{
-				throw new SequenceSpectrumRuntimeException("Base spectrum must implement FirstWordProvider");
+				//throw new SequenceSpectrumRuntimeException("Base spectrum must implement FirstWordProvider");
 				}
-			firstWordProvider = (FirstWordProvider) spectrum;
+			else
+				{
+				firstWordProvider = (FirstWordProvider) spectrum;
+				}
 			}
 		theSpectra.put(baseSpectrum.getClass(), baseSpectrum);
 		}
@@ -530,12 +535,37 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 		}
 
+	//** Move this to a @PropertyConsumer
 
+	/*	@Property(helpmessage = "A type of spectrum to compute early to manage memory",
+			   defaultvalue = "null", isNullable = true)
+	 //, isPlugin = true)
+	 public GenericFactory<SequenceSpectrum> precomputeSpectrumTypeFactory;
+
+	 public void runFinishTrainingProcessor() throws DistributionProcessorException
+		 {
+		 scanIfNeeded();
+		 if (precomputeSpectrumTypeFactory != null)
+			 {
+			 try
+				 {
+				 getSpectrum(precomputeSpectrumTypeFactory.getCreatesClass(), precomputeSpectrumTypeFactory);
+				 }
+			 catch (SequenceSpectrumException e)
+				 {
+				 logger.debug(e);
+				 e.printStackTrace();
+				 throw new DistributionProcessorException(e);
+				 }
+			 }
+		 baseSpectrum.runFinishTrainingProcessor();
+
+		 }
+ */
 	public void runFinishTrainingProcessor() throws DistributionProcessorException
 		{
 		scanIfNeeded();
 		baseSpectrum.runFinishTrainingProcessor();
-
 		}
 
 	/*	public void runCompletionProcessor() throws DistributionProcessorException
@@ -543,6 +573,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	   baseSpectrum.runCompletionProcessor();
 
 	   }*/
+
+	// the only way to do this is to scan the sequence.  It sucks but we have no choice
 
 	public void checkAvailable() throws NotEnoughSequenceException
 		{
@@ -552,7 +584,13 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				{
 				theReader.seek(parentMetadata, startPosition);
 				//prefix = new byte[PREFIX_LENGTH];
-				theScanner.checkSequenceAvailable(theReader, desiredlength);
+				theScanner.checkSequenceAvailable(this);//theReader, desiredlength);
+
+				if (theReader.getTotalSequence() < desiredlength)
+					{
+					throw new NotEnoughSequenceException("Not enough sequence: " + desiredlength + " requested, "
+							+ theReader.getTotalSequence() + " available.");
+					}
 				}
 			}
 		catch (IOException e)
@@ -569,49 +607,55 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		}
 
-	public SequenceSpectrum scan(byte[] prefix)
+	/*	public SequenceSpectrum scan(byte[] prefix)
+	   {
+	   if (prefix == null || prefix.length == 0)
+		   {
+		   scanIfNeeded();
+		   return getBaseSpectrum();
+		   }
+
+	   // now we're guaranteed that length has been set
+
+	   try
+		   {
+		   return theScanner.scanSequence(getResetReader(), length, prefix);
+		   }
+	   catch (IOException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }
+	   catch (FilterException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }
+	   catch (NotEnoughSequenceException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }
+	   catch (DistributionProcessorException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }
+	   catch (GenericFactoryException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }
+	   }*/
+
+	public int getDesiredLength()
 		{
-		if (prefix == null || prefix.length == 0)
-			{
-			scanIfNeeded();
-			return getBaseSpectrum();
-			}
-
-		// now we're guaranteed that length has been set
-
-		try
-			{
-			return theScanner.scanSequence(getResetReader(), length, prefix);
-			}
-		catch (IOException e)
-			{
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		catch (FilterException e)
-			{
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		catch (NotEnoughSequenceException e)
-			{
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		catch (DistributionProcessorException e)
-			{
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		catch (GenericFactoryException e)
-			{
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
-			}
+		return desiredlength;
 		}
+
 	}

@@ -136,13 +136,28 @@ public class RonPSTTest
 
 		// really should use a 3-level pst for this
 
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'d', 'a', 'b', 'a', 'b'}) == pst
-				.conditionalProbability((byte) 'a', new byte[]{'a', 'b'});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) == pst
+		assert pst.conditionalProbability((byte) 'a', new byte[]{
+				'd',
+				'a',
+				'b',
+				'a',
+				'b'
+		}) == pst
+				.conditionalProbability((byte) 'a', new byte[]{
+						'a',
+						'b'
+				});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{
+				'a',
+				'b'
+		}) == pst
 				.conditionalProbability((byte) 'a', new byte[]{'b'});
 		assert pst.conditionalProbability((byte) 'a', new byte[]{'b'}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) != pst
+		assert pst.conditionalProbability((byte) 'a', new byte[]{
+				'a',
+				'b'
+		}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{'a'});
 		}
 
@@ -211,6 +226,10 @@ public class RonPSTTest
 		Map<Byte, Double> counts = new HashMap<Byte, Double>();
 		Map<Byte, Map<Byte, Double>> counts2 = new HashMap<Byte, Map<Byte, Double>>();
 
+		public int getLength()
+			{
+			throw new NotImplementedException();
+			}
 
 		public void addPseudocounts()
 			{
@@ -308,7 +327,12 @@ public class RonPSTTest
 
 		public byte[] getAlphabet()
 			{
-			return new byte[]{'a', 'b', 'c', 'd'};
+			return new byte[]{
+					'a',
+					'b',
+					'c',
+					'd'
+			};
 			}
 
 		public int getMaxDepth()
@@ -416,6 +440,12 @@ public class RonPSTTest
 		public void setIgnoreEdges(boolean ignoreEdges)
 			{
 			// not relevant here...
+			}
+
+
+		public void setImmutable()
+			{
+			// not relevant here
 			}
 		}
 	}

@@ -59,7 +59,7 @@ public abstract class Cluster<T extends Clusterable<T>>
 
 	public Cluster(DistanceMeasure<T> dm, T centroid)
 		{
-		this.centroid = centroid.clone();
+		this.centroid = centroid;//.clone();
 		n++;
 		//add(centroid);
 		logger.debug("Created cluster with centroid: " + centroid);

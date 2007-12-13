@@ -36,7 +36,6 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
-import edu.berkeley.compbio.sequtils.SequenceReader;
 
 import java.io.IOException;
 
@@ -63,7 +62,7 @@ public interface KcountScanner extends SequenceSpectrumScanner
 	 *                                    not throw this exception, but instead simply return a Kcount based on the short
 	 *                                    sequence)
 	 */
-	Kcount scanSequence(SequenceReader sequenceReader, int desiredLength)//, SequenceFragment fragment)
+	Kcount scanSequence(SequenceFragment fragment)//SequenceReader sequenceReader, int desiredLength)//,
 			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
 			GenericFactoryException;
 
@@ -73,6 +72,7 @@ public interface KcountScanner extends SequenceSpectrumScanner
 	/*	void checkSequenceAvailable(SequenceReader theReader, int desiredlength)
 				throws IOException, FilterException, NotEnoughSequenceException;*/
 
-	Kcount scanSequence(SequenceReader resetReader, int desiredLength, byte[] prefix) throws IOException,
-			FilterException, NotEnoughSequenceException, DistributionProcessorException, GenericFactoryException;
+	Kcount scanSequence(SequenceFragment fragment, byte[] prefix)//SequenceReader resetReader, int desiredLength
+			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
+			GenericFactoryException;
 	}

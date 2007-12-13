@@ -60,7 +60,8 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	/**
 	 * Creates a new BayesianClustering with the following parameters
 	 *
-	 * @param theCentroids     Centroids of the clusters
+	 * @param theCentroids     Centroids of the clusters.  Note these will be used as is and modified; clone them first if
+	 *                         you need to
 	 * @param thePriors        Prior expectations for the clusters
 	 * @param dm               The distance measure to use
 	 * @param unknownThreshold the minimum probability to accept when adding a point to a cluster

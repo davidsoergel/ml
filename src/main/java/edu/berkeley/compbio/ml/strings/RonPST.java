@@ -161,6 +161,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 				}
 			catch (SequenceSpectrumException e)
 				{
+				logger.warn("Unknown probability: " + new String(s));
 				// too bad, the requested probability is not known
 				}
 			}
@@ -196,6 +197,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 					}
 				catch (SequenceSpectrumException e)
 					{
+					logger.warn("Unknown probability: " + new String(s));
 					// too bad, the requested probability is not known
 					}
 
@@ -255,7 +257,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		//return root;
 
 		logger.info("Learned Ron PST with " + getSubtreeNodes() + " nodes, max depth " + getMaxDepth());
-		logger.info("\n" + toLongString());
+		logger.debug("\n" + toLongString());
 		}
 
 	/**
@@ -288,6 +290,31 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		//return getLongestSuffix(ArrayUtils.append(prefix, sigma)).conditionalProbability(sigma);
 		return getLongestSuffix(prefix).conditionalProbability(sigma);
 		}
+
+	/**
+	 * Computes the total log probability of generating the given sequence fragment under the model.  This differs from
+	 * {@link #totalProbability(byte[])} in that the sequence fragment is not given explicitly but only as metadata.  Thus
+	 * its probability may be computed from summary statistics that are already available in the given SequenceFragment
+	 * rather than from the raw sequence.  Also, because these probabilities are typically very small, the result is
+	 * returned in log space (indeed implementations will likely compute them in log space).
+	 *
+	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
+	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
+	 */
+	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
+		{
+		// simply follow the MarkovTreeNode as a state machine, using backlinks
+		/*		SequenceReader in = sequenceFragment.getResetReader();
+	   while (true)
+		   {
+		   try
+			   {
+			   byte c = in.read();
+			   }
+		   }*/
+		return 0;
+		}
+
 
 	public MarkovTreeNode getLongestSuffix(byte[] suffix)
 		{

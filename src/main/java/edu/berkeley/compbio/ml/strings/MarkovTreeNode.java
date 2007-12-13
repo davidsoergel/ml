@@ -71,11 +71,18 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	private Map<Byte, MarkovTreeNode> children = new HashMap<Byte, MarkovTreeNode>();
 	private Multinomial<Byte> probs = new Multinomial<Byte>();
 
+
 	// note that the probabilities should exist even if there are no corresponding child nodes!
 	// There is no point in having a node with no associated probabilities, except temporarily
 	// during the learning process before the probabilities have been filled in.
 
 	// avoid holding a parent link; we don't need it so far
+
+
+	public void setImmutable()
+		{
+		// not relevant here
+		}
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
@@ -363,6 +370,9 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 */
 	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
 		{
+		// the RonPST implementation uses backlinks and so is vastly more efficient.
+		// We can't use backlinks here because they might point to nodes outside of this subtree
+
 		SequenceReader in = sequenceFragment.getResetReader();
 		int requiredPrefixLength = getMaxDepth();
 		double logprob = 0;
@@ -376,7 +386,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 				try
 					{
-					// this is probably terribly inefficient
+					//** this is terribly inefficient
 					byte[] prefixAsBytes = ArrayUtils.toPrimitive((Byte[]) prefix.toArray(new Byte[]{}));
 
 					// these log probabilities could be cached, e.g. logConditionalProbability(c, prefix)
@@ -829,5 +839,10 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			result += child.getSubtreeNodes();
 			}
 		return result;
+		}
+
+	public int getLength()
+		{
+		throw new NotImplementedException();
 		}
 	}

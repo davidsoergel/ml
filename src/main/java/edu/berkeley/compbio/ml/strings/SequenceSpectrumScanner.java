@@ -4,7 +4,6 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
-import edu.berkeley.compbio.sequtils.SequenceReader;
 
 import java.io.IOException;
 
@@ -32,16 +31,16 @@ public interface SequenceSpectrumScanner
 	 *                             when the reader cannot supply the desired amound of sequence (some scanners may not
 	 *                             throw this exception, but instead simply return a Kcount based on the short sequence)
 	 */
-	SequenceSpectrum scanSequence(SequenceReader sequenceReader, int desiredLength)//, SequenceFragment fragment)
+	SequenceSpectrum scanSequence(SequenceFragment fragment)//SequenceReader sequenceReader, int desiredLength)//
 			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
 			GenericFactoryException;
 
 	/*	Kcount scanSequence(SequenceReader in, int desiredlength, List<byte[]> firstWords) //, int firstWordLength)
 				throws IOException, FilterException, NotEnoughSequenceException;*/
-
-	void checkSequenceAvailable(SequenceReader theReader, int desiredlength)
+	void checkSequenceAvailable(SequenceFragment fragment)//SequenceReader theReader, int desiredlength)
 			throws IOException, FilterException, NotEnoughSequenceException;
 
-	SequenceSpectrum scanSequence(SequenceReader resetReader, int desiredLength, byte[] prefix) throws IOException,
-			FilterException, NotEnoughSequenceException, DistributionProcessorException, GenericFactoryException;
+	SequenceSpectrum scanSequence(SequenceFragment fragment, //SequenceReader resetReader, int desiredLength,
+	                              byte[] prefix) throws IOException, FilterException, NotEnoughSequenceException,
+			DistributionProcessorException, GenericFactoryException;
 	}

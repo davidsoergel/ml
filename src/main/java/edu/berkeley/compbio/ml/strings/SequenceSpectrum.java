@@ -199,4 +199,6 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 */
 	@NotNull
 	GenericFactory getFactory();
+
+	void setImmutable();
 	}
