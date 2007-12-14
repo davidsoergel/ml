@@ -50,8 +50,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A node in a tree where each transition is labeled by a byte and has a local probability (that is, conditional on the
@@ -181,7 +183,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		probs.normalize();
 		}
 
-	public double conditionalProbability(byte sigma)//throws SequenceSpectrumException
+	public double conditionalProbability(byte sigma) throws SequenceSpectrumException
 		{
 		try
 			{
@@ -190,11 +192,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		catch (DistributionException e)
 			{
 			logger.debug(e);
-			throw new SequenceSpectrumRuntimeException(e);
+			throw new SequenceSpectrumException(e);
 			}
 		}
 
-	public double logConditionalProbability(byte sigma)//throws SequenceSpectrumException
+	public double logConditionalProbability(byte sigma) throws SequenceSpectrumException
 		{
 		try
 			{
@@ -203,7 +205,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		catch (DistributionException e)
 			{
 			logger.debug(e);
-			throw new SequenceSpectrumRuntimeException(e);
+			throw new SequenceSpectrumException(e);
 			}
 		}
 
@@ -874,8 +876,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		MarkovTreeNode result = children.get(sigma);
 		if (result == null)
 			{
-			result = getBacklink()
-					.get(sigma);// could be nextNode(sigma), except that the backlink should always have children
+			result = getBacklink().nextNode(sigma);
 			}
 		return result;
 		}
@@ -892,16 +893,44 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 	public void setBacklinksUsingRoot(MarkovTreeNode rootNode)
 		{
-		if (children.isEmpty())
+		//	if (children.isEmpty())
+		//		{
+		if (id.length > 0)
 			{
-			setBacklink(rootNode.getLongestSuffix(id));
+			setBacklink(rootNode.getLongestSuffix(ArrayUtils.suffix(id, 1)));
 			}
-		else
+		//		}
+		//else
+		//	{
+		for (MarkovTreeNode child : children.values())
 			{
-			for (MarkovTreeNode child : children.values())
-				{
-				child.setBacklinksUsingRoot(rootNode);
-				}
+			child.setBacklinksUsingRoot(rootNode);
+			}
+		//	}
+		}
+
+	public boolean isLeaf()
+		{
+		return children.isEmpty();
+		}
+
+	public Set<MarkovTreeNode> getAllNodes()
+		{
+		Set<MarkovTreeNode> result = new HashSet<MarkovTreeNode>();
+		result.add(this);
+		for (MarkovTreeNode child : children.values())
+			{
+			child.addAllNodes(result);
+			}
+		return result;
+		}
+
+	public void addAllNodes(Set<MarkovTreeNode> result)
+		{
+		result.add(this);
+		for (MarkovTreeNode child : children.values())
+			{
+			child.addAllNodes(result);
 			}
 		}
 	}

@@ -118,7 +118,6 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		{
 		this();
 		learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
-		setBacklinks();
 		if (completionProcessor != null)
 			{
 			try
@@ -266,8 +265,24 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		   }*/
 
 		//return root;
+		setBacklinks();
 
-		logger.info("Learned Ron PST with " + getSubtreeNodes() + " nodes, max depth " + getMaxDepth());
+		int total = 0, leaves = 0, maxdepth = 0;
+		double avgdepth = 0;
+		for (MarkovTreeNode node : getAllNodes())
+			{
+			total++;
+			if (node.isLeaf())
+				{
+				leaves++;
+				int depth = node.getId().length();
+				avgdepth += depth;
+				maxdepth = Math.max(maxdepth, depth);
+				}
+			}
+		avgdepth /= leaves;
+		logger.info("Learned Ron PST with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
+				+ ", max depth " + maxdepth);
 		logger.debug("\n" + toLongString());
 		}
 
@@ -296,7 +311,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	 * @return the conditional probability, a double value between 0 and 1, inclusive
 	 * @see #fragmentLogProbability(edu.berkeley.compbio.ml.strings.SequenceFragment)
 	 */
-	public double conditionalProbability(byte sigma, byte[] prefix)//throws SequenceSpectrumException
+	public double conditionalProbability(byte sigma, byte[] prefix) throws SequenceSpectrumException
 		{
 		//return getLongestSuffix(ArrayUtils.append(prefix, sigma)).conditionalProbability(sigma);
 		return getLongestSuffix(prefix).conditionalProbability(sigma);
@@ -320,15 +335,24 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		MarkovTreeNode currentNode = this;
 		while (true)
 			{
+			byte c = 0;
 			try
 				{
-				byte c = in.read();
+				c = in.read();
 				logprob += currentNode.logConditionalProbability(c);
 				currentNode = currentNode.nextNode(c);
 				}
 			catch (NotEnoughSequenceException e)
 				{
 				return logprob;
+				}
+			catch (SequenceSpectrumException e)
+				{
+				// probably a bad input character
+				logger.warn("Unknown input symbol: " + c + " at " + sequenceFragment);
+
+				// ignore it, but reset the state machine
+				currentNode = this;
 				}
 			catch (IOException e)
 				{
@@ -370,4 +394,5 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		{
 		return getLongestSuffix(ArrayUtils.suffix(id, 1));
 		}
+
 	}
