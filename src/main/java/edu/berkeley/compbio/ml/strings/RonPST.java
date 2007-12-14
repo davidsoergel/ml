@@ -38,8 +38,12 @@ import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
+import edu.berkeley.compbio.sequtils.FilterException;
+import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
+import edu.berkeley.compbio.sequtils.SequenceReader;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Locale;
@@ -114,6 +118,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		{
 		this();
 		learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
+		setBacklinks();
 		if (completionProcessor != null)
 			{
 			try
@@ -128,6 +133,12 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 				}
 			}
 		}
+
+	private void setBacklinks()
+		{
+		setBacklinksUsingRoot(this);
+		}
+
 
 	public void learn(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
 		{
@@ -304,24 +315,36 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
 		{
 		// simply follow the MarkovTreeNode as a state machine, using backlinks
-		/*		SequenceReader in = sequenceFragment.getResetReader();
-	   while (true)
-		   {
-		   try
-			   {
-			   byte c = in.read();
-			   }
-		   }*/
-		return 0;
+		SequenceReader in = sequenceFragment.getResetReader();
+		double logprob = 0;
+		MarkovTreeNode currentNode = this;
+		while (true)
+			{
+			try
+				{
+				byte c = in.read();
+				logprob += currentNode.logConditionalProbability(c);
+				currentNode = currentNode.nextNode(c);
+				}
+			catch (NotEnoughSequenceException e)
+				{
+				return logprob;
+				}
+			catch (IOException e)
+				{
+				logger.debug(e);
+				e.printStackTrace();
+				throw new SequenceSpectrumException(e);
+				}
+			catch (FilterException e)
+				{
+				logger.debug(e);
+				e.printStackTrace();
+				throw new SequenceSpectrumException(e);
+				}
+			}
 		}
 
-
-	public MarkovTreeNode getLongestSuffix(byte[] suffix)
-		{
-		byte[] prefix = ArrayUtils.clone(suffix);
-		ArrayUtils.reverse(prefix);
-		return getLongestPrefix(prefix);
-		}
 
 	/**
 	 * Computes the conditional probability distribution of symbols given a prefix under the model, backing off to shorter

@@ -45,6 +45,7 @@ import edu.berkeley.compbio.sequtils.SequenceReader;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -70,6 +71,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	private byte[] alphabet;
 	private Map<Byte, MarkovTreeNode> children = new HashMap<Byte, MarkovTreeNode>();
 	private Multinomial<Byte> probs = new Multinomial<Byte>();
+	private MarkovTreeNode backlink;
 
 
 	// note that the probabilities should exist even if there are no corresponding child nodes!
@@ -184,6 +186,19 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		try
 			{
 			return probs.get(sigma);
+			}
+		catch (DistributionException e)
+			{
+			logger.debug(e);
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		}
+
+	public double logConditionalProbability(byte sigma)//throws SequenceSpectrumException
+		{
+		try
+			{
+			return probs.getLog(sigma);
 			}
 		catch (DistributionException e)
 			{
@@ -760,6 +775,13 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return result;
 		}
 
+	public MarkovTreeNode getLongestSuffix(byte[] suffix)
+		{
+		byte[] prefix = ArrayUtils.clone(suffix);
+		ArrayUtils.reverse(prefix);
+		return getLongestPrefix(prefix);
+		}
+
 	/**
 	 * Gets the child node associated with the given sequence, if it exists
 	 *
@@ -844,5 +866,42 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public int getLength()
 		{
 		throw new NotImplementedException();
+		}
+
+	@NotNull
+	public MarkovTreeNode nextNode(byte sigma)
+		{
+		MarkovTreeNode result = children.get(sigma);
+		if (result == null)
+			{
+			result = getBacklink()
+					.get(sigma);// could be nextNode(sigma), except that the backlink should always have children
+			}
+		return result;
+		}
+
+	public MarkovTreeNode getBacklink()
+		{
+		return backlink;
+		}
+
+	public void setBacklink(MarkovTreeNode backlink)
+		{
+		this.backlink = backlink;
+		}
+
+	public void setBacklinksUsingRoot(MarkovTreeNode rootNode)
+		{
+		if (children.isEmpty())
+			{
+			setBacklink(rootNode.getLongestSuffix(id));
+			}
+		else
+			{
+			for (MarkovTreeNode child : children.values())
+				{
+				child.setBacklinksUsingRoot(rootNode);
+				}
+			}
 		}
 	}
