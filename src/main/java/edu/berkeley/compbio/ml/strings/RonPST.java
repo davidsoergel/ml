@@ -184,6 +184,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 			catch (SequenceSpectrumException e)
 				{
 				logger.warn("Unknown probability: " + new String(s));
+				logger.info(e);
 				// too bad, the requested probability is not known
 				}
 			}
@@ -308,7 +309,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	 *
 	 * @param s the byte[]
 	 */
-	private void addAllSuffixes(byte[] s)
+	private void addAllSuffixes(byte[] s) throws SequenceSpectrumException
 		{
 		while (s.length > 0)
 			{
@@ -405,7 +406,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		return sb.toString();
 		}
 
-	public MarkovTreeNode getBackoffPrior(byte[] id)
+	public MarkovTreeNode getBackoffPrior(byte[] id) throws SequenceSpectrumException
 		{
 		return getLongestSuffix(ArrayUtils.suffix(id, 1));
 		}

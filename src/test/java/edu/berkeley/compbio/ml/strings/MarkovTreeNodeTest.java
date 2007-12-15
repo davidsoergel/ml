@@ -48,7 +48,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 	private byte[] alphabet = new byte[]{'a', 'b', 'c', 'd'};
 
 	@Test
-	public void emptyClonesHaveEqualValue()
+	public void emptyClonesHaveEqualValue() throws SequenceSpectrumException
 		{
 		MarkovTreeNode n = createComplexMarkovTree();
 		assert n.clone().equalValue(n);
@@ -65,7 +65,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		assert n.clone().equalValue(n);
 		}
 
-	private MarkovTreeNode createComplexMarkovTree()
+	private MarkovTreeNode createComplexMarkovTree() throws SequenceSpectrumException
 		{
 		MarkovTreeNode node = new MarkovTreeNode(new byte[0], alphabet);
 		node.add(new byte[]{'b', 'c', 'b'});
@@ -74,7 +74,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		return node;
 		}
 
-	private MarkovTreeNode createSimpleMarkovTree()
+	private MarkovTreeNode createSimpleMarkovTree() throws SequenceSpectrumException
 		{
 		MarkovTreeNode node = new MarkovTreeNode(new byte[0], alphabet);
 		node.add(new byte[]{'b', 'c'});
@@ -84,37 +84,37 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		}
 
 	@Test
-	public void maxDepthWorks()
+	public void maxDepthWorks() throws SequenceSpectrumException
 		{
 		MarkovTreeNode n = createComplexMarkovTree();
-		assert n.get((byte) 'd') == null;
-		n.add((byte) 'd');
-		assert n.get((byte) 'd') != null;
-		assert n.get((byte) 'd').getMaxDepth() == 0;
+		assert n.getChild((byte) 'd') == null;
+		n.addChild((byte) 'd');
+		assert n.getChild((byte) 'd') != null;
+		assert n.getChild((byte) 'd').getMaxDepth() == 0;
 		}
 
 	@Test
-	public void addOneChildWorks()
+	public void addOneChildWorks() throws SequenceSpectrumException
 		{
 		MarkovTreeNode n = createComplexMarkovTree();
-		assert n.get((byte) 'd') == null;
-		n.add((byte) 'd');
-		assert n.get((byte) 'd') != null;
-		assert n.get((byte) 'd').getMaxDepth() == 0;
+		assert n.getChild((byte) 'd') == null;
+		n.addChild((byte) 'd');
+		assert n.getChild((byte) 'd') != null;
+		assert n.getChild((byte) 'd').getMaxDepth() == 0;
 		}
 
 	@Test
-	public void addChildSequenceWorks()
+	public void addChildSequenceWorks() throws SequenceSpectrumException
 		{
 		MarkovTreeNode n = createComplexMarkovTree();
-		assert n.get((byte) 'd') == null;
+		assert n.getChild((byte) 'd') == null;
 		n.add(new byte[]{'d', 'a', 'a', 'b'});
-		assert n.get((byte) 'd') != null;
-		assert n.get((byte) 'd').get((byte) 'a') != null;
-		assert n.get((byte) 'd').get((byte) 'a').get((byte) 'a') != null;
-		assert n.get((byte) 'd').get((byte) 'a').get((byte) 'a').get((byte) 'b') != null;
-		assert n.get((byte) 'd').get((byte) 'a').get((byte) 'a').get((byte) 'b').getMaxDepth() == 0;
-		assert n.get((byte) 'd').getMaxDepth() == 3;
+		assert n.getChild((byte) 'd') != null;
+		assert n.getChild((byte) 'd').getChild((byte) 'a') != null;
+		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a') != null;
+		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b') != null;
+		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b').getMaxDepth() == 0;
+		assert n.getChild((byte) 'd').getMaxDepth() == 3;
 		}
 
 
@@ -126,7 +126,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		MarkovTreeNode n = createSimpleMarkovTree();
 		n.completeAndCopyProbsFrom(ss);
 
-		assert n.get((byte) 'd') == null;// node d has no children, so it has no reason to exist
+		assert n.getChild((byte) 'd') == null;// node d has no children, so it has no reason to exist
 		assert n.get(new byte[]{'d'}) == null;
 		assert n.conditionalProbability((byte) 'd') == 0.4;// but there is still a transition probability
 		assert n.get(new byte[]{'b'}) != null;
@@ -154,10 +154,10 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		assert n.conditionalProbability((byte) 'c', new byte[]{'b'}) == 0.31;
 		assert n.conditionalProbability((byte) 'd', new byte[]{'b'}) == 0.36;
 
-		assert n.get((byte) 'b').conditionalProbability((byte) 'a') == 0.11;
-		assert n.get((byte) 'b').conditionalProbability((byte) 'b') == 0.22;
-		assert n.get((byte) 'b').conditionalProbability((byte) 'c') == 0.31;
-		assert n.get((byte) 'b').conditionalProbability((byte) 'd') == 0.36;
+		assert n.getChild((byte) 'b').conditionalProbability((byte) 'a') == 0.11;
+		assert n.getChild((byte) 'b').conditionalProbability((byte) 'b') == 0.22;
+		assert n.getChild((byte) 'b').conditionalProbability((byte) 'c') == 0.31;
+		assert n.getChild((byte) 'b').conditionalProbability((byte) 'd') == 0.36;
 
 		assert n.conditionalsFrom(new byte[]{'b'}).get((byte) 'a') == 0.11;
 		assert n.conditionalsFrom(new byte[]{'b'}).get((byte) 'b') == 0.22;

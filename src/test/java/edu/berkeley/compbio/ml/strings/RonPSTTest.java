@@ -100,9 +100,9 @@ public class RonPSTTest
 			{
 			return false;
 			}
-		for (MarkovTreeNode child : node.getChildren().values())
+		for (MarkovTreeNode child : node.getChildren())//.values())
 			{
-			if (!allNodesAreCompleteOrEmpty(child, maxWidth))
+			if (child != null && !allNodesAreCompleteOrEmpty(child, maxWidth))
 				{
 				return false;
 				}
@@ -112,7 +112,7 @@ public class RonPSTTest
 
 	private boolean nodeIsCompleteOrEmpty(MarkovTreeNode node, int maxWidth)
 		{
-		int width = node.getChildren().size();
+		int width = node.countChildren();//.size();
 		if (width != 0 && width != maxWidth)
 			{
 			return false;
@@ -136,28 +136,13 @@ public class RonPSTTest
 
 		// really should use a 3-level pst for this
 
-		assert pst.conditionalProbability((byte) 'a', new byte[]{
-				'd',
-				'a',
-				'b',
-				'a',
-				'b'
-		}) == pst
-				.conditionalProbability((byte) 'a', new byte[]{
-						'a',
-						'b'
-				});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{
-				'a',
-				'b'
-		}) == pst
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'d', 'a', 'b', 'a', 'b'}) == pst
+				.conditionalProbability((byte) 'a', new byte[]{'a', 'b'});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) == pst
 				.conditionalProbability((byte) 'a', new byte[]{'b'});
 		assert pst.conditionalProbability((byte) 'a', new byte[]{'b'}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{
-				'a',
-				'b'
-		}) != pst
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{'a'});
 		}
 
@@ -327,12 +312,7 @@ public class RonPSTTest
 
 		public byte[] getAlphabet()
 			{
-			return new byte[]{
-					'a',
-					'b',
-					'c',
-					'd'
-			};
+			return new byte[]{'a', 'b', 'c', 'd'};
 			}
 
 		public int getMaxDepth()

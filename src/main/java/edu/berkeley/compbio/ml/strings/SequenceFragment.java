@@ -595,7 +595,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				//prefix = new byte[PREFIX_LENGTH];
 				theScanner.checkSequenceAvailable(this);//theReader, desiredlength);
 
-				if (theReader.getTotalSequence() < desiredlength)
+				if (desiredlength != Integer.MAX_VALUE && theReader.getTotalSequence() < desiredlength)
 					{
 					throw new NotEnoughSequenceException("Not enough sequence: " + desiredlength + " requested, "
 							+ theReader.getTotalSequence() + " available.");

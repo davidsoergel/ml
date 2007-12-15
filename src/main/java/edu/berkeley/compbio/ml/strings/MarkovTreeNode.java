@@ -45,13 +45,10 @@ import edu.berkeley.compbio.sequtils.SequenceReader;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -71,7 +68,17 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	private byte[] id;
 	private byte[] alphabet;
 	private double[] logprobs;
-	private Map<Byte, MarkovTreeNode> children = new HashMap<Byte, MarkovTreeNode>();
+
+	// use the alphabet to get indexes into the child array, instead of the HashM'p, for efficiency (no autoboxing, etc)
+
+	//	private Map<Byte, MarkovTreeNode> children = new HashMap<Byte, MarkovTreeNode>();
+
+	// includes only the children, with nulls where the tree does not continue
+	private MarkovTreeNode[] children;
+
+	// includes both the real children and the backlinks together
+	private MarkovTreeNode[] nextNodes;
+
 	//private Map<Byte, MarkovTreeNode> backlinkChildren = new HashMap<Byte, MarkovTreeNode>();
 	private Multinomial<Byte> probs = new Multinomial<Byte>();
 	private MarkovTreeNode backoffPrior;
@@ -124,11 +131,10 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 *
 	 * @return a Map<Byte, MarkovTreeNode> describing the possible transitions from this node to its children.
 	 */
-	public Map<Byte, MarkovTreeNode> getChildren()
-		{
-		return children;
-		}
-
+	/*	public Map<Byte, MarkovTreeNode> getChildren()
+	   {
+	   return children;
+	   }*/
 	public Multinomial<Byte> getProbs()
 		{
 		return probs;
@@ -143,13 +149,16 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		{
 		this.alphabet = alphabet;
 		logprobs = new double[alphabet.length];
+		children = new MarkovTreeNode[alphabet.length];
+		nextNodes = new MarkovTreeNode[alphabet.length];
 		}
 
 	// ------------------------ CANONICAL METHODS ------------------------
 
 
 	/**
-	 * Performs a deep copy of this node
+	 * Performs a deep copy of this node.  Does not populate nextNode, since it can't know the identities of the
+	 * appropriate backlink nodes
 	 *
 	 * @return a copy of this node, including a deep copy of its children and their probabilities
 	 */
@@ -157,26 +166,38 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		{
 		MarkovTreeNode result = new MarkovTreeNode(id, alphabet);
 		result.probs = probs.clone();
-		for (byte b : children.keySet())
+		try
 			{
-			result.addChild(b, add(b).clone());
-			/*		try
-			   {
-			   result.setProb(b, probs.get(b));
-			   }
-		   catch (DistributionException e)
-			   {
-			   // no problem, just leave it empty then
-			   }*/
+			for (byte b : alphabet)//children.keySet())
+				{
+				MarkovTreeNode child = getChild(b);
+				if (child != null)
+					{
+					result.addChild(b, child.clone());
+					}
+				}
 			}
+		catch (SequenceSpectrumException e)
+			{
+			throw new Error("Impossible");
+			}
+		/*		try
+					   {
+					   result.setProb(b, probs.get(b));
+					   }
+				   catch (DistributionException e)
+					   {
+					   // no problem, just leave it empty then
+					   }*/
+
 		/*	try
-		   {
-		   result.normalize();
-		   }
-	   catch (DistributionException e)
-		   {
-		   throw new SequenceSpectrumRuntimeException(e);
-		   }*/
+				   {
+				   result.normalize();
+				   }
+			   catch (DistributionException e)
+				   {
+				   throw new SequenceSpectrumRuntimeException(e);
+				   }*/
 		return result;
 		}
 
@@ -198,25 +219,21 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		}
 
-	public double logConditionalProbability(byte sigma) throws SequenceSpectrumException
+	private int alphabetIndexForSymbol(byte sigma) throws SequenceSpectrumException
 		{
-		//	try
-		//		{
 		for (int i = 0; i < alphabet.length; i++)
 			{
 			if (sigma == alphabet[i])
 				{
-				return logprobs[i];
+				return i;
 				}
 			}
-		//	return probs.getLog(sigma);
-		/*		}
-	   catch (DistributionException e)
-		   {
-		   logger.debug(e);
-		   throw new SequenceSpectrumException(e);
-		   }*/
 		throw new SequenceSpectrumException("Symbol " + (char) sigma + " not in alphabet");
+		}
+
+	public double logConditionalProbability(byte sigma) throws SequenceSpectrumException
+		{
+		return logprobs[alphabetIndexForSymbol(sigma)];
 		}
 
 	public double conditionalProbability(byte[] suffix, byte[] prefix) throws SequenceSpectrumException
@@ -262,9 +279,13 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return node.probs;
 		}
 
-	private void addChild(byte b, MarkovTreeNode child)
+	private void addChild(byte b, MarkovTreeNode child) throws SequenceSpectrumException
 		{
-		children.put(b, child);
+		leaf = false;
+		int childIndex = alphabetIndexForSymbol(b);
+		children[childIndex] = child;
+		nextNodes[childIndex] = child;
+		//children.put(b, child);
 		}
 
 	private void setProb(byte b, double prob) throws DistributionException
@@ -323,11 +344,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			{
 			return false;
 			}
-		if (children.size() != other.children.size())
-			{
-			return false;
-			}
-		for (byte b : children.keySet())
+		/*	if (children.size() != other.children.size())
+		   {
+		   return false;
+		   }*/
+		for (byte b : alphabet)//children.keySet())
 			{
 			double v = 0, v1 = 0;
 			int unknown = 0;
@@ -355,8 +376,17 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				{
 				return false;
 				}
-			MarkovTreeNode node = get(b);
-			MarkovTreeNode node1 = other.get(b);
+			MarkovTreeNode node = null;
+			MarkovTreeNode node1 = null;
+			try
+				{
+				node = getChild(b);
+				node1 = other.getChild(b);
+				}
+			catch (SequenceSpectrumException e)
+				{
+				throw new Error("Impossible");
+				}
 			if (node != null && node1 == null)
 				{
 				return false;
@@ -526,9 +556,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			{
 			result = 1;
 			}
-		for (MarkovTreeNode n : children.values())
+		for (MarkovTreeNode child : children)//.values())
 			{
-			result = Math.max(result, n.getMaxDepth() + 1);
+			if (child != null)
+				{
+				result = Math.max(result, child.getMaxDepth() + 1);
+				}
 			}
 		return result;
 		}
@@ -653,13 +686,16 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param sigma the transition to follow from this node
 	 * @return the node at the other end of the transition
 	 */
-	public MarkovTreeNode add(byte sigma)
+	public MarkovTreeNode addChild(byte sigma) throws SequenceSpectrumException
 		{
-		MarkovTreeNode result = children.get(sigma);
+		leaf = false;
+		int index = alphabetIndexForSymbol(sigma);
+		MarkovTreeNode result = children[index];
 		if (result == null)
 			{
 			result = new MarkovTreeNode(ArrayUtils.append(id, sigma), alphabet);
-			children.put(sigma, result);
+			nextNodes[index] = result;
+			children[index] = result;
 			}
 		return result;
 		}
@@ -670,7 +706,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param prefix the sequence of symbols to follow from this node
 	 * @return the node at the end of the chain of transitions
 	 */
-	public MarkovTreeNode add(byte[] prefix)
+	public MarkovTreeNode add(byte[] prefix) throws SequenceSpectrumException
 		{
 		if (prefix.length == 0)
 			{
@@ -679,11 +715,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		else if (prefix.length == 1)
 			{
-			return add(prefix[0]);
+			return addChild(prefix[0]);
 			}
 		else if (prefix.length >= 1)
 			{
-			return add(prefix[0]).add(ArrayUtils.suffix(prefix, 1));
+			return addChild(prefix[0]).add(ArrayUtils.suffix(prefix, 1));
 			}
 		throw new Error("Impossible");
 		}
@@ -759,9 +795,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 
 		// okay, but we still need to recurse to the children that do exist
-		for (MarkovTreeNode child : children.values())
+		for (MarkovTreeNode child : children)//.values())
 			{
-			child.completeAndCopyProbsFrom(spectrum);
+			if (child != null)
+				{
+				child.completeAndCopyProbsFrom(spectrum);
+				}
 			}
 		}
 
@@ -772,7 +811,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param prefix the sequence to walk
 	 * @return the MarkovTreeNode
 	 */
-	public MarkovTreeNode getLongestPrefix(byte[] prefix)
+	public MarkovTreeNode getLongestPrefix(byte[] prefix) throws SequenceSpectrumException
 		{
 		MarkovTreeNode result = this;
 		MarkovTreeNode next;
@@ -780,7 +819,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		// this could also have been recursive, but that would have involved making each suffix byte[] explicitly
 		for (byte b : prefix)
 			{
-			next = result.get(b);
+			next = result.getChild(b);
 			if (next == null)
 				{
 				return result;
@@ -794,7 +833,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return result;
 		}
 
-	public MarkovTreeNode getLongestSuffix(byte[] suffix)
+	public MarkovTreeNode getLongestSuffix(byte[] suffix) throws SequenceSpectrumException
 		{
 		byte[] prefix = ArrayUtils.clone(suffix);
 		ArrayUtils.reverse(prefix);
@@ -807,9 +846,20 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param sigma the symbol to follow from this node
 	 * @return the node pointed to, or null if that leaf does not exist
 	 */
-	public MarkovTreeNode get(byte sigma)
+	public MarkovTreeNode nextNode(byte sigma) throws SequenceSpectrumException
 		{
-		return children.get(sigma);
+		return nextNodes[alphabetIndexForSymbol(sigma)];
+		}
+
+	/**
+	 * Gets the child node associated with the given sequence, if it exists
+	 *
+	 * @param sigma the symbol to follow from this node
+	 * @return the node pointed to, or null if that leaf does not exist
+	 */
+	public MarkovTreeNode getChild(byte sigma) throws SequenceSpectrumException
+		{
+		return children[alphabetIndexForSymbol(sigma)];
 		}
 
 	/**
@@ -818,7 +868,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param seq the sequence of symbols to follow from this node
 	 * @return the node at the end of the chain of transitions, or null if that leaf does not exist
 	 */
-	public MarkovTreeNode get(byte[] seq)
+	public MarkovTreeNode get(byte[] seq) throws SequenceSpectrumException
 		{
 		if (seq.length == 0)
 			{
@@ -826,7 +876,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			return this;
 			}
 
-		MarkovTreeNode nextChild = children.get(seq[0]);
+		MarkovTreeNode nextChild = nextNodes[alphabetIndexForSymbol(seq[0])];
 
 		if (nextChild == null)
 			{
@@ -845,14 +895,15 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 	public void appendString(Formatter formatter, String indent)
 		{
-		for (Byte b : probs.getElements())
+		for (int i = 0; i < alphabet.length; i++)
 			{
+			byte b = alphabet[i];
 			try
 				{
 				formatter.format("%s %3.3g -> %c\n", indent, probs.get(b), b);
 				//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
-				MarkovTreeNode child = children.get(b);
-				if (child != null)
+				MarkovTreeNode child = nextNodes[i];
+				if (child != null && child.getId().length() > getId().length())
 					{
 					child.appendString(formatter, indent + "     | ");
 					}
@@ -875,9 +926,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public int getSubtreeNodes()
 		{
 		int result = 1;// this
-		for (MarkovTreeNode child : children.values())
+		for (MarkovTreeNode child : children)//.values())
 			{
-			result += child.getSubtreeNodes();
+			if (child != null)
+				{
+				result += child.getSubtreeNodes();
+				}
 			}
 		return result;
 		}
@@ -887,24 +941,24 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new NotImplementedException();
 		}
 
-	@NotNull
-	public MarkovTreeNode nextNode(byte sigma)
-		{
-		return children.get(sigma);
-		/*		MarkovTreeNode result = children.get(sigma);
-				if (result == null)
-					{
-					result = backlinkChildren.get(sigma);
-					}
-				return result;*/
-		}
+	//	@NotNull
+	//	public MarkovTreeNode nextNode(byte sigma)
+	//		{
+	//		return children.get(sigma);
+	/*		MarkovTreeNode result = children.get(sigma);
+					if (result == null)
+						{
+						result = backlinkChildren.get(sigma);
+						}
+					return result;*/
+	//		}
 
 	public MarkovTreeNode getBackoffPrior()
 		{
 		return backoffPrior;
 		}
 
-	boolean leaf = false;
+	private boolean leaf = true;
 
 	/**
 	 * This method assumes that it has not been run before, and that all nodes at higher levels in the tree hve already
@@ -915,15 +969,15 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public void setBackoffPrior(MarkovTreeNode backoffPrior)
 		{
 		this.backoffPrior = backoffPrior;
-		if (children.isEmpty())
+		/*	if (children.isEmpty())
+		   {
+		   leaf = true;
+		   }*/
+		for (int i = 0; i < alphabet.length; i++)
 			{
-			leaf = true;
-			}
-		for (byte sigma : alphabet)
-			{
-			if (children.get(sigma) == null)
+			if (nextNodes[i] == null)
 				{
-				children.put(sigma, getBackoffPrior().nextNode(sigma));
+				nextNodes[i] = getBackoffPrior().nextNodes[i];//get(sigma));
 				}
 			}
 		}
@@ -931,15 +985,25 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public void setBacklinksUsingRoot(MarkovTreeNode rootNode, Queue<MarkovTreeNode> breadthFirstList)
 		{
 		// must do this first, before we fill out the children hash
-		for (MarkovTreeNode child : children.values())
+		for (MarkovTreeNode child : children)//.values())
 			{
-			breadthFirstList.add(child);//.setBacklinksUsingRoot(rootNode);
+			if (child != null)
+				{
+				breadthFirstList.add(child);//.setBacklinksUsingRoot(rootNode);
+				}
 			}
 		//	if (children.isEmpty())
 		//		{
 		if (id.length > 0)
 			{
-			setBackoffPrior(rootNode.getLongestSuffix(ArrayUtils.suffix(id, 1)));
+			try
+				{
+				setBackoffPrior(rootNode.getLongestSuffix(ArrayUtils.suffix(id, 1)));
+				}
+			catch (SequenceSpectrumException e)
+				{
+				throw new Error("Impossible");
+				}
 			}
 		//		}
 		//else
@@ -973,4 +1037,27 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		   child.addAllNodes(result);
 		   }
 	   }*/
+
+	public MarkovTreeNode[] nextNodes()
+		{
+		return nextNodes;
+		}
+
+	public MarkovTreeNode[] getChildren()
+		{
+		return children;
+		}
+
+	public int countChildren()
+		{
+		int result = 0;
+		for (MarkovTreeNode n : children)
+			{
+			if (n != null)
+				{
+				result++;
+				}
+			}
+		return result;
+		}
 	}

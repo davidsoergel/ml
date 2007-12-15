@@ -77,13 +77,26 @@ public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
 			// do the rest of the tree, breadth first
 
 			List<MarkovTreeNode> nodesRemaining = new LinkedList<MarkovTreeNode>();
-			nodesRemaining.addAll(ronPST.getChildren().values());
+			for (MarkovTreeNode n : ronPST.getChildren())
+				{
+				if (n != null)
+					{
+					nodesRemaining.add(n);
+					}
+				}
 
 			while (!nodesRemaining.isEmpty())
 				{
 				MarkovTreeNode node = nodesRemaining.remove(0);
 				smooth(node, ronPST);
-				nodesRemaining.addAll(node.getChildren().values());
+				//	nodesRemaining.addAll(node.getChildren());//.values());
+				for (MarkovTreeNode n : node.getChildren())
+					{
+					if (n != null)
+						{
+						nodesRemaining.add(n);
+						}
+					}
 				}
 
 			}
