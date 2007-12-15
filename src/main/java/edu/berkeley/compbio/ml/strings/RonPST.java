@@ -291,10 +291,11 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 				leaves++;
 				int depth = node.getId().length();
 				avgdepth += depth;
-				maxdepth = Math.max(maxdepth, depth);
+				maxdepth = Math.max(maxdepth, depth) + 1;
 				}
 			}
 		avgdepth /= leaves;
+		avgdepth += 1;
 		logger.info("Learned Ron PST with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
 				+ ", max depth " + maxdepth);
 		if (logger.isDebugEnabled())
