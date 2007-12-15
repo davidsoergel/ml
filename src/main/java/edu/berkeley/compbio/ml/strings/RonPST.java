@@ -41,6 +41,7 @@ import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
 import edu.berkeley.compbio.sequtils.SequenceReader;
+import edu.berkeley.compbio.sequtils.TranslationException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -347,25 +348,26 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		{
 		// simply follow the MarkovTreeNode as a state machine, using backlinks
 		SequenceReader in = sequenceFragment.getResetReader();
+		in.setTranslationAlphabet(getAlphabet());
 		double logprob = 0;
 		MarkovTreeNode currentNode = this;
 		while (true)
 			{
-			byte c = 0;
+			int c = 0;
 			try
 				{
-				c = in.read();
-				logprob += currentNode.logConditionalProbability(c);
-				currentNode = currentNode.nextNode(c);
+				c = in.readTranslated();
+				logprob += currentNode.logConditionalProbabilityByAlphabetIndex(c);
+				currentNode = currentNode.nextNodeByAlphabetIndex(c);
 				}
 			catch (NotEnoughSequenceException e)
 				{
 				return logprob;
 				}
-			catch (SequenceSpectrumException e)
+			catch (TranslationException e)
 				{
 				// probably a bad input character
-				logger.debug("Unknown input symbol: " + (char) c + " at " + in);
+				logger.debug(" at " + in, e);
 
 				// ignore it, but reset the state machine
 				currentNode = this;

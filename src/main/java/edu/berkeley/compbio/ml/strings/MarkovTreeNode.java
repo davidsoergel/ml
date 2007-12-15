@@ -236,6 +236,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return logprobs[alphabetIndexForSymbol(sigma)];
 		}
 
+	public double logConditionalProbabilityByAlphabetIndex(int c)
+		{
+		return logprobs[c];
+		}
+
 	public double conditionalProbability(byte[] suffix, byte[] prefix) throws SequenceSpectrumException
 		{
 		if (suffix.length == 0)
@@ -851,6 +856,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return nextNodes[alphabetIndexForSymbol(sigma)];
 		}
 
+	public MarkovTreeNode nextNodeByAlphabetIndex(int c)
+		{
+		return nextNodes[c];
+		}
+
 	/**
 	 * Gets the child node associated with the given sequence, if it exists
 	 *
@@ -1060,4 +1070,5 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		return result;
 		}
+
 	}
