@@ -70,6 +70,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	private static Logger logger = Logger.getLogger(MarkovTreeNode.class);
 	private byte[] id;
 	private byte[] alphabet;
+	private double[] logprobs;
 	private Map<Byte, MarkovTreeNode> children = new HashMap<Byte, MarkovTreeNode>();
 	//private Map<Byte, MarkovTreeNode> backlinkChildren = new HashMap<Byte, MarkovTreeNode>();
 	private Multinomial<Byte> probs = new Multinomial<Byte>();
@@ -98,7 +99,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public MarkovTreeNode(byte[] id, byte[] alphabet)
 		{
 		this.id = id;
-		this.alphabet = alphabet;
+		setAlphabet(alphabet);
 		}
 
 	public MarkovTreeNode()
@@ -141,6 +142,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public void setAlphabet(byte[] alphabet)
 		{
 		this.alphabet = alphabet;
+		logprobs = new double[alphabet.length];
 		}
 
 	// ------------------------ CANONICAL METHODS ------------------------
@@ -198,15 +200,23 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 	public double logConditionalProbability(byte sigma) throws SequenceSpectrumException
 		{
-		try
+		//	try
+		//		{
+		for (int i = 0; i < alphabet.length; i++)
 			{
-			return probs.getLog(sigma);
+			if (sigma == alphabet[i])
+				{
+				return logprobs[i];
+				}
 			}
-		catch (DistributionException e)
-			{
-			logger.debug(e);
-			throw new SequenceSpectrumException(e);
-			}
+		//	return probs.getLog(sigma);
+		/*		}
+	   catch (DistributionException e)
+		   {
+		   logger.debug(e);
+		   throw new SequenceSpectrumException(e);
+		   }*/
+		throw new SequenceSpectrumException("Symbol " + (char) sigma + " not in alphabet");
 		}
 
 	public double conditionalProbability(byte[] suffix, byte[] prefix) throws SequenceSpectrumException
@@ -260,6 +270,13 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	private void setProb(byte b, double prob) throws DistributionException
 		{
 		probs.put(b, prob);
+		for (int i = 0; i < alphabet.length; i++)
+			{
+			if (b == alphabet[i])
+				{
+				logprobs[i] = MathUtils.approximateLog(prob);
+				}
+			}
 		}
 
 	// ------------------------ INTERFACE METHODS ------------------------
@@ -712,7 +729,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				}
 			try
 				{
-				probs.put(sigma, prob);
+				setProb(sigma, prob);
 				}
 			catch (DistributionException e)
 				{
