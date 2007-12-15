@@ -351,18 +351,21 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		in.setTranslationAlphabet(getAlphabet());
 		double logprob = 0;
 		MarkovTreeNode currentNode = this;
-		while (true)
+		int count = 0;
+		int desiredLength = sequenceFragment.getDesiredLength();
+		while (count < desiredLength)
 			{
-			int c = 0;
 			try
 				{
-				c = in.readTranslated();
+				int c = in.readTranslated();
 				logprob += currentNode.logConditionalProbabilityByAlphabetIndex(c);
 				currentNode = currentNode.nextNodeByAlphabetIndex(c);
 				}
 			catch (NotEnoughSequenceException e)
 				{
-				return logprob;
+				logger.debug(e);
+				e.printStackTrace();
+				throw new SequenceSpectrumException(e);
 				}
 			catch (TranslationException e)
 				{
@@ -384,7 +387,9 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 				e.printStackTrace();
 				throw new SequenceSpectrumException(e);
 				}
+			count++;
 			}
+		return logprob;
 		}
 
 
