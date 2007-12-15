@@ -124,6 +124,10 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		theReader = in;
 		theScanner = scanner;
 		this.desiredlength = desiredlength;
+		if (sequenceName == null)
+			{
+			this.sequenceName = theReader.getName();
+			}
 		}
 
 
@@ -283,6 +287,10 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	public void incrementBy(SequenceFragment object)
 		{
 		scanIfNeeded();
+		if (sequenceName == null)
+			{
+			this.sequenceName += object.getSequenceName();
+			}
 		try
 			{
 			length += object.getLength();
@@ -562,6 +570,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 		 }
  */
+
 	public void runFinishTrainingProcessor() throws DistributionProcessorException
 		{
 		scanIfNeeded();

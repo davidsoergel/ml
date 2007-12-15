@@ -50,10 +50,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Queue;
 
 /**
  * A node in a tree where each transition is labeled by a byte and has a local probability (that is, conditional on the
@@ -72,8 +71,9 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	private byte[] id;
 	private byte[] alphabet;
 	private Map<Byte, MarkovTreeNode> children = new HashMap<Byte, MarkovTreeNode>();
+	//private Map<Byte, MarkovTreeNode> backlinkChildren = new HashMap<Byte, MarkovTreeNode>();
 	private Multinomial<Byte> probs = new Multinomial<Byte>();
-	private MarkovTreeNode backlink;
+	private MarkovTreeNode backoffPrior;
 
 
 	// note that the probabilities should exist even if there are no corresponding child nodes!
@@ -873,64 +873,87 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	@NotNull
 	public MarkovTreeNode nextNode(byte sigma)
 		{
-		MarkovTreeNode result = children.get(sigma);
-		if (result == null)
+		return children.get(sigma);
+		/*		MarkovTreeNode result = children.get(sigma);
+				if (result == null)
+					{
+					result = backlinkChildren.get(sigma);
+					}
+				return result;*/
+		}
+
+	public MarkovTreeNode getBackoffPrior()
+		{
+		return backoffPrior;
+		}
+
+	boolean leaf = false;
+
+	/**
+	 * This method assumes that it has not been run before, and that all nodes at higher levels in the tree hve already
+	 * been proceesed.  So it must be run in breadth-first order exactly once.
+	 *
+	 * @param backoffPrior
+	 */
+	public void setBackoffPrior(MarkovTreeNode backoffPrior)
+		{
+		this.backoffPrior = backoffPrior;
+		if (children.isEmpty())
 			{
-			result = getBacklink().nextNode(sigma);
+			leaf = true;
 			}
-		return result;
+		for (byte sigma : alphabet)
+			{
+			if (children.get(sigma) == null)
+				{
+				children.put(sigma, getBackoffPrior().nextNode(sigma));
+				}
+			}
 		}
 
-	public MarkovTreeNode getBacklink()
+	public void setBacklinksUsingRoot(MarkovTreeNode rootNode, Queue<MarkovTreeNode> breadthFirstList)
 		{
-		return backlink;
-		}
-
-	public void setBacklink(MarkovTreeNode backlink)
-		{
-		this.backlink = backlink;
-		}
-
-	public void setBacklinksUsingRoot(MarkovTreeNode rootNode)
-		{
+		// must do this first, before we fill out the children hash
+		for (MarkovTreeNode child : children.values())
+			{
+			breadthFirstList.add(child);//.setBacklinksUsingRoot(rootNode);
+			}
 		//	if (children.isEmpty())
 		//		{
 		if (id.length > 0)
 			{
-			setBacklink(rootNode.getLongestSuffix(ArrayUtils.suffix(id, 1)));
+			setBackoffPrior(rootNode.getLongestSuffix(ArrayUtils.suffix(id, 1)));
 			}
 		//		}
 		//else
 		//	{
-		for (MarkovTreeNode child : children.values())
-			{
-			child.setBacklinksUsingRoot(rootNode);
-			}
+
 		//	}
 		}
 
 	public boolean isLeaf()
 		{
-		return children.isEmpty();
+		return leaf;
 		}
 
-	public Set<MarkovTreeNode> getAllNodes()
-		{
-		Set<MarkovTreeNode> result = new HashSet<MarkovTreeNode>();
-		result.add(this);
-		for (MarkovTreeNode child : children.values())
-			{
-			child.addAllNodes(result);
-			}
-		return result;
-		}
+	/*
+   public Set<MarkovTreeNode> getAllNodes()
+	   {
+	   Set<MarkovTreeNode> result = new HashSet<MarkovTreeNode>();
+	   result.add(this);
+	   for (MarkovTreeNode child : children.values())
+		   {
+		   child.addAllNodes(result);
+		   }
+	   return result;
+	   }
 
-	public void addAllNodes(Set<MarkovTreeNode> result)
-		{
-		result.add(this);
-		for (MarkovTreeNode child : children.values())
-			{
-			child.addAllNodes(result);
-			}
-		}
+   public void addAllNodes(Set<MarkovTreeNode> result)
+	   {
+	   result.add(this);
+	   for (MarkovTreeNode child : children.values())
+		   {
+		   child.addAllNodes(result);
+		   }
+	   }*/
 	}

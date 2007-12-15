@@ -46,7 +46,10 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -133,9 +136,18 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 			}
 		}
 
-	private void setBacklinks()
+	private List<MarkovTreeNode> setBacklinks()
 		{
-		setBacklinksUsingRoot(this);
+		List<MarkovTreeNode> result = new LinkedList();
+		Queue<MarkovTreeNode> breathFirstQueue = new LinkedList<MarkovTreeNode>();
+		breathFirstQueue.add(this);
+		while (!breathFirstQueue.isEmpty())
+			{
+			MarkovTreeNode next = breathFirstQueue.remove();
+			next.setBacklinksUsingRoot(this, breathFirstQueue);
+			result.add(next);
+			}
+		return result;
 		}
 
 
@@ -265,11 +277,11 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		   }*/
 
 		//return root;
-		setBacklinks();
+		List<MarkovTreeNode> breadthFirstList = setBacklinks();
 
 		int total = 0, leaves = 0, maxdepth = 0;
 		double avgdepth = 0;
-		for (MarkovTreeNode node : getAllNodes())
+		for (MarkovTreeNode node : breadthFirstList)
 			{
 			total++;
 			if (node.isLeaf())
@@ -283,7 +295,10 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		avgdepth /= leaves;
 		logger.info("Learned Ron PST with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
 				+ ", max depth " + maxdepth);
-		logger.debug("\n" + toLongString());
+		if (logger.isDebugEnabled())
+			{
+			logger.debug("\n" + toLongString());
+			}
 		}
 
 	/**
@@ -349,7 +364,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 			catch (SequenceSpectrumException e)
 				{
 				// probably a bad input character
-				logger.warn("Unknown input symbol: " + c + " at " + sequenceFragment);
+				logger.debug("Unknown input symbol: " + (char) c + " at " + in);
 
 				// ignore it, but reset the state machine
 				currentNode = this;

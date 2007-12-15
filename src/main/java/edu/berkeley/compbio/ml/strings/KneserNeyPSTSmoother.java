@@ -96,7 +96,7 @@ public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
 
 	private void smooth(MarkovTreeNode node, RonPST ronPST) throws DistributionException
 		{
-		node.getProbs().mixIn(node.getBacklink().getProbs(), smoothFactorTimesFour);
+		node.getProbs().mixIn(node.getBackoffPrior().getProbs(), smoothFactorTimesFour);
 
 		//node.getProbs().mixIn(ronPST.getBackoffPrior(node.getIdBytes()).getProbs(), smoothFactorTimesFour);
 		}
