@@ -338,7 +338,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	 * @param sigma  a byte specifying the symbol whose probability is to be computed
 	 * @param prefix a byte array providing the conditioning prefix
 	 * @return the conditional probability, a double value between 0 and 1, inclusive
-	 * @see #fragmentLogProbability(edu.berkeley.compbio.ml.strings.SequenceFragment)
+	 * @see #fragmentLogProbability(SequenceFragment)
 	 */
 	public double conditionalProbability(byte sigma, byte[] prefix) throws SequenceSpectrumException
 		{
@@ -353,6 +353,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	 * @param prefix a byte array providing the conditioning prefix
 	 * @return the Multinomial conditional distribution of symbols following the given prefix
 	 */
+	@Override
 	public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
 		{
 		return getLongestSuffix(prefix).conditionalsFrom(new byte[]{});

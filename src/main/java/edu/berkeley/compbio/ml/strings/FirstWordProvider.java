@@ -42,5 +42,5 @@ public interface FirstWordProvider
 	{
 	// -------------------------- OTHER METHODS --------------------------
 
-	public List<byte[]> getFirstWords(int k);
+	List<byte[]> getFirstWords(int k);
 	}

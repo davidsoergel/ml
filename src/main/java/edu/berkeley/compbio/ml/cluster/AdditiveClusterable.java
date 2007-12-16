@@ -48,14 +48,14 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 	 *
 	 * @param object the object to subtract from this one
 	 */
-	public void decrementBy(T object);
+	void decrementBy(T object);
 
 	/**
 	 * updates this object by adding another one to it.
 	 *
 	 * @param object the object to add to this one
 	 */
-	public void incrementBy(T object);
+	void incrementBy(T object);
 
 	/**
 	 * Returns a new object representing the difference between this one and the given argument.
@@ -63,7 +63,7 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 	 * @param object the object to be subtracted from this one
 	 * @return the difference between this object and the argument
 	 */
-	public T minus(T object);
+	T minus(T object);
 
 	/**
 	 * Returns a new object representing the sum of this one and the given argument.
@@ -71,7 +71,7 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 	 * @param object the object to be added to this one
 	 * @return the sum of this object and the argument
 	 */
-	public T plus(T object);
+	T plus(T object);
 
 	//public T times(double d);
 

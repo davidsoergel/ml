@@ -40,9 +40,9 @@ public interface MonteCarloState
 	{
 	// -------------------------- OTHER METHODS --------------------------
 
-	public abstract void init();
+	abstract void init();
 
 	double unnormalizedLogLikelihood();
 
-	public abstract void writeToDataCollector(int step, DataCollector dc);
+	abstract void writeToDataCollector(int step, DataCollector dc);
 	}

@@ -48,5 +48,5 @@ public interface DistanceMeasure<T>
 	 * @return double
 	 */
 	//public String getName();
-	public double distanceFromTo(T a, T b);
+	double distanceFromTo(T a, T b);
 	}

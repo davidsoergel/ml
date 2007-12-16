@@ -355,6 +355,14 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	// --------------------- Interface SequenceSpectrum ---------------------
 
 
+	/**
+	 * Computes the conditional probability distribution of symbols given a prefix under the model.
+	 *
+	 * @param prefix a byte array providing the conditioning prefix
+	 * @return the Multinomial conditional distribution of symbols following the given prefix
+	 * @throws edu.berkeley.compbio.ml.strings.SequenceSpectrumException
+	 *          when anything goes wrong
+	 */
 	public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
 		{
 		MarkovTreeNode node = get(prefix);

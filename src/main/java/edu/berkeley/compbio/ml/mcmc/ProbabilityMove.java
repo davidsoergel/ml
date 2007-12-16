@@ -40,5 +40,5 @@ public interface ProbabilityMove
 	{
 	// -------------------------- OTHER METHODS --------------------------
 
-	public abstract MonteCarloState doMove();
+	abstract MonteCarloState doMove();
 	}

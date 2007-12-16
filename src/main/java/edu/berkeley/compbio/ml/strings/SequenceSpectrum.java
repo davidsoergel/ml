@@ -78,7 +78,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @see Object#clone
 	 * @see java.lang.Cloneable
 	 */
-	public T clone();
+	T clone();
 
 	/**
 	 * Computes the conditional probability of generating a symbol given a prefix under the model.
@@ -130,7 +130,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @return the length (type int) of this Kcount object.
 	 * @see #addUnknown()
 	 */
-	public int getLength();
+	int getLength();
 
 	/**
 	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
@@ -141,14 +141,14 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 *
 	 * @return the maximum correlation length considered in the model.
 	 */
-	public int getMaxDepth();
+	int getMaxDepth();
 
 	/**
 	 * Returns the number of samples on which this spectrum is based.
 	 *
 	 * @return The number of samples
 	 */
-	public int getNumberOfSamples();
+	int getNumberOfSamples();
 
 	//void addPseudocounts();
 
@@ -166,7 +166,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @param prefix a byte array providing the conditioning prefix
 	 * @return the chosen symbol
 	 */
-	public byte sample(byte[] prefix) throws SequenceSpectrumException;
+	byte sample(byte[] prefix) throws SequenceSpectrumException;
 
 	/**
 	 * Chooses a random string according to the conditional probabilities of symbols.
@@ -174,7 +174,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @param length the length of the desired random string
 	 * @return a byte[] of the desired length sampled from this distribution
 	 */
-	public byte[] sample(int length) throws SequenceSpectrumException;
+	byte[] sample(int length) throws SequenceSpectrumException;
 
 	//void runCompletionProcessor() throws DistributionProcessorException;
 

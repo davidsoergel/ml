@@ -48,7 +48,7 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 * @see Object#clone
 	 * @see java.lang.Cloneable
 	 */
-	public T clone();
+	T clone();
 
 	/**
 	 * Test whether the given object is the same as this one.  Differs from equals() in that implementations of this
@@ -58,7 +58,7 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 * @param other The clusterable object to compare against
 	 * @return True if they are equivalent, false otherwise
 	 */
-	public boolean equalValue(T other);
+	boolean equalValue(T other);
 
 	/**
 	 * Returns a String identifying this object.  Ideally each clusterable object being analyzed should have a unique
@@ -66,5 +66,5 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 *
 	 * @return a unique identifier for this object
 	 */
-	public String getId();
+	String getId();
 	}

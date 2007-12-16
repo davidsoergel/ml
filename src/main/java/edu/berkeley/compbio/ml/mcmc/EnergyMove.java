@@ -40,5 +40,5 @@ public interface EnergyMove
 	{
 	// -------------------------- OTHER METHODS --------------------------
 
-	public abstract MonteCarloState doMove(double temperature);
+	abstract MonteCarloState doMove(double temperature);
 	}
