@@ -40,9 +40,14 @@ import java.util.List;
 public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> extends AbstractGenericFactoryAware
 		implements SequenceSpectrum<T>
 	{
+	// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(HierarchicalSpectrum.class);
 
 	protected T parent = null;
+
+
+	// --------------------- GETTER / SETTER METHODS ---------------------
 
 	/**
 	 * Returns the parent of this Kcount.
@@ -63,6 +68,43 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 		return parent;
 		}
 
+	public abstract boolean hasParent();
+
+	/**
+	 * Generates a new Kcount based on this one and stores it as the parent
+	 */
+	protected abstract void newParent();//throws SequenceSpectrumException;
+
+
+	// ------------------------ CANONICAL METHODS ------------------------
+
+	/**
+	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
+	 * requires no cast.  Also, we insist that is method be implemented in inheriting classes, so it does not throw
+	 * CloneNotSupportedException.
+	 *
+	 * @return a clone of this instance.
+	 * @see Object#clone
+	 * @see Cloneable
+	 */
+	@Override
+	public abstract T clone();
+
+
+	// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * Recursively generalize thisKcount, creating a chain of "parents" until no further generalization is possible
+	 */
+	protected void ensureAllParentsExist()
+		{
+		T kc = getParent();
+		if (kc != null)
+			{
+			kc.ensureAllParentsExist();
+			}
+		}
+
 	public List<HierarchicalSpectrum<T>> getAncestryList()
 		{
 		List<HierarchicalSpectrum<T>> result;
@@ -77,36 +119,4 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 		result.add(this);
 		return result;
 		}
-
-	/**
-	 * Generates a new Kcount based on this one and stores it as the parent
-	 */
-	protected abstract void newParent();//throws SequenceSpectrumException;
-
-	/**
-	 * Recursively generalize thisKcount, creating a chain of "parents" until no further generalization is possible
-	 */
-	protected void ensureAllParentsExist()
-		{
-		T kc = getParent();
-		if (kc != null)
-			{
-			kc.ensureAllParentsExist();
-			}
-		}
-
-	public abstract boolean hasParent();
-
-	/**
-	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
-	 * requires no cast.  Also, we insist that is method be implemented in inheriting classes, so it does not throw
-	 * CloneNotSupportedException.
-	 *
-	 * @return a clone of this instance.
-	 * @see Object#clone
-	 * @see Cloneable
-	 */
-	@Override
-	public abstract T clone();
-
 	}

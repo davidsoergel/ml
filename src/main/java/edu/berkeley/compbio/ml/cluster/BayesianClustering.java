@@ -55,6 +55,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	private double unknownThreshold;
 
+
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
@@ -96,12 +97,6 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		return null;
 		}
 
-	/**
-	 * Returns the best cluster without adding the point
-	 *
-	 * @param p                   Point to find the best cluster of
-	 * @param secondBestDistances List of second-best distances to add to
-	 */
 	public int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
 		int i;

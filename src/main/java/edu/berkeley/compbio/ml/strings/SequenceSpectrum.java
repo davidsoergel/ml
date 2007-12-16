@@ -52,7 +52,22 @@ import org.jetbrains.annotations.NotNull;
 public interface SequenceSpectrum<T extends SequenceSpectrum>
 		extends AdditiveClusterable<T>, Cloneable, GenericFactoryAware
 	{
-	// ------------------------ CANONICAL METHODS ------------------------
+	// ------------------------ INTERFACE METHODS ------------------------
+
+
+	// --------------------- Interface GenericFactoryAware ---------------------
+
+	/**
+	 * Returns the factory that produced this SequenceSpectrum.  This is useful because the factory may have some
+	 * configuration parameters, and we may want to construct a new SequenceSpectrum using the same parameters.
+	 *
+	 * @return
+	 */
+	@NotNull
+	GenericFactory getFactory();
+
+
+	// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
@@ -64,9 +79,6 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @see java.lang.Cloneable
 	 */
 	public T clone();
-
-
-	// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Computes the conditional probability of generating a symbol given a prefix under the model.
@@ -111,6 +123,16 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	byte[] getAlphabet();
 
 	/**
+	 * Returns the length of the sequence that was scanned to produce this spectrum.  This number may be greater than that
+	 * given by {@link #getNumberOfSamples()} because every symbol is not necessarily counted as a sample, depending on the
+	 * implementation.
+	 *
+	 * @return the length (type int) of this Kcount object.
+	 * @see #addUnknown()
+	 */
+	public int getLength();
+
+	/**
 	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
 	 * implicit assumption is that the sequences being modeled have some correlation length, and thus that statistical
 	 * models of them can be built from substrings up to that length.  Thus, this method tells the maximum correlation
@@ -128,15 +150,14 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 */
 	public int getNumberOfSamples();
 
-	/**
-	 * Returns the length of the sequence that was scanned to produce this spectrum.  This number may be greater than that
-	 * given by {@link #getNumberOfSamples()} because every symbol is not necessarily counted as a sample, depending on the
-	 * implementation.
-	 *
-	 * @return the length (type int) of this Kcount object.
-	 * @see #addUnknown()
-	 */
-	public int getLength();
+	//void addPseudocounts();
+
+
+	// ** really the lifecycle of a SequenceSpectrum should be managed more carefully, i.e. as a Builder
+
+	void runBeginTrainingProcessor() throws DistributionProcessorException;
+
+	void runFinishTrainingProcessor() throws DistributionProcessorException;
 
 	/**
 	 * Chooses a random symbol according to the conditional probabilities of symbols following the given prefix.  Shortcut
@@ -154,6 +175,12 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @return a byte[] of the desired length sampled from this distribution
 	 */
 	public byte[] sample(int length) throws SequenceSpectrumException;
+
+	//void runCompletionProcessor() throws DistributionProcessorException;
+
+	void setIgnoreEdges(boolean b);
+
+	void setImmutable();
 
 	/**
 	 * Test whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
@@ -177,28 +204,4 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @return the probability, a double value between 0 and 1, inclusive
 	 */
 	double totalProbability(byte[] s) throws SequenceSpectrumException;// throws SequenceSpectrumException;
-
-	//void addPseudocounts();
-
-
-	// ** really the lifecycle of a SequenceSpectrum should be managed more carefully, i.e. as a Builder
-
-	void runBeginTrainingProcessor() throws DistributionProcessorException;
-
-	void runFinishTrainingProcessor() throws DistributionProcessorException;
-
-	//void runCompletionProcessor() throws DistributionProcessorException;
-
-	void setIgnoreEdges(boolean b);
-
-	/**
-	 * Returns the factory that produced this SequenceSpectrum.  This is useful because the factory may have some
-	 * configuration parameters, and we may want to construct a new SequenceSpectrum using the same parameters.
-	 *
-	 * @return
-	 */
-	@NotNull
-	GenericFactory getFactory();
-
-	void setImmutable();
 	}

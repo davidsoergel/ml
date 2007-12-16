@@ -134,7 +134,6 @@ public class MoveTypeSet
 		catch (DistributionException e)
 			{
 			throw new Error(e);
-
 			}
 		}
 

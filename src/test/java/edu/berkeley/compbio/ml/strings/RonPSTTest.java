@@ -48,33 +48,12 @@ import java.util.Map;
 
 public class RonPSTTest
 	{
+	// ------------------------------ FIELDS ------------------------------
+
 	private static Logger logger = Logger.getLogger(RonPSTTest.class);
 
-	@BeforeMethod
-	public void setUp() throws Exception
-		{
-		/*	ThreadLocalRun.removeInstance();
-		new ThreadLocalRun()
-		{
-		public String getVersion()
-			{
-			return null;//To change body of implemented methods use File | Settings | File Templates.
-			}
 
-		public void run() throws RunUnsuccessfulException
-			{
-			//To change body of implemented methods use File | Settings | File Templates.
-			}
-		};*/
-		//	Map<String, Object> props = new HashMap<String, Object>();
-
-		////props.put("edu.berkeley.compbio.ml.strings.KneserNeyPSTSmoother.smoothFactor", "0.1");
-
-		//	HierarchicalTypedPropertyNode n = PropertyConsumerClassParser.parseRootContextClass(StubSequenceFragmentIterator.class);
-		//	MapToHierarchicalTypedPropertyNodeAdapter.mergeInto(n, props);
-		//	stubSequenceFragmentIteratorFactory = new PropertyConsumerFactory<StubSequenceFragmentIterator>(n);
-
-		}
+	// -------------------------- OTHER METHODS --------------------------
 
 	@Test
 	public void afterCompleteEveryNodeHasTransitionsForEverySymbolOrNone()
@@ -92,81 +71,6 @@ public class RonPSTTest
 		RonPST pst = new RonPST(0.0001, 0, 1.1, 0.01, 4, ss);
 		//pst.completeAndCopyProbsFrom(ss);
 		return pst;
-		}
-
-	private boolean allNodesAreCompleteOrEmpty(MarkovTreeNode node, int maxWidth)
-		{
-		if (!nodeIsCompleteOrEmpty(node, maxWidth))
-			{
-			return false;
-			}
-		for (MarkovTreeNode child : node.getChildren())//.values())
-			{
-			if (child != null && !allNodesAreCompleteOrEmpty(child, maxWidth))
-				{
-				return false;
-				}
-			}
-		return true;
-		}
-
-	private boolean nodeIsCompleteOrEmpty(MarkovTreeNode node, int maxWidth)
-		{
-		int width = node.countChildren();//.size();
-		if (width != 0 && width != maxWidth)
-			{
-			return false;
-			}
-		return true;
-		}
-
-
-	@Test
-	public void maxDepthIsCalculated() throws SequenceSpectrumException
-		{
-		RonPST pst = createSimplePST();
-		assert pst.getMaxDepth() == 2;
-		}
-
-
-	@Test
-	public void conditionalProbabilitiesAreGivenBasedOnLongestAvailableSuffix() throws SequenceSpectrumException
-		{
-		RonPST pst = createSimplePST();
-
-		// really should use a 3-level pst for this
-
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'d', 'a', 'b', 'a', 'b'}) == pst
-				.conditionalProbability((byte) 'a', new byte[]{'a', 'b'});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) == pst
-				.conditionalProbability((byte) 'a', new byte[]{'b'});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'b'}) != pst
-				.conditionalProbability((byte) 'a', new byte[]{});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) != pst
-				.conditionalProbability((byte) 'a', new byte[]{'a'});
-		}
-
-	@Test
-	public void highRatioThresholdProducesShallowTree() throws SequenceSpectrumException
-		{
-		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
-		RonPST pst = new RonPST(0.0001, 0, 500, 0.01, 4, ss);
-		//	pst.completeAndCopyProbsFrom(ss);
-
-		assert pst.getMaxDepth() == 1;
-		}
-
-
-	@Test
-	public void lowRatioThresholdProducesDeepTree() throws SequenceSpectrumException
-		{
-		// todo improve by making a deeper tree to test
-
-		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
-		RonPST pst = new RonPST(0.0001, 0, 1, 0.01, 4, ss);
-		//		pst.completeAndCopyProbsFrom(ss);
-
-		assert pst.getMaxDepth() == 2;
 		}
 
 	public static SequenceSpectrum createStubSimpleSequenceSpectrum() throws SequenceSpectrumException
@@ -205,6 +109,120 @@ public class RonPSTTest
 		replay(ss);
 		return ss;*/
 		}
+
+	private boolean allNodesAreCompleteOrEmpty(MarkovTreeNode node, int maxWidth)
+		{
+		if (!nodeIsCompleteOrEmpty(node, maxWidth))
+			{
+			return false;
+			}
+		for (MarkovTreeNode child : node.getChildren())//.values())
+			{
+			if (child != null && !allNodesAreCompleteOrEmpty(child, maxWidth))
+				{
+				return false;
+				}
+			}
+		return true;
+		}
+
+	private boolean nodeIsCompleteOrEmpty(MarkovTreeNode node, int maxWidth)
+		{
+		int width = node.countChildren();//.size();
+		if (width != 0 && width != maxWidth)
+			{
+			return false;
+			}
+		return true;
+		}
+
+	@Test
+	public void conditionalProbabilitiesAreGivenBasedOnLongestAvailableSuffix() throws SequenceSpectrumException
+		{
+		RonPST pst = createSimplePST();
+
+		// really should use a 3-level pst for this
+
+		assert pst.conditionalProbability((byte) 'a', new byte[]{
+				'd',
+				'a',
+				'b',
+				'a',
+				'b'
+		}) == pst
+				.conditionalProbability((byte) 'a', new byte[]{
+						'a',
+						'b'
+				});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{
+				'a',
+				'b'
+		}) == pst
+				.conditionalProbability((byte) 'a', new byte[]{'b'});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'b'}) != pst
+				.conditionalProbability((byte) 'a', new byte[]{});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{
+				'a',
+				'b'
+		}) != pst
+				.conditionalProbability((byte) 'a', new byte[]{'a'});
+		}
+
+	@Test
+	public void highRatioThresholdProducesShallowTree() throws SequenceSpectrumException
+		{
+		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
+		RonPST pst = new RonPST(0.0001, 0, 500, 0.01, 4, ss);
+		//	pst.completeAndCopyProbsFrom(ss);
+
+		assert pst.getMaxDepth() == 1;
+		}
+
+	@Test
+	public void lowRatioThresholdProducesDeepTree() throws SequenceSpectrumException
+		{
+		// todo improve by making a deeper tree to test
+
+		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
+		RonPST pst = new RonPST(0.0001, 0, 1, 0.01, 4, ss);
+		//		pst.completeAndCopyProbsFrom(ss);
+
+		assert pst.getMaxDepth() == 2;
+		}
+
+	@Test
+	public void maxDepthIsCalculated() throws SequenceSpectrumException
+		{
+		RonPST pst = createSimplePST();
+		assert pst.getMaxDepth() == 2;
+		}
+
+	@BeforeMethod
+	public void setUp() throws Exception
+		{
+		/*	ThreadLocalRun.removeInstance();
+		new ThreadLocalRun()
+		{
+		public String getVersion()
+			{
+			return null;//To change body of implemented methods use File | Settings | File Templates.
+			}
+
+		public void run() throws RunUnsuccessfulException
+			{
+			//To change body of implemented methods use File | Settings | File Templates.
+			}
+		};*/
+		//	Map<String, Object> props = new HashMap<String, Object>();
+
+		////props.put("edu.berkeley.compbio.ml.strings.KneserNeyPSTSmoother.smoothFactor", "0.1");
+
+		//	HierarchicalTypedPropertyNode n = PropertyConsumerClassParser.parseRootContextClass(StubSequenceFragmentIterator.class);
+		//	MapToHierarchicalTypedPropertyNodeAdapter.mergeInto(n, props);
+		//	stubSequenceFragmentIteratorFactory = new PropertyConsumerFactory<StubSequenceFragmentIterator>(n);
+		}
+
+	// -------------------------- INNER CLASSES --------------------------
 
 	public static class StubSequenceSpectrum extends AbstractGenericFactoryAware implements SequenceSpectrum
 		{
@@ -254,7 +272,6 @@ public class RonPSTTest
 			dCounts.put((byte) 'd', 1.);
 			counts2.put((byte) 'd', dCounts);
 			counts.put((byte) 'd', ArrayUtils.sum(dCounts.values()));
-
 			}
 
 		public SequenceSpectrum clone()
@@ -312,7 +329,12 @@ public class RonPSTTest
 
 		public byte[] getAlphabet()
 			{
-			return new byte[]{'a', 'b', 'c', 'd'};
+			return new byte[]{
+					'a',
+					'b',
+					'c',
+					'd'
+			};
 			}
 
 		public int getMaxDepth()
@@ -355,7 +377,6 @@ public class RonPSTTest
 		public byte[] sample(int length) throws SequenceSpectrumException
 			{
 			throw new NotImplementedException();
-
 			}
 
 		public boolean spectrumEquals(SequenceSpectrum spectrum)
@@ -380,7 +401,6 @@ public class RonPSTTest
 			throw new SequenceSpectrumException("depth oops");
 			}
 
-
 		public void runBeginTrainingProcessor() throws DistributionProcessorException
 			{
 			// do nothing
@@ -390,7 +410,6 @@ public class RonPSTTest
 			{
 			// do nothing
 			}
-
 
 		public void decrementBy(AdditiveClusterable object)
 			{
@@ -421,7 +440,6 @@ public class RonPSTTest
 			{
 			// not relevant here...
 			}
-
 
 		public void setImmutable()
 			{

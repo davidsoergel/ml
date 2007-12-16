@@ -37,11 +37,15 @@ import org.apache.log4j.Logger;
 
 public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkovTreeNode>
 	{
+	// ------------------------------ FIELDS ------------------------------
+
 	private static Logger logger = Logger.getLogger(RelativeMarkovTreeNode.class);
-	protected MarkovTreeNode backoffParent;
 	Multinomial<Byte> target = new Multinomial<Byte>();
 	double mixingProportion;
+	protected MarkovTreeNode backoffParent;
 
+
+	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * Constructs a new RelativeMarkovTreeNode by comparing one MarkovTreeNode with another and representing the difference
@@ -118,13 +122,15 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 			}
 		}
 
-	public Multinomial<Byte> getTarget()
-		{
-		return target;
-		}
+	// --------------------- GETTER / SETTER METHODS ---------------------
 
 	public double getMixingProportion()
 		{
 		return mixingProportion;
+		}
+
+	public Multinomial<Byte> getTarget()
+		{
+		return target;
 		}
 	}

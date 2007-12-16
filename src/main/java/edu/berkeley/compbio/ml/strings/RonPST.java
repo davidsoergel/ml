@@ -71,9 +71,6 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 
 	//private double pMin, alpha, pRatioMinMax, gammaMin;
 	//private int l_max;
-
-	// --------------------------- CONSTRUCTORS ---------------------------
-
 	/*
 	 Pmin = (1.-eta1) * eta0
 	 alpha = eta2
@@ -85,6 +82,9 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	          defaultvalue = "", isNullable = true)
 	//isPlugin = true,
 	public DistributionProcessor<RonPST> completionProcessor;
+
+
+	// --------------------------- CONSTRUCTORS ---------------------------
 
 	public RonPST()//String injectorId)
 		{
@@ -136,21 +136,6 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 				}
 			}
 		}
-
-	private List<MarkovTreeNode> setBacklinks()
-		{
-		List<MarkovTreeNode> result = new LinkedList();
-		Queue<MarkovTreeNode> breathFirstQueue = new LinkedList<MarkovTreeNode>();
-		breathFirstQueue.add(this);
-		while (!breathFirstQueue.isEmpty())
-			{
-			MarkovTreeNode next = breathFirstQueue.remove();
-			next.setBacklinksUsingRoot(this, breathFirstQueue);
-			result.add(next);
-			}
-		return result;
-		}
-
 
 	public void learn(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
 		{
@@ -224,7 +209,6 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 					logger.warn("Unknown probability: " + new String(s));
 					// too bad, the requested probability is not known
 					}
-
 				}
 			// C)
 			if (s.length < l_max)
@@ -320,6 +304,33 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 			}
 		}
 
+	private List<MarkovTreeNode> setBacklinks()
+		{
+		List<MarkovTreeNode> result = new LinkedList();
+		Queue<MarkovTreeNode> breathFirstQueue = new LinkedList<MarkovTreeNode>();
+		breathFirstQueue.add(this);
+		while (!breathFirstQueue.isEmpty())
+			{
+			MarkovTreeNode next = breathFirstQueue.remove();
+			next.setBacklinksUsingRoot(this, breathFirstQueue);
+			result.add(next);
+			}
+		return result;
+		}
+
+	public String toLongString()
+		{
+		StringBuffer sb = new StringBuffer();
+		Formatter formatter = new Formatter(sb, Locale.US);
+		appendString(formatter, "");
+		return sb.toString();
+		}
+
+	// ------------------------ INTERFACE METHODS ------------------------
+
+
+	// --------------------- Interface SequenceSpectrum ---------------------
+
 	/**
 	 * Computes the conditional probability of generating a symbol given a prefix under the model, backing off to shorter
 	 * prefixes as needed if the given prefix is not explicitly represented.
@@ -333,6 +344,18 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		{
 		//return getLongestSuffix(ArrayUtils.append(prefix, sigma)).conditionalProbability(sigma);
 		return getLongestSuffix(prefix).conditionalProbability(sigma);
+		}
+
+	/**
+	 * Computes the conditional probability distribution of symbols given a prefix under the model, backing off to shorter
+	 * prefixes as needed if the given prefix is not explicitly represented.
+	 *
+	 * @param prefix a byte array providing the conditioning prefix
+	 * @return the Multinomial conditional distribution of symbols following the given prefix
+	 */
+	public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
+		{
+		return getLongestSuffix(prefix).conditionalsFrom(new byte[]{});
 		}
 
 	/**
@@ -393,30 +416,10 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		return logprob;
 		}
 
-
-	/**
-	 * Computes the conditional probability distribution of symbols given a prefix under the model, backing off to shorter
-	 * prefixes as needed if the given prefix is not explicitly represented.
-	 *
-	 * @param prefix a byte array providing the conditioning prefix
-	 * @return the Multinomial conditional distribution of symbols following the given prefix
-	 */
-	public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
-		{
-		return getLongestSuffix(prefix).conditionalsFrom(new byte[]{});
-		}
-
-	public String toLongString()
-		{
-		StringBuffer sb = new StringBuffer();
-		Formatter formatter = new Formatter(sb, Locale.US);
-		appendString(formatter, "");
-		return sb.toString();
-		}
+	// -------------------------- OTHER METHODS --------------------------
 
 	public MarkovTreeNode getBackoffPrior(byte[] id) throws SequenceSpectrumException
 		{
 		return getLongestSuffix(ArrayUtils.suffix(id, 1));
 		}
-
 	}

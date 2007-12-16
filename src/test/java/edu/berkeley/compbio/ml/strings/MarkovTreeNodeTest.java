@@ -45,52 +45,48 @@ import org.testng.annotations.Test;
  */
 public class MarkovTreeNodeTest implements TestInstanceFactory
 	{
-	private byte[] alphabet = new byte[]{'a', 'b', 'c', 'd'};
+	// ------------------------------ FIELDS ------------------------------
 
-	@Test
-	public void emptyClonesHaveEqualValue() throws SequenceSpectrumException
-		{
-		MarkovTreeNode n = createComplexMarkovTree();
-		assert n.clone().equalValue(n);
-		}
+	private byte[] alphabet = new byte[]{
+			'a',
+			'b',
+			'c',
+			'd'
+	};
 
-	@Test
-	public void populatedClonesHaveEqualValue() throws SequenceSpectrumException, DistributionException
+
+	// ------------------------ INTERFACE METHODS ------------------------
+
+
+	// --------------------- Interface TestInstanceFactory ---------------------
+
+	public MarkovTreeNode createInstance() throws Exception
 		{
 		SequenceSpectrum ss = createMockSimpleSpectrum();
-
 		MarkovTreeNode n = createSimpleMarkovTree();
 		n.completeAndCopyProbsFrom(ss);
-
-		assert n.clone().equalValue(n);
+		return n;
 		}
 
-	private MarkovTreeNode createComplexMarkovTree() throws SequenceSpectrumException
-		{
-		MarkovTreeNode node = new MarkovTreeNode(new byte[0], alphabet);
-		node.add(new byte[]{'b', 'c', 'b'});
-		node.add(new byte[]{'b', 'a', 'b'});
-		node.add(new byte[]{'a', 'a', 'b'});
-		return node;
-		}
-
-	private MarkovTreeNode createSimpleMarkovTree() throws SequenceSpectrumException
-		{
-		MarkovTreeNode node = new MarkovTreeNode(new byte[0], alphabet);
-		node.add(new byte[]{'b', 'c'});
-		node.add(new byte[]{'b', 'a'});
-		node.add(new byte[]{'a'});
-		return node;
-		}
+	// -------------------------- OTHER METHODS --------------------------
 
 	@Test
-	public void maxDepthWorks() throws SequenceSpectrumException
+	public void addChildSequenceWorks() throws SequenceSpectrumException
 		{
 		MarkovTreeNode n = createComplexMarkovTree();
 		assert n.getChild((byte) 'd') == null;
-		n.addChild((byte) 'd');
+		n.add(new byte[]{
+				'd',
+				'a',
+				'a',
+				'b'
+		});
 		assert n.getChild((byte) 'd') != null;
-		assert n.getChild((byte) 'd').getMaxDepth() == 0;
+		assert n.getChild((byte) 'd').getChild((byte) 'a') != null;
+		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a') != null;
+		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b') != null;
+		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b').getMaxDepth() == 0;
+		assert n.getChild((byte) 'd').getMaxDepth() == 3;
 		}
 
 	@Test
@@ -102,21 +98,6 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		assert n.getChild((byte) 'd') != null;
 		assert n.getChild((byte) 'd').getMaxDepth() == 0;
 		}
-
-	@Test
-	public void addChildSequenceWorks() throws SequenceSpectrumException
-		{
-		MarkovTreeNode n = createComplexMarkovTree();
-		assert n.getChild((byte) 'd') == null;
-		n.add(new byte[]{'d', 'a', 'a', 'b'});
-		assert n.getChild((byte) 'd') != null;
-		assert n.getChild((byte) 'd').getChild((byte) 'a') != null;
-		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a') != null;
-		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b') != null;
-		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b').getMaxDepth() == 0;
-		assert n.getChild((byte) 'd').getMaxDepth() == 3;
-		}
-
 
 	@Test
 	public void completeAndCopyProbsFromWorks() throws SequenceSpectrumException, DistributionException
@@ -135,61 +116,6 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 				== 0.0;// this one was not specified, but shouldn't throw an exception-- that's the "complete" part
 		}
 
-
-	@Test
-	public void variousProbabilitiesAreCorrectAndConsistent() throws SequenceSpectrumException, DistributionException
-		{
-		SequenceSpectrum ss = createMockSimpleSpectrum();
-
-		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
-
-		assert n.conditionalProbability((byte) 'a') == 0.1;
-		assert n.conditionalProbability((byte) 'b') == 0.2;
-		assert n.conditionalProbability((byte) 'c') == 0.3;
-		assert n.conditionalProbability((byte) 'd') == 0.4;
-
-		assert n.conditionalProbability((byte) 'a', new byte[]{'b'}) == 0.11;
-		assert n.conditionalProbability((byte) 'b', new byte[]{'b'}) == 0.22;
-		assert n.conditionalProbability((byte) 'c', new byte[]{'b'}) == 0.31;
-		assert n.conditionalProbability((byte) 'd', new byte[]{'b'}) == 0.36;
-
-		assert n.getChild((byte) 'b').conditionalProbability((byte) 'a') == 0.11;
-		assert n.getChild((byte) 'b').conditionalProbability((byte) 'b') == 0.22;
-		assert n.getChild((byte) 'b').conditionalProbability((byte) 'c') == 0.31;
-		assert n.getChild((byte) 'b').conditionalProbability((byte) 'd') == 0.36;
-
-		assert n.conditionalsFrom(new byte[]{'b'}).get((byte) 'a') == 0.11;
-		assert n.conditionalsFrom(new byte[]{'b'}).get((byte) 'b') == 0.22;
-		assert n.conditionalsFrom(new byte[]{'b'}).get((byte) 'c') == 0.31;
-		assert n.conditionalsFrom(new byte[]{'b'}).get((byte) 'd') == 0.36;
-		}
-
-	@Test
-	public void totalProbabilitiesAreCorrect() throws SequenceSpectrumException, DistributionException
-		{
-		SequenceSpectrum ss = createMockSimpleSpectrum();
-		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
-
-		assert MathUtils.equalWithinFPError(n.totalProbability(new byte[]{'b'}), 0.2);
-		assert MathUtils.equalWithinFPError(n.totalProbability(new byte[]{'b', 'a'}), 0.022);
-		assert MathUtils.equalWithinFPError(n.totalProbability(new byte[]{'b', 'a'}), 0.022);
-		assert MathUtils.equalWithinFPError(n.totalProbability(new byte[]{'b', 'c'}), 0.062);
-		}
-
-	@Test(expectedExceptions = {SequenceSpectrumException.class})
-	public void totalProbabilityThrowsExceptionOnOverlySpecificProbabilityRequest()
-			throws SequenceSpectrumException, DistributionException
-		{
-		SequenceSpectrum ss = createMockSimpleSpectrum();
-
-		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
-
-		n.totalProbability(new byte[]{'b', 'a', 'd', 'd'});
-		}
-
 	@Test(expectedExceptions = {SequenceSpectrumException.class})
 	public void conditionalProbabilityThrowsExceptionOnOverlySpecificProbabilityRequest()
 			throws SequenceSpectrumException, DistributionException
@@ -199,7 +125,60 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		MarkovTreeNode n = createSimpleMarkovTree();
 		n.completeAndCopyProbsFrom(ss);
 
-		n.conditionalProbability((byte) 'd', new byte[]{'b', 'a', 'd'});
+		n.conditionalProbability((byte) 'd', new byte[]{
+				'b',
+				'a',
+				'd'
+		});
+		}
+
+	@Test
+	public void emptyClonesHaveEqualValue() throws SequenceSpectrumException
+		{
+		MarkovTreeNode n = createComplexMarkovTree();
+		assert n.clone().equalValue(n);
+		}
+
+	private MarkovTreeNode createComplexMarkovTree() throws SequenceSpectrumException
+		{
+		MarkovTreeNode node = new MarkovTreeNode(new byte[0], alphabet);
+		node.add(new byte[]{
+				'b',
+				'c',
+				'b'
+		});
+		node.add(new byte[]{
+				'b',
+				'a',
+				'b'
+		});
+		node.add(new byte[]{
+				'a',
+				'a',
+				'b'
+		});
+		return node;
+		}
+
+	@Test
+	public void maxDepthWorks() throws SequenceSpectrumException
+		{
+		MarkovTreeNode n = createComplexMarkovTree();
+		assert n.getChild((byte) 'd') == null;
+		n.addChild((byte) 'd');
+		assert n.getChild((byte) 'd') != null;
+		assert n.getChild((byte) 'd').getMaxDepth() == 0;
+		}
+
+	@Test
+	public void populatedClonesHaveEqualValue() throws SequenceSpectrumException, DistributionException
+		{
+		SequenceSpectrum ss = createMockSimpleSpectrum();
+
+		MarkovTreeNode n = createSimpleMarkovTree();
+		n.completeAndCopyProbsFrom(ss);
+
+		assert n.clone().equalValue(n);
 		}
 
 	public static SequenceSpectrum createMockSimpleSpectrum() throws SequenceSpectrumException
@@ -223,40 +202,88 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		expect(ss.conditionalProbability(eq((byte) 'c'), aryEq(new byte[]{'b'}))).andReturn(.31);
 		expect(ss.conditionalProbability(eq((byte) 'd'), aryEq(new byte[]{'b'}))).andReturn(.36);
 
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'a', 'a'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'a',
+				'a'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'a', 'b'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'a',
+				'b'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'a', 'c'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'a',
+				'c'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'a', 'd'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'a',
+				'd'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'b', 'a'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'b',
+				'a'
+		})))
 				.andReturn(.25).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'b', 'b'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'b',
+				'b'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'b', 'c'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'b',
+				'c'
+		})))
 				.andReturn(.25).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'b', 'd'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'b',
+				'd'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'c', 'a'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'c',
+				'a'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'c', 'b'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'c',
+				'b'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'c', 'c'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'c',
+				'c'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'c', 'd'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'c',
+				'd'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'d', 'a'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'd',
+				'a'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'d', 'b'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'd',
+				'b'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'d', 'c'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'd',
+				'c'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
-		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{'d', 'd'})))
+		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
+				'd',
+				'd'
+		})))
 				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 
 
@@ -301,12 +328,19 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		return ss;
 		}
 
-	public MarkovTreeNode createInstance() throws Exception
+	private MarkovTreeNode createSimpleMarkovTree() throws SequenceSpectrumException
 		{
-		SequenceSpectrum ss = createMockSimpleSpectrum();
-		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
-		return n;
+		MarkovTreeNode node = new MarkovTreeNode(new byte[0], alphabet);
+		node.add(new byte[]{
+				'b',
+				'c'
+		});
+		node.add(new byte[]{
+				'b',
+				'a'
+		});
+		node.add(new byte[]{'a'});
+		return node;
 		}
 
 	@Factory
@@ -318,5 +352,73 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		{
 		};
 		return result;
+		}
+
+	@Test
+	public void totalProbabilitiesAreCorrect() throws SequenceSpectrumException, DistributionException
+		{
+		SequenceSpectrum ss = createMockSimpleSpectrum();
+		MarkovTreeNode n = createSimpleMarkovTree();
+		n.completeAndCopyProbsFrom(ss);
+
+		assert MathUtils.equalWithinFPError(n.totalProbability(new byte[]{'b'}), 0.2);
+		assert MathUtils.equalWithinFPError(n.totalProbability(new byte[]{
+				'b',
+				'a'
+		}), 0.022);
+		assert MathUtils.equalWithinFPError(n.totalProbability(new byte[]{
+				'b',
+				'a'
+		}), 0.022);
+		assert MathUtils.equalWithinFPError(n.totalProbability(new byte[]{
+				'b',
+				'c'
+		}), 0.062);
+		}
+
+	@Test(expectedExceptions = {SequenceSpectrumException.class})
+	public void totalProbabilityThrowsExceptionOnOverlySpecificProbabilityRequest()
+			throws SequenceSpectrumException, DistributionException
+		{
+		SequenceSpectrum ss = createMockSimpleSpectrum();
+
+		MarkovTreeNode n = createSimpleMarkovTree();
+		n.completeAndCopyProbsFrom(ss);
+
+		n.totalProbability(new byte[]{
+				'b',
+				'a',
+				'd',
+				'd'
+		});
+		}
+
+	@Test
+	public void variousProbabilitiesAreCorrectAndConsistent() throws SequenceSpectrumException, DistributionException
+		{
+		SequenceSpectrum ss = createMockSimpleSpectrum();
+
+		MarkovTreeNode n = createSimpleMarkovTree();
+		n.completeAndCopyProbsFrom(ss);
+
+		assert n.conditionalProbability((byte) 'a') == 0.1;
+		assert n.conditionalProbability((byte) 'b') == 0.2;
+		assert n.conditionalProbability((byte) 'c') == 0.3;
+		assert n.conditionalProbability((byte) 'd') == 0.4;
+
+		assert n.conditionalProbability((byte) 'a', new byte[]{'b'}) == 0.11;
+		assert n.conditionalProbability((byte) 'b', new byte[]{'b'}) == 0.22;
+		assert n.conditionalProbability((byte) 'c', new byte[]{'b'}) == 0.31;
+		assert n.conditionalProbability((byte) 'd', new byte[]{'b'}) == 0.36;
+
+		assert n.getChild((byte) 'b').conditionalProbability((byte) 'a') == 0.11;
+		assert n.getChild((byte) 'b').conditionalProbability((byte) 'b') == 0.22;
+		assert n.getChild((byte) 'b').conditionalProbability((byte) 'c') == 0.31;
+		assert n.getChild((byte) 'b').conditionalProbability((byte) 'd') == 0.36;
+
+		assert n.conditionalsFrom(new byte[]{'b'}).get((byte) 'a') == 0.11;
+		assert n.conditionalsFrom(new byte[]{'b'}).get((byte) 'b') == 0.22;
+		assert n.conditionalsFrom(new byte[]{'b'}).get((byte) 'c') == 0.31;
+		assert n.conditionalsFrom(new byte[]{'b'}).get((byte) 'd') == 0.36;
 		}
 	}

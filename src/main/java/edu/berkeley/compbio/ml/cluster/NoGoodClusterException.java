@@ -47,6 +47,7 @@ public class NoGoodClusterException extends ChainedException
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
+
 	public NoGoodClusterException()
 		{
 		super();

@@ -78,7 +78,6 @@ public abstract class Cluster<T extends Clusterable<T>>
 		this.centroid = centroid;
 		}
 
-	/* Note there can be no online method of updating the sum of squares, because the centroid keeps moving */
 
 	public int getId()
 		{
@@ -141,6 +140,10 @@ public abstract class Cluster<T extends Clusterable<T>>
 
 	// -------------------------- OTHER METHODS --------------------------
 
+
+	/**
+	 * Note there can be no online method of updating the sum of squares, because the centroid keeps moving
+	 */
 	public void addToSumOfSquareDistances(double v)
 		{
 		sumOfSquareDistances += v;

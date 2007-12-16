@@ -40,5 +40,7 @@ import java.util.List;
  */
 public interface FirstWordProvider
 	{
+	// -------------------------- OTHER METHODS --------------------------
+
 	public List<byte[]> getFirstWords(int k);
 	}

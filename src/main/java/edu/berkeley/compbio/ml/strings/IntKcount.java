@@ -67,18 +67,18 @@ public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implement
 		{
 		}
 
-	// --------------------- GETTER / SETTER METHODS ---------------------
+	// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
-	 * Returns an array of the counts.  The mapping of patterns to array indices is implementation-dependent.  A typical
-	 * implementation will order all possible patterns up to length K in lexical order according to the symbol alphabet.
+	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
+	 * requires no cast.  Also, we insist that is method be implemented in inheriting classes, so it does not throw
+	 * CloneNotSupportedException.
 	 *
-	 * @return The array of counts
+	 * @return a clone of this instance.
+	 * @see Object#clone
+	 * @see java.lang.Cloneable
 	 */
-	public int[] getArray()
-		{
-		return counts;
-		}
+	public abstract T clone();
 
 
 	// ------------------------ INTERFACE METHODS ------------------------
@@ -97,6 +97,19 @@ public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implement
 	public boolean equalValue(T other)
 		{
 		return Arrays.equals(counts, other.counts);
+		}
+
+	// --------------------- Interface IntArrayContainer ---------------------
+
+	/**
+	 * Returns an array of the counts.  The mapping of patterns to array indices is implementation-dependent.  A typical
+	 * implementation will order all possible patterns up to length K in lexical order according to the symbol alphabet.
+	 *
+	 * @return The array of counts
+	 */
+	public int[] getArray()
+		{
+		return counts;
 		}
 
 	// --------------------- Interface SequenceSpectrum ---------------------
@@ -124,19 +137,4 @@ public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implement
 		{
 		return equalValue((T) spectrum);
 		}
-
-	// -------------------------- OTHER METHODS --------------------------
-	// ------------------------ CANONICAL METHODS ------------------------
-
-	/**
-	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
-	 * requires no cast.  Also, we insist that is method be implemented in inheriting classes, so it does not throw
-	 * CloneNotSupportedException.
-	 *
-	 * @return a clone of this instance.
-	 * @see Object#clone
-	 * @see java.lang.Cloneable
-	 */
-	public abstract T clone();
-
 	}

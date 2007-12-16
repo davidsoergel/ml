@@ -44,14 +44,33 @@ import org.testng.annotations.Test;
  */
 public abstract class SequenceSpectrumAbstractTest
 	{
+	// ------------------------------ FIELDS ------------------------------
+
 	private static Logger logger = Logger.getLogger(SequenceSpectrumAbstractTest.class);
 	//public abstract SequenceSpectrum createInstance() throws Exception;
 
 	private TestInstanceFactory tif;
 
+
+	// --------------------------- CONSTRUCTORS ---------------------------
+
 	public SequenceSpectrumAbstractTest(TestInstanceFactory tif)
 		{
 		this.tif = tif;
+		}
+
+	// -------------------------- OTHER METHODS --------------------------
+
+	@Test
+	public void getRandomReturnsAlphabetSymbols() throws Exception
+		{
+		SequenceSpectrum ss = (SequenceSpectrum) tif.createInstance();
+		byte[] alphabet = ss.getAlphabet();
+		for (int count = 0; count < 100; count++)
+			{
+			byte b = ss.sample(new byte[0]);
+			assert ArrayUtils.contains(alphabet, b);
+			}
 		}
 
 	@Test
@@ -95,7 +114,10 @@ public abstract class SequenceSpectrumAbstractTest
 
 			try
 				{
-				double total = ss.totalProbability(new byte[]{b, c});
+				double total = ss.totalProbability(new byte[]{
+						b,
+						c
+				});
 				double cond1 = ss.conditionalProbability(b, new byte[0]);
 				double cond2 = ss
 						.conditionalProbability(c, new byte[]{b});
@@ -113,23 +135,7 @@ public abstract class SequenceSpectrumAbstractTest
 				// no point in doing this test if the given spectrum doesn't have the required resolution
 				// but hey, that's why we do it 100 times.
 				}
-
 			}
 		assert multipliedConditionals > 5;// still we want to be sure it worked at all
 		}
-
-
-	@Test
-	public void getRandomReturnsAlphabetSymbols() throws Exception
-		{
-		SequenceSpectrum ss = (SequenceSpectrum) tif.createInstance();
-		byte[] alphabet = ss.getAlphabet();
-		for (int count = 0; count < 100; count++)
-			{
-			byte b = ss.sample(new byte[0]);
-			assert ArrayUtils.contains(alphabet, b);
-			}
-		}
-
-
 	}

@@ -83,20 +83,14 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	private Multinomial<Byte> probs = new Multinomial<Byte>();
 	private MarkovTreeNode backoffPrior;
 
+	private boolean leaf = true;
 
-	// note that the probabilities should exist even if there are no corresponding child nodes!
-	// There is no point in having a node with no associated probabilities, except temporarily
-	// during the learning process before the probabilities have been filled in.
-
-	// avoid holding a parent link; we don't need it so far
-
-
-	public void setImmutable()
-		{
-		// not relevant here
-		}
 
 	// --------------------------- CONSTRUCTORS ---------------------------
+
+	public MarkovTreeNode()
+		{
+		}
 
 	/**
 	 * Constructs a new MarkovTreeNode with the given identifier
@@ -109,8 +103,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		setAlphabet(alphabet);
 		}
 
-	public MarkovTreeNode()
+	public void setAlphabet(byte[] alphabet)
 		{
+		this.alphabet = alphabet;
+		logprobs = new double[alphabet.length];
+		children = new MarkovTreeNode[alphabet.length];
+		nextNodes = new MarkovTreeNode[alphabet.length];
 		}
 
 	// --------------------- GETTER / SETTER METHODS ---------------------
@@ -123,6 +121,28 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public byte[] getAlphabet()
 		{
 		return alphabet;
+		}
+
+	//	@NotNull
+	//	public MarkovTreeNode nextNode(byte sigma)
+	//		{
+	//		return children.get(sigma);
+	/*		MarkovTreeNode result = children.get(sigma);
+					if (result == null)
+						{
+						result = backlinkChildren.get(sigma);
+						}
+					return result;*/
+	//		}
+
+	public MarkovTreeNode getBackoffPrior()
+		{
+		return backoffPrior;
+		}
+
+	public MarkovTreeNode[] getChildren()
+		{
+		return children;
 		}
 
 	/**
@@ -140,21 +160,17 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return probs;
 		}
 
+	public boolean isLeaf()
+		{
+		return leaf;
+		}
+
 	public void setId(byte[] id)
 		{
 		this.id = id;
 		}
 
-	public void setAlphabet(byte[] alphabet)
-		{
-		this.alphabet = alphabet;
-		logprobs = new double[alphabet.length];
-		children = new MarkovTreeNode[alphabet.length];
-		nextNodes = new MarkovTreeNode[alphabet.length];
-		}
-
 	// ------------------------ CANONICAL METHODS ------------------------
-
 
 	/**
 	 * Performs a deep copy of this node.  Does not populate nextNode, since it can't know the identities of the
@@ -201,87 +217,15 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return result;
 		}
 
-	private void normalize() throws DistributionException
+	/**
+	 * Gets the child node associated with the given sequence, if it exists
+	 *
+	 * @param sigma the symbol to follow from this node
+	 * @return the node pointed to, or null if that leaf does not exist
+	 */
+	public MarkovTreeNode getChild(byte sigma) throws SequenceSpectrumException
 		{
-		probs.normalize();
-		}
-
-	public double conditionalProbability(byte sigma) throws SequenceSpectrumException
-		{
-		try
-			{
-			return probs.get(sigma);
-			}
-		catch (DistributionException e)
-			{
-			logger.debug(e);
-			throw new SequenceSpectrumException(e);
-			}
-		}
-
-	private int alphabetIndexForSymbol(byte sigma) throws SequenceSpectrumException
-		{
-		for (int i = 0; i < alphabet.length; i++)
-			{
-			if (sigma == alphabet[i])
-				{
-				return i;
-				}
-			}
-		throw new SequenceSpectrumException("Symbol " + (char) sigma + " not in alphabet");
-		}
-
-	public double logConditionalProbability(byte sigma) throws SequenceSpectrumException
-		{
-		return logprobs[alphabetIndexForSymbol(sigma)];
-		}
-
-	public double logConditionalProbabilityByAlphabetIndex(int c)
-		{
-		return logprobs[c];
-		}
-
-	public double conditionalProbability(byte[] suffix, byte[] prefix) throws SequenceSpectrumException
-		{
-		if (suffix.length == 0)
-			{
-			return 1;
-			}
-		byte sigma = suffix[0];
-		if (suffix.length == 1)
-			{
-			return conditionalProbability(sigma, prefix);
-			}
-		return conditionalProbability(sigma, prefix) * conditionalProbability(ArrayUtils.suffix(suffix, 1),
-		                                                                      ArrayUtils.append(prefix, sigma));
-		}
-
-	public double conditionalProbability(byte sigma, byte[] prefix) throws SequenceSpectrumException
-		{
-		MarkovTreeNode node = get(prefix);
-		if (node == null || node.probs == null)
-			{
-			throw new SequenceSpectrumException("Unknown probability: " + prefix + " -> " + sigma);
-			}
-		try
-			{
-			return node.probs.get(sigma);
-			}
-		catch (DistributionException e)
-			{
-			logger.debug(e);
-			throw new SequenceSpectrumException(e);
-			}
-		}
-
-	public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
-		{
-		MarkovTreeNode node = get(prefix);
-		if (node == null || node.probs == null)
-			{
-			throw new SequenceSpectrumException("Unknown probabilities at " + prefix);
-			}
-		return node.probs;
+		return children[alphabetIndexForSymbol(sigma)];
 		}
 
 	private void addChild(byte b, MarkovTreeNode child) throws SequenceSpectrumException
@@ -291,18 +235,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		children[childIndex] = child;
 		nextNodes[childIndex] = child;
 		//children.put(b, child);
-		}
-
-	private void setProb(byte b, double prob) throws DistributionException
-		{
-		probs.put(b, prob);
-		for (int i = 0; i < alphabet.length; i++)
-			{
-			if (b == alphabet[i])
-				{
-				logprobs[i] = MathUtils.approximateLog(prob);
-				}
-			}
 		}
 
 	// ------------------------ INTERFACE METHODS ------------------------
@@ -420,12 +352,18 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		//throw new NotImplementedException();
 		}
 
-	public byte[] getIdBytes()
-		{
-		return id;
-		}
-
 	// --------------------- Interface SequenceSpectrum ---------------------
+
+
+	public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
+		{
+		MarkovTreeNode node = get(prefix);
+		if (node == null || node.probs == null)
+			{
+			throw new SequenceSpectrumException("Unknown probabilities at " + prefix);
+			}
+		return node.probs;
+		}
 
 	/**
 	 * Computes the total log probability of generating the given sequence fragment under the model.  This differs from
@@ -490,6 +428,346 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return logprob;
 		}
 
+	/**
+	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
+	 * implicit assumption is that the sequences being modeled have some correlation length, and thus that statistical
+	 * models of them can be built from substrings up to that length.  Thus, this method tells the maximum correlation
+	 * length provided by the model.  A manifestation of this is that conditional probabilities of symbols given a prefix
+	 * will cease to change as the prefix is lengthened (to the left) past this length.
+	 *
+	 * @return the maximum correlation length considered in the model.
+	 */
+	public int getMaxDepth()
+		{
+		// inefficient; could be cached
+
+		int result = 0;
+		if (probs.size() > 0)
+			{
+			result = 1;
+			}
+		for (MarkovTreeNode child : children)//.values())
+			{
+			if (child != null)
+				{
+				result = Math.max(result, child.getMaxDepth() + 1);
+				}
+			}
+		return result;
+		}
+
+	/**
+	 * Returns the number of samples on which this spectrum is based.
+	 *
+	 * @return The number of samples
+	 */
+	public int getNumberOfSamples()
+		{
+		throw new NotImplementedException();
+		}
+
+	public int getLength()
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * Chooses a random symbol according to the conditional probabilities of symbols following the given prefix.  Shortcut
+	 * equivalent to conditionalsFrom(prefix).sample().byteValue()
+	 *
+	 * @param prefix a byte array providing the conditioning prefix
+	 * @return the chosen symbol
+	 */
+	public byte sample(byte[] prefix) throws SequenceSpectrumRuntimeException
+		{
+		try
+			{
+			return conditionalsFrom(prefix).sample();
+			//return probs.sample();
+			}
+		catch (SequenceSpectrumException e)
+			{
+			return sample(ArrayUtils.suffix(prefix, 1));
+			/*
+						logger.debug(e);
+						e.printStackTrace();
+						throw new SequenceSpectrumRuntimeException(e);*/
+			}
+		catch (DistributionException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		}
+
+	/**
+	 * Chooses a random string according to the conditional probabilities of symbols.
+	 *
+	 * @param length the length of the desired random string
+	 * @return a byte[] of the desired length sampled from this distribution
+	 */
+	public byte[] sample(int length) throws SequenceSpectrumException
+		{
+		throw new NotImplementedException();
+		/*
+			 byte[] result = new byte[length];
+			 for (int i = 0; i < length; i++)
+				 {
+
+				 }*/
+		}
+
+	/**
+	 * Test whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
+	 * implementations of this interface may contain additional state which make them not strictly equal; here we're only
+	 * interested in whether they're equal as far as this interface is concerned.
+	 * <p/>
+	 * Naive implementations will simply test for exact equality; more sophisticated implementations ought to use a more
+	 * rigorous idea of "statistically equivalent", though in that case we'll probabably need to provide more parameters,
+	 * such as a p-value threshold to use.  Note that the spectra know the number of samples used to generate them, so at
+	 * least that's covered.
+	 *
+	 * @param spectrum the SequenceSpectrum to compare
+	 * @return True if the spectra are equivalent, false otherwise
+	 */
+	public boolean spectrumEquals(SequenceSpectrum spectrum)
+		{
+		throw new NotImplementedException();
+		}
+
+	public void runBeginTrainingProcessor() throws DistributionProcessorException
+		{
+		// do nothing
+		}
+
+	public void runFinishTrainingProcessor() throws DistributionProcessorException
+		{
+		// do nothing
+		}
+
+	public void setIgnoreEdges(boolean ignoreEdges)
+		{
+		// not relevant here...
+		}
+
+	// note that the probabilities should exist even if there are no corresponding child nodes!
+	// There is no point in having a node with no associated probabilities, except temporarily
+	// during the learning process before the probabilities have been filled in.
+
+	// avoid holding a parent link; we don't need it so far
+
+
+	public void setImmutable()
+		{
+		// not relevant here
+		}
+
+	// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * Gets the child node associated with the given sequence, creating it (and nodes along the way) as needed
+	 *
+	 * @param prefix the sequence of symbols to follow from this node
+	 * @return the node at the end of the chain of transitions
+	 */
+	public MarkovTreeNode add(byte[] prefix) throws SequenceSpectrumException
+		{
+		if (prefix.length == 0)
+			{
+			// this should probably never occur
+			return this;
+			}
+		else if (prefix.length == 1)
+			{
+			return addChild(prefix[0]);
+			}
+		else if (prefix.length >= 1)
+			{
+			return addChild(prefix[0]).add(ArrayUtils.suffix(prefix, 1));
+			}
+		throw new Error("Impossible");
+		}
+
+	/**
+	 * Gets the child node associated with the given symbol, creating it first if needed.
+	 *
+	 * @param sigma the transition to follow from this node
+	 * @return the node at the other end of the transition
+	 */
+	public MarkovTreeNode addChild(byte sigma) throws SequenceSpectrumException
+		{
+		leaf = false;
+		int index = alphabetIndexForSymbol(sigma);
+		MarkovTreeNode result = children[index];
+		if (result == null)
+			{
+			result = new MarkovTreeNode(ArrayUtils.append(id, sigma), alphabet);
+			nextNodes[index] = result;
+			children[index] = result;
+			}
+		return result;
+		}
+
+	public void addPseudocounts()
+		{
+		throw new NotImplementedException();
+		}
+
+	public void appendString(Formatter formatter, String indent)
+		{
+		for (int i = 0; i < alphabet.length; i++)
+			{
+			byte b = alphabet[i];
+			try
+				{
+				formatter.format("%s %3.3g -> %c\n", indent, probs.get(b), b);
+				//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
+				MarkovTreeNode child = nextNodes[i];
+				if (child != null && child.getId().length() > getId().length())
+					{
+					child.appendString(formatter, indent + "     | ");
+					}
+				}
+			catch (DistributionException e)
+				{
+				//sb.append(indent + "ERROR ->" + b);
+				formatter.format("%s %s -> %c\n", indent, "ERROR", b);
+				}
+			}
+		}
+
+	/**
+	 * Recursively fills out the tree so that each node has a complete set of children, or none at all.  That is: if this
+	 * node has any children at all, ensures that there is a child for each symbol in the alphabet.
+	 */
+	/*	public void complete()
+		   {
+		   if (children == null || children.size() == 0)
+			   {
+			   return;
+			   }
+
+		   // we only get here if there is at least one child.  In that case, the get() calls will create all the other children, as needed.
+		   for (byte sigma : getAlphabet())
+			   {
+			   add(sigma).complete();
+			   }
+		   }*/
+
+	/**
+	 * Recursively fills out the tree so that each node has either a complete set of children or none at all, and assigns
+	 * conditional probabilities according to the given spectrum.  That is: if this node has any children, ensures that
+	 * there is a child for each symbol in the alphabet.
+	 */
+	public void completeAndCopyProbsFrom(SequenceSpectrum spectrum)
+		//throws SequenceSpectrumException//DistributionException,
+		{
+		for (byte sigma : getAlphabet())
+			{
+			// copy the probabilities regardless
+			double prob = 0;
+			try
+				{
+				prob = spectrum.conditionalProbability(sigma, id);
+				}
+			catch (SequenceSpectrumException e)
+				{
+				//e.printStackTrace();
+				// no worries, just let prob=0 then
+				}
+			try
+				{
+				setProb(sigma, prob);
+				}
+			catch (DistributionException e)
+				{
+				throw new SequenceSpectrumRuntimeException(e);
+				}
+
+			// Nooo!  We already made sure that we have probability entries for each possible child.
+			// But we only want a full-fledged node if tha child itself has children.
+			/*
+
+								// if there are any children, make sure there are all children
+							   if (children != null && children.size() != 0)
+								   {
+								   add(sigma).completeAndCopyProbsFrom(spectrum);
+								   }
+
+								   */
+			}
+		try
+			{
+			probs.normalize();
+			}
+		catch (DistributionException e)
+			{
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+
+		// okay, but we still need to recurse to the children that do exist
+		for (MarkovTreeNode child : children)//.values())
+			{
+			if (child != null)
+				{
+				child.completeAndCopyProbsFrom(spectrum);
+				}
+			}
+		}
+
+	private void setProb(byte b, double prob) throws DistributionException
+		{
+		probs.put(b, prob);
+		for (int i = 0; i < alphabet.length; i++)
+			{
+			if (b == alphabet[i])
+				{
+				logprobs[i] = MathUtils.approximateLog(prob);
+				}
+			}
+		}
+
+	public double conditionalProbability(byte sigma) throws SequenceSpectrumException
+		{
+		try
+			{
+			return probs.get(sigma);
+			}
+		catch (DistributionException e)
+			{
+			logger.debug(e);
+			throw new SequenceSpectrumException(e);
+			}
+		}
+
+	public double conditionalProbability(byte[] suffix, byte[] prefix) throws SequenceSpectrumException
+		{
+		if (suffix.length == 0)
+			{
+			return 1;
+			}
+		byte sigma = suffix[0];
+		if (suffix.length == 1)
+			{
+			return conditionalProbability(sigma, prefix);
+			}
+		return conditionalProbability(sigma, prefix) * conditionalProbability(ArrayUtils.suffix(suffix, 1),
+		                                                                      ArrayUtils.append(prefix, sigma));
+		}
+
+	public int countChildren()
+		{
+		int result = 0;
+		for (MarkovTreeNode n : children)
+			{
+			if (n != null)
+				{
+				result++;
+				}
+			}
+		return result;
+		}
 
 	/**
 	 * Computes the total log probability of generating the given sequence fragment under the model.  This differs from
@@ -544,110 +822,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		}
 
 	/**
-	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
-	 * implicit assumption is that the sequences being modeled have some correlation length, and thus that statistical
-	 * models of them can be built from substrings up to that length.  Thus, this method tells the maximum correlation
-	 * length provided by the model.  A manifestation of this is that conditional probabilities of symbols given a prefix
-	 * will cease to change as the prefix is lengthened (to the left) past this length.
-	 *
-	 * @return the maximum correlation length considered in the model.
-	 */
-	public int getMaxDepth()
-		{
-		// inefficient; could be cached
-
-		int result = 0;
-		if (probs.size() > 0)
-			{
-			result = 1;
-			}
-		for (MarkovTreeNode child : children)//.values())
-			{
-			if (child != null)
-				{
-				result = Math.max(result, child.getMaxDepth() + 1);
-				}
-			}
-		return result;
-		}
-
-	/**
-	 * Returns the number of samples on which this spectrum is based.
-	 *
-	 * @return The number of samples
-	 */
-	public int getNumberOfSamples()
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * Chooses a random symbol according to the conditional probabilities of symbols following the given prefix.  Shortcut
-	 * equivalent to conditionalsFrom(prefix).sample().byteValue()
-	 *
-	 * @param prefix a byte array providing the conditioning prefix
-	 * @return the chosen symbol
-	 */
-	public byte sample(byte[] prefix) throws SequenceSpectrumRuntimeException
-		{
-		try
-			{
-			return conditionalsFrom(prefix).sample();
-			//return probs.sample();
-			}
-		catch (SequenceSpectrumException e)
-			{
-			return sample(ArrayUtils.suffix(prefix, 1));
-			/*
-						logger.debug(e);
-						e.printStackTrace();
-						throw new SequenceSpectrumRuntimeException(e);*/
-
-			}
-		catch (DistributionException e)
-			{
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		}
-
-	/**
-	 * Chooses a random string according to the conditional probabilities of symbols.
-	 *
-	 * @param length the length of the desired random string
-	 * @return a byte[] of the desired length sampled from this distribution
-	 */
-	public byte[] sample(int length) throws SequenceSpectrumException
-		{
-		throw new NotImplementedException();
-		/*
-			 byte[] result = new byte[length];
-			 for (int i = 0; i < length; i++)
-				 {
-
-				 }*/
-		}
-
-	/**
-	 * Test whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
-	 * implementations of this interface may contain additional state which make them not strictly equal; here we're only
-	 * interested in whether they're equal as far as this interface is concerned.
-	 * <p/>
-	 * Naive implementations will simply test for exact equality; more sophisticated implementations ought to use a more
-	 * rigorous idea of "statistically equivalent", though in that case we'll probabably need to provide more parameters,
-	 * such as a p-value threshold to use.  Note that the spectra know the number of samples used to generate them, so at
-	 * least that's covered.
-	 *
-	 * @param spectrum the SequenceSpectrum to compare
-	 * @return True if the spectra are equivalent, false otherwise
-	 */
-	public boolean spectrumEquals(SequenceSpectrum spectrum)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
 	 * Computes the probability of generating the given sequence under the model.
 	 *
 	 * @param s a byte array
@@ -662,214 +836,22 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return conditionalProbability(s, new byte[0]);
 		}
 
-
-	public void runBeginTrainingProcessor() throws DistributionProcessorException
+	public double conditionalProbability(byte sigma, byte[] prefix) throws SequenceSpectrumException
 		{
-		// do nothing
-		}
-
-	public void runFinishTrainingProcessor() throws DistributionProcessorException
-		{
-		// do nothing
-		}
-
-	public void addPseudocounts()
-		{
-		throw new NotImplementedException();
-		}
-
-	public List<byte[]> getFirstWords(int k)
-		{
-		throw new NotImplementedException();
-		}
-
-	// -------------------------- OTHER METHODS --------------------------
-
-	/**
-	 * Gets the child node associated with the given symbol, creating it first if needed.
-	 *
-	 * @param sigma the transition to follow from this node
-	 * @return the node at the other end of the transition
-	 */
-	public MarkovTreeNode addChild(byte sigma) throws SequenceSpectrumException
-		{
-		leaf = false;
-		int index = alphabetIndexForSymbol(sigma);
-		MarkovTreeNode result = children[index];
-		if (result == null)
+		MarkovTreeNode node = get(prefix);
+		if (node == null || node.probs == null)
 			{
-			result = new MarkovTreeNode(ArrayUtils.append(id, sigma), alphabet);
-			nextNodes[index] = result;
-			children[index] = result;
-			}
-		return result;
-		}
-
-	/**
-	 * Gets the child node associated with the given sequence, creating it (and nodes along the way) as needed
-	 *
-	 * @param prefix the sequence of symbols to follow from this node
-	 * @return the node at the end of the chain of transitions
-	 */
-	public MarkovTreeNode add(byte[] prefix) throws SequenceSpectrumException
-		{
-		if (prefix.length == 0)
-			{
-			// this should probably never occur
-			return this;
-			}
-		else if (prefix.length == 1)
-			{
-			return addChild(prefix[0]);
-			}
-		else if (prefix.length >= 1)
-			{
-			return addChild(prefix[0]).add(ArrayUtils.suffix(prefix, 1));
-			}
-		throw new Error("Impossible");
-		}
-
-	/**
-	 * Recursively fills out the tree so that each node has a complete set of children, or none at all.  That is: if this
-	 * node has any children at all, ensures that there is a child for each symbol in the alphabet.
-	 */
-	/*	public void complete()
-		   {
-		   if (children == null || children.size() == 0)
-			   {
-			   return;
-			   }
-
-		   // we only get here if there is at least one child.  In that case, the get() calls will create all the other children, as needed.
-		   for (byte sigma : getAlphabet())
-			   {
-			   add(sigma).complete();
-			   }
-		   }*/
-
-	/**
-	 * Recursively fills out the tree so that each node has either a complete set of children or none at all, and assigns
-	 * conditional probabilities according to the given spectrum.  That is: if this node has any children, ensures that
-	 * there is a child for each symbol in the alphabet.
-	 */
-	public void completeAndCopyProbsFrom(SequenceSpectrum spectrum)
-		//throws SequenceSpectrumException//DistributionException,
-		{
-		for (byte sigma : getAlphabet())
-			{
-			// copy the probabilities regardless
-			double prob = 0;
-			try
-				{
-				prob = spectrum.conditionalProbability(sigma, id);
-				}
-			catch (SequenceSpectrumException e)
-				{
-				//e.printStackTrace();
-				// no worries, just let prob=0 then
-				}
-			try
-				{
-				setProb(sigma, prob);
-				}
-			catch (DistributionException e)
-				{
-				throw new SequenceSpectrumRuntimeException(e);
-
-				}
-
-			// Nooo!  We already made sure that we have probability entries for each possible child.
-			// But we only want a full-fledged node if tha child itself has children.
-			/*
-
-								// if there are any children, make sure there are all children
-							   if (children != null && children.size() != 0)
-								   {
-								   add(sigma).completeAndCopyProbsFrom(spectrum);
-								   }
-
-								   */
+			throw new SequenceSpectrumException("Unknown probability: " + prefix + " -> " + sigma);
 			}
 		try
 			{
-			probs.normalize();
+			return node.probs.get(sigma);
 			}
 		catch (DistributionException e)
 			{
-			throw new SequenceSpectrumRuntimeException(e);
+			logger.debug(e);
+			throw new SequenceSpectrumException(e);
 			}
-
-		// okay, but we still need to recurse to the children that do exist
-		for (MarkovTreeNode child : children)//.values())
-			{
-			if (child != null)
-				{
-				child.completeAndCopyProbsFrom(spectrum);
-				}
-			}
-		}
-
-
-	/**
-	 * gets the node associated with the longest available prefix of the given sequence.
-	 *
-	 * @param prefix the sequence to walk
-	 * @return the MarkovTreeNode
-	 */
-	public MarkovTreeNode getLongestPrefix(byte[] prefix) throws SequenceSpectrumException
-		{
-		MarkovTreeNode result = this;
-		MarkovTreeNode next;
-
-		// this could also have been recursive, but that would have involved making each suffix byte[] explicitly
-		for (byte b : prefix)
-			{
-			next = result.getChild(b);
-			if (next == null)
-				{
-				return result;
-				}
-			else
-				{
-				result = next;
-				}
-			}
-
-		return result;
-		}
-
-	public MarkovTreeNode getLongestSuffix(byte[] suffix) throws SequenceSpectrumException
-		{
-		byte[] prefix = ArrayUtils.clone(suffix);
-		ArrayUtils.reverse(prefix);
-		return getLongestPrefix(prefix);
-		}
-
-	/**
-	 * Gets the child node associated with the given sequence, if it exists
-	 *
-	 * @param sigma the symbol to follow from this node
-	 * @return the node pointed to, or null if that leaf does not exist
-	 */
-	public MarkovTreeNode nextNode(byte sigma) throws SequenceSpectrumException
-		{
-		return nextNodes[alphabetIndexForSymbol(sigma)];
-		}
-
-	public MarkovTreeNode nextNodeByAlphabetIndex(int c)
-		{
-		return nextNodes[c];
-		}
-
-	/**
-	 * Gets the child node associated with the given sequence, if it exists
-	 *
-	 * @param sigma the symbol to follow from this node
-	 * @return the node pointed to, or null if that leaf does not exist
-	 */
-	public MarkovTreeNode getChild(byte sigma) throws SequenceSpectrumException
-		{
-		return children[alphabetIndexForSymbol(sigma)];
 		}
 
 	/**
@@ -903,34 +885,14 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new Error("Impossible");
 		}
 
-	public void appendString(Formatter formatter, String indent)
+	public List<byte[]> getFirstWords(int k)
 		{
-		for (int i = 0; i < alphabet.length; i++)
-			{
-			byte b = alphabet[i];
-			try
-				{
-				formatter.format("%s %3.3g -> %c\n", indent, probs.get(b), b);
-				//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
-				MarkovTreeNode child = nextNodes[i];
-				if (child != null && child.getId().length() > getId().length())
-					{
-					child.appendString(formatter, indent + "     | ");
-					}
-				}
-			catch (DistributionException e)
-				{
-				//sb.append(indent + "ERROR ->" + b);
-				formatter.format("%s %s -> %c\n", indent, "ERROR", b);
-				}
-
-			}
-
+		throw new NotImplementedException();
 		}
 
-	public void setIgnoreEdges(boolean ignoreEdges)
+	public byte[] getIdBytes()
 		{
-		// not relevant here...
+		return id;
 		}
 
 	public int getSubtreeNodes()
@@ -946,50 +908,73 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return result;
 		}
 
-	public int getLength()
+	public double logConditionalProbability(byte sigma) throws SequenceSpectrumException
 		{
-		throw new NotImplementedException();
+		return logprobs[alphabetIndexForSymbol(sigma)];
 		}
 
-	//	@NotNull
-	//	public MarkovTreeNode nextNode(byte sigma)
-	//		{
-	//		return children.get(sigma);
-	/*		MarkovTreeNode result = children.get(sigma);
-					if (result == null)
-						{
-						result = backlinkChildren.get(sigma);
-						}
-					return result;*/
-	//		}
-
-	public MarkovTreeNode getBackoffPrior()
+	private int alphabetIndexForSymbol(byte sigma) throws SequenceSpectrumException
 		{
-		return backoffPrior;
-		}
-
-	private boolean leaf = true;
-
-	/**
-	 * This method assumes that it has not been run before, and that all nodes at higher levels in the tree hve already
-	 * been proceesed.  So it must be run in breadth-first order exactly once.
-	 *
-	 * @param backoffPrior
-	 */
-	public void setBackoffPrior(MarkovTreeNode backoffPrior)
-		{
-		this.backoffPrior = backoffPrior;
-		/*	if (children.isEmpty())
-		   {
-		   leaf = true;
-		   }*/
 		for (int i = 0; i < alphabet.length; i++)
 			{
-			if (nextNodes[i] == null)
+			if (sigma == alphabet[i])
 				{
-				nextNodes[i] = getBackoffPrior().nextNodes[i];//get(sigma));
+				return i;
 				}
 			}
+		throw new SequenceSpectrumException("Symbol " + (char) sigma + " not in alphabet");
+		}
+
+	public double logConditionalProbabilityByAlphabetIndex(int c)
+		{
+		return logprobs[c];
+		}
+
+	/**
+	 * Gets the child node associated with the given sequence, if it exists
+	 *
+	 * @param sigma the symbol to follow from this node
+	 * @return the node pointed to, or null if that leaf does not exist
+	 */
+	public MarkovTreeNode nextNode(byte sigma) throws SequenceSpectrumException
+		{
+		return nextNodes[alphabetIndexForSymbol(sigma)];
+		}
+
+	public MarkovTreeNode nextNodeByAlphabetIndex(int c)
+		{
+		return nextNodes[c];
+		}
+
+	/*
+   public Set<MarkovTreeNode> getAllNodes()
+	   {
+	   Set<MarkovTreeNode> result = new HashSet<MarkovTreeNode>();
+	   result.add(this);
+	   for (MarkovTreeNode child : children.values())
+		   {
+		   child.addAllNodes(result);
+		   }
+	   return result;
+	   }
+
+   public void addAllNodes(Set<MarkovTreeNode> result)
+	   {
+	   result.add(this);
+	   for (MarkovTreeNode child : children.values())
+		   {
+		   child.addAllNodes(result);
+		   }
+	   }*/
+
+	public MarkovTreeNode[] nextNodes()
+		{
+		return nextNodes;
+		}
+
+	private void normalize() throws DistributionException
+		{
+		probs.normalize();
 		}
 
 	public void setBacklinksUsingRoot(MarkovTreeNode rootNode, Queue<MarkovTreeNode> breadthFirstList)
@@ -1022,53 +1007,60 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		//	}
 		}
 
-	public boolean isLeaf()
+	/**
+	 * This method assumes that it has not been run before, and that all nodes at higher levels in the tree hve already
+	 * been proceesed.  So it must be run in breadth-first order exactly once.
+	 *
+	 * @param backoffPrior
+	 */
+	public void setBackoffPrior(MarkovTreeNode backoffPrior)
 		{
-		return leaf;
-		}
-
-	/*
-   public Set<MarkovTreeNode> getAllNodes()
-	   {
-	   Set<MarkovTreeNode> result = new HashSet<MarkovTreeNode>();
-	   result.add(this);
-	   for (MarkovTreeNode child : children.values())
+		this.backoffPrior = backoffPrior;
+		/*	if (children.isEmpty())
 		   {
-		   child.addAllNodes(result);
-		   }
-	   return result;
-	   }
-
-   public void addAllNodes(Set<MarkovTreeNode> result)
-	   {
-	   result.add(this);
-	   for (MarkovTreeNode child : children.values())
-		   {
-		   child.addAllNodes(result);
-		   }
-	   }*/
-
-	public MarkovTreeNode[] nextNodes()
-		{
-		return nextNodes;
-		}
-
-	public MarkovTreeNode[] getChildren()
-		{
-		return children;
-		}
-
-	public int countChildren()
-		{
-		int result = 0;
-		for (MarkovTreeNode n : children)
+		   leaf = true;
+		   }*/
+		for (int i = 0; i < alphabet.length; i++)
 			{
-			if (n != null)
+			if (nextNodes[i] == null)
 				{
-				result++;
+				nextNodes[i] = getBackoffPrior().nextNodes[i];//get(sigma));
 				}
 			}
-		return result;
 		}
 
+	public MarkovTreeNode getLongestSuffix(byte[] suffix) throws SequenceSpectrumException
+		{
+		byte[] prefix = ArrayUtils.clone(suffix);
+		ArrayUtils.reverse(prefix);
+		return getLongestPrefix(prefix);
+		}
+
+	/**
+	 * gets the node associated with the longest available prefix of the given sequence.
+	 *
+	 * @param prefix the sequence to walk
+	 * @return the MarkovTreeNode
+	 */
+	public MarkovTreeNode getLongestPrefix(byte[] prefix) throws SequenceSpectrumException
+		{
+		MarkovTreeNode result = this;
+		MarkovTreeNode next;
+
+		// this could also have been recursive, but that would have involved making each suffix byte[] explicitly
+		for (byte b : prefix)
+			{
+			next = result.getChild(b);
+			if (next == null)
+				{
+				return result;
+				}
+			else
+				{
+				result = next;
+				}
+			}
+
+		return result;
+		}
 	}

@@ -76,16 +76,14 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 	//public static <T extends AdditiveClusterable<T>> Cluster<T> bestCluster(List<Cluster<T>> theClusters, T p)
 
+	/**
+	 * Return a ClusterMove object describing the best way to reassign the given point to a new cluster.
+	 *
+	 * @param p
+	 * @return
+	 */
 	public abstract ClusterMove bestClusterMove(T p);
 
-	/**
-	 * Returns the best cluster without adding the point
-	 *
-	 * @param p                   Point to find the best cluster of
-	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
-	 */
-	public abstract int getBestCluster(T p, List<Double> secondBestDistances)
-			throws ClusterException, NoGoodClusterException;
 
 	/**
 	 * for each cluster, compute the standard deviation of the distance of each point to the centroid. This does not
@@ -109,13 +107,14 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 			}
 		}
 
-	/*
-	   */
-
-	public List<Cluster<T>> getClusters()
-		{
-		return theClusters;
-		}
+	/**
+	 * Returns the best cluster without adding the point
+	 *
+	 * @param p                   Point to find the best cluster of
+	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
+	 */
+	public abstract int getBestCluster(T p, List<Double> secondBestDistances)
+			throws ClusterException, NoGoodClusterException;
 
 
 	public List<T> getCentroids()
@@ -128,6 +127,13 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		return result;
 		}
 
+	/*
+	   */
+
+	public List<Cluster<T>> getClusters()
+		{
+		return theClusters;
+		}
 
 	//public abstract void addAndRecenter(T v);
 	//public abstract void reassign(T v);
@@ -202,6 +208,18 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 			}
 		}
 
+	/**
+	 * Adds a point to the best cluster.  Generally it's not a good idea to store the point itself in the cluster for
+	 * memory reasons; so this method is primarily useful for updating the position of the centroid.
+	 *
+	 * @param p
+	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
+	 * @return
+	 * @throws ClusterException
+	 * @throws NoGoodClusterException
+	 */
+	public abstract boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
+
 	/*public OnlineClustering(Iterator<T> vp)
 		{
 		theDataPointProvider = vp;
@@ -209,8 +227,6 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 */
 
 	//public abstract void add(T v);
-
-	public abstract boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
 
 
 	public String shortClusteringStats()

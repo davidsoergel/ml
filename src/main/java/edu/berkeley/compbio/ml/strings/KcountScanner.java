@@ -47,7 +47,10 @@ import java.io.IOException;
  */
 public interface KcountScanner extends SequenceSpectrumScanner
 	{
-	// -------------------------- OTHER METHODS --------------------------
+	// ------------------------ INTERFACE METHODS ------------------------
+
+
+	// --------------------- Interface SequenceSpectrumScanner ---------------------
 
 	/**
 	 * Scan a sequence to count pattern frequencies.
@@ -64,7 +67,7 @@ public interface KcountScanner extends SequenceSpectrumScanner
 	 */
 	Kcount scanSequence(SequenceFragment fragment)//SequenceReader sequenceReader, int desiredLength)//,
 			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
-			GenericFactoryException;
+			       GenericFactoryException;
 
 	/*	Kcount scanSequence(SequenceReader in, int desiredlength, List<byte[]> firstWords) //, int firstWordLength)
 				throws IOException, FilterException, NotEnoughSequenceException;*/
@@ -74,5 +77,5 @@ public interface KcountScanner extends SequenceSpectrumScanner
 
 	Kcount scanSequence(SequenceFragment fragment, byte[] prefix)//SequenceReader resetReader, int desiredLength
 			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
-			GenericFactoryException;
+			       GenericFactoryException;
 	}

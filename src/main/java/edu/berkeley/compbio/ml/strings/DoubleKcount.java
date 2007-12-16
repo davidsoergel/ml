@@ -66,21 +66,22 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 		super();
 		}
 
-	// --------------------- GETTER / SETTER METHODS ---------------------
+	// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
-	 * Returns an array of the counts.  The mapping of patterns to array indices is implementation-dependent.  A typical
-	 * implementation will order all possible patterns up to length K in lexical order according to the symbol alphabet.
+	 * Clones this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
+	 * requires no cast.  Also, we insist that is method be implemented in inheriting classes, so it does not throw
+	 * CloneNotSupportedException.
 	 *
-	 * @return The array of counts
+	 * @return a clone of this instance.
+	 * @see Object#clone
+	 * @see Cloneable
 	 */
-	public double[] getArray()
-		{
-		return counts;
-		}
+	public abstract T clone();
 
 
 	// ------------------------ INTERFACE METHODS ------------------------
+
 
 	// --------------------- Interface Clusterable ---------------------
 
@@ -124,18 +125,6 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 		}
 
 	// -------------------------- OTHER METHODS --------------------------
-	// ------------------------ CANONICAL METHODS ------------------------
-
-	/**
-	 * Clones this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
-	 * requires no cast.  Also, we insist that is method be implemented in inheriting classes, so it does not throw
-	 * CloneNotSupportedException.
-	 *
-	 * @return a clone of this instance.
-	 * @see Object#clone
-	 * @see Cloneable
-	 */
-	public abstract T clone();
 
 	public double[] getLevelOneArray()
 		{
@@ -154,5 +143,16 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 			c = b.getParent();
 			}
 		return a.getArray();
+		}
+
+	/**
+	 * Returns an array of the counts.  The mapping of patterns to array indices is implementation-dependent.  A typical
+	 * implementation will order all possible patterns up to length K in lexical order according to the symbol alphabet.
+	 *
+	 * @return The array of counts
+	 */
+	public double[] getArray()
+		{
+		return counts;
 		}
 	}

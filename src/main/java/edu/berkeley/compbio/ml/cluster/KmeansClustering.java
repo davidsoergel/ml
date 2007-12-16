@@ -72,12 +72,14 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 
 	// -------------------------- OTHER METHODS --------------------------
 
-	public int getBestCluster(T p, List<Double> secondBestDistances)
-		{
-		ClusterMove cm = bestClusterMove(p);
-		return theClusters.indexOf(cm.bestCluster);
-		}
 
+	/**
+	 * Adds a point to the best cluster.  Generally it's not a good idea to store the point itself in the cluster for
+	 * memory reasons; so this method is primarily useful for updating the position of the centroid.
+	 *
+	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
+	 */
+	@Override
 	public boolean add(T p, List<Double> secondBestDistances)
 		{
 		assert p != null;
@@ -103,6 +105,26 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		return false;
 		}
 
+	/**
+	 * Returns the best cluster without adding the point
+	 *
+	 * @param p                   Point to find the best cluster of
+	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
+	 */
+	@Override
+	public int getBestCluster(T p, List<Double> secondBestDistances)
+		{
+		ClusterMove cm = bestClusterMove(p);
+		return theClusters.indexOf(cm.bestCluster);
+		}
+
+	/**
+	 * Return a ClusterMove object describing the best way to reassign the given point to a new cluster.
+	 *
+	 * @param p
+	 * @return
+	 */
+	@Override
 	public ClusterMove bestClusterMove(T p)
 		{
 		ClusterMove result = new ClusterMove();

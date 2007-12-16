@@ -58,7 +58,7 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends Cluster<T
 	public boolean recenterByAdding(T point)//, double distance)
 		{
 		n++;
-		//sumSquareDistances += (distance * distance);  // ** WRONG
+		//sumSquareDistances += (distance * distance);  // WRONG
 		logger.debug("Cluster added " + point);
 		centroid.incrementBy(point);// works because Kcounts are "nonscaling additive", but it's not generic
 		//times((double)n/n+1).plus(point.times(1/((double)n+1)));
@@ -68,7 +68,7 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends Cluster<T
 	public boolean recenterByRemoving(T point)//, double distance)
 		{
 		n--;
-		//sumSquareDistances -= (distance * distance);  // ** WRONG
+		//sumSquareDistances -= (distance * distance);  // WRONG
 		logger.debug("Cluster removed " + point);
 		centroid.decrementBy(point);// works because Kcounts are "nonscaling additive", but it's not generic
 		//times((double)n/n+1).plus(point.times(1/((double)n+1)));

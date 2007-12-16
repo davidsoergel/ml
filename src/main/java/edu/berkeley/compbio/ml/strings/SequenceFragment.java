@@ -68,12 +68,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	private int desiredlength;
 	private boolean ignoreEdges;
 
-	//private List<byte[]> firstWords;//prefix;
-	//private final int FIRSTWORD_LENGTH = 10;
-	//private int prefixValid = 0;
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
+	//private List<byte[]> firstWords;//prefix;
+	//private final int FIRSTWORD_LENGTH = 10;
+	//private int prefixValid = 0;
 	/**
 	 * Constructs a new SequenceFragment by specifying its start position with respect to a containing parent sequence, but
 	 * with an unknown length.  (The length will presumably be determined and set later, as needed.)
@@ -130,6 +130,18 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		}
 
+	// --------------------- GETTER / SETTER METHODS ---------------------
+
+	/**
+	 * Gets the base spectrum from which all other spectra are derived
+	 *
+	 * @return the base spectrum of this sequence
+	 */
+	public SequenceSpectrum getBaseSpectrum()
+		{
+		scanIfNeeded();
+		return baseSpectrum;
+		}
 
 	public void scanIfNeeded()
 		{
@@ -179,22 +191,6 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		}
 
-
-	public SequenceReader getResetReader()
-		{
-		try
-			{
-			theReader.seek(parentMetadata, startPosition);
-			return theReader;
-			}
-		catch (IOException e)
-			{
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		}
-
 	/*byte[] getPrefix(int length) throws NotEnoughSequenceException
 	   {
 	   if (length > prefixValid)
@@ -228,17 +224,19 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		theSpectra.put(baseSpectrum.getClass(), baseSpectrum);
 		}
 
-	// --------------------- GETTER / SETTER METHODS ---------------------
-
-	/**
-	 * Gets the base spectrum from which all other spectra are derived
-	 *
-	 * @return the base spectrum of this sequence
-	 */
-	public SequenceSpectrum getBaseSpectrum()
+	public FirstWordProvider getFirstWordProvider() throws SequenceSpectrumException
 		{
+		if (ignoreEdges)
+			{
+			throw new SequenceSpectrumException("We're ignoring edges");
+			}
 		scanIfNeeded();
-		return baseSpectrum;
+		return firstWordProvider;
+		}
+
+	public boolean isIgnoreEdges()
+		{
+		return ignoreEdges;
 		}
 
 	// ------------------------ CANONICAL METHODS ------------------------
@@ -356,6 +354,45 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	// -------------------------- OTHER METHODS --------------------------
 
+	/*	public void runCompletionProcessor() throws DistributionProcessorException
+	   {
+	   baseSpectrum.runCompletionProcessor();
+
+	   }*/
+
+	// the only way to do this is to scan the sequence.  It sucks but we have no choice
+
+	public void checkAvailable() throws NotEnoughSequenceException
+		{
+		try
+			{
+			if (baseSpectrum == null)
+				{
+				theReader.seek(parentMetadata, startPosition);
+				//prefix = new byte[PREFIX_LENGTH];
+				theScanner.checkSequenceAvailable(this);//theReader, desiredlength);
+
+				if (desiredlength != Integer.MAX_VALUE && theReader.getTotalSequence() < desiredlength)
+					{
+					throw new NotEnoughSequenceException("Not enough sequence: " + desiredlength + " requested, "
+							+ theReader.getTotalSequence() + " available.");
+					}
+				}
+			}
+		catch (IOException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		catch (FilterException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		}
+
 	/**
 	 * Indicates that the sequence statistics have changed in some way, such that any derived statistics must be
 	 * recomputed. Since the provided SequenceSpectrum has changed, it must become the new base spectrum, since otherwise
@@ -368,6 +405,84 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		setBaseSpectrum(source);
 		}
 
+	/*	public SequenceSpectrum scan(byte[] prefix)
+	   {
+	   if (prefix == null || prefix.length == 0)
+		   {
+		   scanIfNeeded();
+		   return getBaseSpectrum();
+		   }
+
+	   // now we're guaranteed that length has been set
+
+	   try
+		   {
+		   return theScanner.scanSequence(getResetReader(), length, prefix);
+		   }
+	   catch (IOException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }
+	   catch (FilterException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }
+	   catch (NotEnoughSequenceException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }
+	   catch (DistributionProcessorException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }
+	   catch (GenericFactoryException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }
+	   }*/
+
+	public int getDesiredLength()
+		{
+		return desiredlength;
+		}
+
+	/*
+   public Iterable<? extends byte[]> getFirstWords(int k)
+	   {
+	   getBaseSpectrum().getK();
+	   if (k > FIRSTWORD_LENGTH)
+		   {
+		   throw new SequenceSpectrumRuntimeException(
+				   "First words of length " + k + "were not stored during scanning.");
+		   }
+	   if (k == FIRSTWORD_LENGTH)
+		   {
+		   return firstWords;
+		   }
+
+	   List<byte[]> result = new ArrayList<byte[]>();
+	   for (byte[] longFirstWord : firstWords)
+		   {
+		   result.add(ArrayUtils.prefix(longFirstWord, k));
+		   }
+	   return result;
+	   }*/
+
+	public List<byte[]> getFirstWords(int k) throws SequenceSpectrumException
+		{
+		return getFirstWordProvider().getFirstWords(k);
+		}
+
 	/**
 	 * Returns the number of samples on which the base spectrum is based.
 	 *
@@ -376,6 +491,21 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	public int getNumberOfSamples()
 		{
 		return getBaseSpectrum().getNumberOfSamples();//theKcount.getNumberOfSamples();
+		}
+
+	public SequenceReader getResetReader()
+		{
+		try
+			{
+			theReader.seek(parentMetadata, startPosition);
+			return theReader;
+			}
+		catch (IOException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumRuntimeException(e);
+			}
 		}
 
 	/**
@@ -452,84 +582,6 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		return s;
 		}
 
-	/**
-	 * Test whether this sequence has statistics matching the given spectrum.  A spectrum of this sequence is generated
-	 * that is of the same type as the given spectrum such that they may be compared.  The statistical equivalence reported
-	 * naturally depends on the particular statistics being compared (that is, on the specific SequenceSpectrum
-	 * implementation).
-	 *
-	 * @param spectrum the SequenceSpectrum to compare
-	 * @return True if the spectra are equivalent, false otherwise
-	 * @see SequenceSpectrum#spectrumEquals(SequenceSpectrum)
-	 */
-	public boolean spectrumEquals(SequenceSpectrum spectrum)
-		{
-		try
-			{
-			return getSpectrum(spectrum.getClass(), spectrum.getFactory()).spectrumEquals(spectrum);
-			}
-		catch (SequenceSpectrumException e)
-			{
-			// the object being compared doesn't even have a base spectrum of the proper type, so it's definitely not equal
-			return false;
-			}
-		}
-
-	/*
-   public Iterable<? extends byte[]> getFirstWords(int k)
-	   {
-	   getBaseSpectrum().getK();
-	   if (k > FIRSTWORD_LENGTH)
-		   {
-		   throw new SequenceSpectrumRuntimeException(
-				   "First words of length " + k + "were not stored during scanning.");
-		   }
-	   if (k == FIRSTWORD_LENGTH)
-		   {
-		   return firstWords;
-		   }
-
-	   List<byte[]> result = new ArrayList<byte[]>();
-	   for (byte[] longFirstWord : firstWords)
-		   {
-		   result.add(ArrayUtils.prefix(longFirstWord, k));
-		   }
-	   return result;
-	   }*/
-
-	public List<byte[]> getFirstWords(int k) throws SequenceSpectrumException
-		{
-
-		return getFirstWordProvider().getFirstWords(k);
-		}
-
-
-	public FirstWordProvider getFirstWordProvider() throws SequenceSpectrumException
-		{
-		if (ignoreEdges)
-			{
-			throw new SequenceSpectrumException("We're ignoring edges");
-			}
-		scanIfNeeded();
-		return firstWordProvider;
-		}
-
-	public void setIgnoreEdges(boolean b)
-		{
-		ignoreEdges = b;
-		scanIfNeeded();
-		baseSpectrum.setIgnoreEdges(b);
-		if (ignoreEdges)
-			{
-			firstWordProvider = null;
-			}
-		}
-
-	public boolean isIgnoreEdges()
-		{
-		return ignoreEdges;
-		}
-
 	/*
 	   public void addPseudocounts()
 		   {
@@ -540,7 +592,6 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		{
 		scanIfNeeded();
 		baseSpectrum.runBeginTrainingProcessor();
-
 		}
 
 	//** Move this to a @PropertyConsumer
@@ -577,94 +628,37 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		baseSpectrum.runFinishTrainingProcessor();
 		}
 
-	/*	public void runCompletionProcessor() throws DistributionProcessorException
-	   {
-	   baseSpectrum.runCompletionProcessor();
+	public void setIgnoreEdges(boolean b)
+		{
+		ignoreEdges = b;
+		scanIfNeeded();
+		baseSpectrum.setIgnoreEdges(b);
+		if (ignoreEdges)
+			{
+			firstWordProvider = null;
+			}
+		}
 
-	   }*/
-
-	// the only way to do this is to scan the sequence.  It sucks but we have no choice
-
-	public void checkAvailable() throws NotEnoughSequenceException
+	/**
+	 * Test whether this sequence has statistics matching the given spectrum.  A spectrum of this sequence is generated
+	 * that is of the same type as the given spectrum such that they may be compared.  The statistical equivalence reported
+	 * naturally depends on the particular statistics being compared (that is, on the specific SequenceSpectrum
+	 * implementation).
+	 *
+	 * @param spectrum the SequenceSpectrum to compare
+	 * @return True if the spectra are equivalent, false otherwise
+	 * @see SequenceSpectrum#spectrumEquals(SequenceSpectrum)
+	 */
+	public boolean spectrumEquals(SequenceSpectrum spectrum)
 		{
 		try
 			{
-			if (baseSpectrum == null)
-				{
-				theReader.seek(parentMetadata, startPosition);
-				//prefix = new byte[PREFIX_LENGTH];
-				theScanner.checkSequenceAvailable(this);//theReader, desiredlength);
-
-				if (desiredlength != Integer.MAX_VALUE && theReader.getTotalSequence() < desiredlength)
-					{
-					throw new NotEnoughSequenceException("Not enough sequence: " + desiredlength + " requested, "
-							+ theReader.getTotalSequence() + " available.");
-					}
-				}
+			return getSpectrum(spectrum.getClass(), spectrum.getFactory()).spectrumEquals(spectrum);
 			}
-		catch (IOException e)
+		catch (SequenceSpectrumException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		catch (FilterException e)
-			{
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
+			// the object being compared doesn't even have a base spectrum of the proper type, so it's definitely not equal
+			return false;
 			}
 		}
-
-	/*	public SequenceSpectrum scan(byte[] prefix)
-	   {
-	   if (prefix == null || prefix.length == 0)
-		   {
-		   scanIfNeeded();
-		   return getBaseSpectrum();
-		   }
-
-	   // now we're guaranteed that length has been set
-
-	   try
-		   {
-		   return theScanner.scanSequence(getResetReader(), length, prefix);
-		   }
-	   catch (IOException e)
-		   {
-		   logger.debug(e);
-		   e.printStackTrace();
-		   throw new SequenceSpectrumRuntimeException(e);
-		   }
-	   catch (FilterException e)
-		   {
-		   logger.debug(e);
-		   e.printStackTrace();
-		   throw new SequenceSpectrumRuntimeException(e);
-		   }
-	   catch (NotEnoughSequenceException e)
-		   {
-		   logger.debug(e);
-		   e.printStackTrace();
-		   throw new SequenceSpectrumRuntimeException(e);
-		   }
-	   catch (DistributionProcessorException e)
-		   {
-		   logger.debug(e);
-		   e.printStackTrace();
-		   throw new SequenceSpectrumRuntimeException(e);
-		   }
-	   catch (GenericFactoryException e)
-		   {
-		   logger.debug(e);
-		   e.printStackTrace();
-		   throw new SequenceSpectrumRuntimeException(e);
-		   }
-	   }*/
-
-	public int getDesiredLength()
-		{
-		return desiredlength;
-		}
-
 	}

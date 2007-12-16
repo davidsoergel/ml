@@ -40,6 +40,10 @@ import com.davidsoergel.stats.DoubleArrayContainer;
  */
 public class DoubleNormalizer implements DistributionProcessor<DoubleArrayContainer>//extends DoubleArrayProcessor
 	{
+	// ------------------------ INTERFACE METHODS ------------------------
+
+
+	// --------------------- Interface DistributionProcessor ---------------------
 
 	public void process(DoubleArrayContainer c)
 		{

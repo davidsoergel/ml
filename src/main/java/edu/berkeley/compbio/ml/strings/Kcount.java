@@ -36,8 +36,15 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		implements AdditiveClusterable<T>, SequenceSpectrum<T>, DiscreteDistribution1D
 	{
+	// ------------------------------ FIELDS ------------------------------
+
 	protected int k;
 	protected int numberOfBins;
+
+	protected int length;
+
+
+	// --------------------- GETTER / SETTER METHODS ---------------------
 
 	/**
 	 * Returns the pattern length K that this Kcount handles (i.e. the number of symbols per word being counted)
@@ -48,14 +55,6 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		{
 		return k;
 		}
-
-
-	public boolean hasParent()
-		{
-		return k > 0;
-		}
-
-	protected int length;
 
 	/**
 	 * Returns the length of the sequence that was scanned to produce this spectrum.  This number may be greater than that
@@ -81,36 +80,7 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		return numberOfBins;
 		}
 
-	/**
-	 * Returns the number of samples, which equals the sum of the counts.
-	 *
-	 * @return The number of samples
-	 */
-	public abstract int getNumberOfSamples();
-
-	/**
-	 * Adds an "unknown" sample to this kcount, indicating that a character was consumed without incrementing any counter.
-	 */
-	public void addUnknown()
-		{
-		//metadata.length++;//incrementLength();
-		length++;
-		}
-
-	public abstract int idForSequence(byte[] seq);
-
-	public abstract byte[] sequenceForId(int i);
-
-	public abstract byte[] prefixForId(int id);
-
-	public abstract int prefixId(int id);
-
-	public abstract int suffixId(int id);
-
-	public abstract byte lastSymbolForId(int id);
-
-
-	// ------------------------ CANONICAL METHODS ------------------------
+	// ------------------------ INTERFACE METHODS ------------------------
 
 
 	// --------------------- Interface AdditiveClusterable ---------------------
@@ -156,4 +126,42 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		//result.getMetadata().setSequenceName("plus result");
 		return result;
 		}
+
+	// --------------------- Interface SequenceSpectrum ---------------------
+
+	/**
+	 * Returns the number of samples, which equals the sum of the counts.
+	 *
+	 * @return The number of samples
+	 */
+	public abstract int getNumberOfSamples();
+
+
+	// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * Adds an "unknown" sample to this kcount, indicating that a character was consumed without incrementing any counter.
+	 */
+	public void addUnknown()
+		{
+		//metadata.length++;//incrementLength();
+		length++;
+		}
+
+	public boolean hasParent()
+		{
+		return k > 0;
+		}
+
+	public abstract int idForSequence(byte[] seq);
+
+	public abstract byte lastSymbolForId(int id);
+
+	public abstract byte[] prefixForId(int id);
+
+	public abstract int prefixId(int id);
+
+	public abstract byte[] sequenceForId(int i);
+
+	public abstract int suffixId(int id);
 	}

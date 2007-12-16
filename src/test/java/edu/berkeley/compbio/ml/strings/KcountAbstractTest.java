@@ -43,14 +43,20 @@ import java.util.Arrays;
  */
 public abstract class KcountAbstractTest
 	{
-	//public abstract Kcount createInstance() throws Exception;
+	// ------------------------------ FIELDS ------------------------------
 
+	//public abstract Kcount createInstance() throws Exception;
 	private TestInstanceFactory tif;
+
+
+	// --------------------------- CONSTRUCTORS ---------------------------
 
 	public KcountAbstractTest(TestInstanceFactory tif)
 		{
 		this.tif = tif;
 		}
+
+	// -------------------------- OTHER METHODS --------------------------
 
 	@Test
 	public void addUnknownIncrementsLength() throws Exception
@@ -65,7 +71,12 @@ public abstract class KcountAbstractTest
 	public void idForSequenceIdAndSequenceForIdAreInverses() throws Exception
 		{
 		Kcount kc = (Kcount) tif.createInstance();
-		int id1 = kc.idForSequence(new byte[]{'a', 'c', 'g', 't'});
+		int id1 = kc.idForSequence(new byte[]{
+				'a',
+				'c',
+				'g',
+				't'
+		});
 		byte[] a1 = kc.sequenceForId(id1);
 		for (int rep = 0; rep < 10; rep++)
 			{
@@ -77,8 +88,6 @@ public abstract class KcountAbstractTest
 			int id = kc.idForSequence(seq);
 			byte[] a = kc.sequenceForId(id);
 			assert Arrays.equals(a, seq);
-
 			}
-
 		}
 	}

@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: Clusterable.java 98 2007-07-03 06:37:53Z lorax $ */
 
 /*
  * Copyright (c) 2007 Regents of the University of California
@@ -37,7 +37,7 @@ package edu.berkeley.compbio.ml.cluster;
  */
 public interface Clusterable<T extends Clusterable> extends Cloneable
 	{
-	// ------------------------ CANONICAL METHODS ------------------------
+	// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
@@ -49,9 +49,6 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 * @see java.lang.Cloneable
 	 */
 	public T clone();
-
-
-	// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Test whether the given object is the same as this one.  Differs from equals() in that implementations of this

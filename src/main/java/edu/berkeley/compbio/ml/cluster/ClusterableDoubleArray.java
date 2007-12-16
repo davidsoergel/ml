@@ -52,14 +52,14 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
+	public ClusterableDoubleArray()
+		{
+		}
+
 	public ClusterableDoubleArray(String id, double[] data)
 		{
 		this.id = id;
 		this.data = data;
-		}
-
-	public ClusterableDoubleArray()
-		{
 		}
 
 	// ------------------------ CANONICAL METHODS ------------------------
@@ -107,6 +107,14 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		return null;
 		}
 
+	// --------------------- Interface DoubleArrayContainer ---------------------
+
+
+	public double[] getArray()
+		{
+		return data;
+		}
+
 	// -------------------------- OTHER METHODS --------------------------
 
 	public double get(int i)
@@ -117,10 +125,5 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	public int length()
 		{
 		return data.length;
-		}
-
-	public double[] getArray()
-		{
-		return data;
 		}
 	}

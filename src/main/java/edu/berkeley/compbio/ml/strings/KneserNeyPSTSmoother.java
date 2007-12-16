@@ -43,11 +43,16 @@ import java.util.List;
 @PropertyConsumer
 public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
 	{
+	// ------------------------------ FIELDS ------------------------------
+
 	private static Logger logger = Logger.getLogger(KneserNeyPSTSmoother.class);
 
 	@Property(helpmessage = "Smoothing factor", defaultvalue = "0.1")
 	public Double smoothFactor;
 	private double smoothFactorTimesFour;// = smoothFactor * 4;
+
+
+	// --------------------------- CONSTRUCTORS ---------------------------
 
 	public KneserNeyPSTSmoother()//String injectorId)//double smoothFactor)
 		{
@@ -55,10 +60,10 @@ public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
 		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
 		}
 
-	public void init()
-		{
-		smoothFactorTimesFour = smoothFactor * 4;
-		}
+	// ------------------------ INTERFACE METHODS ------------------------
+
+
+	// --------------------- Interface DistributionProcessor ---------------------
 
 	public void process(RonPST ronPST)
 		{
@@ -98,13 +103,19 @@ public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
 						}
 					}
 				}
-
 			}
 		catch (DistributionException e)
 			{
 			logger.debug(e);
 			throw new Error(e);
 			}
+		}
+
+	// -------------------------- OTHER METHODS --------------------------
+
+	public void init()
+		{
+		smoothFactorTimesFour = smoothFactor * 4;
 		}
 
 	private void smooth(MarkovTreeNode node, RonPST ronPST) throws DistributionException
