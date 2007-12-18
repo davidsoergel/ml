@@ -48,7 +48,7 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
 
 	public boolean recenterByAdding(T point)
 		{
-		//**	centroid.incrementBy(point.minus(centroid).times(alpha(time));
+		centroid.incrementBy();
 		return true;
 		}
 

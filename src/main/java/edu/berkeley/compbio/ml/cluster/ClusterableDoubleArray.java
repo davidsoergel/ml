@@ -77,12 +77,20 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 
 	public void decrementBy(ClusterableDoubleArray object)
 		{
-		data = ArrayUtils.minus(data, object.data);
+		//data = ArrayUtils.minus(data, object.data);
+		ArrayUtils.decrementBy(data, object.data);
 		}
 
 	public void incrementBy(ClusterableDoubleArray object)
 		{
-		data = ArrayUtils.plus(data, object.data);
+		//data = ArrayUtils.plus(data, object.data);
+		ArrayUtils.incrementBy(data, object.data);
+		}
+
+	public void multiplyBy(double scalar)
+		{
+		//data = ArrayUtils.times(data, scalar);
+		ArrayUtils.multiplyBy(data, scalar);
 		}
 
 	public ClusterableDoubleArray minus(ClusterableDoubleArray object)
@@ -93,6 +101,11 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	public ClusterableDoubleArray plus(ClusterableDoubleArray object)
 		{
 		return new ClusterableDoubleArray(id + "+" + object.getId(), ArrayUtils.plus(data, object.data));
+		}
+
+	public ClusterableDoubleArray times(double scalar)
+		{
+		return new ClusterableDoubleArray(id + "*" + scalar, ArrayUtils.times(data, scalar));
 		}
 
 	// --------------------- Interface Clusterable ---------------------

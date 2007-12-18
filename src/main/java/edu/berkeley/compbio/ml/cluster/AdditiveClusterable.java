@@ -78,4 +78,8 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 	//public T weightedAverage(T object, double weight);
 
 	//void normalize(int n);
+
+	T times(double v);
+
+	void multiplyBy(double v);
 	}

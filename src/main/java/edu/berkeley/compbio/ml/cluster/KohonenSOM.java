@@ -31,6 +31,7 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
@@ -102,11 +103,20 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 		{
 		int target = getBestCluster(p, secondBestDistances);
 
-		//**       for (KohonenSOMCell<T> c : neighborhoodOf(target, time)) {
-		//**        c.recenterByAdding(p, time);
-		//**    }
+		for (Iterator<KohonenSOMCell<T>> i = neighborhoodOf(target, time); i.hasNext();)
+			{
+			KohonenSOMCell<T> neighbor = i.next();
+			T motion = p.minus(neighbor.getCentroid());
+			motion.multiplyBy(moveFactor(time));
+			neighbor.recenterByAdding(motion);
+			}
 		time++;
 		return true;
+		}
+
+	private double moveFactor(int time)
+		{
+		throw new NotImplementedException();
 		}
 
 	private Iterator<KohonenSOMCell<T>> neighborhoodOf(int target, int time)
