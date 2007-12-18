@@ -262,6 +262,16 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new NotImplementedException();
 		}
 
+	public void multiplyBy(double v)
+		{
+		throw new NotImplementedException();
+		}
+
+	public MarkovTreeNode times(double v)
+		{
+		throw new NotImplementedException();
+		}
+
 	// --------------------- Interface Clusterable ---------------------
 
 	/**
