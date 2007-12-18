@@ -33,6 +33,7 @@ package edu.berkeley.compbio.ml.cluster;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -43,114 +44,135 @@ import java.util.Vector;
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T> {
+public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T>
+	{
 
-    // ------------------------------ FIELDS ------------------------------
+	// ------------------------------ FIELDS ------------------------------
 
-    private static final Logger logger = Logger.getLogger(KohonenSOM.class);
+	private static final Logger logger = Logger.getLogger(KohonenSOM.class);
 
-    int[] cellsPerDimension;
+	int[] cellsPerDimension;
 
-    Map<Vector<Integer>, T> centroidsByPosition;
+	Map<Vector<Integer>, T> centroidsByPosition;
 
-    int time = 0;
+	int time = 0;
 
-    private DistanceMeasure<T> measure;
-    private int dimensions;
+	private DistanceMeasure<T> measure;
+	private int dimensions;
 
-    // --------------------------- CONSTRUCTORS ---------------------------
-
-
-    public KohonenSOM(int[] cellsPerDimension, List<Vector> initialVectors, DistanceMeasure<T> dm) {
-        this.cellsPerDimension = cellsPerDimension;
-        this.measure = dm;
-        this.dimensions = cellsPerDimension.length;
-
-        createClusters(initialVectors, new int[dimensions], 0);
-    }
-
-    private void createClusters(List<Vector> initialVectors, int[] cellPosition, int changingDimension) {
-        if (changingDimension == dimensions)
+	// --------------------------- CONSTRUCTORS ---------------------------
 
 
-        {
-            for (int i = 0; i < cellsPerDimension[changingDimension]; i++) {
-                cellPosition[changingDimension] = i;
-                createClusters(initialVectors, cellPosition, changingDimension + 1);
-            }
-        }
+	public KohonenSOM(int[] cellsPerDimension, List<Vector> initialVectors, DistanceMeasure<T> dm)
+		{
+		this.cellsPerDimension = cellsPerDimension;
+		this.measure = dm;
+		this.dimensions = cellsPerDimension.length;
 
-        /*  for (int i = 0; i < k; i++) {
-      // initialize the clusters with the first k points
+		createClusters(initialVectors, new int[dimensions], 0);
+		}
 
-      Cluster<T> c = new AdditiveCluster<T>(measure);
-      c.setId(i);
+	private void createClusters(List<Vector> initialVectors, int[] cellPosition, int changingDimension)
+		{
+		if (changingDimension == dimensions)
 
-      theClusters.add(c);
-  }
-  logger.debug("initialized " + k + " clusters");*/
-    }
 
-    // -------------------------- OTHER METHODS --------------------------
+			{
+			for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
+				{
+				cellPosition[changingDimension] = i;
+				createClusters(initialVectors, cellPosition, changingDimension + 1);
+				}
+			}
 
-    public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException {
-        int target = getBestCluster(p, secondBestDistances);
+		/*  for (int i = 0; i < k; i++) {
+			  // initialize the clusters with the first k points
 
-        /*   for (KohonenSOMNode<T> c : neighborhoodOf(target, time)) {
-            c.recenterByAdding(p, time);
-        }*/
-        time++;
-        return true;
-    }
+			  Cluster<T> c = new AdditiveCluster<T>(measure);
+			  c.setId(i);
 
-    /**
-     * Returns the best cluster without adding the point
-     *
-     * @param p                   Point to find the best cluster of
-     * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
-     */
-    public int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException {
-        ClusterMove cm = bestClusterMove(p);
-        return theClusters.indexOf(cm.bestCluster);
-    }
+			  theClusters.add(c);
+		  }
+		  logger.debug("initialized " + k + " clusters");*/
+		}
 
-    /**
-     * Copied from KmeansClustering
-     *
-     * @param p
-     * @return
-     */
-    public ClusterMove bestClusterMove(T p) {
-        ClusterMove result = new ClusterMove();
-        //double bestDistance = Double.MAX_VALUE;
-        //Cluster<T> bestCluster = null;
+	// -------------------------- OTHER METHODS --------------------------
 
-        String id = p.getId();
-        result.oldCluster = assignments.get(id);
+	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
+		{
+		int target = getBestCluster(p, secondBestDistances);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
-        }
-        for (Cluster<T> c : theClusters) {
-            double d = c.distanceToCentroid(p);
-            if (logger.isDebugEnabled()) {
-                logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);
-            }
-            if (d < result.bestDistance) {
-                result.secondBestDistance = result.bestDistance;
-                result.bestDistance = d;
-                result.bestCluster = c;
-            } else if (d < result.secondBestDistance) {
-                result.secondBestDistance = d;
-            }
-        }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Chose " + result.bestCluster);
-        }
-        if (result.bestCluster == null) {
-            logger.warn("Can't classify: " + p);
-            assert false;
-        }
-        return result;
-    }
-}
+		//**       for (KohonenSOMCell<T> c : neighborhoodOf(target, time)) {
+		//**        c.recenterByAdding(p, time);
+		//**    }
+		time++;
+		return true;
+		}
+
+	private Iterator<KohonenSOMCell<T>> neighborhoodOf(int target, int time)
+		{
+
+		return null;
+		}
+
+	/**
+	 * Returns the best cluster without adding the point
+	 *
+	 * @param p                   Point to find the best cluster of
+	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
+	 */
+	public int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
+		{
+		ClusterMove cm = bestClusterMove(p);
+		return theClusters.indexOf(cm.bestCluster);
+		}
+
+	/**
+	 * Copied from KmeansClustering
+	 *
+	 * @param p
+	 * @return
+	 */
+	public ClusterMove bestClusterMove(T p)
+		{
+		ClusterMove result = new ClusterMove();
+		//double bestDistance = Double.MAX_VALUE;
+		//Cluster<T> bestCluster = null;
+
+		String id = p.getId();
+		result.oldCluster = assignments.get(id);
+
+		if (logger.isDebugEnabled())
+			{
+			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
+			}
+		for (Cluster<T> c : theClusters)
+			{
+			double d = c.distanceToCentroid(p);
+			if (logger.isDebugEnabled())
+				{
+				logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);
+				}
+			if (d < result.bestDistance)
+				{
+				result.secondBestDistance = result.bestDistance;
+				result.bestDistance = d;
+				result.bestCluster = c;
+				}
+			else if (d < result.secondBestDistance)
+				{
+				result.secondBestDistance = d;
+				}
+			}
+		if (logger.isDebugEnabled())
+			{
+			logger.debug("Chose " + result.bestCluster);
+			}
+		if (result.bestCluster == null)
+			{
+			logger.warn("Can't classify: " + p);
+			assert false;
+			}
+		return result;
+		}
+	}
