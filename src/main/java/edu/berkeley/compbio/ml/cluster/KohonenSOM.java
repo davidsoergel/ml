@@ -48,11 +48,18 @@ import java.util.Vector;
 public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T>
 	{
 
+	// we jump through some hoops to avoid actually storing the cells in an array,
+	// since we don't know a priori how many dimensions it should have, and it would be redundant with
+	// OnlineClusteringMethod.theClusters
+
+	// aha: since theClusters is a list, we can map our array into it.  see listIndexFor(int[] cellposition)
+
 	// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(KohonenSOM.class);
 
 	int[] cellsPerDimension;
+	int[] blockSize;
 
 	Map<Vector<Integer>, T> centroidsByPosition;
 
@@ -60,8 +67,20 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 
 	private DistanceMeasure<T> measure;
 	private int dimensions;
+	private boolean edgesWrap;
 
 	// --------------------------- CONSTRUCTORS ---------------------------
+
+	private int listIndexFor(int[] cellposition)
+		{
+		int result = 0;
+		assert cellposition.length == cellsPerDimension.length;
+		for (int i = 0; i < dimensions; i++)
+			{
+			result += cellposition[i] * blockSize[i];
+			}
+		return result;
+		}
 
 
 	public KohonenSOM(int[] cellsPerDimension, List<Vector> initialVectors, DistanceMeasure<T> dm)
@@ -70,21 +89,33 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 		this.measure = dm;
 		this.dimensions = cellsPerDimension.length;
 
+		// precompute stuff for listIndexFor
+		blockSize = new int[dimensions];
+		blockSize[dimensions - 1] = 1;
+		for (int i = dimensions - 2; i > 0; i--)
+			{
+			blockSize[i] = blockSize[i + 1] * cellsPerDimension[i];
+			}
+
 		createClusters(initialVectors, new int[dimensions], 0);
 		}
 
 	private void createClusters(List<Vector> initialVectors, int[] cellPosition, int changingDimension)
 		{
 		if (changingDimension == dimensions)
-
-
 			{
-			for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
-				{
-				cellPosition[changingDimension] = i;
-				createClusters(initialVectors, cellPosition, changingDimension + 1);
-				}
+			//**	KohonenSOMCell<T> c = new KohonenSOMCell<T>(measure, prototype.clone());
+			//**	theClusters.set(listIndexFor(cellPosition),c);
 			}
+
+
+		{
+		for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
+			{
+			cellPosition[changingDimension] = i;
+			createClusters(initialVectors, cellPosition, changingDimension + 1);
+			}
+		}
 
 		/*  for (int i = 0; i < k; i++) {
 			  // initialize the clusters with the first k points
@@ -121,7 +152,7 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 
 	private Iterator<KohonenSOMCell<T>> neighborhoodOf(int target, int time)
 		{
-
+		//**	theClusters.get(target).getNeighbors(roadius);
 		return null;
 		}
 

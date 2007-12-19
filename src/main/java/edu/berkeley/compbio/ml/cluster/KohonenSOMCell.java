@@ -48,10 +48,8 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
 
 	public boolean recenterByAdding(T point)
 		{
-
-		throw new NotImplementedException();
-		//	centroid.incrementBy(point);
-		//	return true;
+		centroid.incrementBy(point);
+		return true;
 		}
 
 	public boolean recenterByRemoving(T point)
