@@ -34,6 +34,7 @@ import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +84,7 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 		}
 
 
-	public KohonenSOM(int[] cellsPerDimension, List<Vector> initialVectors, DistanceMeasure<T> dm)
+	public KohonenSOM(int[] cellsPerDimension, DistanceMeasure<T> dm, T prototype)
 		{
 		this.cellsPerDimension = cellsPerDimension;
 		this.measure = dm;
@@ -97,25 +98,42 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 			blockSize[i] = blockSize[i + 1] * cellsPerDimension[i];
 			}
 
-		createClusters(initialVectors, new int[dimensions], 0);
+		int[] zeroCell = new int[dimensions];
+		Arrays.fill(zeroCell, 0);
+		createClusters(zeroCell, -1);//, prototype);
+		List<VectorPair> vectorRanges;
+		initializeClusters(vectorRanges);
 		}
 
-	private void createClusters(List<Vector> initialVectors, int[] cellPosition, int changingDimension)
+
+	private void initializeClusters(List<VectorPair> vectorRanges)
 		{
+
+		}
+
+
+	/**
+	 * Create a rectangular grid of cells using the given dimensionality and size, assigning a null position to each
+	 *
+	 * @param cellPosition
+	 * @param changingDimension // * @param prototype
+	 */
+	private void createClusters(int[] cellPosition, int changingDimension)//, T prototype)
+		{
+		changingDimension++;
 		if (changingDimension == dimensions)
 			{
-			//**	KohonenSOMCell<T> c = new KohonenSOMCell<T>(measure, prototype.clone());
-			//**	theClusters.set(listIndexFor(cellPosition),c);
+			KohonenSOMCell<T> c = new KohonenSOMCell<T>(measure, null);//, prototype.clone());
+			theClusters.set(listIndexFor(cellPosition), c);
 			}
-
-
-		{
-		for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
+		else
 			{
-			cellPosition[changingDimension] = i;
-			createClusters(initialVectors, cellPosition, changingDimension + 1);
+			for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
+				{
+				cellPosition[changingDimension] = i;
+				createClusters(cellPosition, changingDimension),//, prototype);
+				}
 			}
-		}
 
 		/*  for (int i = 0; i < k; i++) {
 			  // initialize the clusters with the first k points
@@ -152,7 +170,7 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 
 	private Iterator<KohonenSOMCell<T>> neighborhoodOf(int target, int time)
 		{
-		//**	theClusters.get(target).getNeighbors(roadius);
+		theClusters.get(target).getNeighbors(radius);
 		return null;
 		}
 
