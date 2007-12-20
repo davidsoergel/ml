@@ -97,11 +97,13 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		return null;
 		}
 
+	double bestdistance = Double.MAX_VALUE;
+
 	public int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
 		int i;
 		double secondbestdistance = Double.MAX_VALUE;
-		double bestdistance = Double.MAX_VALUE;
+		bestdistance = Double.MAX_VALUE;
 		double temp;
 		int j = -1;
 		for (i = 0; i < theClusters.size(); i++)
@@ -127,5 +129,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 			throw new NoGoodClusterException("Best distance " + bestdistance + " > threshold " + unknownThreshold);
 			}
 		return j;
+		}
+
+	public double getBestdistance()
+		{
+		return bestdistance;
 		}
 	}

@@ -30,6 +30,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.Interval;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
@@ -101,12 +102,12 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 		int[] zeroCell = new int[dimensions];
 		Arrays.fill(zeroCell, 0);
 		createClusters(zeroCell, -1);//, prototype);
-		List<VectorPair> vectorRanges;
-		initializeClusters(vectorRanges);
+		List<Interval<Double>> axisRanges;
+		//**	initializeClusters(axisRanges);
 		}
 
 
-	private void initializeClusters(List<VectorPair> vectorRanges)
+	private void initializeClusters(List<Interval<Double>> axisRanges)
 		{
 
 		}
@@ -131,7 +132,7 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 			for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
 				{
 				cellPosition[changingDimension] = i;
-				createClusters(cellPosition, changingDimension),//, prototype);
+				createClusters(cellPosition, changingDimension);//, prototype);
 				}
 			}
 
@@ -170,7 +171,7 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 
 	private Iterator<KohonenSOMCell<T>> neighborhoodOf(int target, int time)
 		{
-		theClusters.get(target).getNeighbors(radius);
+		//**	theClusters.get(target).getNeighbors(radius);
 		return null;
 		}
 
