@@ -30,7 +30,6 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.Interval;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
@@ -44,6 +43,13 @@ import java.util.Vector;
 /* $Id$ */
 
 /**
+ * Kohonen Self Organizing Map implementation for a rectangular grid of arbitrary dimensions.  Grid cells are
+ * initialized using the first n samples.
+ * <p/>
+ * The standard algorithm moves the cells towards the winner cell; in our implementation we also have the option to
+ * remove the point from the cell where it was previously assigned, moving the neighbors away from the moved node a
+ * bit.
+ *
  * @Author David Soergel
  * @Version 1.0
  */
@@ -85,7 +91,7 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 		}
 
 
-	public KohonenSOM(int[] cellsPerDimension, DistanceMeasure<T> dm, T prototype)
+	public KohonenSOM(int[] cellsPerDimension, DistanceMeasure<T> dm)
 		{
 		this.cellsPerDimension = cellsPerDimension;
 		this.measure = dm;
@@ -102,16 +108,16 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 		int[] zeroCell = new int[dimensions];
 		Arrays.fill(zeroCell, 0);
 		createClusters(zeroCell, -1);//, prototype);
-		List<Interval<Double>> axisRanges;
-		//**	initializeClusters(axisRanges);
+		//List<Interval<Double>> axisRanges;
+		//	initializeClusters(axisRanges);
 		}
 
+	/*
+	 private void initializeClusters(List<Interval<Double>> axisRanges)
+		 {
 
-	private void initializeClusters(List<Interval<Double>> axisRanges)
-		{
-
-		}
-
+		 }
+ */
 
 	/**
 	 * Create a rectangular grid of cells using the given dimensionality and size, assigning a null position to each
@@ -151,9 +157,22 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 
 	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
-		int target = getBestCluster(p, secondBestDistances);
-
-		for (Iterator<KohonenSOMCell<T>> i = neighborhoodOf(target, time); i.hasNext();)
+		ClusterMove cm = bestClusterMove(p);
+		int loser = theClusters.indexOf(cm.oldCluster);
+		int winner = theClusters.indexOf(cm.bestCluster);
+// *** AAAGH
+/*		if(decrementLosingNeighborhood)
+			{
+			for (Iterator<KohonenSOMCell<T>> i = neighborhoodOf(loser, time); i.hasNext();)
+				{
+				KohonenSOMCell<T> neighbor = i.next();
+				T motion = p.minus(neighbor.getCentroid());
+				motion.multiplyBy(-moveFactor(time));
+				neighbor.recenterByAdding(motion);
+				}
+			}
+*/
+		for (Iterator<KohonenSOMCell<T>> i = neighborhoodOf(winner, time); i.hasNext();)
 			{
 			KohonenSOMCell<T> neighbor = i.next();
 			T motion = p.minus(neighbor.getCentroid());
@@ -208,6 +227,17 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 			}
 		for (Cluster<T> c : theClusters)
 			{
+			// while initializing the grid, cell centroids are null.  In that case, just assign the present point.
+			// ** no this won't work right at all
+			if(c.getCentroid() == null)
+				{
+				c.setCentroid(p.clone());
+				result.bestDistance = 0;
+				result.bestCluster = c;
+				return result;
+				}
+
+			// otherwise find the nearest cluster
 			double d = c.distanceToCentroid(p);
 			if (logger.isDebugEnabled())
 				{
