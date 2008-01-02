@@ -193,13 +193,13 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 					double suffixConditional = prob.conditionalProbability(sigma, ArrayUtils.suffix(s, 1));
 
 					double probRatio = conditional / suffixConditional;
-					logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
+				//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
 					if ((conditional >= (1. + alpha) * gammaMin) &&
 							// for some reason Ron et al only want to test this one way, but Bejerano, Kermorvant, etc.
 							// do it both ways, and that makes more sense anyway
 							((probRatio >= pRatioMinMax) || (probRatio <= (1. / pRatioMinMax))))
 						{
-						logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
+					//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
 						addAllSuffixes(s);
 						break;
 						}
@@ -275,9 +275,10 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 				leaves++;
 				int depth = node.getId().length();
 				avgdepth += depth;
-				maxdepth = Math.max(maxdepth, depth) + 1;
+				maxdepth = Math.max(maxdepth, depth);
 				}
 			}
+		maxdepth += 1;
 		avgdepth /= leaves;
 		avgdepth += 1;
 		logger.info("Learned Ron PST with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
