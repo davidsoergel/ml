@@ -97,7 +97,7 @@
 	</dependencies>
 
 	<scm>
-		<connection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</connection>
+		<connection>scm:svn:http://svn.davidsoergel.com/repos/ml</connection>
 		<developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</developerConnection>
 	</scm>
 	<distributionManagement>
