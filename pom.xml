@@ -36,7 +36,7 @@
 	<artifactId>ml</artifactId>
 
 	<name>ml</name>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.9-SNAPSHOT</version>
 	<url>http://dev.davidsoergel.com/ml</url>
 	<description>Generic implementations of various Machine Learning algorithms. Includes an online clustering framework
 		with a K-means implementation, and a Markov Chain Monte Carlo (MCMC) framework with a Metropolis-coupled
@@ -46,7 +46,7 @@
 	<parent>
 		<groupId>edu.berkeley.compbio</groupId>
 		<artifactId>basepom</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<version>0.9-SNAPSHOT</version>
 	</parent>
 
 	<inceptionYear>2006</inceptionYear>
@@ -62,24 +62,24 @@
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>dsutils</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>0.9-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>edu.berkeley.compbio</groupId>
 			<artifactId>sequtils</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>0.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>runutils</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>0.9-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>stats</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>0.9-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -97,8 +97,8 @@
 	</dependencies>
 
 	<scm>
-		<connection>scm:svn:svn+ssh://lorax.org/home/lorax/repos-compbio/ml</connection>
-		<developerConnection>scm:svn:svn+ssh://lorax.org/home/lorax/repos-compbio/ml</developerConnection>
+		<connection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</developerConnection>
 	</scm>
 	<distributionManagement>
 		<site>
