@@ -54,10 +54,68 @@
 	<packaging>jar</packaging>
 
 	<issueManagement>
-		<system>Jira</system>
-		<url>http://jira.davidsoergel.com/ml</url>
+		<system>Trac</system>
+		<url>http://dev.davidsoergel.com/ml/</url>
 	</issueManagement>
 
+
+	<scm>
+		<connection>scm:svn:http://svn.davidsoergel.com/repos/ml</connection>
+		<developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</developerConnection>
+	</scm>
+
+
+	<distributionManagement>
+		<site>
+			<id>website</id>
+			<url>scpexe://dev.davidsoergel.com/home/build/mavensites/ml</url>
+		</site>
+	</distributionManagement>
+
+
+	<developers>
+		<developer>
+			<id>dtulga</id>
+			<name>David Tulga</name>
+			<email>dtulga@compbio.berkeley.edu</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<organization>University of California, Berkeley</organization>
+			<timezone>-7</timezone>
+		</developer>
+		<developer>
+			<id>lorax</id>
+			<name>David Soergel</name>
+			<email>soergel@compbio.berkeley.edu</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<organization>University of California, Berkeley</organization>
+			<timezone>-7</timezone>
+		</developer>
+	</developers>
+
+
+
+	<repositories>
+	    <repository>
+	        <id>central</id>
+	        <url>http://dev.davidsoergel.com/artifactory/repo</url>
+	        <snapshots>
+	            <enabled>false</enabled>
+	        </snapshots>
+	    </repository>
+	    <repository>
+	        <id>snapshots</id>
+	        <url>http://dev.davidsoergel.com/artifactory/repo</url>
+	        <releases>
+	            <enabled>false</enabled>
+	        </releases>
+	    </repository>
+	</repositories>
+	
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
@@ -95,75 +153,4 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-
-	<scm>
-		<connection>scm:svn:http://svn.davidsoergel.com/repos/ml</connection>
-		<developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</developerConnection>
-	</scm>
-	<distributionManagement>
-		<site>
-			<id>website</id>
-			<url>scpexe://dev.davidsoergel.com/home/continuum/domains/dev.davidsoergel.com/ml/site</url>
-		</site>
-	</distributionManagement>
-
-	<developers>
-		<developer>
-			<id>dtulga</id>
-			<name>David Tulga</name>
-			<email>dtulga@compbio.berkeley.edu</email>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<organization>University of California, Berkeley</organization>
-			<timezone>-7</timezone>
-		</developer>
-		<developer>
-			<id>lorax</id>
-			<name>David Soergel</name>
-			<email>soergel@compbio.berkeley.edu</email>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<organization>University of California, Berkeley</organization>
-			<timezone>-7</timezone>
-		</developer>
-	</developers>
-
-
-	<repositories>
-		<repository>
-			<id>dev.davidsoergel.com</id>
-			<name>David Soergel Release Repository</name>
-			<url>http://dev.davidsoergel.com/maven2</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>dev.davidsoergel.com.snapshots</id>
-			<name>David Soergel Snapshot Repository</name>
-			<url>http://dev.davidsoergel.com/maven2-snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>dev.davidsoergel.com.xtra</id>
-			<name>David Soergel Xtra Repository</name>
-			<url>http://dev.davidsoergel.com/maven2-xtra</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 </project>
