@@ -78,8 +78,8 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	 pRatioMinMax = p_ratio = (1 + (3 * eta2))
  */
 
-	@Property(helpmessage = "A distribution processor to run on this NucleotideKtrie",
-	          defaultvalue = "", isNullable = true)
+	@Property(helpmessage = "A distribution processor to run on this PST, typically used for smoothing",
+	          defaultvalue = "edu.berkeley.compbio.ml.strings.RonPSTSmoother", isNullable = true)
 	//isPlugin = true,
 	public DistributionProcessor<RonPST> completionProcessor;
 
@@ -122,19 +122,6 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		{
 		this();
 		learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
-		if (completionProcessor != null)
-			{
-			try
-				{
-				completionProcessor.process(this);
-				}
-			catch (DistributionProcessorException e)
-				{
-				logger.debug(e);
-				e.printStackTrace();
-				throw new SequenceSpectrumRuntimeException(e);
-				}
-			}
 		}
 
 	public void learn(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
@@ -193,13 +180,13 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 					double suffixConditional = prob.conditionalProbability(sigma, ArrayUtils.suffix(s, 1));
 
 					double probRatio = conditional / suffixConditional;
-				//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
+					//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
 					if ((conditional >= (1. + alpha) * gammaMin) &&
 							// for some reason Ron et al only want to test this one way, but Bejerano, Kermorvant, etc.
 							// do it both ways, and that makes more sense anyway
 							((probRatio >= pRatioMinMax) || (probRatio <= (1. / pRatioMinMax))))
 						{
-					//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
+						//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
 						addAllSuffixes(s);
 						break;
 						}
@@ -265,6 +252,24 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		//return root;
 		List<MarkovTreeNode> breadthFirstList = setBacklinks();
 
+
+		if (completionProcessor != null)
+			{
+			try
+				{
+				completionProcessor.process(this);
+				}
+			catch (DistributionProcessorException e)
+				{
+				logger.debug(e);
+				e.printStackTrace();
+				throw new SequenceSpectrumRuntimeException(e);
+				}
+			}
+
+		updateLogProbsRecursive();
+
+		// diagnostics
 		int total = 0, leaves = 0, maxdepth = 0;
 		double avgdepth = 0;
 		for (MarkovTreeNode node : breadthFirstList)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007 Regents of the University of California
+ * Copyright (c) 2008 Regents of the University of California
  *
  * All rights reserved.
  *
@@ -34,14 +34,13 @@ import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessor;
-import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
 
 @PropertyConsumer
-public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
+public class RonPSTSmoother implements DistributionProcessor<RonPST>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -49,12 +48,10 @@ public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
 
 	@Property(helpmessage = "Smoothing factor", defaultvalue = "0.1")
 	public Double smoothFactor;
-	private double smoothFactorTimesFour;// = smoothFactor * 4;
-
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
-	public KneserNeyPSTSmoother()//String injectorId)//double smoothFactor)
+	public RonPSTSmoother()//String injectorId)//double smoothFactor)
 		{
 		//this.smoothFactor = smoothFactor;
 		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
@@ -62,39 +59,22 @@ public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
 
 	// ------------------------ INTERFACE METHODS ------------------------
 
-
 	// --------------------- Interface DistributionProcessor ---------------------
 
 	public void process(RonPST ronPST)
 		{
-		// mix the root with the uniform distribution
-		Multinomial<Byte> uniform = new Multinomial<Byte>();
 		try
 			{
-			for (byte b : ronPST.getAlphabet())
-				{
-				uniform.put(b, 1);
-				}
-			uniform.normalize();
-
-			ronPST.getProbs().mixIn(uniform, smoothFactorTimesFour);
-
-			// do the rest of the tree, breadth first
+			// breadth first  (for no reason, just symmetry with the KneserNeyPSTSmoother where it is important)
 
 			List<MarkovTreeNode> nodesRemaining = new LinkedList<MarkovTreeNode>();
-			for (MarkovTreeNode n : ronPST.getChildren())
-				{
-				if (n != null)
-					{
-					nodesRemaining.add(n);
-					}
-				}
+			nodesRemaining.add(ronPST);
 
 			while (!nodesRemaining.isEmpty())
 				{
 				MarkovTreeNode node = nodesRemaining.remove(0);
-				smooth(node);//, ronPST);
-				//	nodesRemaining.addAll(node.getChildren());//.values());
+				node.getProbs().redistributeWithMinimum(smoothFactor);
+
 				for (MarkovTreeNode n : node.getChildren())
 					{
 					if (n != null)
@@ -112,16 +92,4 @@ public class KneserNeyPSTSmoother implements DistributionProcessor<RonPST>
 		}
 
 	// -------------------------- OTHER METHODS --------------------------
-
-	public void init()
-		{
-		smoothFactorTimesFour = smoothFactor * 4;
-		}
-
-	private void smooth(MarkovTreeNode node) throws DistributionException
-		{
-		node.getProbs().mixIn(node.getBackoffPrior().getProbs(), smoothFactorTimesFour);
-
-		//node.getProbs().mixIn(ronPST.getBackoffPrior(node.getIdBytes()).getProbs(), smoothFactorTimesFour);
-		}
 	}

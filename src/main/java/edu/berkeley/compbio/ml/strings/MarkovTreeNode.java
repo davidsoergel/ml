@@ -737,12 +737,34 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	private void setProb(byte b, double prob) throws DistributionException
 		{
 		probs.put(b, prob);
-		for (int i = 0; i < alphabet.length; i++)
+		}
+
+
+	public void updateLogProbsRecursive()
+		{
+		updateLogProbs();
+		for (MarkovTreeNode child : children)//.values())
 			{
-			if (b == alphabet[i])
+			if (child != null)
 				{
-				logprobs[i] = MathUtils.approximateLog(prob);
+				child.updateLogProbsRecursive();
 				}
+			}
+		}
+
+	public void updateLogProbs()
+		{
+		try
+			{
+			for (int i = 0; i < alphabet.length; i++)
+				{
+				logprobs[i] = MathUtils.approximateLog(probs.get(alphabet[i]));
+				}
+			}
+		catch (DistributionException e)
+			{
+			logger.debug(e);
+			throw new SequenceSpectrumRuntimeException(e);
 			}
 		}
 
@@ -926,6 +948,14 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return result;
 		}
 
+	/**
+	 * Returns the conditional probability of the given symbol from this node.  {@link #updateLogProbs()} must have been
+	 * run first.
+	 *
+	 * @param sigma
+	 * @return
+	 * @throws SequenceSpectrumException
+	 */
 	public double logConditionalProbability(byte sigma) throws SequenceSpectrumException
 		{
 		return logprobs[alphabetIndexForSymbol(sigma)];
