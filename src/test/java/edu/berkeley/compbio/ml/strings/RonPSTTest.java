@@ -239,7 +239,7 @@ public class RonPSTTest
 			throw new NotImplementedException();
 			}
 
-		public int getLength()
+		public int getOriginalSequenceLength()
 			{
 			throw new NotImplementedException();
 			}

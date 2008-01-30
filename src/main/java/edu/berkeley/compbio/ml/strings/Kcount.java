@@ -41,7 +41,7 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	protected int k;
 	protected int numberOfBins;
 
-	protected int length;
+	protected int originalSequenceLength;
 
 
 	// --------------------- GETTER / SETTER METHODS ---------------------
@@ -64,9 +64,9 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	 * @return the length (type int) of this Kcount object.
 	 * @see #addUnknown()
 	 */
-	public int getLength()
+	public int getOriginalSequenceLength()
 		{
-		return length;
+		return originalSequenceLength;
 		}
 
 	/**
@@ -145,7 +145,7 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	public void addUnknown()
 		{
 		//metadata.length++;//incrementLength();
-		length++;
+		originalSequenceLength++;
 		}
 
 	public boolean hasParent()

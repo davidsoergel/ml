@@ -82,6 +82,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	          defaultvalue = "edu.berkeley.compbio.ml.strings.RonPSTSmoother", isNullable = true)
 	//isPlugin = true,
 	public DistributionProcessor<RonPST> completionProcessor;
+	private double logConditionalProbability;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
@@ -371,6 +372,9 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	 * its probability may be computed from summary statistics that are already available in the given SequenceFragment
 	 * rather than from the raw sequence.  Also, because these probabilities are typically very small, the result is
 	 * returned in log space (indeed implementations will likely compute them in log space).
+	 * <p/>
+	 * Note this computes the probability only in the forward direction (i.e., it does not take a reverse complement
+	 * also).
 	 *
 	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
 	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
@@ -389,7 +393,12 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 			try
 				{
 				int c = in.readTranslated();
-				logprob += currentNode.logConditionalProbabilityByAlphabetIndex(c);
+				logConditionalProbability = currentNode.logConditionalProbabilityByAlphabetIndex(c);
+
+				logger.debug("Conditional at " + new String(currentNode.getIdBytes()) + " " + (char) getAlphabet()[c]
+						+ " = " + currentNode
+						.conditionalProbabilityByAlphabetIndex(c));
+				logprob += logConditionalProbability;
 				currentNode = currentNode.nextNodeByAlphabetIndex(c);
 				}
 			catch (NotEnoughSequenceException e)

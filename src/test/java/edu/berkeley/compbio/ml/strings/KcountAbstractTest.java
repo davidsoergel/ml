@@ -62,9 +62,9 @@ public abstract class KcountAbstractTest
 	public void addUnknownIncrementsLength() throws Exception
 		{
 		Kcount kc = (Kcount) tif.createInstance();
-		int l = kc.getLength();
+		int l = kc.getOriginalSequenceLength();
 		kc.addUnknown();
-		assert kc.getLength() == l + 1;
+		assert kc.getOriginalSequenceLength() == l + 1;
 		}
 
 	@Test

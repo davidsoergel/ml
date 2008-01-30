@@ -484,7 +484,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new NotImplementedException();
 		}
 
-	public int getLength()
+	public int getOriginalSequenceLength()
 		{
 		throw new NotImplementedException();
 		}
@@ -976,6 +976,20 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public double logConditionalProbabilityByAlphabetIndex(int c)
 		{
 		return logprobs[c];
+		}
+
+	public double conditionalProbabilityByAlphabetIndex(int c)
+		{
+		try
+			{
+			return probs.get(alphabet[c]);
+			}
+		catch (DistributionException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new Error(e);
+			}
 		}
 
 	/**

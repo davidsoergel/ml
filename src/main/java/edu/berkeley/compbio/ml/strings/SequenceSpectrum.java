@@ -130,7 +130,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @return the length (type int) of this Kcount object.
 	 * @see #addUnknown()
 	 */
-	int getLength();
+	int getOriginalSequenceLength();
 
 	/**
 	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our

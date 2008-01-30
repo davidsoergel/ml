@@ -157,7 +157,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			SequenceSpectrum s =
 					theScanner.scanSequence(this);//theReader, desiredlength);//, firstWords, FIRSTWORD_LENGTH);
 			//prefixValid = Math.min(PREFIX_LENGTH, s.getNumberOfSamples() + s.getK() - 1);
-			length = s.getLength();// how much sequence was actually read
+			length = s.getOriginalSequenceLength();// how much sequence was actually read
 			setBaseSpectrum(s);
 			}
 		catch (GenericFactoryException e)
