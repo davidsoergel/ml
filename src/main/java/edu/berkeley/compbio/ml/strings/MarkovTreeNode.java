@@ -1039,14 +1039,14 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		probs.normalize();
 		}
 
-	public void setBacklinksUsingRoot(MarkovTreeNode rootNode, Queue<MarkovTreeNode> breadthFirstList)
+	public void setBacklinksUsingRoot(MarkovTreeNode rootNode, Queue<MarkovTreeNode> breadthFirstQueue)
 		{
 		// must do this first, before we fill out the children hash
 		for (MarkovTreeNode child : children)//.values())
 			{
 			if (child != null)
 				{
-				breadthFirstList.add(child);//.setBacklinksUsingRoot(rootNode);
+				breadthFirstQueue.add(child);//.setBacklinksUsingRoot(rootNode);
 				}
 			}
 		//	if (children.isEmpty())
@@ -1091,6 +1091,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		}
 
+	/**
+	 * gets the node associated with the longest available suffix of the given sequence.
+	 *
+	 * @param suffix the sequence to walk
+	 * @return the MarkovTreeNode
+	 */
 	public MarkovTreeNode getLongestSuffix(byte[] suffix) throws SequenceSpectrumException
 		{
 		byte[] prefix = ArrayUtils.clone(suffix);
