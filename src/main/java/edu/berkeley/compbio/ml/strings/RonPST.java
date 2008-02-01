@@ -38,19 +38,12 @@ import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
-import edu.berkeley.compbio.sequtils.FilterException;
-import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
-import edu.berkeley.compbio.sequtils.SequenceReader;
-import edu.berkeley.compbio.sequtils.TranslationException;
+import com.davidsoergel.stats.MutableDistribution;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -62,7 +55,8 @@ import java.util.Set;
  * @Author David Soergel (soergel@compbio.berkeley.edu)
  */
 @PropertyConsumer
-public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslator
+public class RonPST extends RonPSTNode
+		implements SequenceSpectrum<RonPST>, MutableDistribution//implements SequenceSpectrumTranslator
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -82,7 +76,6 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 	          defaultvalue = "edu.berkeley.compbio.ml.strings.RonPSTSmoother", isNullable = true)
 	//isPlugin = true,
 	public DistributionProcessor<RonPST> completionProcessor;
-	private double logConditionalProbability;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
@@ -125,10 +118,11 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
 		}
 
-	public void learn(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
+	public void learn(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max,
+	                  SequenceSpectrum fromSpectrum)
 		{
 		setId(new byte[]{});
-		setAlphabet(prob.getAlphabet());
+		setAlphabet(fromSpectrum.getAlphabet());
 
 		/*
 		  this.pMin = pMin;
@@ -145,12 +139,12 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 
 		Set<byte[]> remainingSequences = new HashSet<byte[]>();
 
-		for (byte c : prob.getAlphabet())
+		for (byte c : fromSpectrum.getAlphabet())
 			{
 			byte[] s = new byte[]{c};
 			try
 				{
-				if (prob.totalProbability(s) >= pMin)
+				if (fromSpectrum.totalProbability(s) >= pMin)
 					{
 					remainingSequences.add(s);
 					}
@@ -173,12 +167,12 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 			remainingSequences.remove(s);
 
 			// B)
-			for (byte sigma : prob.getAlphabet())
+			for (byte sigma : fromSpectrum.getAlphabet())
 				{
 				try
 					{
-					double conditional = prob.conditionalProbability(sigma, s);
-					double suffixConditional = prob.conditionalProbability(sigma, ArrayUtils.suffix(s, 1));
+					double conditional = fromSpectrum.conditionalProbability(sigma, s);
+					double suffixConditional = fromSpectrum.conditionalProbability(sigma, ArrayUtils.suffix(s, 1));
 
 					double probRatio = conditional / suffixConditional;
 					//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
@@ -201,12 +195,12 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 			// C)
 			if (s.length < l_max)
 				{
-				for (byte sigma2 : prob.getAlphabet())
+				for (byte sigma2 : fromSpectrum.getAlphabet())
 					{
 					byte[] s2 = ArrayUtils.prepend(sigma2, s);
 					try
 						{
-						if (prob.totalProbability(s2) >= pMin)
+						if (fromSpectrum.totalProbability(s2) >= pMin)
 							{
 							remainingSequences.add(s2);
 							}
@@ -227,7 +221,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 
 		//complete();
 		logger.debug("1");
-		completeAndCopyProbsFrom(prob);
+		completeAndCopyProbsFrom(fromSpectrum);
 		logger.debug("2");
 
 
@@ -251,7 +245,7 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		   }*/
 
 		//return root;
-		List<MarkovTreeNode> breadthFirstList = setBacklinks();
+		//List<MarkovTreeNode> breadthFirstList = setBacklinks();
 
 
 		if (completionProcessor != null)
@@ -311,19 +305,6 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 			}
 		}
 
-	private List<MarkovTreeNode> setBacklinks()
-		{
-		List<MarkovTreeNode> result = new LinkedList();
-		Queue<MarkovTreeNode> breathFirstQueue = new LinkedList<MarkovTreeNode>();
-		breathFirstQueue.add(this);
-		while (!breathFirstQueue.isEmpty())
-			{
-			MarkovTreeNode next = breathFirstQueue.remove();
-			next.setBacklinksUsingRoot(this, breathFirstQueue);
-			result.add(next);
-			}
-		return result;
-		}
 
 	public String toLongString()
 		{
@@ -366,71 +347,6 @@ public class RonPST extends MarkovTreeNode//implements SequenceSpectrumTranslato
 		return getLongestSuffix(prefix).conditionalsFrom(new byte[]{});
 		}
 
-	/**
-	 * Computes the total log probability of generating the given sequence fragment under the model.  This differs from
-	 * {@link #totalProbability(byte[])} in that the sequence fragment is not given explicitly but only as metadata.  Thus
-	 * its probability may be computed from summary statistics that are already available in the given SequenceFragment
-	 * rather than from the raw sequence.  Also, because these probabilities are typically very small, the result is
-	 * returned in log space (indeed implementations will likely compute them in log space).
-	 * <p/>
-	 * Note this computes the probability only in the forward direction (i.e., it does not take a reverse complement
-	 * also).
-	 *
-	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
-	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
-	 */
-	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
-		{
-		// simply follow the MarkovTreeNode as a state machine, using backlinks
-		SequenceReader in = sequenceFragment.getResetReader();
-		in.setTranslationAlphabet(getAlphabet());
-		double logprob = 0;
-		MarkovTreeNode currentNode = this;
-		int count = 0;
-		int desiredLength = sequenceFragment.getDesiredLength();
-		while (count < desiredLength)
-			{
-			try
-				{
-				int c = in.readTranslated();
-				logConditionalProbability = currentNode.logConditionalProbabilityByAlphabetIndex(c);
-
-				logger.debug("Conditional at " + new String(currentNode.getIdBytes()) + " " + (char) getAlphabet()[c]
-						+ " = " + currentNode
-						.conditionalProbabilityByAlphabetIndex(c));
-				logprob += logConditionalProbability;
-				currentNode = currentNode.nextNodeByAlphabetIndex(c);
-				}
-			catch (NotEnoughSequenceException e)
-				{
-				logger.debug(e);
-				e.printStackTrace();
-				throw new SequenceSpectrumException(e);
-				}
-			catch (TranslationException e)
-				{
-				// probably a bad input character
-				logger.debug(" at " + in, e);
-
-				// ignore it, but reset the state machine
-				currentNode = this;
-				}
-			catch (IOException e)
-				{
-				logger.debug(e);
-				e.printStackTrace();
-				throw new SequenceSpectrumException(e);
-				}
-			catch (FilterException e)
-				{
-				logger.debug(e);
-				e.printStackTrace();
-				throw new SequenceSpectrumException(e);
-				}
-			count++;
-			}
-		return logprob;
-		}
 
 	// -------------------------- OTHER METHODS --------------------------
 

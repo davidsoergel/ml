@@ -49,15 +49,15 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * A node in a tree where each transition is labeled by a byte and has a local probability (that is, conditional on the
  * parent node).  If the tree is completely filled out with respect to its alphabet up to a depth k, then it represents
- * a k-order Markov model.  If it is incompletely filled out, it may represent a Probabilistic Suffix Tree.  There is
- * some confusion about whether PSTs should be drawn "to the left" or "to the right", but it turns out to be equivalent
- * if you think about it properly.  The only remaining difficulty is how to add strings recursively; in the case of
- * PSTs, the recursion should walk all suffixes, not prefixes.
+ * a k-order Markov model.  If it is incompletely filled out, it may represent a Variable Memory Markov model (VMM).
+ *
+ * @see RonPSANode
+ *      <p/>
+ *      This class should not be used to represent a Probabilistic Suffix Tree, because that is likely to be confusing.
  */
 public class MarkovTreeNode extends AbstractGenericFactoryAware
 		implements SequenceSpectrum<MarkovTreeNode>, MutableDistribution
@@ -65,8 +65,8 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	// ------------------------------ FIELDS ------------------------------
 
 	private static Logger logger = Logger.getLogger(MarkovTreeNode.class);
-	private byte[] id;
-	private byte[] alphabet;
+	protected byte[] id;
+	protected byte[] alphabet;
 	private double[] logprobs;
 
 	// use the alphabet to get indexes into the child array, instead of the HashM'p, for efficiency (no autoboxing, etc)
@@ -74,16 +74,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	//	private Map<Byte, MarkovTreeNode> children = new HashMap<Byte, MarkovTreeNode>();
 
 	// includes only the children, with nulls where the tree does not continue
-	private MarkovTreeNode[] children;
+	protected MarkovTreeNode[] children;
 
-	// includes both the real children and the backlinks together
-	private MarkovTreeNode[] nextNodes;
+	protected Multinomial<Byte> probs = new Multinomial<Byte>();
 
-	//private Map<Byte, MarkovTreeNode> backlinkChildren = new HashMap<Byte, MarkovTreeNode>();
-	private Multinomial<Byte> probs = new Multinomial<Byte>();
-	private MarkovTreeNode backoffPrior;
-
-	private boolean leaf = true;
+	protected boolean leaf = true;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
@@ -108,7 +103,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		this.alphabet = alphabet;
 		logprobs = new double[alphabet.length];
 		children = new MarkovTreeNode[alphabet.length];
-		nextNodes = new MarkovTreeNode[alphabet.length];
 		}
 
 	// --------------------- GETTER / SETTER METHODS ---------------------
@@ -123,27 +117,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return alphabet;
 		}
 
-	//	@NotNull
-	//	public MarkovTreeNode nextNode(byte sigma)
-	//		{
-	//		return children.get(sigma);
-	/*		MarkovTreeNode result = children.get(sigma);
-					if (result == null)
-						{
-						result = backlinkChildren.get(sigma);
-						}
-					return result;*/
-	//		}
-
-	public MarkovTreeNode getBackoffPrior()
-		{
-		return backoffPrior;
-		}
-
-	public MarkovTreeNode[] getChildren()
-		{
-		return children;
-		}
 
 	/**
 	 * Returns a mapping of symbols to child nodes, describing the possible transitions from this node to its children.
@@ -173,8 +146,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
-	 * Performs a deep copy of this node.  Does not populate nextNode, since it can't know the identities of the
-	 * appropriate backlink nodes
+	 * Performs a deep copy of this node.
 	 *
 	 * @return a copy of this node, including a deep copy of its children and their probabilities
 	 */
@@ -225,16 +197,19 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 */
 	public MarkovTreeNode getChild(byte sigma) throws SequenceSpectrumException
 		{
-		return children[alphabetIndexForSymbol(sigma)];
+		return children[ArrayUtils.indexOf(alphabet, sigma)];
+		}
+
+	public MarkovTreeNode[] getChildren()
+		{
+		return children;
 		}
 
 	private void addChild(byte b, MarkovTreeNode child) throws SequenceSpectrumException
 		{
 		leaf = false;
-		int childIndex = alphabetIndexForSymbol(b);
+		int childIndex = ArrayUtils.indexOf(alphabet, b);
 		children[childIndex] = child;
-		nextNodes[childIndex] = child;
-		//children.put(b, child);
 		}
 
 	// ------------------------ INTERFACE METHODS ------------------------
@@ -395,7 +370,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 */
 	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
 		{
-		// the RonPST implementation uses backlinks and so is vastly more efficient.
+		// the RonPSA implementation uses backlinks and so is vastly more efficient.
 		// We can't use backlinks here because they might point to nodes outside of this subtree
 
 		SequenceReader in = sequenceFragment.getResetReader();
@@ -616,12 +591,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public MarkovTreeNode addChild(byte sigma) throws SequenceSpectrumException
 		{
 		leaf = false;
-		int index = alphabetIndexForSymbol(sigma);
+		int index = ArrayUtils.indexOf(alphabet, sigma);
 		MarkovTreeNode result = children[index];
 		if (result == null)
 			{
 			result = new MarkovTreeNode(ArrayUtils.append(id, sigma), alphabet);
-			nextNodes[index] = result;
 			children[index] = result;
 			}
 		return result;
@@ -641,7 +615,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				{
 				formatter.format("%s %3.3g -> %c\n", indent, probs.get(b), b);
 				//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
-				MarkovTreeNode child = nextNodes[i];
+				MarkovTreeNode child = children[i];
 				if (child != null && child.getId().length() > getId().length())
 					{
 					child.appendString(formatter, indent + "     | ");
@@ -704,7 +678,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				}
 
 			// Nooo!  We already made sure that we have probability entries for each possible child.
-			// But we only want a full-fledged node if tha child itself has children.
+			// But we only want a full-fledged node if the child itself has children.
 			/*
 
 								// if there are any children, make sure there are all children
@@ -908,7 +882,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			return this;
 			}
 
-		MarkovTreeNode nextChild = nextNodes[alphabetIndexForSymbol(seq[0])];
+		MarkovTreeNode nextChild = children[ArrayUtils.indexOf(alphabet, seq[0])];
 
 		if (nextChild == null)
 			{
@@ -958,20 +932,17 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 */
 	public double logConditionalProbability(byte sigma) throws SequenceSpectrumException
 		{
-		return logprobs[alphabetIndexForSymbol(sigma)];
+		try
+			{
+			return logprobs[ArrayUtils.indexOf(alphabet, sigma)];//alphabetIndexForSymbol(sigma)];
+			}
+		catch (IndexOutOfBoundsException e)
+			{
+
+			throw new SequenceSpectrumException("Symbol " + (char) sigma + " not in alphabet");
+			}
 		}
 
-	private int alphabetIndexForSymbol(byte sigma) throws SequenceSpectrumException
-		{
-		for (int i = 0; i < alphabet.length; i++)
-			{
-			if (sigma == alphabet[i])
-				{
-				return i;
-				}
-			}
-		throw new SequenceSpectrumException("Symbol " + (char) sigma + " not in alphabet");
-		}
 
 	public double logConditionalProbabilityByAlphabetIndex(int c)
 		{
@@ -992,21 +963,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		}
 
-	/**
-	 * Gets the child node associated with the given sequence, if it exists
-	 *
-	 * @param sigma the symbol to follow from this node
-	 * @return the node pointed to, or null if that leaf does not exist
-	 */
-	public MarkovTreeNode nextNode(byte sigma) throws SequenceSpectrumException
-		{
-		return nextNodes[alphabetIndexForSymbol(sigma)];
-		}
-
-	public MarkovTreeNode nextNodeByAlphabetIndex(int c)
-		{
-		return nextNodes[c];
-		}
 
 	/*
    public Set<MarkovTreeNode> getAllNodes()
@@ -1029,80 +985,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		   }
 	   }*/
 
-	public MarkovTreeNode[] nextNodes()
-		{
-		return nextNodes;
-		}
-
 	private void normalize() throws DistributionException
 		{
 		probs.normalize();
 		}
 
-	public void setBacklinksUsingRoot(MarkovTreeNode rootNode, Queue<MarkovTreeNode> breadthFirstQueue)
-		{
-		// must do this first, before we fill out the children hash
-		for (MarkovTreeNode child : children)//.values())
-			{
-			if (child != null)
-				{
-				breadthFirstQueue.add(child);//.setBacklinksUsingRoot(rootNode);
-				}
-			}
-		//	if (children.isEmpty())
-		//		{
-		if (id.length > 0)
-			{
-			try
-				{
-				setBackoffPrior(rootNode.getLongestSuffix(ArrayUtils.suffix(id, 1)));
-				}
-			catch (SequenceSpectrumException e)
-				{
-				throw new Error("Impossible");
-				}
-			}
-		//		}
-		//else
-		//	{
-
-		//	}
-		}
-
-	/**
-	 * This method assumes that it has not been run before, and that all nodes at higher levels in the tree hve already
-	 * been proceesed.  So it must be run in breadth-first order exactly once.
-	 *
-	 * @param backoffPrior
-	 */
-	public void setBackoffPrior(MarkovTreeNode backoffPrior)
-		{
-		this.backoffPrior = backoffPrior;
-		/*	if (children.isEmpty())
-		   {
-		   leaf = true;
-		   }*/
-		for (int i = 0; i < alphabet.length; i++)
-			{
-			if (nextNodes[i] == null)
-				{
-				nextNodes[i] = getBackoffPrior().nextNodes[i];//get(sigma));
-				}
-			}
-		}
-
-	/**
-	 * gets the node associated with the longest available suffix of the given sequence.
-	 *
-	 * @param suffix the sequence to walk
-	 * @return the MarkovTreeNode
-	 */
-	public MarkovTreeNode getLongestSuffix(byte[] suffix) throws SequenceSpectrumException
-		{
-		byte[] prefix = ArrayUtils.clone(suffix);
-		ArrayUtils.reverse(prefix);
-		return getLongestPrefix(prefix);
-		}
 
 	/**
 	 * gets the node associated with the longest available prefix of the given sequence.
