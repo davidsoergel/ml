@@ -35,6 +35,7 @@ package edu.berkeley.compbio.ml.strings;
 import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
+import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
@@ -267,7 +268,7 @@ public class RonPST extends RonPSTNode
 		// diagnostics
 		int total = 0, leaves = 0, maxdepth = 0;
 		double avgdepth = 0;
-		for (MarkovTreeNode node : breadthFirstList)
+		for (RonPSTNode node : getAllUpstreamNodes())
 			{
 			total++;
 			if (node.isLeaf())
@@ -300,11 +301,10 @@ public class RonPST extends RonPSTNode
 		{
 		while (s.length > 0)
 			{
-			add(s);
+			addUpstreamNode(s);
 			s = ArrayUtils.suffix(s, 1);
 			}
 		}
-
 
 	public String toLongString()
 		{
@@ -320,6 +320,33 @@ public class RonPST extends RonPSTNode
 	// --------------------- Interface SequenceSpectrum ---------------------
 
 	/**
+	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
+	 * requires no cast.  Also, we insist that this method be implemented in inheriting classes, so it does not throw
+	 * CloneNotSupportedException.
+	 *
+	 * @return a clone of this instance.
+	 * @see Object#clone
+	 * @see Cloneable
+	 */
+	public RonPST clone()
+		{
+		return null;
+		}
+
+	/**
+	 * Test whether the given object is the same as this one.  Differs from equals() in that implementations of this
+	 * interface may contain additional state which make them not strictly equal; here we're only interested in whether
+	 * they're equal as far as this interface is concerned, i.e., for purposes of clustering.
+	 *
+	 * @param other The clusterable object to compare against
+	 * @return True if they are equivalent, false otherwise
+	 */
+	public boolean equalValue(RonPST other)
+		{
+		return false;
+		}
+
+	/**
 	 * Computes the conditional probability of generating a symbol given a prefix under the model, backing off to shorter
 	 * prefixes as needed if the given prefix is not explicitly represented.
 	 *
@@ -331,7 +358,16 @@ public class RonPST extends RonPSTNode
 	public double conditionalProbability(byte sigma, byte[] prefix) throws SequenceSpectrumException
 		{
 		//return getLongestSuffix(ArrayUtils.append(prefix, sigma)).conditionalProbability(sigma);
-		return getLongestSuffix(prefix).conditionalProbability(sigma);
+		try
+			{
+			return getLongestSuffix(prefix).getProbs().get(sigma);
+			}
+		catch (DistributionException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumException(e);
+			}
 		}
 
 	/**
@@ -341,17 +377,210 @@ public class RonPST extends RonPSTNode
 	 * @param prefix a byte array providing the conditioning prefix
 	 * @return the Multinomial conditional distribution of symbols following the given prefix
 	 */
-	@Override
 	public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
 		{
-		return getLongestSuffix(prefix).conditionalsFrom(new byte[]{});
+		return getLongestSuffix(prefix).getProbs();
 		}
 
+	/**
+	 * Computes the total log probability of generating the given sequence fragment under the model.  This differs from
+	 * {@link #totalProbability(byte[])} in that the sequence fragment is not given explicitly but only as metadata.  Thus
+	 * its probability may be computed from summary statistics that are already available in the given SequenceFragment
+	 * rather than from the raw sequence.  Also, because these probabilities are typically very small, the result is
+	 * returned in log space (indeed implementations will likely compute them in log space).
+	 *
+	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
+	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
+	 */
+	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
+		{
+		return 0;
+		}
+
+	/**
+	 * Returns the alphabet of this SequenceSpectrum object.
+	 *
+	 * @return the alphabet (type byte[]) of this SequenceSpectrum object.
+	 */
+	public byte[] getAlphabet()
+		{
+		return new byte[0];
+		}
+
+	/**
+	 * Returns the length of the sequence that was scanned to produce this spectrum.  This number may be greater than that
+	 * given by {@link #getNumberOfSamples()} because every symbol is not necessarily counted as a sample, depending on the
+	 * implementation.
+	 *
+	 * @return the length (type int) of this Kcount object.
+	 */
+	public int getOriginalSequenceLength()
+		{
+		return 0;
+		}
+
+	/**
+	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
+	 * implicit assumption is that the sequences being modeled have some correlation length, and thus that statistical
+	 * models of them can be built from substrings up to that length.  Thus, this method tells the maximum correlation
+	 * length provided by the model.  A manifestation of this is that conditional probabilities of symbols given a prefix
+	 * will cease to change as the prefix is lengthened (to the left) past this length.
+	 *
+	 * @return the maximum correlation length considered in the model.
+	 */
+	public int getMaxDepth()
+		{
+		return 0;
+		}
+
+	/**
+	 * Returns the number of samples on which this spectrum is based.
+	 *
+	 * @return The number of samples
+	 */
+	public int getNumberOfSamples()
+		{
+		return 0;
+		}
+
+	public void runBeginTrainingProcessor() throws DistributionProcessorException
+		{
+		}
+
+	public void runFinishTrainingProcessor() throws DistributionProcessorException
+		{
+		}
+
+	/**
+	 * Chooses a random symbol according to the conditional probabilities of symbols following the given prefix.  Shortcut
+	 * equivalent to conditionalsFrom(prefix).sample().byteValue()
+	 *
+	 * @param prefix a byte array providing the conditioning prefix
+	 * @return the chosen symbol
+	 */
+	public byte sample(byte[] prefix) throws SequenceSpectrumException
+		{
+		return 0;
+		}
+
+	/**
+	 * Chooses a random string according to the conditional probabilities of symbols.
+	 *
+	 * @param length the length of the desired random string
+	 * @return a byte[] of the desired length sampled from this distribution
+	 */
+	public byte[] sample(int length) throws SequenceSpectrumException
+		{
+		return new byte[0];
+		}
+
+	public void setIgnoreEdges(boolean b)
+		{
+		}
+
+	public void setImmutable()
+		{
+		}
+
+	/**
+	 * Test whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
+	 * implementations of this interface may contain additional state which make them not strictly equal; here we're only
+	 * interested in whether they're equal as far as this interface is concerned.
+	 * <p/>
+	 * Naive implementations will simply test for exact equality; more sophisticated implementations ought to use a more
+	 * rigorous idea of "statistically equivalent", though in that case we'll probabably need to provide more parameters,
+	 * such as a p-value threshold to use.  Note that the spectra know the number of samples used to generate them, so at
+	 * least that's covered.
+	 *
+	 * @param spectrum the SequenceSpectrum to compare
+	 * @return True if the spectra are equivalent, false otherwise
+	 */
+	public boolean spectrumEquals(SequenceSpectrum spectrum)
+		{
+		return false;
+		}
+
+	/**
+	 * Computes the probability of generating the given sequence under the model.
+	 *
+	 * @param s a byte array
+	 * @return the probability, a double value between 0 and 1, inclusive
+	 */
+	public double totalProbability(byte[] s) throws SequenceSpectrumException
+		{
+		return 0;
+		}
 
 	// -------------------------- OTHER METHODS --------------------------
 
-	public MarkovTreeNode getBackoffPrior(byte[] id) throws SequenceSpectrumException
+	/*
+	 public RonPSTNode getBackoffPrior(byte[] id) throws SequenceSpectrumException
+		 {
+		 return getLongestSuffix(ArrayUtils.suffix(id, 1));
+		 }
+ */
+	private RonPSTNode getLongestSuffix(byte[] bytes) throws SequenceSpectrumException
 		{
-		return getLongestSuffix(ArrayUtils.suffix(id, 1));
+		RonPSTNode currentNode = this;
+		for (int i = bytes.length - 1; i >= 0; i--)
+			{
+			RonPSTNode nextNode = getUpstreamNode(bytes[i]);
+			if (nextNode == null)
+				{
+				return currentNode;
+				}
+			currentNode = nextNode;
+			}
+		return currentNode;
+		}
+
+
+	/**
+	 * updates this object by subtracting another one from it.
+	 *
+	 * @param object the object to subtract from this one
+	 */
+	public void decrementBy(RonPST object)
+		{
+		}
+
+	/**
+	 * updates this object by adding another one to it.
+	 *
+	 * @param object the object to add to this one
+	 */
+	public void incrementBy(RonPST object)
+		{
+		}
+
+	/**
+	 * Returns a new object representing the difference between this one and the given argument.
+	 *
+	 * @param object the object to be subtracted from this one
+	 * @return the difference between this object and the argument
+	 */
+	public RonPST minus(RonPST object)
+		{
+		return null;
+		}
+
+	/**
+	 * Returns a new object representing the sum of this one and the given argument.
+	 *
+	 * @param object the object to be added to this one
+	 * @return the sum of this object and the argument
+	 */
+	public RonPST plus(RonPST object)
+		{
+		return null;
+		}
+
+	public RonPST times(double v)
+		{
+		return null;
+		}
+
+	public void multiplyBy(double v)
+		{
 		}
 	}

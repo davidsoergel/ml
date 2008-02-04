@@ -30,6 +30,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+@Deprecated
 public class InferredMixturePST//implements SequenceSpectrum
 	{
 	/*

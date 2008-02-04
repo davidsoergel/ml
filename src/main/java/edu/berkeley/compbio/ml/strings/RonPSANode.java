@@ -254,5 +254,16 @@ public class RonPSANode extends MarkovTreeNode
 			}
 		return currentNode;
 		}
+
+
+	public RonPSANode[] getChildren()
+		{
+		return (RonPSANode[]) children;
+		}
+
+	public RonPSANode getChild(byte sigma) throws SequenceSpectrumException
+		{
+		return (RonPSANode) (super.getChild(sigma));
+		}
 	}
 

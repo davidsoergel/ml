@@ -35,32 +35,33 @@ import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
-public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkovTreeNode>
+public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<RelativeMarkovTreeNode>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(RelativeMarkovTreeNode.class);
-	Multinomial<Byte> target = new Multinomial<Byte>();
+	private static Logger logger = Logger.getLogger(SimplexVectorTargetAndProportion.class);
+	Multinomial<T> target = new Multinomial<T>();
 	double mixingProportion;
-	protected MarkovTreeNode backoffParent;
+	//	protected MarkovTreeNode backoffParent;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * Constructs a new RelativeMarkovTreeNode by comparing one MarkovTreeNode with another and representing the difference
-	 * as a vector on the simplex.  A PST can be constructed from these where each node is represented the difference
+	 * as a vector on the simplex.  A PSA can be constructed from these where each node is represented the difference
 	 * between the multinomial at the node and its (backoff) prior expectation.
-	 *
-	 * @param currentNode   a MarkovTreeNode containing a multinomial
-	 * @param backoffParent the MarkovTreeNode containing a multinomial to which the currentNode should be compared;
-	 *                      typically the backoff prior in our case.
+	 * <p/>
+	 * //@param currentNode   a MarkovTreeNode containing a multinomial //@param backoffParent the MarkovTreeNode
+	 * containing a multinomial to which the currentNode should be compared; //                    typically the backoff
+	 * prior in our case.
 	 */
-	public RelativeMarkovTreeNode(MarkovTreeNode currentNode, MarkovTreeNode backoffParent)
+	public SimplexVectorTargetAndProportion(Multinomial<T> fromDist,
+	                                        Multinomial<T> toDist)//MarkovTreeNode currentNode, MarkovTreeNode backoffParent)
 		{
-		this.backoffParent = backoffParent;
-		Multinomial<Byte> childProbs = currentNode.getProbs();
-		Multinomial<Byte> parentProbs = backoffParent.getProbs();
+		//	this.backoffParent = backoffParent;
+		//	Multinomial<Byte> childProbs = currentNode.getProbs();
+		//	Multinomial<Byte> parentProbs = backoffParent.getProbs();
 
 		//byte zeroSymbol = 0;
 		mixingProportion = 0;
@@ -68,9 +69,9 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 		try
 			{
 			// see which symbol probability would hit zero first if we keep going in the same direction
-			for (byte b : childProbs.getElements())
+			for (T b : toDist.getElements())
 				{
-				double alpha = 1 - (childProbs.get(b) / parentProbs.get(b));
+				double alpha = 1 - (toDist.get(b) / fromDist.get(b));
 
 				if (mixingProportion < alpha && alpha <= 1)
 					{
@@ -88,7 +89,7 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 				}
 			else
 				{
-				for (byte b : childProbs.getElements())
+				for (T b : toDist.getElements())
 					{
 					double targetVal;
 					/*	if (b == zeroSymbol)
@@ -98,7 +99,7 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 					   }
 				   else
 					   {*/
-					targetVal = (1 / mixingProportion) * childProbs.get(b) + (1 - (1 / mixingProportion)) * parentProbs
+					targetVal = (1 / mixingProportion) * toDist.get(b) + (1 - (1 / mixingProportion)) * fromDist
 							.get(b);
 					//	}
 					// avoid infinitesimal negative values due to numerical imprecision
@@ -129,7 +130,7 @@ public class RelativeMarkovTreeNode// implements SequenceSpectrum<RelativeMarkov
 		return mixingProportion;
 		}
 
-	public Multinomial<Byte> getTarget()
+	public Multinomial<T> getTarget()
 		{
 		return target;
 		}

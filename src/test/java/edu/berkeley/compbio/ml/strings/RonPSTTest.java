@@ -35,8 +35,6 @@ import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
-import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Clusterable;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.testng.annotations.BeforeMethod;
@@ -110,13 +108,13 @@ public class RonPSTTest
 		return ss;*/
 		}
 
-	private boolean allNodesAreCompleteOrEmpty(MarkovTreeNode node, int maxWidth)
+	private boolean allNodesAreCompleteOrEmpty(RonPSTNode node, int maxWidth)
 		{
 		if (!nodeIsCompleteOrEmpty(node, maxWidth))
 			{
 			return false;
 			}
-		for (MarkovTreeNode child : node.getChildren())//.values())
+		for (RonPSTNode child : node.getUpstreamNodes())//.values())
 			{
 			if (child != null && !allNodesAreCompleteOrEmpty(child, maxWidth))
 				{
@@ -126,9 +124,9 @@ public class RonPSTTest
 		return true;
 		}
 
-	private boolean nodeIsCompleteOrEmpty(MarkovTreeNode node, int maxWidth)
+	private boolean nodeIsCompleteOrEmpty(RonPSTNode node, int maxWidth)
 		{
-		int width = node.countChildren();//.size();
+		int width = node.countUpstreamNodes();//.size();
 		if (width != 0 && width != maxWidth)
 			{
 			return false;
@@ -224,12 +222,55 @@ public class RonPSTTest
 
 	// -------------------------- INNER CLASSES --------------------------
 
-	public static class StubSequenceSpectrum extends AbstractGenericFactoryAware implements SequenceSpectrum
+	public static class StubSequenceSpectrum extends AbstractGenericFactoryAware
+			implements SequenceSpectrum<StubSequenceSpectrum>
 		{
 		Map<Byte, Double> counts = new HashMap<Byte, Double>();
 		Map<Byte, Map<Byte, Double>> counts2 = new HashMap<Byte, Map<Byte, Double>>();
 
 		public void multiplyBy(double v)
+			{
+			throw new NotImplementedException();
+			}
+
+		/**
+		 * updates this object by subtracting another one from it.
+		 *
+		 * @param object the object to subtract from this one
+		 */
+		public void decrementBy(StubSequenceSpectrum object)
+			{
+			throw new NotImplementedException();
+			}
+
+		/**
+		 * updates this object by adding another one to it.
+		 *
+		 * @param object the object to add to this one
+		 */
+		public void incrementBy(StubSequenceSpectrum object)
+			{
+			throw new NotImplementedException();
+			}
+
+		/**
+		 * Returns a new object representing the difference between this one and the given argument.
+		 *
+		 * @param object the object to be subtracted from this one
+		 * @return the difference between this object and the argument
+		 */
+		public StubSequenceSpectrum minus(StubSequenceSpectrum object)
+			{
+			throw new NotImplementedException();
+			}
+
+		/**
+		 * Returns a new object representing the sum of this one and the given argument.
+		 *
+		 * @param object the object to be added to this one
+		 * @return the sum of this object and the argument
+		 */
+		public StubSequenceSpectrum plus(StubSequenceSpectrum object)
 			{
 			throw new NotImplementedException();
 			}
@@ -284,15 +325,24 @@ public class RonPSTTest
 			counts.put((byte) 'd', ArrayUtils.sum(dCounts.values()));
 			}
 
-		public SequenceSpectrum clone()
+		public StubSequenceSpectrum clone()
 			{
 			throw new NotImplementedException();
 			}
 
-		public boolean equalValue(Clusterable other)
+		/**
+		 * Test whether the given object is the same as this one.  Differs from equals() in that implementations of this
+		 * interface may contain additional state which make them not strictly equal; here we're only interested in whether
+		 * they're equal as far as this interface is concerned, i.e., for purposes of clustering.
+		 *
+		 * @param other The clusterable object to compare against
+		 * @return True if they are equivalent, false otherwise
+		 */
+		public boolean equalValue(StubSequenceSpectrum other)
 			{
 			throw new NotImplementedException();
 			}
+
 
 		public String getId()
 			{
@@ -421,25 +471,6 @@ public class RonPSTTest
 			// do nothing
 			}
 
-		public void decrementBy(AdditiveClusterable object)
-			{
-			throw new NotImplementedException();
-			}
-
-		public void incrementBy(AdditiveClusterable object)
-			{
-			throw new NotImplementedException();
-			}
-
-		public AdditiveClusterable minus(AdditiveClusterable object)
-			{
-			throw new NotImplementedException();
-			}
-
-		public AdditiveClusterable plus(AdditiveClusterable object)
-			{
-			throw new NotImplementedException();
-			}
 
 		public List<byte[]> getFirstWords(int k)
 			{

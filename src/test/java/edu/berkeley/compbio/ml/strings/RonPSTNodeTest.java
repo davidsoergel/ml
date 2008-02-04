@@ -30,66 +30,61 @@
 
 package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.runutils.Property;
-import com.davidsoergel.runutils.PropertyConsumer;
-import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.DistributionProcessor;
-import org.apache.log4j.Logger;
+import org.testng.annotations.Test;
 
-import java.util.LinkedList;
-import java.util.List;
+/* $Id$ */
 
-@PropertyConsumer
-public class RonPSTSmoother implements DistributionProcessor<RonPST>
+/**
+ * @Author David Soergel
+ * @Version 1.0
+ */
+public class RonPSTNodeTest
 	{
-	// ------------------------------ FIELDS ------------------------------
-
-	private static Logger logger = Logger.getLogger(KneserNeyPSASmoother.class);
-
-	@Property(helpmessage = "Smoothing factor", defaultvalue = "0.1")
-	public Double smoothFactor;
-
-	// --------------------------- CONSTRUCTORS ---------------------------
-
-	public RonPSTSmoother()//String injectorId)//double smoothFactor)
+	@Test
+	public void updateLogProbsWorks()
 		{
-		//this.smoothFactor = smoothFactor;
-		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
+		assert false;
 		}
 
-	// ------------------------ INTERFACE METHODS ------------------------
 
-	// --------------------- Interface DistributionProcessor ---------------------
-
-	public void process(RonPST ronPST)
+	@Test
+	public void updateLogProbsRecursiveWorks()
 		{
-		try
-			{
-			// breadth first  (for no reason, just symmetry with the KneserNeyPSTSmoother where it is important)
-
-			List<RonPSTNode> nodesRemaining = new LinkedList<RonPSTNode>();
-			nodesRemaining.add(ronPST);
-
-			while (!nodesRemaining.isEmpty())
-				{
-				RonPSTNode node = nodesRemaining.remove(0);
-				node.getProbs().redistributeWithMinimum(smoothFactor);
-
-				for (RonPSTNode n : node.getUpstreamNodes())
-					{
-					if (n != null)
-						{
-						nodesRemaining.add(n);
-						}
-					}
-				}
-			}
-		catch (DistributionException e)
-			{
-			logger.debug(e);
-			throw new Error(e);
-			}
+		assert false;
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+
+	@Test
+	public void addDirectlyUpstreamNodeWorks()
+		{
+		assert false;
+		}
+
+
+	@Test
+	public void addUpstreamNodeChainWorks()
+		{
+		assert false;
+		}
+
+
+	@Test
+	public void getAllUpstreamNodesWorks()
+		{
+		assert false;
+		}
+
+
+	@Test
+	public void countUpstreamNodesWorks()
+		{
+		assert false;
+		}
+
+
+	@Test
+	public void completeAndCopyProbsFromWorks()
+		{
+		assert false;
+		}
 	}

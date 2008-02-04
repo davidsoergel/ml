@@ -37,19 +37,24 @@ import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
+
 /* $Id$ */
 
 /**
- * A node of a Probabilistic Suffix Tree.  Much of this code is very similar to that found in MarkovTreeNode, but I
- * thought it best to separate them to avoid confusion (i.e., because a PST grows to the left whereas a markov tree
- * grows to the right, and such).
+ * A node of a Probabilistic Suffix Tree, where each symbol is a byte.  Much of this code is very similar to that found
+ * in MarkovTreeNode, but I thought it best to separate them to avoid confusion (i.e., because a PST grows to the left
+ * whereas a markov tree grows to the right, and such).
+ * <p/>
+ * A PST node by itself doesn't represent a spectrum like a MarkovTreeNode does; for that you need the root.  So, we
+ * don't implement SequenceSpectrum or MutableDistribution here.
  *
  * @Author David Soergel
  * @Version 1.0
  */
 public class RonPSTNode extends AbstractGenericFactoryAware
-		//implements SequenceSpectrum<RonPSTNode>, MutableDistribution
-		// a node by itself doesn't represent a spectrum like a MarkovTreeNode does; for that you need the root.
 	{
 	private static final Logger logger = Logger.getLogger(RonPSTNode.class);
 
@@ -58,33 +63,80 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	private double[] logprobs;
 	private Multinomial<Byte> probs = new Multinomial<Byte>();
 
+	private boolean leaf = true;
 
 	public RonPSTNode()
 		{
 		}
 
-	// includes only the children, with nulls where the tree does not continue
+	/**
+	 * The upstream node for each symbol, indexed by the alphabet index.  Contains nulls for symbols where no upstream node
+	 * exists.
+	 */
 	private RonPSTNode[] upstreamNodes;
 
+
+	/**
+	 * Returns an array of upstream nodes for each symbol, indexed by the alphabet index.  Contains nulls for symbols where
+	 * no upstream node exists.
+	 */
 	public RonPSTNode[] getUpstreamNodes()
 		{
 		return upstreamNodes;
 		}
 
+	/**
+	 * Get the upstream node for the specified symbol.  Returns null if the node does not exist.
+	 *
+	 * @param b the symbol specifying the upstream transition to follow
+	 * @return the node found by following the requested transition, or null if the node does not exist.
+	 * @throws SequenceSpectrumException if the requested symbol is not part of the alphabet
+	 */
+	public RonPSTNode getUpstreamNode(byte b) throws SequenceSpectrumException
+		{
+		try
+			{
+			return upstreamNodes[ArrayUtils.indexOf(alphabet, b)];
+			}
+		catch (Exception e)
+			{
+			throw new SequenceSpectrumException(e);
+			}
+		}
+
+	/**
+	 * Gets the probability distribution over symbols following the suffix specified by this node's id.
+	 *
+	 * @return a Multinomial<Byte> distribution over symbols.
+	 */
 	public Multinomial<Byte> getProbs()
 		{
 		return probs;
 		}
 
+	/**
+	 * Sets the id of this node, which is just the suffix associated with this node represented as a byte[].
+	 *
+	 * @param id
+	 */
 	public void setId(byte[] id)
 		{
 		this.id = id;
 		}
 
 	/**
-	 * Constructs a new MarkovTreeNode with the given identifier
+	 * Gets the id of this node, which is just the suffix associated with this node represented as a byte[].
+	 */
+	public String getId()
+		{
+		return new String(id);
+		}
+
+	/**
+	 * Constructs a new RonPSTNode with the given identifier
 	 *
-	 * @param id the sequence of symbols leading to this node
+	 * @param id       the suffix associated with this node
+	 * @param alphabet the array of valid symbols
 	 */
 	public RonPSTNode(byte[] id, byte[] alphabet)
 		{
@@ -92,6 +144,12 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		setAlphabet(alphabet);
 		}
 
+	/**
+	 * Sets the array of valid symbols.  The order is important since various other arrays (e.g. upstreamNodes) are of the
+	 * same size and use the same indexes.
+	 *
+	 * @param alphabet
+	 */
 	public void setAlphabet(byte[] alphabet)
 		{
 		this.alphabet = alphabet;
@@ -99,13 +157,23 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		upstreamNodes = new RonPSTNode[alphabet.length];
 		}
 
-
+	/**
+	 * Sets the probability of the given symbol to the given value.  This may cause the probability distribution to become
+	 * unnormalized.
+	 *
+	 * @param b    the symbol
+	 * @param prob the probability
+	 * @throws DistributionException if something bad happens, like a negative probability
+	 */
 	private void setProb(byte b, double prob) throws DistributionException
 		{
 		probs.put(b, prob);
 		}
 
-
+	/**
+	 * Takes the logs of all the probabilities at this node and caches them; then follows the upstream transitions and
+	 * repeats recursively.
+	 */
 	public void updateLogProbsRecursive()
 		{
 		updateLogProbs();
@@ -118,6 +186,9 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			}
 		}
 
+	/**
+	 * Takes the logs of all the probabilities at this node and caches them.
+	 */
 	public void updateLogProbs()
 		{
 		try
@@ -136,12 +207,13 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 
 
 	/**
-	 * Gets the child node associated with the given sequence, creating it (and nodes along the way) as needed
+	 * Gets the upstream node associated with the given suffix starting from this node, creating it (and nodes along the
+	 * way) as needed
 	 *
 	 * @param suffix the sequence of symbols to follow from this node
 	 * @return the node at the end of the chain of transitions
 	 */
-	public RonPSTNode add(byte[] suffix) throws SequenceSpectrumException
+	public RonPSTNode addUpstreamNode(byte[] suffix) throws SequenceSpectrumException
 		{
 		if (suffix.length == 0)
 			{
@@ -154,26 +226,187 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			}
 		else if (suffix.length >= 1)
 			{
-			return addUpstreamNode(suffix[suffix.length - 1]).add(ArrayUtils.prefix(suffix, 1));
+			return addUpstreamNode(suffix[suffix.length - 1]).addUpstreamNode(ArrayUtils.prefix(suffix, 1));
 			}
 		throw new Error("Impossible");
 		}
 
 	/**
-	 * Gets the child node associated with the given symbol, creating it first if needed.
+	 * Gets the upstream node associated with the given symbol starting from this node, creating it first if needed.
 	 *
 	 * @param sigma the transition to follow from this node
 	 * @return the node at the other end of the transition
 	 */
 	public RonPSTNode addUpstreamNode(byte sigma) throws SequenceSpectrumException
 		{
-		//leaf = false;
+		leaf = false;
 		int index = ArrayUtils.indexOf(alphabet, sigma);
 		RonPSTNode result = upstreamNodes[index];
 		if (result == null)
 			{
 			result = new RonPSTNode(ArrayUtils.append(id, sigma), alphabet);
 			upstreamNodes[index] = result;
+			}
+		return result;
+		}
+
+	/**
+	 * Appends a string representation of this node to the given formatter, indenting as needed based on the hierarchy
+	 * level.
+	 *
+	 * @param formatter a Formatter, mostly as a convenience for rendering doubles with limited precision
+	 * @param indent    a String to use to indent this node and its children.  This will get longer as the recursion
+	 *                  proceeds towards the leaves of the tree.
+	 */
+	public void appendString(Formatter formatter, String indent)
+		{
+		formatter.format("[");
+		for (int i = 0; i < alphabet.length; i++)
+			{
+			byte b = alphabet[i];
+			try
+				{
+				formatter.format("%3.3g ", probs.get(b));
+				}
+			catch (DistributionException e)
+				{
+				//sb.append(indent + "ERROR ->" + b);
+				formatter.format("%s ", "ERROR");
+				}
+			}
+		formatter.format("]");
+
+		for (int i = 0; i < alphabet.length; i++)
+			{
+			byte b = alphabet[i];
+
+			formatter.format("\n%s %c ", indent, b);
+			//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
+			RonPSTNode child = upstreamNodes[i];
+			if (child != null && child.getId().length() > getId().length())
+				{
+				child.appendString(formatter, indent + "     | ");
+				}
+			}
+		}
+
+	/**
+	 * Gets a List<RonPSTNode> of all nodes in the subtree starting from this node, including this node.
+	 *
+	 * @return a List of all nodes in the subtree starting from this node, including this node.
+	 */
+	public List<RonPSTNode> getAllUpstreamNodes()
+		{
+		List<RonPSTNode> result = new ArrayList<RonPSTNode>();
+
+		collectUpstreamNodes(result);
+		return result;
+		}
+
+	/**
+	 * Recursively append this node and all its children (upstream nodes) to the provided List<RonPSTNode>
+	 *
+	 * @param nodeList a List to which to add this node and its children
+	 */
+	private void collectUpstreamNodes(List<RonPSTNode> nodeList)
+		{
+		nodeList.add(this);
+		for (RonPSTNode n : upstreamNodes)
+			{
+			if (n != null)
+				{
+				n.collectUpstreamNodes(nodeList);
+				}
+			}
+		}
+
+	/**
+	 * Tells whether this node is a leaf or not.
+	 *
+	 * @return true if this node has no upstream nodes, and false otherwise
+	 */
+	public boolean isLeaf()
+		{
+		return leaf;
+		}
+
+
+	/**
+	 * Recursively fills out the tree so that each node has either a complete set of children or none at all, and assigns
+	 * conditional probabilities according to the given spectrum.  That is: if this node has any children, ensures that
+	 * there is a child for each symbol in the alphabet.
+	 */
+	public void completeAndCopyProbsFrom(SequenceSpectrum spectrum)
+		//throws SequenceSpectrumException//DistributionException,
+		{
+		for (byte sigma : alphabet)
+			{
+			// copy the probabilities regardless
+			double prob = 0;
+			try
+				{
+				prob = spectrum.conditionalProbability(sigma, id);
+				}
+			catch (SequenceSpectrumException e)
+				{
+				//e.printStackTrace();
+				// no worries, just let prob=0 then
+				}
+			try
+				{
+				setProb(sigma, prob);
+				}
+			catch (DistributionException e)
+				{
+				throw new SequenceSpectrumRuntimeException(e);
+				}
+
+			// Nooo!  We already made sure that we have probability entries for each possible child.
+			// But we only want a full-fledged node if the child itself has children.
+			/*
+
+								// if there are any children, make sure there are all children
+							   if (children != null && children.size() != 0)
+								   {
+								   add(sigma).completeAndCopyProbsFrom(spectrum);
+								   }
+
+								   */
+			}
+		try
+			{
+			probs.normalize();
+			}
+		catch (DistributionException e)
+			{
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+
+		// okay, but we still need to recurse to the children that do exist
+		for (RonPSTNode upstream : upstreamNodes)//.values())
+			{
+			if (upstream != null)
+				{
+				upstream.completeAndCopyProbsFrom(spectrum);
+				}
+			}
+		}
+
+	/**
+	 * Counts the immediately upstream nodes that exist.
+	 *
+	 * @returns an int between 0 and the size of the alphabet (inclusive) giving the number of symbols that lead to more
+	 * specific nodes.
+	 */
+	public int countUpstreamNodes()
+		{
+		int result = 0;
+		for (RonPSTNode n : upstreamNodes)
+			{
+			if (n != null)
+				{
+				result++;
+				}
 			}
 		return result;
 		}
