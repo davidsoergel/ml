@@ -46,7 +46,7 @@ import java.util.List;
 /**
  * A node of a Probabilistic Suffix Tree, where each symbol is a byte.  Much of this code is very similar to that found
  * in MarkovTreeNode, but I thought it best to separate them to avoid confusion (i.e., because a PST grows to the left
- * whereas a markov tree grows to the right, and such).
+ * whereas a Markov tree grows to the right, and such).
  * <p/>
  * A PST node by itself doesn't represent a spectrum like a MarkovTreeNode does; for that you need the root.  So, we
  * don't implement SequenceSpectrum or MutableDistribution here.
@@ -168,6 +168,16 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	private void setProb(byte b, double prob) throws DistributionException
 		{
 		probs.put(b, prob);
+		}
+
+	/**
+	 * Normalize the underlying probability distribution
+	 *
+	 * @throws DistributionException
+	 */
+	public void normalize() throws DistributionException
+		{
+		probs.normalize();
 		}
 
 	/**

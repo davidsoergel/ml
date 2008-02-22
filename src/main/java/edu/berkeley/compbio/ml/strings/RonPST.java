@@ -40,6 +40,7 @@ import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
 import com.davidsoergel.stats.MutableDistribution;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.util.Formatter;
@@ -330,7 +331,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public RonPST clone()
 		{
-		return null;
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -343,7 +344,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public boolean equalValue(RonPST other)
 		{
-		return false;
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -394,7 +395,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
 		{
-		return 0;
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -404,7 +405,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public byte[] getAlphabet()
 		{
-		return new byte[0];
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -416,7 +417,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public int getOriginalSequenceLength()
 		{
-		return 0;
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -430,7 +431,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public int getMaxDepth()
 		{
-		return 0;
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -440,7 +441,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public int getNumberOfSamples()
 		{
-		return 0;
+		throw new NotImplementedException();
 		}
 
 	public void runBeginTrainingProcessor() throws DistributionProcessorException
@@ -460,7 +461,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public byte sample(byte[] prefix) throws SequenceSpectrumException
 		{
-		return 0;
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -471,15 +472,17 @@ public class RonPST extends RonPSTNode
 	 */
 	public byte[] sample(int length) throws SequenceSpectrumException
 		{
-		return new byte[0];
+		throw new NotImplementedException();
 		}
 
 	public void setIgnoreEdges(boolean b)
 		{
+		throw new NotImplementedException();
 		}
 
 	public void setImmutable()
 		{
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -497,7 +500,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public boolean spectrumEquals(SequenceSpectrum spectrum)
 		{
-		return false;
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -508,7 +511,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public double totalProbability(byte[] s) throws SequenceSpectrumException
 		{
-		return 0;
+		throw new NotImplementedException();
 		}
 
 	// -------------------------- OTHER METHODS --------------------------
@@ -519,6 +522,7 @@ public class RonPST extends RonPSTNode
 		 return getLongestSuffix(ArrayUtils.suffix(id, 1));
 		 }
  */
+
 	private RonPSTNode getLongestSuffix(byte[] bytes) throws SequenceSpectrumException
 		{
 		RonPSTNode currentNode = this;
@@ -542,6 +546,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public void decrementBy(RonPST object)
 		{
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -551,6 +556,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public void incrementBy(RonPST object)
 		{
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -561,7 +567,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public RonPST minus(RonPST object)
 		{
-		return null;
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -572,15 +578,16 @@ public class RonPST extends RonPSTNode
 	 */
 	public RonPST plus(RonPST object)
 		{
-		return null;
+		throw new NotImplementedException();
 		}
 
 	public RonPST times(double v)
 		{
-		return null;
+		throw new NotImplementedException();
 		}
 
 	public void multiplyBy(double v)
 		{
+		throw new NotImplementedException();
 		}
 	}

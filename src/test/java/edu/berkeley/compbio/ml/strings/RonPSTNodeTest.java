@@ -40,45 +40,64 @@ import org.testng.annotations.Test;
  */
 public class RonPSTNodeTest
 	{
+	RonPSTNode theNode;
+
+	public void setup()
+		{
+		theNode = new RonPSTNode();
+		}
+
 	@Test
 	public void updateLogProbsWorks()
 		{
-		assert false;
+		theNode.updateLogProbs();
+		assert theNode.getLogProbs().get('a') ==;
 		}
 
 
 	@Test
-	public void updateLogProbsRecursiveWorks()
+	public void updateLogProbsRecursiveWorks() throws SequenceSpectrumException
 		{
-		assert false;
+		theNode.updateLogProbsRecursive();
+		assert theNode.getUpstreamNode((byte) 'a').getLogProbs().get('a') ==;
 		}
 
 
 	@Test
-	public void addDirectlyUpstreamNodeWorks()
+	public void addDirectlyUpstreamNodeWorks() throws SequenceSpectrumException
 		{
-		assert false;
+		assert theNode.getUpstreamNode((byte) 'a') == null;
+		theNode.addUpstreamNode((byte) 'a');
+		assert theNode.getUpstreamNode((byte) 'a') != null;
 		}
 
 
 	@Test
-	public void addUpstreamNodeChainWorks()
+	public void addUpstreamNodeChainWorks() throws SequenceSpectrumException
 		{
-		assert false;
+		assert theNode.getUpstreamNode((byte) 'a') == null;
+		theNode.addUpstreamNode(new byte[]{
+				'a',
+				'c',
+				'g',
+				't'
+		});
+		assert theNode.getUpstreamNode((byte) 'a').getUpstreamNode((byte) 'c').getUpstreamNode((byte) 'g')
+				.getUpstreamNode((byte) 't') != null;
 		}
 
 
 	@Test
 	public void getAllUpstreamNodesWorks()
 		{
-		assert false;
+		assert theNode.getAllUpstreamNodes().size() == 10;
 		}
 
 
 	@Test
 	public void countUpstreamNodesWorks()
 		{
-		assert false;
+		assert theNode.countUpstreamNodes() == 10;
 		}
 
 
@@ -86,5 +105,10 @@ public class RonPSTNodeTest
 	public void completeAndCopyProbsFromWorks()
 		{
 		assert false;
+		}
+
+	private void buildSimplePST()
+		{
+
 		}
 	}
