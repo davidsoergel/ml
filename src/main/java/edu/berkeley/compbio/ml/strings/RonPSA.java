@@ -30,6 +30,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.ArrayUtils;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
 import edu.berkeley.compbio.sequtils.SequenceReader;
@@ -51,9 +52,65 @@ public class RonPSA extends RonPSANode
 	{
 	private static final Logger logger = Logger.getLogger(RonPSA.class);
 
-	public RonPSA(byte[] alphabet)
+	public RonPSA()
 		{
-		super(new byte[0], alphabet);
+
+		}
+
+	/*	public RonPSA(byte[] alphabet)
+	   {
+	   super(new byte[0], alphabet);
+	   }*/
+
+	/**
+	 * Convert a PST into a PSA as described in Ron et al Appendix B.  Assumes we're starting from an empty node.
+	 *
+	 * @param pst
+	 */
+	private void convertFrom(RonPST pst)
+		{
+		setAlphabet(pst.getAlphabet());
+		setId(new byte[0]);
+		copyProbsFromSpectrumRecursively(pst);
+		buildPSARecursivelyFromPSTNode(pst, pst);
+		updateLogProbsRecursive();
+		// at this point we have a pure tree with a full set of probabilities at every node
+
+		setBacklinks();
+		}
+
+	private void buildPSARecursivelyFromPSTNode(RonPSTNode pstNode, SequenceSpectrum spectrum)
+		{
+		getOrAddNodeAndIntermediates(pstNode.getIdBytes(), spectrum);
+
+		for (RonPSTNode pstUpstream : pstNode.getUpstreamNodes())
+			{
+			if (pstUpstream != null)
+				{
+				buildPSARecursivelyFromPSTNode(pstUpstream, spectrum);
+				}
+			}
+		}
+
+	private RonPSANode getOrAddNodeAndIntermediates(byte[] id, SequenceSpectrum spectrum)
+		{
+		//RonPSANode psaNode = new RonPSANode(id, alphabet);
+		RonPSANode result = getDescendant(id);
+		if (result == null)
+			{
+			RonPSANode parent = getOrAddNodeAndIntermediates(ArrayUtils.prefix(id, id.length - 1), spectrum);
+			result = parent.addChild(id[id.length - 1]);
+			result.copyProbsFromSpectrumRecursively(spectrum);
+			}
+		return result;
+		}
+
+
+	public void learn(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max,
+	                  SequenceSpectrum fromSpectrum)
+		{
+		RonPST pst = new RonPST(pMin, alpha, pRatioMinMax, gammaMin, l_max, fromSpectrum);
+		convertFrom(pst);
 		}
 
 	private List<RonPSANode> setBacklinks()

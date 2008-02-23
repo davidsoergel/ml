@@ -223,7 +223,7 @@ public class RonPST extends RonPSTNode
 
 		//complete();
 		logger.debug("1");
-		completeAndCopyProbsFrom(fromSpectrum);
+		copyProbsFrom(fromSpectrum);
 		logger.debug("2");
 
 
@@ -275,7 +275,7 @@ public class RonPST extends RonPSTNode
 			if (node.isLeaf())
 				{
 				leaves++;
-				int depth = node.getId().length();
+				int depth = node.getIdBytes().length;//length();
 				avgdepth += depth;
 				maxdepth = Math.max(maxdepth, depth);
 				}
@@ -405,7 +405,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public byte[] getAlphabet()
 		{
-		throw new NotImplementedException();
+		return alphabet;
 		}
 
 	/**
@@ -431,7 +431,7 @@ public class RonPST extends RonPSTNode
 	 */
 	public int getMaxDepth()
 		{
-		throw new NotImplementedException();
+		return super.getMaxDepth();
 		}
 
 	/**
@@ -528,7 +528,7 @@ public class RonPST extends RonPSTNode
 		RonPSTNode currentNode = this;
 		for (int i = bytes.length - 1; i >= 0; i--)
 			{
-			RonPSTNode nextNode = getUpstreamNode(bytes[i]);
+			RonPSTNode nextNode = currentNode.getUpstreamNode(bytes[i]);
 			if (nextNode == null)
 				{
 				return currentNode;

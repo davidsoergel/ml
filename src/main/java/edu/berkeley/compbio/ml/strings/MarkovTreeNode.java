@@ -195,8 +195,9 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param sigma the symbol to follow from this node
 	 * @return the node pointed to, or null if that leaf does not exist
 	 */
-	public MarkovTreeNode getChild(byte sigma) throws SequenceSpectrumException
+	public MarkovTreeNode getChild(byte sigma)//throws SequenceSpectrumException
 		{
+		//return children == null ? null :
 		return children[ArrayUtils.indexOf(alphabet, sigma)];
 		}
 
@@ -300,15 +301,15 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				}
 			MarkovTreeNode node = null;
 			MarkovTreeNode node1 = null;
-			try
-				{
-				node = getChild(b);
-				node1 = other.getChild(b);
-				}
-			catch (SequenceSpectrumException e)
-				{
-				throw new Error("Impossible");
-				}
+			//	try
+			//		{
+			node = getChild(b);
+			node1 = other.getChild(b);
+			//		}
+			//	catch (SequenceSpectrumException e)
+			//		{
+			//		throw new Error("Impossible");
+			//		}
 			if (node != null && node1 == null)
 				{
 				return false;
@@ -652,7 +653,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * conditional probabilities according to the given spectrum.  That is: if this node has any children, ensures that
 	 * there is a child for each symbol in the alphabet.
 	 */
-	public void completeAndCopyProbsFrom(SequenceSpectrum spectrum)
+	public void copyProbsFromSpectrumRecursively(SequenceSpectrum spectrum)
 		//throws SequenceSpectrumException//DistributionException,
 		{
 		for (byte sigma : getAlphabet())
@@ -684,7 +685,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 								// if there are any children, make sure there are all children
 							   if (children != null && children.size() != 0)
 								   {
-								   add(sigma).completeAndCopyProbsFrom(spectrum);
+								   add(sigma).copyProbsFrom(spectrum);
 								   }
 
 								   */
@@ -703,7 +704,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			{
 			if (child != null)
 				{
-				child.completeAndCopyProbsFrom(spectrum);
+				child.copyProbsFromSpectrumRecursively(spectrum);
 				}
 			}
 		}
@@ -1009,6 +1010,35 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			if (next == null)
 				{
 				return result;
+				}
+			else
+				{
+				result = next;
+				}
+			}
+
+		return result;
+		}
+
+
+	/**
+	 * gets the node associated with the the given sequence, or null if that node does not exist
+	 *
+	 * @param descendantId the sequence to walk
+	 * @return the MarkovTreeNode
+	 */
+	public MarkovTreeNode getDescendant(byte[] descendantId)//throws SequenceSpectrumException
+		{
+		MarkovTreeNode result = this;
+		MarkovTreeNode next;
+
+		// this could also have been recursive, but that would have involved making each suffix byte[] explicitly
+		for (byte b : descendantId)
+			{
+			next = result.getChild(b);
+			if (next == null)
+				{
+				return null;
 				}
 			else
 				{

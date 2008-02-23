@@ -82,11 +82,11 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 			// do the rest of the tree, breadth first
 
 			List<RonPSANode> nodesRemaining = new LinkedList<RonPSANode>();
-			for (RonPSANode n : ronPSA.getChildren())
+			for (MarkovTreeNode n : ronPSA.getChildren())
 				{
 				if (n != null)
 					{
-					nodesRemaining.add(n);
+					nodesRemaining.add((RonPSANode) n);
 					}
 				}
 
@@ -95,11 +95,11 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 				RonPSANode node = nodesRemaining.remove(0);
 				smooth(node);//, ronPST);
 				//	nodesRemaining.addAll(node.getChildren());//.values());
-				for (RonPSANode n : node.getChildren())
+				for (MarkovTreeNode n : node.getChildren())
 					{
 					if (n != null)
 						{
-						nodesRemaining.add(n);
+						nodesRemaining.add((RonPSANode) n);
 						}
 					}
 				}

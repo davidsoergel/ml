@@ -59,8 +59,8 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	private static final Logger logger = Logger.getLogger(RonPSTNode.class);
 
 	private byte[] id;
-	private byte[] alphabet;
-	private double[] logprobs;
+	protected byte[] alphabet;
+	private double[] logProbs;
 	private Multinomial<Byte> probs = new Multinomial<Byte>();
 
 	private boolean leaf = true;
@@ -125,14 +125,6 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		}
 
 	/**
-	 * Gets the id of this node, which is just the suffix associated with this node represented as a byte[].
-	 */
-	public String getId()
-		{
-		return new String(id);
-		}
-
-	/**
 	 * Constructs a new RonPSTNode with the given identifier
 	 *
 	 * @param id       the suffix associated with this node
@@ -153,7 +145,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	public void setAlphabet(byte[] alphabet)
 		{
 		this.alphabet = alphabet;
-		logprobs = new double[alphabet.length];
+		logProbs = new double[alphabet.length];
 		upstreamNodes = new RonPSTNode[alphabet.length];
 		}
 
@@ -205,7 +197,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			{
 			for (int i = 0; i < alphabet.length; i++)
 				{
-				logprobs[i] = MathUtils.approximateLog(probs.get(alphabet[i]));
+				logProbs[i] = MathUtils.approximateLog(probs.get(alphabet[i]));
 				}
 			}
 		catch (DistributionException e)
@@ -214,7 +206,6 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		}
-
 
 	/**
 	 * Gets the upstream node associated with the given suffix starting from this node, creating it (and nodes along the
@@ -236,10 +227,12 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			}
 		else if (suffix.length >= 1)
 			{
-			return addUpstreamNode(suffix[suffix.length - 1]).addUpstreamNode(ArrayUtils.prefix(suffix, 1));
+			return addUpstreamNode(suffix[suffix.length - 1])
+					.addUpstreamNode(ArrayUtils.prefix(suffix, suffix.length - 1));
 			}
 		throw new Error("Impossible");
 		}
+
 
 	/**
 	 * Gets the upstream node associated with the given symbol starting from this node, creating it first if needed.
@@ -254,7 +247,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		RonPSTNode result = upstreamNodes[index];
 		if (result == null)
 			{
-			result = new RonPSTNode(ArrayUtils.append(id, sigma), alphabet);
+			result = new RonPSTNode(ArrayUtils.prepend(sigma, id), alphabet);
 			upstreamNodes[index] = result;
 			}
 		return result;
@@ -293,7 +286,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			formatter.format("\n%s %c ", indent, b);
 			//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
 			RonPSTNode child = upstreamNodes[i];
-			if (child != null && child.getId().length() > getId().length())
+			if (child != null && child.getIdBytes().length > getIdBytes().length)
 				{
 				child.appendString(formatter, indent + "     | ");
 				}
@@ -331,6 +324,24 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		}
 
 	/**
+	 * Gets the id of this node, which is just the suffix associated with this node represented as a byte[].
+	 */
+	public byte[] getIdBytes()
+		{
+		return id;
+		//	return new String(id);
+		}
+
+	/**
+	 * Gets the id of this node, which is just the suffix associated with this node represented as a byte[], here converted
+	 * to String for the sake of the Clusterable interface.
+	 */
+	public String getId()
+		{
+		return new String(id);
+		}
+
+	/**
 	 * Tells whether this node is a leaf or not.
 	 *
 	 * @return true if this node has no upstream nodes, and false otherwise
@@ -342,11 +353,12 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 
 
 	/**
-	 * Recursively fills out the tree so that each node has either a complete set of children or none at all, and assigns
-	 * conditional probabilities according to the given spectrum.  That is: if this node has any children, ensures that
-	 * there is a child for each symbol in the alphabet.
+	 * Recursively fills out the tree so that each node has either a complete set of probabilities or none at all, and
+	 * assigns conditional probabilities according to the given spectrum.  That is: if this node has any children, ensures
+	 * that there is a probability for each symbol in the alphabet.  There may or may not be a child node for each symbol,
+	 * though.
 	 */
-	public void completeAndCopyProbsFrom(SequenceSpectrum spectrum)
+	public void copyProbsFrom(SequenceSpectrum spectrum)
 		//throws SequenceSpectrumException//DistributionException,
 		{
 		for (byte sigma : alphabet)
@@ -378,7 +390,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 								// if there are any children, make sure there are all children
 							   if (children != null && children.size() != 0)
 								   {
-								   add(sigma).completeAndCopyProbsFrom(spectrum);
+								   add(sigma).copyProbsFrom(spectrum);
 								   }
 
 								   */
@@ -389,6 +401,9 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			}
 		catch (DistributionException e)
 			{
+			// there should be no node with zero probability weight!
+			logger.debug(e);
+			e.printStackTrace();
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 
@@ -397,7 +412,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			{
 			if (upstream != null)
 				{
-				upstream.completeAndCopyProbsFrom(spectrum);
+				upstream.copyProbsFrom(spectrum);
 				}
 			}
 		}
@@ -418,6 +433,29 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 				result++;
 				}
 			}
+		return result;
+		}
+
+	public double[] getLogProbs()
+		{
+		return logProbs;
+		}
+
+	public int getMaxDepth()
+		{
+		int result = 1;
+		for (RonPSTNode n : upstreamNodes)
+			{
+			if (n != null)
+				{
+				int i = n.getMaxDepth() + 1;
+				if (i > result)
+					{
+					result = i;
+					}
+				}
+			}
+
 		return result;
 		}
 	}

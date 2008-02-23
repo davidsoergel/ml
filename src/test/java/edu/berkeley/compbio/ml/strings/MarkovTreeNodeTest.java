@@ -64,7 +64,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		{
 		SequenceSpectrum ss = createMockSimpleSpectrum();
 		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
+		n.copyProbsFromSpectrumRecursively(ss);
 		return n;
 		}
 
@@ -105,7 +105,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		SequenceSpectrum ss = createMockSimpleSpectrum();
 
 		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
+		n.copyProbsFromSpectrumRecursively(ss);
 
 		assert n.getChild((byte) 'd') == null;// node d has no children, so it has no reason to exist
 		assert n.get(new byte[]{'d'}) == null;
@@ -123,7 +123,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		SequenceSpectrum ss = createMockSimpleSpectrum();
 
 		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
+		n.copyProbsFromSpectrumRecursively(ss);
 
 		n.conditionalProbability((byte) 'd', new byte[]{
 				'b',
@@ -176,7 +176,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		SequenceSpectrum ss = createMockSimpleSpectrum();
 
 		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
+		n.copyProbsFromSpectrumRecursively(ss);
 
 		assert n.clone().equalValue(n);
 		}
@@ -359,7 +359,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		{
 		SequenceSpectrum ss = createMockSimpleSpectrum();
 		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
+		n.copyProbsFromSpectrumRecursively(ss);
 
 		assert MathUtils.equalWithinFPError(n.totalProbability(new byte[]{'b'}), 0.2);
 		assert MathUtils.equalWithinFPError(n.totalProbability(new byte[]{
@@ -383,7 +383,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		SequenceSpectrum ss = createMockSimpleSpectrum();
 
 		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
+		n.copyProbsFromSpectrumRecursively(ss);
 
 		n.totalProbability(new byte[]{
 				'b',
@@ -399,7 +399,7 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		SequenceSpectrum ss = createMockSimpleSpectrum();
 
 		MarkovTreeNode n = createSimpleMarkovTree();
-		n.completeAndCopyProbsFrom(ss);
+		n.copyProbsFromSpectrumRecursively(ss);
 
 		assert n.conditionalProbability((byte) 'a') == 0.1;
 		assert n.conditionalProbability((byte) 'b') == 0.2;

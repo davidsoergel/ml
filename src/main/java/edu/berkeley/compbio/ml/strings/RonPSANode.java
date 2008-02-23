@@ -114,7 +114,7 @@ public class RonPSANode extends MarkovTreeNode
 		}
 
 	/**
-	 * This method assumes that it has not been run before, and that all nodes at higher levels in the tree hve already
+	 * This method assumes that it has not been run before, and that all nodes at higher levels in the tree have already
 	 * been proceesed.  So it must be run in breadth-first order exactly once.
 	 *
 	 * @param backoffPrior
@@ -167,7 +167,7 @@ public class RonPSANode extends MarkovTreeNode
 	 * @param sigma the transition to follow from this node
 	 * @return the node at the other end of the transition
 	 */
-	public RonPSANode addChild(byte sigma) throws SequenceSpectrumException
+	public RonPSANode addChild(byte sigma)//throws SequenceSpectrumException
 		{
 		leaf = false;
 		int index = ArrayUtils.indexOf(alphabet, sigma);
@@ -255,15 +255,20 @@ public class RonPSANode extends MarkovTreeNode
 		return currentNode;
 		}
 
-
-	public RonPSANode[] getChildren()
-		{
-		return (RonPSANode[]) children;
-		}
-
-	public RonPSANode getChild(byte sigma) throws SequenceSpectrumException
+	/*
+	 public RonPSANode[] getChildren()
+		 {
+		 return (RonPSANode[]) children;
+		 }
+ */
+	public RonPSANode getChild(byte sigma)//throws SequenceSpectrumException
 		{
 		return (RonPSANode) (super.getChild(sigma));
+		}
+
+	public RonPSANode getDescendant(byte[] descendantId)//throws SequenceSpectrumException
+		{
+		return (RonPSANode) super.getDescendant(descendantId);
 		}
 	}
 

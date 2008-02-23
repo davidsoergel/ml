@@ -32,6 +32,7 @@ package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
@@ -67,7 +68,7 @@ public class RonPSTTest
 		{
 		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
 		RonPST pst = new RonPST(0.0001, 0, 1.1, 0.01, 4, ss);
-		//pst.completeAndCopyProbsFrom(ss);
+		//pst.copyProbsFrom(ss);
 		return pst;
 		}
 
@@ -171,7 +172,7 @@ public class RonPSTTest
 		{
 		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
 		RonPST pst = new RonPST(0.0001, 0, 500, 0.01, 4, ss);
-		//	pst.completeAndCopyProbsFrom(ss);
+		//	pst.copyProbsFrom(ss);
 
 		assert pst.getMaxDepth() == 1;
 		}
@@ -183,9 +184,10 @@ public class RonPSTTest
 
 		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
 		RonPST pst = new RonPST(0.0001, 0, 1, 0.01, 4, ss);
-		//		pst.completeAndCopyProbsFrom(ss);
+		//		pst.copyProbsFrom(ss);
 
-		assert pst.getMaxDepth() == 2;
+		// note the stub spectrum uses a backoff 1-mer prior for the 3rd level
+		assert pst.getMaxDepth() == 3;
 		}
 
 	@Test
@@ -198,6 +200,7 @@ public class RonPSTTest
 	@BeforeMethod
 	public void setUp() throws Exception
 		{
+		MathUtils.initApproximateLog(-12, 12, 3, 100000);
 		/*	ThreadLocalRun.removeInstance();
 		new ThreadLocalRun()
 		{
@@ -359,7 +362,9 @@ public class RonPSTTest
 				{
 				return counts2.get(prefix[0]).get(sigma) / counts.get(prefix[0]);
 				}
-			throw new SequenceSpectrumException("depth oops");
+			//backoff to 1-mer composition
+			return conditionalProbability(sigma, ArrayUtils.suffix(prefix, 1));
+			//throw new SequenceSpectrumException("depth oops");
 			}
 
 		public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
