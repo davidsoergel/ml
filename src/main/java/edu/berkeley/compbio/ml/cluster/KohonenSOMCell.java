@@ -31,7 +31,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
-import org.apache.commons.lang.NotImplementedException;
 
 /* $Id$ */
 
@@ -54,6 +53,8 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
 
 	public boolean recenterByRemoving(T point)
 		{
-		throw new NotImplementedException();
+		centroid.decrementBy(point);
+		return true;
+		//throw new NotImplementedException();
 		}
 	}

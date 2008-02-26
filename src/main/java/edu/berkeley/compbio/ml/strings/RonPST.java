@@ -87,40 +87,56 @@ public class RonPST extends RonPSTNode
 		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
 		}
 
+	/*
+	     * @param alpha                the "headroom" over the smoothing factor gammaMin that determines whether a branch is to
+		 *                             be pruned or not.  a branch must have a conditional probability of at least (1 + alpha)
+		 *                             * gammaMin in order to be retained.
+		 *  * @param gammaMin             the minimum conditional probability of a symbol that we are interested in.  In the Ron /
+		 *                             Bejerano formulation, this is used as a smoothing factor; no conditional probability may
+		 *                             be less than this parameter after smoothing.  Even in the absence of smoothing, this
+		 *                             parameter contributes to the determination of whether a branch is to be pruned or not,
+		 *                             since if the empirical probability of a branch before smoothing is less than the
+		 *                             smoothing factor, it's considered to be noise and should be pruned.
+
+	 */
 	/**
 	 * Constructs a new Probabilistic Suffix Tree according to the Learn-PST algorithm (Ron et al 1996 p. 13), based on an
 	 * existing sequence spectrum (typically, the set of all word counts; or naively just the sequence itself, if we don't
 	 * mind re-scanning it a whole bunch of times as they seem to suggest).
 	 *
-	 * @param pMin         the minimum total probability of a string that should be taken seriously.  Branches with
-	 *                     probabilities less than this will be pruned.
-	 * @param alpha        the "headroom" over the smoothing factor gammaMin that determines whether a branch is to be
-	 *                     pruned or not.  a branch must have an empirical probability of at least (1 + alpha) * gammaMin
-	 *                     in order to be retained.
-	 * @param pRatioMinMax The ratio threshold for considering the probability of a symbol to have changed compared to the
-	 *                     back-off prior.  That is, either the symbol probability must be a factor of pRatioMinMax greater
-	 *                     than its back-off prior value, or vice versa, in order for the probability to be taken
-	 *                     seriously.  Note that values less than 1 would cause all symbol probabilities to pass the test,
-	 *                     so those aren't very useful.
-	 * @param gammaMin     the minimum conditional probability of a symbol that we are interested in.  In the Ron /
-	 *                     Bejerano formulation, this is used as a smoothing factor; no conditional probability may be less
-	 *                     than this parameter after smoothing.  Even in the absence of smoothing, this parameter
-	 *                     contributes to the determination of whether a branch is to be pruned or not, since if the
-	 *                     empirical probability of a branch before smoothing is less than the smoothing factor, it's
-	 *                     considered to be noise and should be pruned.
-	 * @param l_max        the maximum depth of the tree (that is, the maximum memory length)
-	 * @param prob         the SequenceSpectrum providing the symbol conditional probabilities from which the PST will be
-	 *                     learned
+	 * @param branchAbsoluteMin    the minimum total probability of a string that should be taken seriously.  Branches with
+	 *                             probabilities less than this will be pruned.  Ron et al. call this pMin.
+	 * @param branchConditionalMin the minimum conditional probability of a symbol that we are interested in.  Ron et al.
+	 *                             express this as (1 + alpha) * gammaMin.  Here we just provide it directly since the
+	 *                             smoothing process (and hence gammaMin) are broken out.
+	 * @param pRatioMinMax         The ratio threshold for considering the probability of a symbol to have changed compared
+	 *                             to the back-off prior.  That is, either the symbol probability must be a factor of
+	 *                             pRatioMinMax greater than its back-off prior value, or vice versa, in order for the
+	 *                             probability to be taken seriously.  Note that values less than 1 would cause all symbol
+	 *                             probabilities to pass the test, so those aren't very useful.
+	 * @param l_max                the maximum depth of the tree (that is, the maximum memory length)
+	 * @param prob                 the SequenceSpectrum providing the symbol conditional probabilities from which the PST
+	 *                             will be learned
 	 * @throws SequenceSpectrumException if something goes wrong with the given spectrum
 	 */
-	public RonPST(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
+
+
+	public RonPST(double branchAbsoluteMin, double branchConditionalMin, double pRatioMinMax, int l_max,
+	              SequenceSpectrum prob)
 		//throws SequenceSpectrumException//DistributionException,
 		{
 		this();
-		learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
+		learn(branchAbsoluteMin, branchConditionalMin, pRatioMinMax, l_max, prob);
 		}
 
-	public void learn(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max,
+	/*	public RonPST(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
+	   //throws SequenceSpectrumException//DistributionException,
+	   {
+	   this();
+	   learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
+	   }*/
+
+	public void learn(double branchAbsoluteMin, double branchConditionalMin, double pRatioMinMax, int l_max,
 	                  SequenceSpectrum fromSpectrum)
 		{
 		setId(new byte[]{});
@@ -146,7 +162,7 @@ public class RonPST extends RonPSTNode
 			byte[] s = new byte[]{c};
 			try
 				{
-				if (fromSpectrum.totalProbability(s) >= pMin)
+				if (fromSpectrum.totalProbability(s) >= branchAbsoluteMin)//pMin)
 					{
 					remainingSequences.add(s);
 					}
@@ -178,7 +194,8 @@ public class RonPST extends RonPSTNode
 
 					double probRatio = conditional / suffixConditional;
 					//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
-					if ((conditional >= (1. + alpha) * gammaMin) &&
+					if ((conditional >= branchConditionalMin)// (1. + alpha) * gammaMin)
+							&&
 							// for some reason Ron et al only want to test this one way, but Bejerano, Kermorvant, etc.
 							// do it both ways, and that makes more sense anyway
 							((probRatio >= pRatioMinMax) || (probRatio <= (1. / pRatioMinMax))))
@@ -202,7 +219,7 @@ public class RonPST extends RonPSTNode
 					byte[] s2 = ArrayUtils.prepend(sigma2, s);
 					try
 						{
-						if (fromSpectrum.totalProbability(s2) >= pMin)
+						if (fromSpectrum.totalProbability(s2) >= branchAbsoluteMin)//pMin)
 							{
 							remainingSequences.add(s2);
 							}

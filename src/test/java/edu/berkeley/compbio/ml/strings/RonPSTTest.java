@@ -67,7 +67,7 @@ public class RonPSTTest
 	private RonPST createSimplePST() throws SequenceSpectrumException
 		{
 		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
-		RonPST pst = new RonPST(0.0001, 0, 1.1, 0.01, 4, ss);
+		RonPST pst = new RonPST(0.0001, 0.01, 1.1, 4, ss);
 		//pst.copyProbsFrom(ss);
 		return pst;
 		}
@@ -171,7 +171,7 @@ public class RonPSTTest
 	public void highRatioThresholdProducesShallowTree() throws SequenceSpectrumException
 		{
 		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
-		RonPST pst = new RonPST(0.0001, 0, 500, 0.01, 4, ss);
+		RonPST pst = new RonPST(0.0001, 0.01, 500, 4, ss);
 		//	pst.copyProbsFrom(ss);
 
 		assert pst.getMaxDepth() == 1;
@@ -183,7 +183,7 @@ public class RonPSTTest
 		// todo improve by making a deeper tree to test
 
 		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
-		RonPST pst = new RonPST(0.0001, 0, 1, 0.01, 4, ss);
+		RonPST pst = new RonPST(0.0001, 0.01, 1, 4, ss);
 		//		pst.copyProbsFrom(ss);
 
 		// note the stub spectrum uses a backoff 1-mer prior for the 3rd level

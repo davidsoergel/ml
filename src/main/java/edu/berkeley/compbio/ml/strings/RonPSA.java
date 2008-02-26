@@ -31,6 +31,8 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.stats.DistributionProcessor;
+import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
 import edu.berkeley.compbio.sequtils.SequenceReader;
@@ -106,11 +108,13 @@ public class RonPSA extends RonPSANode
 		}
 
 
-	public void learn(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max,
-	                  SequenceSpectrum fromSpectrum)
+	public void learn(double branchAbsoluteMin, double branchConditionalMin, double pRatioMinMax, int l_max,
+	                  SequenceSpectrum fromSpectrum, DistributionProcessor<RonPSA> completionProcessor)
+			throws DistributionProcessorException
 		{
-		RonPST pst = new RonPST(pMin, alpha, pRatioMinMax, gammaMin, l_max, fromSpectrum);
+		RonPST pst = new RonPST(branchAbsoluteMin, branchConditionalMin, pRatioMinMax, l_max, fromSpectrum);
 		convertFrom(pst);
+		completionProcessor.process(this);
 		}
 
 	private List<RonPSANode> setBacklinks()

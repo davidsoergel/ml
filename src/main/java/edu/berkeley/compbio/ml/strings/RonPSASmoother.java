@@ -40,18 +40,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 @PropertyConsumer
-public class RonPSTSmoother implements DistributionProcessor<RonPST>
+public class RonPSASmoother implements DistributionProcessor<RonPSA>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(RonPSTSmoother.class);
+	private static Logger logger = Logger.getLogger(RonPSASmoother.class);
 
-	@Property(helpmessage = "Smoothing factor (aka gammaMin)", defaultvalue = "0.1")
+	@Property(helpmessage = "Smoothing factor (aka gammaMin)", defaultvalue = "0.01")
 	public Double smoothFactor;
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
-	public RonPSTSmoother()//String injectorId)//double smoothFactor)
+	public RonPSASmoother()//String injectorId)//double smoothFactor)
 		{
 		//this.smoothFactor = smoothFactor;
 		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
@@ -61,21 +61,21 @@ public class RonPSTSmoother implements DistributionProcessor<RonPST>
 
 	// --------------------- Interface DistributionProcessor ---------------------
 
-	public void process(RonPST ronPST)
+	public void process(RonPSA ronPSA)
 		{
 		try
 			{
 			// breadth first  (for no reason, just symmetry with the KneserNeyPSTSmoother where it is important)
 
-			List<RonPSTNode> nodesRemaining = new LinkedList<RonPSTNode>();
-			nodesRemaining.add(ronPST);
+			List<MarkovTreeNode> nodesRemaining = new LinkedList<MarkovTreeNode>();
+			nodesRemaining.add(ronPSA);
 
 			while (!nodesRemaining.isEmpty())
 				{
-				RonPSTNode node = nodesRemaining.remove(0);
+				MarkovTreeNode node = nodesRemaining.remove(0);
 				node.getProbs().redistributeWithMinimum(smoothFactor);
 
-				for (RonPSTNode n : node.getUpstreamNodes())
+				for (MarkovTreeNode n : node.getChildren())
 					{
 					if (n != null)
 						{
