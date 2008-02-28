@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007 Regents of the University of California
+ * Copyright (c) 2008 Regents of the University of California
  *
  * All rights reserved.
  *
@@ -30,53 +30,60 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.commons.collections.Bag;
 import org.apache.commons.collections.bag.HashBag;
+import org.apache.log4j.Logger;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /* $Id$ */
 
 /**
+ * Label each cell in a Kohonen SOM with label proportions according to the label counts that are present in the cell,
+ * or in the smallest neighborhood around the cell including a given number of real data points.
+ *
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
+public class KohonenSOMNeighborhoodCollectingRelabeler implements KohonenSOMLabeler
 	{
-	public KohonenSOMCell(DistanceMeasure<T> dm, T centroid)
+	private static final Logger logger = Logger.getLogger(KohonenSOMNeighborhoodCollectingRelabeler.class);
+	int requiredLabels;
+
+	public KohonenSOMNeighborhoodCollectingRelabeler(int requiredLabels)
 		{
-		super(dm, centroid);
+		this.requiredLabels = requiredLabels;
 		}
 
-	public boolean recenterByAdding(T point)
+	public void propagateLabels(KohonenSOM theMap)
 		{
-		centroid.incrementBy(point);
-		labelCounts.add(point.getLabel());
-		return true;
-		}
+		for (KohonenSOMCell cell : (List<KohonenSOMCell>) theMap.getClusters())
+			{
+			Bag counts = new HashBag();
+			Iterator<Set<KohonenSOMCell>> shells = theMap.getNeighborhoodShellIterator(cell);
 
-	public boolean recenterByRemoving(T point)
-		{
-		centroid.decrementBy(point);
+			while (counts.size() < requiredLabels)
+				{
+				for (KohonenSOMCell shellMember : shells.next())
+					{
+					counts.addAll(shellMember.getLabelCounts());
+					}
+				}
 
-		// we don't sanity check that the label was present to begin with
-		labelCounts.remove(point.getLabel());
-
-		return true;
-		//throw new NotImplementedException();
-		}
-
-	Bag labelCounts = new HashBag();
-
-	Multinomial<String> labelProbabilities = new Multinomial<String>();
-
-	public Bag getLabelCounts()
-		{
-		return labelCounts;
-		}
-
-	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
-		{
-		this.labelProbabilities = labelProbabilities;
+			try
+				{
+				cell.setLabelProbabilities(new Multinomial(counts));
+				}
+			catch (DistributionException e)
+				{
+				logger.warn("Empty bag?", e);
+				e.printStackTrace();
+				cell.setLabelProbabilities(null);
+				}
+			}
 		}
 	}

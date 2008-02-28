@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007 Regents of the University of California
+ * Copyright (c) 2008 Regents of the University of California
  *
  * All rights reserved.
  *
@@ -30,53 +30,16 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.stats.Multinomial;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
-import org.apache.commons.collections.Bag;
-import org.apache.commons.collections.bag.HashBag;
-
 /* $Id$ */
 
 /**
+ * Once a Kohonen SOM is learned, propagate the sample labels around in some way to give label confidences for every
+ * cell
+ *
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
+public interface KohonenSOMLabeler<T extends AdditiveClusterable<T>>
 	{
-	public KohonenSOMCell(DistanceMeasure<T> dm, T centroid)
-		{
-		super(dm, centroid);
-		}
-
-	public boolean recenterByAdding(T point)
-		{
-		centroid.incrementBy(point);
-		labelCounts.add(point.getLabel());
-		return true;
-		}
-
-	public boolean recenterByRemoving(T point)
-		{
-		centroid.decrementBy(point);
-
-		// we don't sanity check that the label was present to begin with
-		labelCounts.remove(point.getLabel());
-
-		return true;
-		//throw new NotImplementedException();
-		}
-
-	Bag labelCounts = new HashBag();
-
-	Multinomial<String> labelProbabilities = new Multinomial<String>();
-
-	public Bag getLabelCounts()
-		{
-		return labelCounts;
-		}
-
-	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
-		{
-		this.labelProbabilities = labelProbabilities;
-		}
+	void propagateLabels(KohonenSOM<T> theMap);
 	}

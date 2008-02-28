@@ -231,6 +231,12 @@ public class RonPSTTest
 		Map<Byte, Double> counts = new HashMap<Byte, Double>();
 		Map<Byte, Map<Byte, Double>> counts2 = new HashMap<Byte, Map<Byte, Double>>();
 
+
+		public String getLabel()
+			{
+			return "Stub";
+			}
+
 		public void multiplyBy(double v)
 			{
 			throw new NotImplementedException();

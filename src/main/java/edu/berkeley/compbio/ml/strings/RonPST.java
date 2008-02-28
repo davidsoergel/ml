@@ -74,6 +74,18 @@ public class RonPST extends RonPSTNode
 	 pRatioMinMax = p_ratio = (1 + (3 * eta2))
  */
 
+	private String label;
+
+	public String getLabel()
+		{
+		return label;
+		}
+
+	public void setLabel(String label)
+		{
+		this.label = label;
+		}
+
 	@Property(helpmessage = "A distribution processor to run on this PST, typically used for smoothing",
 	          defaultvalue = "edu.berkeley.compbio.ml.strings.RonPSTSmoother", isNullable = true)
 	//isPlugin = true,

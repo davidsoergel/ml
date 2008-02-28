@@ -49,6 +49,17 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	protected String id;
 	protected double[] data;
 
+	private String label;
+
+	public String getLabel()
+		{
+		return label;
+		}
+
+	public void setLabel(String label)
+		{
+		this.label = label;
+		}
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 

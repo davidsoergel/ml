@@ -1,5 +1,7 @@
+/* $Id$ */
+
 /*
- * Copyright (c) 2007 Regents of the University of California
+ * Copyright (c) 2008 Regents of the University of California
  *
  * All rights reserved.
  *
@@ -30,53 +32,34 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.stats.Multinomial;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
-import org.apache.commons.collections.Bag;
-import org.apache.commons.collections.bag.HashBag;
-
-/* $Id$ */
+import com.davidsoergel.dsutils.ChainedRuntimeException;
+import org.apache.log4j.Logger;
 
 /**
- * @Author David Soergel
- * @Version 1.0
+ * @author lorax
+ * @version 1.0
  */
-public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
+public class ClusterRuntimeException extends ChainedRuntimeException
 	{
-	public KohonenSOMCell(DistanceMeasure<T> dm, T centroid)
+	// ------------------------------ FIELDS ------------------------------
+
+	private static Logger logger = Logger.getLogger(ClusterException.class);
+
+
+	// --------------------------- CONSTRUCTORS ---------------------------
+
+	public ClusterRuntimeException(String s)
 		{
-		super(dm, centroid);
+		super(s);
 		}
 
-	public boolean recenterByAdding(T point)
+	public ClusterRuntimeException(Exception e)
 		{
-		centroid.incrementBy(point);
-		labelCounts.add(point.getLabel());
-		return true;
+		super(e);
 		}
 
-	public boolean recenterByRemoving(T point)
+	public ClusterRuntimeException(Exception e, String s)
 		{
-		centroid.decrementBy(point);
-
-		// we don't sanity check that the label was present to begin with
-		labelCounts.remove(point.getLabel());
-
-		return true;
-		//throw new NotImplementedException();
-		}
-
-	Bag labelCounts = new HashBag();
-
-	Multinomial<String> labelProbabilities = new Multinomial<String>();
-
-	public Bag getLabelCounts()
-		{
-		return labelCounts;
-		}
-
-	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
-		{
-		this.labelProbabilities = labelProbabilities;
+		super(e, s);
 		}
 	}

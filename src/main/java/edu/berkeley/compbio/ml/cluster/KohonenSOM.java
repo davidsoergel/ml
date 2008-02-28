@@ -30,6 +30,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.stats.SimpleFunction;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.commons.lang.NotImplementedException;
@@ -40,6 +41,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Vector;
 
@@ -74,6 +76,7 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 
 	// how many cells wide is the grid along each axis
 	int[] cellsPerDimension;
+	double maxRadius;
 
 	// the product of the first i dimensions, precomputed for convenience
 	int[] blockSize;
@@ -147,6 +150,7 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 		//List<Interval<Double>> axisRanges;
 		//	initializeClusters(axisRanges);
 
+		maxRadius = ArrayUtils.norm(cellsPerDimension);
 		}
 
 	/*
@@ -229,65 +233,112 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 
 	KohonenSOMCell<T>[] immediateNeighbors = new KohonenSOMCell[2 * dimensions];
 
-	//private Iterator<KohonenSOMCell<T>> neighborhoodOf(int target, int time)
-	private class NeighborhoodIterator implements Iterator<KohonenSOMCell<T>>
+	public Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell)
 		{
-		double radius;
-
-		KohonenSOMCell<T> center;
-		// this will likely need optimizing later
-		Set<KohonenSOMCell<T>> todo = new HashSet<KohonenSOMCell<T>>();
-		Set<KohonenSOMCell<T>> done = new HashSet<KohonenSOMCell<T>>();
+		return new NeighborhoodShellIterator(cell);
+		}
 
 
-		private NeighborhoodIterator(KohonenSOMCell<T> center, int time)
+	private class NeighborhoodShellIterator implements Iterator<Set<KohonenSOMCell<T>>>
+		{
+
+		int radius = 0;
+		private int radiusSquared;
+		int centerPos[];
+
+		public NeighborhoodShellIterator(KohonenSOMCell<T> cell)
 			{
-			this.center = center;
-			radius = radiusFunction.f(time);
-			todo.add(center);
+			centerPos = cellPositionFor(theClusters.indexOf(cell));
+			prevShell.add(cell);
 			}
 
+
+		public double getNextRadius()
+			{
+			return radius + 1;
+			}
+
+		/**
+		 * Returns <tt>true</tt> if the iteration has more elements. (In other words, returns <tt>true</tt> if <tt>next</tt>
+		 * would return an element rather than throwing an exception.)
+		 *
+		 * @return <tt>true</tt> if the iterator has more elements.
+		 */
 		public boolean hasNext()
 			{
-			return !todo.isEmpty();
+			return (radius + 1) <= maxRadius;
 			}
 
-		public KohonenSOMCell<T> next()
+
+		Set<KohonenSOMCell<T>> prevShell = new HashSet<KohonenSOMCell<T>>();
+		Set<KohonenSOMCell<T>> prevPrevShell = new HashSet<KohonenSOMCell<T>>();
+		;
+
+		/**
+		 * Returns the next element in the iteration.  Calling this method repeatedly until the {@link #hasNext()} method
+		 * returns false will return each element in the underlying collection exactly once.
+		 *
+		 * @return the next element in the iteration.
+		 * @throws java.util.NoSuchElementException
+		 *          iteration has no more elements.
+		 */
+		public Set<KohonenSOMCell<T>> next()
 			{
-			KohonenSOMCell<T> trav = todo.iterator().next();
-			done.add(trav);
-
-			computeImmediateNeighbors(trav);
-			for (KohonenSOMCell<T> neighbor : immediateNeighbors)
+			Set<KohonenSOMCell<T>> shell = new HashSet<KohonenSOMCell<T>>();
+			for (KohonenSOMCell<T> cell : prevShell)
 				{
-				// careful not to repeat cells when the radius is large
-				// no problem, the done list deals with that
-
-				// optimizations possible here, i.e. test squares inscribed in circle first before doing sqrt
-				if (neighbor != null && euclideanDistance(neighbor, center) <= radius && !done.contains(neighbor))
+				// ** problem with edges when not wrapping; need to include edges in the shell?
+				computeImmediateNeighbors(cell);
+				for (KohonenSOMCell<T> neighbor : immediateNeighbors)
 					{
-					todo.add(neighbor);
+					if (neighbor != null && !prevShell.contains(neighbor) && !prevPrevShell.contains(neighbor)
+							&& isWithinCurrentRadius(neighbor))
+						{
+						shell.add(neighbor);
+						}
 					}
 				}
-			return trav;
+
+			prevPrevShell = prevShell;
+			prevShell = shell;
+
+			radius++;
+			radiusSquared = radius * radius;
+
+			return shell;
 			}
 
-		private double euclideanDistance(KohonenSOMCell<T> neighbor, KohonenSOMCell<T> center)
+		private boolean isWithinCurrentRadius(KohonenSOMCell<T> neighbor)
 			{
-			int[] a = cellPositionFor(theClusters.indexOf(neighbor));
-			int[] b = cellPositionFor(theClusters.indexOf(center));
+			int pos[] = cellPositionFor(theClusters.indexOf(neighbor));
 
 			int sum = 0;
 			for (int i = 0; i < dimensions; i++)
 				{
-				int dist = a[i] - b[i];
+				int dist = Math.abs(pos[i] - centerPos[i]);
 				if (edgesWrap)
 					{
-					dist = Math.min(dist, b[i] - a[i]);
+					dist = Math.min(dist, cellsPerDimension[i] - dist);
 					}
 				sum += dist * dist;
 				}
-			return Math.sqrt(sum);
+
+			return sum <= radiusSquared;
+			}
+
+		/**
+		 * Removes from the underlying collection the last element returned by the iterator (optional operation).  This method
+		 * can be called only once per call to <tt>next</tt>.  The behavior of an iterator is unspecified if the underlying
+		 * collection is modified while the iteration is in progress in any way other than by calling this method.
+		 *
+		 * @throws UnsupportedOperationException if the <tt>remove</tt> operation is not supported by this Iterator.
+		 * @throws IllegalStateException         if the <tt>next</tt> method has not yet been called, or the <tt>remove</tt>
+		 *                                       method has already been called after the last call to the <tt>next</tt>
+		 *                                       method.
+		 */
+		public void remove()
+			{
+			throw new NotImplementedException();
 			}
 
 		/**
@@ -349,6 +400,48 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 
 				// return to the original position
 				pos[i]--;
+				}
+			}
+		}
+
+
+	private class NeighborhoodIterator implements Iterator<KohonenSOMCell<T>>
+		{
+		double maxRadius;
+
+		KohonenSOMCell<T> center;
+		private NeighborhoodShellIterator shells;
+		private Set<KohonenSOMCell<T>> currentShell;
+		private Iterator<KohonenSOMCell<T>> currentShellIterator;
+
+
+		private NeighborhoodIterator(KohonenSOMCell<T> center, int time)
+			{
+			shells = new NeighborhoodShellIterator(center);
+			maxRadius = radiusFunction.f(time);
+			}
+
+		public boolean hasNext()
+			{
+			return currentShellIterator.hasNext() || (shells.hasNext() && shells.getNextRadius() <= maxRadius);
+			}
+
+		public KohonenSOMCell<T> next()
+			{
+			try
+				{
+				return currentShellIterator.next();
+				}
+			catch (NoSuchElementException e)
+				{
+				if (shells.getNextRadius() > maxRadius)
+					{
+					throw new NoSuchElementException();
+					}
+				currentShell = shells.next();
+				currentShellIterator = currentShell.iterator();
+
+				return currentShellIterator.next();
 				}
 			}
 
@@ -434,4 +527,72 @@ public class KohonenSOM<T extends AdditiveClusterable<T>> extends OnlineClusteri
 			}
 		return result;
 		}
+
+	/*
+   private class OldBogusNeighborhoodIterator implements Iterator<KohonenSOMCell<T>>
+	   {
+	   double radius;
+
+	   KohonenSOMCell<T> center;
+	   // this will likely need optimizing later
+	   Set<KohonenSOMCell<T>> todo = new HashSet<KohonenSOMCell<T>>();
+	   Set<KohonenSOMCell<T>> done = new HashSet<KohonenSOMCell<T>>();
+
+
+	   private NeighborhoodIterator(KohonenSOMCell<T> center, int time)
+		   {
+		   this.center = center;
+		   radius = radiusFunction.f(time);
+		   todo.add(center);
+		   }
+
+	   public boolean hasNext()
+		   {
+		   return !todo.isEmpty();
+		   }
+
+	   public KohonenSOMCell<T> next()
+		   {
+		   KohonenSOMCell<T> trav = todo.iterator().next();
+		   done.add(trav);
+
+		   computeImmediateNeighbors(trav);
+		   for (KohonenSOMCell<T> neighbor : immediateNeighbors)
+			   {
+			   // careful not to repeat cells when the radius is large
+			   // no problem, the done list deals with that
+
+			   // optimizations possible here, i.e. test squares inscribed in circle first before doing sqrt
+			   if (neighbor != null && euclideanDistance(neighbor, center) <= radius && !done.contains(neighbor))
+				   {
+				   todo.add(neighbor);
+				   }
+			   }
+		   return trav;
+		   }
+
+	   private double euclideanDistance(KohonenSOMCell<T> neighbor, KohonenSOMCell<T> center)
+		   {
+		   int[] a = cellPositionFor(theClusters.indexOf(neighbor));
+		   int[] b = cellPositionFor(theClusters.indexOf(center));
+
+		   int sum = 0;
+		   for (int i = 0; i < dimensions; i++)
+			   {
+			   int dist = a[i] - b[i];
+			   if (edgesWrap)
+				   {
+				   dist = Math.min(dist, b[i] - a[i]);
+				   }
+			   sum += dist * dist;
+			   }
+		   return Math.sqrt(sum);
+		   }
+
+
+	   public void remove()
+		   {
+		   throw new NotImplementedException();
+		   }
+	   }*/
 	}

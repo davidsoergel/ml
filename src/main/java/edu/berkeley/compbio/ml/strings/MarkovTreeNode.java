@@ -80,6 +80,17 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 	protected boolean leaf = true;
 
+	private String label;
+
+	public String getLabel()
+		{
+		return label;
+		}
+
+	public void setLabel(String label)
+		{
+		this.label = label;
+		}
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 

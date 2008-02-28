@@ -82,4 +82,11 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 	T times(double v);
 
 	void multiplyBy(double v);
+
+	/**
+	 * Get a classification label, if available (optional operation)
+	 *
+	 * @return
+	 */
+	String getLabel();
 	}
