@@ -58,7 +58,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	private static Logger logger = Logger.getLogger(OnlineClusteringMethod.class);
 	//private Iterator<T> theDataPointProvider;
 
-	List<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
+	protected List<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
 
 	protected Map<String, Cluster<T>> assignments = new HashMap<String, Cluster<T>>();// see whether anything changed
 
@@ -323,13 +323,13 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 	// -------------------------- INNER CLASSES --------------------------
 
-	protected class ClusterMove
+	public class ClusterMove
 		{
-		Cluster<T> bestCluster;
-		double bestDistance = Double.MAX_VALUE;
-		Cluster<T> oldCluster;
+		public Cluster<T> bestCluster;
+		public double bestDistance = Double.MAX_VALUE;
+		public Cluster<T> oldCluster;
 		double oldDistance;
-		double secondBestDistance = 0;
+		public double secondBestDistance = 0;
 		//
 		//		public clusterMove(Cluster<T> newC, double newDistance, double oldDistance)
 		//			{
