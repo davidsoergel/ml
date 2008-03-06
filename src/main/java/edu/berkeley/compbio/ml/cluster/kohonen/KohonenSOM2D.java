@@ -42,6 +42,7 @@ import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -149,11 +150,11 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		}
 
 
-	public KohonenSOM2D(int[] cellsPerDimension, DistanceMeasure<T> dm, T prototype, SimpleFunction moveFactorFunction,
-	                    SimpleFunction radiusFunction, SimpleFunction weightFunction,
+	public KohonenSOM2D(Integer[] cellsPerDimension, DistanceMeasure<T> dm, T prototype,
+	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction, SimpleFunction weightFunction,
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap)
 		{
-		this.cellsPerDimension = cellsPerDimension;
+		this.cellsPerDimension = ArrayUtils.toPrimitive(cellsPerDimension);
 		this.measure = dm;
 		this.dimensions = cellsPerDimension.length;
 		this.moveFactorFunction = moveFactorFunction;
@@ -169,19 +170,19 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		// precompute stuff for listIndexFor
 		blockSize = new int[dimensions];
-		blockSize[dimensions - 1] = 1;
-		for (int i = dimensions - 2; i > 0; i--)
-			{
-			blockSize[i] = blockSize[i + 1] * cellsPerDimension[i];
-			}
+		blockSize[1] = 1;
+		blockSize[0] = cellsPerDimension[0];
 
+		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
+		theClusters = new ArrayList<Cluster<T>>(totalCells);
 		int[] zeroCell = new int[dimensions];
 		Arrays.fill(zeroCell, 0);
-		createClusters(zeroCell, -1, prototype);
+		//createClusters(zeroCell, -1, prototype);
+		createClusters(totalCells, prototype);
 		//List<Interval<Double>> axisRanges;
 		//	initializeClusters(axisRanges);
 
-		maxRadius = ArrayUtils.norm(cellsPerDimension);
+		maxRadius = ArrayUtils.norm(this.cellsPerDimension);
 		}
 
 	/*
@@ -190,6 +191,14 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		 }
  */
+	private void createClusters(int totalCells, T prototype)
+		{
+		for (int i = 0; i < totalCells; i++)
+			{
+			KohonenSOMCell<T> c = new KohonenSOMCell<T>(measure, prototype.clone());
+			theClusters.add(c);
+			}
+		}
 
 	/**
 	 * Create a rectangular grid of cells using the given dimensionality and size, assigning a null vector to each
@@ -197,36 +206,43 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	 * @param cellPosition
 	 * @param changingDimension // * @param prototype
 	 */
-	private void createClusters(int[] cellPosition, int changingDimension, T prototype)
-		{
-		changingDimension++;
-		if (changingDimension == dimensions)
-			{
-			KohonenSOMCell<T> c = new KohonenSOMCell<T>(measure, prototype.clone());
-			theClusters.set(listIndexFor(cellPosition), c);
-			}
-		else
-			{
-			for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
-				{
-				cellPosition[changingDimension] = i;
-				createClusters(cellPosition, changingDimension, prototype);
-				}
-			}
+	/*	private void createClusters(int[] cellPosition, int changingDimension, T prototype)
+		 {
+		 changingDimension++;
+		 if (changingDimension == dimensions)
+			 {
+			 KohonenSOMCell<T> c = new KohonenSOMCell<T>(measure, prototype.clone());
+			 theClusters.set(listIndexFor(cellPosition), c);
+			 }
+		 else
+			 {
+			 for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
+				 {
+				 cellPosition[changingDimension] = i;
+				 createClusters(cellPosition, changingDimension, prototype);
+				 }
+			 }
+ */
+	/*  for (int i = 0; i < k; i++) {
+				  // initialize the clusters with the first k points
 
-		/*  for (int i = 0; i < k; i++) {
-			  // initialize the clusters with the first k points
+				  Cluster<T> c = new AdditiveCluster<T>(measure);
+				  c.setId(i);
 
-			  Cluster<T> c = new AdditiveCluster<T>(measure);
-			  c.setId(i);
-
-			  theClusters.add(c);
-		  }
-		  logger.debug("initialized " + k + " clusters");*/
-		}
+				  theClusters.add(c);
+			  }
+			  logger.debug("initialized " + k + " clusters");*/
+	//		}
 
 	// -------------------------- OTHER METHODS --------------------------
 
+	/**
+	 * @param p
+	 * @param secondBestDistances not used, here only for the sake of the interface; passing null is fine
+	 * @return
+	 * @throws ClusterException
+	 * @throws NoGoodClusterException
+	 */
 	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
 		ClusterMove cm = bestClusterMove(p);
@@ -360,7 +376,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			for (; x > y; x--)
 				{
 				double dist = Math.sqrt(x * x + y * y);
-				double theWeight = weightFunction.f(dist / maxRadius);
+				double theWeight = weightFunction == null ? 1 : weightFunction.f(dist / maxRadius);
 
 				deltaX[i] = x;
 				deltaY[i] = y;

@@ -125,7 +125,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		theReader = in;
 		theScanner = scanner;
 		this.desiredlength = desiredlength;
-		if (sequenceName == null)
+		if (sequenceName == null && theReader != null)
 			{
 			this.sequenceName = theReader.getName();
 			}
@@ -152,10 +152,17 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		try
 			{
-			theReader.seek(parentMetadata, startPosition);
-			//prefix = new byte[PREFIX_LENGTH];
-			SequenceSpectrum s =
-					theScanner.scanSequence(this);//theReader, desiredlength);//, firstWords, FIRSTWORD_LENGTH);
+			SequenceSpectrum s;
+			if (theReader == null)
+				{
+				s = theScanner.getEmpty();
+				}
+			else
+				{
+				theReader.seek(parentMetadata, startPosition);
+				//prefix = new byte[PREFIX_LENGTH];
+				s = theScanner.scanSequence(this);//theReader, desiredlength);//, firstWords, FIRSTWORD_LENGTH);
+				}
 			//prefixValid = Math.min(PREFIX_LENGTH, s.getNumberOfSamples() + s.getK() - 1);
 			length = s.getOriginalSequenceLength();// how much sequence was actually read
 			setBaseSpectrum(s);

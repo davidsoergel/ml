@@ -86,4 +86,14 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
 		{
 		return labelProbabilities;
 		}
+
+	public double getDominantProbability()
+		{
+		return labelProbabilities.getDominantProbability();
+		}
+
+	public String getDominantLabel()
+		{
+		return labelProbabilities.getDominantKey();
+		}
 	}

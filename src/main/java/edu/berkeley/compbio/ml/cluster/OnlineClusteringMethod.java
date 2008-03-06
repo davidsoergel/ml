@@ -58,7 +58,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	private static Logger logger = Logger.getLogger(OnlineClusteringMethod.class);
 	//private Iterator<T> theDataPointProvider;
 
-	protected List<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
+	protected List<Cluster<T>> theClusters;// = new ArrayList<Cluster<T>>();
 
 	protected Map<String, Cluster<T>> assignments = new HashMap<String, Cluster<T>>();// see whether anything changed
 

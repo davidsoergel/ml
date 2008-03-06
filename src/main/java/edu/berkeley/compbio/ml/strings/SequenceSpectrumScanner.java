@@ -74,4 +74,6 @@ public interface SequenceSpectrumScanner
 	SequenceSpectrum scanSequence(SequenceFragment fragment, //SequenceReader resetReader, int desiredLength,
 	                              byte[] prefix) throws IOException, FilterException, NotEnoughSequenceException,
 	                                                    DistributionProcessorException, GenericFactoryException;
+
+	SequenceSpectrum getEmpty();
 	}
