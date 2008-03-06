@@ -151,7 +151,7 @@ public abstract class Cluster<T extends Clusterable<T>>
 
 	public double distanceToCentroid(T p)
 		{
-		return theDistanceMeasure.distanceFromTo(centroid, p);
+		return theDistanceMeasure.distanceFromTo(p, centroid);
 		}
 
 	public boolean equals(Cluster<T> other)

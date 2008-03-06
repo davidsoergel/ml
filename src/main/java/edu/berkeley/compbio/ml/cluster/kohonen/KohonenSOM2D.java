@@ -83,6 +83,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	// how many cells wide is the grid along each axis
 	int[] cellsPerDimension;
 	double maxRadius;
+	double minRadius;
 
 	// the product of the first i dimensions, precomputed for convenience
 	int[] blockSize;
@@ -152,7 +153,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 	public KohonenSOM2D(Integer[] cellsPerDimension, DistanceMeasure<T> dm, T prototype,
 	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction, SimpleFunction weightFunction,
-	                    boolean decrementLosingNeighborhood, boolean edgesWrap)
+	                    boolean decrementLosingNeighborhood, boolean edgesWrap, int minRadius)
 		{
 		this.cellsPerDimension = ArrayUtils.toPrimitive(cellsPerDimension);
 		this.measure = dm;
@@ -174,7 +175,10 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		blockSize[0] = cellsPerDimension[0];
 
 		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
+
+		// this overwrites the original list of unknown capacity
 		theClusters = new ArrayList<Cluster<T>>(totalCells);
+
 		int[] zeroCell = new int[dimensions];
 		Arrays.fill(zeroCell, 0);
 		//createClusters(zeroCell, -1, prototype);
@@ -195,7 +199,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		{
 		for (int i = 0; i < totalCells; i++)
 			{
-			KohonenSOMCell<T> c = new KohonenSOMCell<T>(measure, prototype.clone());
+			KohonenSOMCell<T> c = new KohonenSOMCell<T>(measure, prototype == null ? null : prototype.clone());
+			c.setId(i);
 			theClusters.add(c);
 			}
 		}
@@ -250,10 +255,16 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		KohonenSOMCell<T> winner = (KohonenSOMCell<T>) cm.bestCluster;
 
 		double moveFactor = moveFactorFunction.f(time);
+
+		moveFactor = Math.min(moveFactor, 1);
+		moveFactor = Math.max(moveFactor, 0);
 		double radius = radiusFunction.f(time);
 
+		radius = Math.min(radius, maxRadius);
+		radius = Math.max(radius, minRadius);
+
 		// ** I had a problem with this before??
-		if (decrementLosingNeighborhood)
+		if (decrementLosingNeighborhood && loser != null)
 			{
 			for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(loser); i.hasNext();)
 				{
@@ -285,7 +296,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return true;
 		}
 
-	private WeightedMask getWeightedMask(int radius)
+	WeightedMask getWeightedMask(int radius)
 		{
 		WeightedMask result = weightedMasks.get(radius);
 		if (result == null)
@@ -311,7 +322,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	 * Note we can't just return the cell, because if the edges wrap, then the same cell may be returned up to four times,
 	 * but with different distances; so we need to return the distance too.
 	 */
-	private class WeightedMask
+	class WeightedMask
 		{
 		// store a list of x,y pairs representing all the vectors from the center
 		int[] deltaX;
@@ -326,9 +337,6 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		// i.e. the logical end of the array as opposed to the physical end.
 		int numCells;
 
-		// the current index in the mask list.  Points to the next cell to be returned.
-		int trav = 0;
-
 		private WeightedMask(int radius)
 			{
 			int x = radius;
@@ -342,11 +350,17 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			// we'll see if 3.2 is enough, given rounding, to work for small r.
 			// If it's not then we'll get an ArrayIndexOutOfBoundsException below.
 			// 4 should be absolutely safe (i.e., the whole square) and the memory cost is likely no issue anyway.
-			int overestimateNumCells = (int) (3.2 * (radius * radius));
+			int overestimateNumCells = (int) (3.2 * ((radius + 1) * (radius + 1)));
 
 			deltaX = new int[overestimateNumCells];
 			deltaY = new int[overestimateNumCells];
 			weight = new double[overestimateNumCells];
+
+			// always add the center (only once)
+			deltaX[i] = 0;
+			deltaY[i] = 0;
+			weight[i] = weightFunction == null ? 1 : weightFunction.f(0);
+			i++;
 
 			while (x >= y)
 				{
@@ -363,70 +377,95 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 					}
 				}
 
+			// for some reason the above algorithm always leaves out the points (0,radius) and (0,-radius).
+			// I don't bother to understand why, I just fix it.
+
+			if (radius != 0)
+				{
+				double theWeight = weightFunction == null ? 1 : weightFunction.f(1);
+
+				deltaX[i] = 0;
+				deltaY[i] = radius;
+				weight[i] = theWeight;
+				i++;
+
+				deltaX[i] = 0;
+				deltaY[i] = -radius;
+				weight[i] = theWeight;
+				i++;
+				}
+
 			numCells = i;
 			}
 
-		private int plot8CirclePoints(int i, int x, int y, int maxRadius)
+		private int plot8CirclePoints(int i, int x, int y, int radius)
 			{
 			// here we're given x,y pairs around the circumference of the circle; but actually we need to fill it in.
+
 			// also the given x,y pairs are only in one eighth of the circle, so we have to be careful how we fill in the rest
-			// to avoid hitting the same internal cells multiple times
+			// to avoid hitting the same internal cells multiple times.
 
-			// don't use x >= y, because then we'd double-count the diagonals
-			for (; x > y; x--)
+			// note that the circle is always centered around a cell, so the width and height will always be odd.
+			// that is, there will always be cells along the axes (x=0 and y=0) which should not be double-counted.
+
+			// we could add pixels to a non-redundant Set of some sort, but that would be slow; we want to do everything with int arrays,
+			// so we have to be careful to avoid redundancy up front.
+
+			if (x != 0 && y != 0)
 				{
-				double dist = Math.sqrt(x * x + y * y);
-				double theWeight = weightFunction == null ? 1 : weightFunction.f(dist / maxRadius);
+				// don't use x >= y, because then we'd double-count the diagonals and the center
+				for (; x > y; x--)
+					{
+					double dist = Math.sqrt(x * x + y * y);
+					double theWeight = weightFunction == null ? 1 : weightFunction.f(dist / radius);
 
-				deltaX[i] = x;
-				deltaY[i] = y;
-				weight[i] = theWeight;
-				i++;
-				deltaX[i] = x;
-				deltaY[i] = -y;
-				weight[i] = theWeight;
-				i++;
-				deltaX[i] = -x;
-				deltaY[i] = y;
-				weight[i] = theWeight;
-				i++;
-				deltaX[i] = -x;
-				deltaY[i] = -y;
-				weight[i] = theWeight;
-				i++;
-				deltaX[i] = y;
-				deltaY[i] = x;
-				weight[i] = theWeight;
-				i++;
-				deltaX[i] = y;
-				deltaY[i] = -x;
-				weight[i] = theWeight;
-				i++;
-				deltaX[i] = -y;
-				deltaY[i] = x;
-				weight[i] = theWeight;
-				i++;
-				deltaX[i] = -y;
-				deltaY[i] = -x;
-				weight[i] = theWeight;
-				i++;
-				}
+					deltaX[i] = x;
+					deltaY[i] = y;
+					weight[i] = theWeight;
+					i++;
+
+					deltaX[i] = x;
+					deltaY[i] = -y;
+					weight[i] = theWeight;
+					i++;
+
+					deltaX[i] = -x;
+					deltaY[i] = y;
+					weight[i] = theWeight;
+					i++;
+
+					deltaX[i] = -x;
+					deltaY[i] = -y;
+					weight[i] = theWeight;
+					i++;
+
+					deltaX[i] = y;
+					deltaY[i] = x;
+					weight[i] = theWeight;
+					i++;
+
+					deltaX[i] = y;
+					deltaY[i] = -x;
+					weight[i] = theWeight;
+					i++;
+
+					deltaX[i] = -y;
+					deltaY[i] = x;
+					weight[i] = theWeight;
+					i++;
+
+					deltaX[i] = -y;
+					deltaY[i] = -x;
+					weight[i] = theWeight;
+					i++;
+					}
 
 
-			// count the center only once (this method will be called with y == 0 only once)
-			if (y == 0)
-				{
-				deltaX[i] = 0;
-				deltaY[i] = 0;
-				weight[i] = weightFunction.f(0);
-				i++;
-				}
+				// count the four diagonals (x = y) only once.  Note y != 0 so we're not worried about the center.
+				// we know that y is incremented exactly once for each call of plot8CirclePoints.
 
-			// count the four diagonals (x = y) only once
-			else
-				{
 				double dist = Math.sqrt(y * y + y * y);
-				double theWeight = weightFunction.f(dist);
+				double theWeight = weightFunction == null ? 1 : weightFunction.f(dist);
 
 				deltaX[i] = y;
 				deltaY[i] = y;
@@ -443,9 +482,48 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				deltaX[i] = -y;
 				deltaY[i] = -y;
 				weight[i] = theWeight;
+				i++;
+
+				// count the vertical center line only once.
+				// again we know this will be called once for each y (where y != 0 due to the conditional block we're in)
+				theWeight = weightFunction == null ? 1 : weightFunction.f(y / radius);
+
+				deltaX[i] = 0;
+				deltaY[i] = y;
+				weight[i] = weightFunction == null ? 1 : weightFunction.f(theWeight);
+				i++;
+				deltaX[i] = 0;
+				deltaY[i] = -y;
+				weight[i] = weightFunction == null ? 1 : weightFunction.f(theWeight);
 				i++;
 				}
+			else if (y == 0 && x != 0)
+				{
 
+
+				// count the horizontal center line only once
+
+				// don't use x >= y, because then we'd double-count the center
+				for (; x > 0; x--)
+					{
+					double theWeight = weightFunction == null ? 1 : weightFunction.f(x / radius);
+
+					deltaX[i] = x;
+					deltaY[i] = 0;
+					weight[i] = theWeight;
+					i++;
+
+					deltaX[i] = -x;
+					deltaY[i] = 0;
+					weight[i] = theWeight;
+					i++;
+					}
+				}
+			else
+				// (x == 0 && y != 0)
+				{
+				// ignore this situation, since the vertical line and the center are already accounted for by our construction above
+				}
 			return i;
 			}
 
@@ -460,12 +538,16 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			WeightedCell currentCell, nextCell;
 			int xCenter, yCenter;
 
+			// the current index in the mask list.  Points to the next cell to be returned.
+			int trav = -1;
+
 			public MaskIterator(KohonenSOMCell<T> center)
 				{
 				//this.center = center;
 				int[] c = cellPositionFor(theClusters.indexOf(center));
 				xCenter = c[0];
 				yCenter = c[1];
+				nextCell = findNextCell();
 				}
 
 			public boolean hasNext()
@@ -489,6 +571,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 				boolean foundCell = false;
 
+				int realX = -1, realY =
+						-1;// the loop below can't complete without setting these; if there's a bug we'll get ArrayIndexOutOfBoundsException
+
 				// iterate rather than recurse to avoid huge stacks
 				while (!foundCell)
 					{
@@ -498,8 +583,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 						}
 					else
 						{
-						int realX = xCenter + deltaX[trav];
-						int realY = yCenter + deltaY[trav];
+						realX = xCenter + deltaX[trav];
+						realY = yCenter + deltaY[trav];
 
 						if (!edgesWrap && (realX < 0 || realX >= cellsPerDimension[0] || realY < 0
 								|| realY >= cellsPerDimension[1]))
@@ -509,16 +594,16 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 							}
 						else
 							{
-							realX %= cellsPerDimension[0];
-							realY %= cellsPerDimension[1];
+							// avoid negatives too
+							realX = (realX + cellsPerDimension[0]) % cellsPerDimension[0];
+							realY = (realY + cellsPerDimension[1]) % cellsPerDimension[1];
 							foundCell = true;
 							}
 						}
 					}
 
 
-				return new WeightedCell((KohonenSOMCell<T>) theClusters.get(listIndexFor(deltaX[trav], deltaY[trav])),
-				                        weight[trav]);
+				return new WeightedCell((KohonenSOMCell<T>) theClusters.get(listIndexFor(realX, realY)), weight[trav]);
 				}
 
 

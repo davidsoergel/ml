@@ -40,7 +40,6 @@ import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
 import edu.berkeley.compbio.sequtils.SequenceFragmentMetadata;
 import edu.berkeley.compbio.sequtils.SequenceReader;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -327,12 +326,15 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	public void multiplyBy(double v)
 		{
-		throw new NotImplementedException();
+		baseSpectrum.multiplyBy(v);
+		setBaseSpectrum(baseSpectrum);// ensure that any derived spectra are cleared
 		}
 
 	public SequenceFragment times(double v)
 		{
-		throw new NotImplementedException();
+		SequenceFragment result = clone();
+		result.multiplyBy(v);
+		return result;
 		}
 
 	// --------------------- Interface Clusterable ---------------------
