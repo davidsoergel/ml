@@ -30,6 +30,13 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import com.davidsoergel.stats.SimpleFunction;
+import edu.berkeley.compbio.ml.cluster.Cluster;
+import edu.berkeley.compbio.ml.cluster.ClusterException;
+import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;
+import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
+import edu.berkeley.compbio.ml.distancemeasure.EuclideanDistance;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
@@ -43,6 +50,93 @@ import java.util.Set;
  */
 public class KohonenSOM2DTest
 	{
+	SimpleFunction radiusFunction = new SimpleFunction()
+	{
+	public double f(double x)
+		{
+		return 15 - x;
+		}
+	};
+
+	SimpleFunction moveFactorFunction = new SimpleFunction()
+	{
+	public double f(double x)
+		{
+		return 1;
+		}
+	};
+
+	SimpleFunction weightFunction = new SimpleFunction()
+	{
+	public double f(double x)
+		{
+		return 1. - x;
+		}
+	};
+
+	DistanceMeasure<ClusterableDoubleArray> dm = new EuclideanDistance();
+
+	@Test
+	public void initialTrainingSampleAltersAllCells() throws ClusterException, NoGoodClusterException
+		{
+		ClusterableDoubleArray prototype = new ClusterableDoubleArray("test1", new double[]{
+				0,
+				0,
+				0,
+				0,
+				0
+		});
+		KohonenSOM2D<ClusterableDoubleArray> som = new KohonenSOM2D<ClusterableDoubleArray>(new Integer[]{
+				10,
+				10
+		}, dm, prototype, moveFactorFunction, radiusFunction, weightFunction, false, false, 1);
+
+		som.add(new ClusterableDoubleArray("test1", new double[]{
+				1,
+				2,
+				3,
+				4,
+				5
+		}), null);
+
+		for (Cluster<ClusterableDoubleArray> cell : som.getClusters())
+			{
+			assert cell.getCentroid() != null;
+			assert !cell.getCentroid().equalValue(prototype);
+			}
+		}
+
+	@Test
+	public void secondTrainingSampleMatchesAppropriateCell() throws ClusterException, NoGoodClusterException
+		{
+		ClusterableDoubleArray prototype = new ClusterableDoubleArray("test1", new double[]{
+				0,
+				0,
+				0,
+				0,
+				0
+		});
+		KohonenSOM2D<ClusterableDoubleArray> som = new KohonenSOM2D<ClusterableDoubleArray>(new Integer[]{
+				10,
+				10
+		}, dm, prototype, moveFactorFunction, radiusFunction, weightFunction, false, false, 1);
+
+		som.add(new ClusterableDoubleArray("test1", new double[]{
+				1,
+				2,
+				3,
+				4,
+				5
+		}), null);
+
+		assert som.getBestCluster(new ClusterableDoubleArray("test1", new double[]{
+				0,
+				0,
+				0,
+				0,
+				0
+		}), null) != 0;
+		}
 
 	@Test
 	public void WeightedMaskMakesRadiusZeroCircle()
