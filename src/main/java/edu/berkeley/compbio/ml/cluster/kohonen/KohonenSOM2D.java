@@ -78,7 +78,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 	// ------------------------------ FIELDS ------------------------------
 
-	private static final Logger logger = Logger.getLogger(KohonenSOMnD.class);
+	private static final Logger logger = Logger.getLogger(KohonenSOM2D.class);
 
 	// how many cells wide is the grid along each axis
 	int[] cellsPerDimension;
@@ -187,7 +187,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		//List<Interval<Double>> axisRanges;
 		//	initializeClusters(axisRanges);
 
-		maxRadius = ArrayUtils.norm(this.cellsPerDimension);
+		maxRadius = ArrayUtils.norm(this.cellsPerDimension) / 2.;
 		}
 
 	/*
@@ -264,7 +264,13 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		radius = Math.min(radius, maxRadius);
 		radius = Math.max(radius, minRadius);
 
+		logger.debug("Adding point with neighborhood radius " + radius + ", moveFactor " + moveFactor);
+
 		// ** I had a problem with this before??
+		// yeah a couple things:
+		// 1. it produces negative counts, which makes no sense, and
+		// 2. it leaves the average count number very low
+
 		if (decrementLosingNeighborhood && loser != null)
 			{
 			for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(loser); i.hasNext();)
@@ -285,13 +291,26 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			{
 			WeightedCell v = i.next();
 			KohonenSOMCell<T> neighbor = v.theCell;
+
+			//** Rearrange to avoid subtraction
+			/*
 			T motion = p.minus(neighbor.getCentroid());
+
 			motion.multiplyBy(moveFactor);
 			if (v.weight != 1)
 				{
 				motion.multiplyBy(v.weight);
 				}
 			neighbor.recenterByAdding(motion);
+			*/
+
+			double motionFactor = moveFactor * v.weight;
+
+			//neighbor = (1-motionFactor) * neighbor + motionFactor * p;
+
+
+			//** REVISIT
+			neighbor.recenterByAddingWeighted(p, motionFactor);
 			}
 		time++;
 		return true;
@@ -361,6 +380,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			deltaX[i] = 0;
 			deltaY[i] = 0;
 			weight[i] = weightFunction == null ? 1 : weightFunction.f(0);
+			assert weight[i] > 0;
 			i++;
 
 			while (x >= y)
@@ -384,6 +404,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			if (radius != 0)
 				{
 				double theWeight = weightFunction == null ? 1 : weightFunction.f(1);
+				assert theWeight > 0;
 
 				deltaX[i] = 0;
 				deltaY[i] = radius;
@@ -419,6 +440,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 					{
 					double dist = Math.sqrt(x * x + y * y);
 					double theWeight = weightFunction == null ? 1 : weightFunction.f(dist / (double) radius);
+					assert theWeight > 0;
 
 					deltaX[i] = x;
 					deltaY[i] = y;
@@ -467,6 +489,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 				double dist = Math.sqrt(y * y + y * y);
 				double theWeight = weightFunction == null ? 1 : weightFunction.f(dist / (double) radius);
+				assert theWeight > 0;
 
 				deltaX[i] = y;
 				deltaY[i] = y;
@@ -488,6 +511,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				// count the vertical center line only once.
 				// again we know this will be called once for each y (where y != 0 due to the conditional block we're in)
 				theWeight = weightFunction == null ? 1 : weightFunction.f((double) y / (double) radius);
+				assert theWeight > 0;
 
 				deltaX[i] = 0;
 				deltaY[i] = y;
@@ -508,6 +532,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				for (; x > 0; x--)
 					{
 					double theWeight = weightFunction == null ? 1 : weightFunction.f((double) x / (double) radius);
+					assert theWeight > 0;
 
 					deltaX[i] = x;
 					deltaY[i] = 0;
@@ -687,7 +712,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 					  }
 	  */
 			// otherwise find the nearest cluster
-			double d = c.distanceToCentroid(p);
+			double d = c.distanceToCentroid(p);//, result.bestDistance);
 			if (logger.isDebugEnabled())
 				{
 				logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);

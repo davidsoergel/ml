@@ -154,6 +154,12 @@ public abstract class Cluster<T extends Clusterable<T>>
 		return theDistanceMeasure.distanceFromTo(p, centroid);
 		}
 
+	// premature optimization
+	/*	public double distanceToCentroid(T p, double distanceToBeat)
+	   {
+	   return theDistanceMeasure.distanceFromTo(p, centroid, distanceToBeat);
+	   }*/
+
 	public boolean equals(Cluster<T> other)
 		{
 		boolean result = centroid.equals(other.getCentroid())

@@ -57,6 +57,14 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
 		return true;
 		}
 
+	public void recenterByAddingWeighted(T point, double motionFactor)
+		{
+		//** REVISIT
+		centroid.multiplyBy(1 - motionFactor);
+		centroid.incrementBy(point.times(motionFactor));
+		labelCounts.add(point.getLabel());
+		}
+
 	public boolean recenterByRemoving(T point)
 		{
 		centroid.decrementBy(point);

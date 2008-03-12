@@ -160,6 +160,6 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 
 	public void multiplyBy(double v)
 		{
-		ArrayUtils.times(counts, v);
+		ArrayUtils.multiplyBy(counts, v);
 		}
 	}
