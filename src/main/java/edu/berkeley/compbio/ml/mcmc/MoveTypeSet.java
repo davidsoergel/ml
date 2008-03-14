@@ -57,8 +57,9 @@ public class MoveTypeSet
 
 	private static Logger logger = Logger.getLogger(MoveTypeSet.class);
 
-	private static ThreadLocal<HashMap<Object, MoveTypeSet>> _instance_tl =
-			new ThreadLocal<HashMap<Object, MoveTypeSet>>();
+	//	private static ThreadLocal<HashMap<Object, MoveTypeSet>> _instance_tl =
+	//			new ThreadLocal<HashMap<Object, MoveTypeSet>>();
+	private static HashMap<Object, MoveTypeSet> _instances = new HashMap<Object, MoveTypeSet>();
 
 	int numTypes = 0;
 
@@ -74,17 +75,17 @@ public class MoveTypeSet
 
 	public static MoveTypeSet getInstance(String movePackage) throws IOException
 		{
-		HashMap<Object, MoveTypeSet> instances = _instance_tl.get();
-		if (instances == null)
-			{
-			instances = new HashMap<Object, MoveTypeSet>();
-			_instance_tl.set(instances);
-			}
-		MoveTypeSet result = instances.get(movePackage);
+		//HashMap<Object, MoveTypeSet> instances = _instance_tl.get();
+		//	if (_instances == null)
+		//		{
+		//		_instances = new HashMap<Object, MoveTypeSet>();
+		//_instance_tl.set(instances);
+		//		}
+		MoveTypeSet result = _instances.get(movePackage);
 		if (result == null)
 			{
 			result = new MoveTypeSet(movePackage);
-			instances.put(movePackage, result);
+			_instances.put(movePackage, result);
 			}
 		return result;
 		}
@@ -96,7 +97,7 @@ public class MoveTypeSet
 
 	public MoveTypeSet(String movePackage) throws IOException
 		{
-		//		ThreadLocalRun.getProps().injectProperties(injectorId, this);
+		//		ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
 
 		Double prob;
 		for (Class movetype : SubclassFinder.find(movePackage, Move.class))
@@ -114,7 +115,7 @@ public class MoveTypeSet
 			// ** injection completely broken
 			/* **** commented out only due to refactoring; need to fix ****
 			// hack because we can't inject into a Map
-			prob = ThreadLocalRun.getProps()
+			prob = ResultsCollectingProgramRun.getProps()
 					.getDouble("edu.berkeley.compbio.ml.mcmc.MoveTypeSet.moveProbabilities." + shortname);
 					*/
 			prob = null;

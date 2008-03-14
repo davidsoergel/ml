@@ -57,7 +57,7 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 	public KneserNeyPSASmoother()//String injectorId)//double smoothFactor)
 		{
 		//this.smoothFactor = smoothFactor;
-		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
+		//ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
 		}
 
 	// ------------------------ INTERFACE METHODS ------------------------

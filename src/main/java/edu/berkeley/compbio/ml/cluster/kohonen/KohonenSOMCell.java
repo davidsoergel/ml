@@ -30,6 +30,7 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
@@ -52,25 +53,36 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
 
 	public boolean recenterByAdding(T point)
 		{
+		// we don't increment n here, because moving the centroid and actually assigning a sample to this cell are two different things
 		centroid.incrementBy(point);
-		labelCounts.add(point.getLabel());
 		return true;
 		}
+
+	public void addLabel(T point)
+		{
+		n++;
+		labelCounts.add(point.getLabel());
+		}
+
+	public void removeLabel(T point)
+		{
+		n--;
+		// we don't sanity check that the label was present to begin with
+		labelCounts.remove(point.getLabel());
+		}
+
 
 	public void recenterByAddingWeighted(T point, double motionFactor)
 		{
 		//** REVISIT
 		centroid.multiplyBy(1 - motionFactor);
 		centroid.incrementBy(point.times(motionFactor));
-		labelCounts.add(point.getLabel());
 		}
 
 	public boolean recenterByRemoving(T point)
 		{
 		centroid.decrementBy(point);
 
-		// we don't sanity check that the label was present to begin with
-		labelCounts.remove(point.getLabel());
 
 		return true;
 		//throw new NotImplementedException();
@@ -90,13 +102,15 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
 		this.labelProbabilities = labelProbabilities;
 		}
 
-	public Multinomial<String> getLabelProbabilities()
+	public Multinomial<String> getLabelProbabilities() throws DistributionException
 		{
+		labelProbabilities.normalize();
 		return labelProbabilities;
 		}
 
-	public double getDominantProbability()
+	public double getDominantProbability() throws DistributionException
 		{
+		labelProbabilities.normalize();
 		return labelProbabilities.getDominantProbability();
 		}
 

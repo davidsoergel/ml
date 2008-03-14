@@ -96,7 +96,7 @@ public class RonPST extends RonPSTNode
 
 	public RonPST()//String injectorId)
 		{
-		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
+		//ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
 		}
 
 	/*

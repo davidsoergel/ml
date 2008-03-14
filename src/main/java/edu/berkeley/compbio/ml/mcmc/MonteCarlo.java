@@ -164,7 +164,7 @@ public abstract class MonteCarlo
 
 	public MonteCarlo()//String injectorId)
 		{
-		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
+		//ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
 		}
 
 	// --------------------- GETTER / SETTER METHODS ---------------------

@@ -201,8 +201,8 @@ public class RonPSTTest
 	public void setUp() throws Exception
 		{
 		MathUtils.initApproximateLog(-12, 12, 3, 100000);
-		/*	ThreadLocalRun.removeInstance();
-		new ThreadLocalRun()
+		/*	ResultsCollectingProgramRun.removeInstance();
+		new ResultsCollectingProgramRun()
 		{
 		public String getVersion()
 			{

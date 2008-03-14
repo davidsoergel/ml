@@ -61,6 +61,7 @@ public class KohonenSOMNeighborhoodCollectingRelabeler implements KohonenSOMLabe
 
 	public void propagateLabels(KohonenSOM theMap)
 		{
+		int i = 0;
 		for (KohonenSOMCell cell : (List<KohonenSOMCell>) theMap.getClusters())
 			{
 			Bag counts = new HashBag();
@@ -84,6 +85,11 @@ public class KohonenSOMNeighborhoodCollectingRelabeler implements KohonenSOMLabe
 				e.printStackTrace();
 				cell.setLabelProbabilities(null);
 				}
+			if (i % 100 == 0)
+				{
+				logger.debug("Relabeled " + i + " nodes");
+				}
+			i++;
 			}
 		}
 	}

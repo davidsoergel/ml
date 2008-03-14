@@ -54,7 +54,7 @@ public class RonPSTSmoother implements DistributionProcessor<RonPST>
 	public RonPSTSmoother()//String injectorId)//double smoothFactor)
 		{
 		//this.smoothFactor = smoothFactor;
-		//ThreadLocalRun.getProps().injectProperties(injectorId, this);
+		//ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
 		}
 
 	// ------------------------ INTERFACE METHODS ------------------------

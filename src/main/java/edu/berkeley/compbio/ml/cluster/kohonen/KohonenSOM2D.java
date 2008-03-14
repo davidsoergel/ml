@@ -273,6 +273,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		if (decrementLosingNeighborhood && loser != null)
 			{
+			loser.removeLabel(p);
 			for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(loser); i.hasNext();)
 				{
 				WeightedCell v = i.next();
@@ -287,6 +288,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				}
 			}
 
+		winner.addLabel(p);
 		for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(winner); i.hasNext();)
 			{
 			WeightedCell v = i.next();
@@ -359,50 +361,61 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		private WeightedMask(int radius)
 			{
-			int x = radius;
-			int y = 0;
-			int xChange = 1 - 2 * radius;
-			int yChange = 1;
-			int radiusError = 0;
-
-			int i = 0;
-
-			// we'll see if 3.2 is enough, given rounding, to work for small r.
-			// If it's not then we'll get an ArrayIndexOutOfBoundsException below.
-			// 4 should be absolutely safe (i.e., the whole square) and the memory cost is likely no issue anyway.
-			int overestimateNumCells = (int) (3.2 * ((radius + 1) * (radius + 1)));
-
-			deltaX = new int[overestimateNumCells];
-			deltaY = new int[overestimateNumCells];
-			weight = new double[overestimateNumCells];
-
-			// always add the center (only once)
-			deltaX[i] = 0;
-			deltaY[i] = 0;
-			weight[i] = weightFunction == null ? 1 : weightFunction.f(0);
-			assert weight[i] > 0;
-			i++;
-
-			while (x >= y)
+			if (radius == 0)
 				{
-				i = plot8CirclePoints(i, x, y, radius);
+				deltaX = new int[1];
+				deltaY = new int[1];
+				weight = new double[1];
 
-				y++;
-				radiusError += yChange;
-				yChange += 2;
-				if (2 * radiusError + xChange > 0)
-					{
-					x--;
-					radiusError += xChange;
-					xChange += 2;
-					}
+				deltaX[0] = 0;
+				deltaY[0] = 0;
+				weight[0] = weightFunction == null ? 1 : weightFunction.f(0);
+				numCells = 1;
 				}
-
-			// for some reason the above algorithm always leaves out the points (0,radius) and (0,-radius).
-			// I don't bother to understand why, I just fix it.
-
-			if (radius != 0)
+			else
 				{
+				int x = radius;
+				int y = 0;
+				int xChange = 1 - 2 * radius;
+				int yChange = 1;
+				int radiusError = 0;
+
+				int i = 0;
+
+				// we'll see if 3.2 is enough, given rounding, to work for small r.
+				// If it's not then we'll get an ArrayIndexOutOfBoundsException below.
+				// 4 should be absolutely safe (i.e., the whole square) and the memory cost is likely no issue anyway.
+				int overestimateNumCells = (int) (3.2 * ((radius + 1) * (radius + 1)));
+
+				deltaX = new int[overestimateNumCells];
+				deltaY = new int[overestimateNumCells];
+				weight = new double[overestimateNumCells];
+
+				// always add the center (only once)
+				deltaX[i] = 0;
+				deltaY[i] = 0;
+				weight[i] = weightFunction == null ? 1 : weightFunction.f(0);
+				assert weight[i] > 0;
+				i++;
+
+				while (x >= y)
+					{
+					i = plot8CirclePoints(i, x, y, radius);
+
+					y++;
+					radiusError += yChange;
+					yChange += 2;
+					if (2 * radiusError + xChange > 0)
+						{
+						x--;
+						radiusError += xChange;
+						xChange += 2;
+						}
+					}
+
+				// for some reason the above algorithm always leaves out the points (0,radius) and (0,-radius).
+				// I don't bother to understand why, I just fix it.
+
 				double theWeight = weightFunction == null ? 1 : weightFunction.f(1);
 				assert theWeight > 0;
 
@@ -415,9 +428,10 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				deltaY[i] = -radius;
 				weight[i] = theWeight;
 				i++;
-				}
 
-			numCells = i;
+
+				numCells = i;
+				}
 			}
 
 		private int plot8CirclePoints(int i, int x, int y, int radius)
@@ -440,6 +454,11 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 					{
 					double dist = Math.sqrt(x * x + y * y);
 					double theWeight = weightFunction == null ? 1 : weightFunction.f(dist / (double) radius);
+					/*		if (logger.isDebugEnabled())
+					   {
+					   logger.debug("Plotting circle point " + x + ", " + y + " distance " + dist + " radius " + radius
+							   + " weight " + theWeight);
+					   }*/
 					assert theWeight > 0;
 
 					deltaX[i] = x;
@@ -713,10 +732,10 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	  */
 			// otherwise find the nearest cluster
 			double d = c.distanceToCentroid(p);//, result.bestDistance);
-			if (logger.isDebugEnabled())
-				{
-				logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);
-				}
+			/*	if (logger.isDebugEnabled())
+			   {
+			   logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);
+			   }*/
 			if (d < result.bestDistance)
 				{
 				result.secondBestDistance = result.bestDistance;
@@ -842,7 +861,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 					result.remove(i.next().theCell);
 					}
 				}
-
+			radius++;
 			return result;
 			}
 
