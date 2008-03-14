@@ -87,7 +87,7 @@ public class KohonenSOMNeighborhoodCollectingRelabeler implements KohonenSOMLabe
 				}
 			if (i % 100 == 0)
 				{
-				logger.debug("Relabeled " + i + " nodes");
+				logger.info("Relabeled " + i + " nodes.");
 				}
 			i++;
 			}

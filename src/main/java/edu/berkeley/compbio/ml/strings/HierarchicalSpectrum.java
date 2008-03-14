@@ -63,7 +63,14 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 			}
 		if (parent == null)
 			{
-			newParent();
+			try
+				{
+				newParent();
+				}
+			catch (SequenceSpectrumException e)
+				{
+				throw new SequenceSpectrumRuntimeException(e);
+				}
 			}
 		return parent;
 		}
@@ -73,7 +80,7 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 	/**
 	 * Generates a new Kcount based on this one and stores it as the parent
 	 */
-	protected abstract void newParent();//throws SequenceSpectrumException;
+	protected abstract void newParent() throws SequenceSpectrumException;//throws SequenceSpectrumException;
 
 
 	// ------------------------ CANONICAL METHODS ------------------------
@@ -96,7 +103,7 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 	/**
 	 * Recursively generalize thisKcount, creating a chain of "parents" until no further generalization is possible
 	 */
-	protected void ensureAllParentsExist()
+	protected void ensureAllParentsExist() throws SequenceSpectrumException
 		{
 		T kc = getParent();
 		if (kc != null)

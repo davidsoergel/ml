@@ -107,6 +107,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	// how strong the motion should be vs. fraction of the radius
 	private SimpleFunction weightFunction;
 	private Map<Integer, WeightedMask> weightedMasks = new HashMap<Integer, WeightedMask>();
+	private Map<Integer, WeightedMask> shellMasks = new HashMap<Integer, WeightedMask>();
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
@@ -329,6 +330,44 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return result;
 		}
 
+	WeightedMask getShellMask(int radius)
+		{
+		WeightedMask result = shellMasks.get(radius);
+		if (result == null)
+			{
+			if (radius < 1)
+				{
+				result = getWeightedMask(0);
+				}
+			else
+				{
+				WeightedMask outerMask = getWeightedMask(radius);
+				WeightedMask innerMask = getWeightedMask(radius - 1);
+				List<Integer> xList = new ArrayList<Integer>();
+				List<Integer> yList = new ArrayList<Integer>();
+				for (int i = 0; i < outerMask.deltaX.length; i++)
+					{
+					int x = outerMask.deltaX[i];
+					int y = outerMask.deltaY[i];
+					if (!innerMask.containsPoint(x, y))
+						{
+						xList.add(x);
+						yList.add(y);
+						}
+					}
+
+				result = new WeightedMask();
+				result.deltaX = ArrayUtils.toPrimitive(xList.toArray(new Integer[]{}));
+				result.deltaY = ArrayUtils.toPrimitive(yList.toArray(new Integer[]{}));
+				result.weight = new double[result.deltaX.length];
+				Arrays.fill(result.weight, 1);
+				result.numCells = result.deltaX.length;
+				}
+			shellMasks.put(radius, result);
+			}
+		return result;
+		}
+
 	public Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell)
 		{
 		return new NeighborhoodShellIterator(cell);
@@ -358,6 +397,10 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		// memory to the above arrays than we need.  Then we need to keep track of the highest index that is valid,
 		// i.e. the logical end of the array as opposed to the physical end.
 		int numCells;
+
+		private WeightedMask()
+			{
+			}
 
 		private WeightedMask(int radius)
 			{
@@ -575,6 +618,19 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		public Iterator<WeightedCell> iterator(KohonenSOMCell<T> center)
 			{
 			return new MaskIterator(center);
+			}
+
+		public boolean containsPoint(int x, int y)
+			{
+			//brute force search
+			for (int i = 0; i < deltaX.length; i++)
+				{
+				if (deltaX[i] == x && deltaY[i] == y)
+					{
+					return true;
+					}
+				}
+			return false;
 			}
 
 
@@ -846,21 +902,27 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		// This is horribly inefficient but we don't do it often
 		public Set<KohonenSOMCell<T>> next()
 			{
-			oldMask = currentMask;
-			currentMask = getWeightedMask(radius);
+
+			WeightedMask mask = getShellMask(radius);
+			//	oldMask = currentMask;
+			//	currentMask = getWeightedMask(radius);
 
 			Set<KohonenSOMCell<T>> result = new HashSet<KohonenSOMCell<T>>();
-			for (Iterator<WeightedCell> i = currentMask.iterator(center); i.hasNext();)
+			for (Iterator<WeightedCell> i = mask.iterator(center); i.hasNext();)
 				{
 				result.add(i.next().theCell);
 				}
-			if (oldMask != null)
-				{
-				for (Iterator<WeightedCell> i = oldMask.iterator(center); i.hasNext();)
-					{
-					result.remove(i.next().theCell);
-					}
-				}
+			/*	for (Iterator<WeightedCell> i = currentMask.iterator(center); i.hasNext();)
+			   {
+			   result.add(i.next().theCell);
+			   }
+		   if (oldMask != null)
+			   {
+			   for (Iterator<WeightedCell> i = oldMask.iterator(center); i.hasNext();)
+				   {
+				   result.remove(i.next().theCell);
+				   }
+			   }*/
 			radius++;
 			return result;
 			}
