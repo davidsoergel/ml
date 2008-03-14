@@ -187,7 +187,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		//List<Interval<Double>> axisRanges;
 		//	initializeClusters(axisRanges);
 
-		maxRadius = ArrayUtils.norm(this.cellsPerDimension) / 2.;
+		maxRadius = ArrayUtils.norm(this.cellsPerDimension) / 2.;//Math.ceil();
 		}
 
 	/*

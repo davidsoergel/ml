@@ -70,7 +70,7 @@ public class KohonenSOM2DTest
 	{
 	public double f(double x)
 		{
-		return 1. - x;
+		return 1.1 - x;
 		}
 	};
 
@@ -89,7 +89,7 @@ public class KohonenSOM2DTest
 		KohonenSOM2D<ClusterableDoubleArray> som = new KohonenSOM2D<ClusterableDoubleArray>(new Integer[]{
 				10,
 				10
-		}, dm, prototype, moveFactorFunction, radiusFunction, weightFunction, false, false, 1);
+		}, dm, prototype, moveFactorFunction, radiusFunction, weightFunction, false, true, 1);
 
 		som.add(new ClusterableDoubleArray("test1", new double[]{
 				1,
@@ -119,7 +119,7 @@ public class KohonenSOM2DTest
 		KohonenSOM2D<ClusterableDoubleArray> som = new KohonenSOM2D<ClusterableDoubleArray>(new Integer[]{
 				10,
 				10
-		}, dm, prototype, moveFactorFunction, radiusFunction, weightFunction, false, false, 1);
+		}, dm, prototype, moveFactorFunction, radiusFunction, weightFunction, false, true, 1);
 
 		som.add(new ClusterableDoubleArray("test1", new double[]{
 				1,
