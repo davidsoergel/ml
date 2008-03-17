@@ -373,6 +373,28 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return new NeighborhoodShellIterator(cell);
 		}
 
+	public void addToRandomCell(T p)
+		{
+		KohonenSOMCell<T> winner = (KohonenSOMCell<T>) chooseRandomCluster();
+
+		double moveFactor = 1.;
+		double radius = maxRadius;
+
+		logger.debug("Adding point with neighborhood radius " + radius + ", moveFactor " + moveFactor);
+
+		// winner.addLabel(p);  // no, this is just for random initialization
+
+		for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(winner); i.hasNext();)
+			{
+			WeightedCell v = i.next();
+			KohonenSOMCell<T> neighbor = v.theCell;
+
+			double motionFactor = moveFactor * v.weight;
+			neighbor.recenterByAddingWeighted(p, motionFactor);
+			}
+		//time++;  // no!
+		}
+
 
 	/**
 	 * Iterates over all the cells within a given radius of a center cell, using a fast algorithm from

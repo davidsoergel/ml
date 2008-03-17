@@ -34,6 +34,7 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.dsutils.MathUtils;
+import com.davidsoergel.dsutils.MersenneTwisterFast;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -134,6 +135,13 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		{
 		return theClusters;
 		}
+
+
+	protected Cluster<T> chooseRandomCluster()
+		{
+		return theClusters.get(MersenneTwisterFast.randomInt(theClusters.size()));
+		}
+
 
 	//public abstract void addAndRecenter(T v);
 	//public abstract void reassign(T v);
