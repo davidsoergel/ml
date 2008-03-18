@@ -46,7 +46,7 @@
 	<parent>
 		<groupId>edu.berkeley.compbio</groupId>
 		<artifactId>basepom</artifactId>
-		<version>0.9-SNAPSHOT</version>
+		<version>0.9</version>
 	</parent>
 
 	<inceptionYear>2006</inceptionYear>
@@ -97,25 +97,24 @@
 	</developers>
 
 
-
 	<repositories>
-	    <repository>
-	        <id>central</id>
-	        <url>http://dev.davidsoergel.com/artifactory/repo</url>
-	        <snapshots>
-	            <enabled>false</enabled>
-	        </snapshots>
-	    </repository>
-	    <repository>
-	        <id>snapshots</id>
-	        <url>http://dev.davidsoergel.com/artifactory/repo</url>
-	        <releases>
-	            <enabled>false</enabled>
-	        </releases>
-	    </repository>
+		<repository>
+			<id>central</id>
+			<url>http://dev.davidsoergel.com/artifactory/repo</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>snapshots</id>
+			<url>http://dev.davidsoergel.com/artifactory/repo</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
 	</repositories>
-	
-	
+
+
 	<dependencies>
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
