@@ -271,6 +271,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		// yeah a couple things:
 		// 1. it produces negative counts, which makes no sense, and
 		// 2. it leaves the average count number very low
+		// 3. in many of our runs we have an infinite supply of new samples, and never reclassify old samples
 
 		if (decrementLosingNeighborhood && loser != null)
 			{
@@ -279,13 +280,16 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				{
 				WeightedCell v = i.next();
 				KohonenSOMCell<T> neighbor = v.theCell;
-				T motion = p.minus(neighbor.getCentroid());
+				/*T motion = p.minus(neighbor.getCentroid());
 				motion.multiplyBy(-moveFactor);
 				if (v.weight != 1)
 					{
 					motion.multiplyBy(v.weight);
 					}
-				neighbor.recenterByAdding(motion);
+				neighbor.recenterByAdding(motion);*/
+
+				double motionFactor = moveFactor * v.weight;
+				neighbor.recenterByRemovingWeighted(p, motionFactor);
 				}
 			}
 

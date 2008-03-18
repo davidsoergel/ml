@@ -74,10 +74,25 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
 
 	public void recenterByAddingWeighted(T point, double motionFactor)
 		{
-		//** REVISIT
-		centroid.multiplyBy(1 - motionFactor);
+		//** Note assumption of an additive statistical model for the centroids
+		/*		if (!additiveModel)
+		   {
+		   centroid.multiplyBy(1 - motionFactor);
+		   }*/
 		centroid.incrementBy(point.times(motionFactor));
 		}
+
+
+	public void recenterByRemovingWeighted(T point, double motionFactor)
+		{
+		//** Note assumption of an additive statistical model for the centroids
+		/*		if (!additiveModel)
+		   {
+		   centroid.multiplyBy(1 - motionFactor);
+		   }*/
+		centroid.decrementBy(point.times(motionFactor));
+		}
+
 
 	public boolean recenterByRemoving(T point)
 		{
