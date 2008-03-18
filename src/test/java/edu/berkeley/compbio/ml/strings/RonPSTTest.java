@@ -252,12 +252,22 @@ public class RonPSTTest
 			throw new NotImplementedException();
 			}
 
+		public void decrementByWeighted(StubSequenceSpectrum object, double weight)
+			{
+			throw new NotImplementedException();
+			}
+
 		/**
 		 * updates this object by adding another one to it.
 		 *
 		 * @param object the object to add to this one
 		 */
 		public void incrementBy(StubSequenceSpectrum object)
+			{
+			throw new NotImplementedException();
+			}
+
+		public void incrementByWeighted(StubSequenceSpectrum object, double weight)
 			{
 			throw new NotImplementedException();
 			}

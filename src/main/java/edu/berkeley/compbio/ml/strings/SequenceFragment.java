@@ -289,6 +289,25 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		fireUpdated(baseSpectrum);
 		}
 
+
+	public void decrementByWeighted(SequenceFragment object, double weight)
+		{
+		scanIfNeeded();
+		try
+			{
+			length -= object.getLength();
+			baseSpectrum.decrementByWeighted(object.getSpectrum(baseSpectrum.getClass(), baseSpectrum.getFactory()),
+			                                 weight);
+			}
+		catch (SequenceSpectrumException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new Error(e);
+			}
+		fireUpdated(baseSpectrum);
+		}
+
 	public void incrementBy(SequenceFragment object)
 		{
 		scanIfNeeded();
@@ -300,6 +319,29 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			length += object.getLength();
 			baseSpectrum.incrementBy(object.getSpectrum(baseSpectrum.getClass(), baseSpectrum.getFactory()));
+			}
+		catch (SequenceSpectrumException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new Error(e);
+			}
+		fireUpdated(baseSpectrum);
+		}
+
+
+	public void incrementByWeighted(SequenceFragment object, double weight)
+		{
+		scanIfNeeded();
+		if (sequenceName == null)
+			{
+			this.sequenceName += object.getSequenceName();
+			}
+		try
+			{
+			length += object.getLength();
+			baseSpectrum.incrementByWeighted(object.getSpectrum(baseSpectrum.getClass(), baseSpectrum.getFactory()),
+			                                 weight);
 			}
 		catch (SequenceSpectrumException e)
 			{

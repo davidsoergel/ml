@@ -98,6 +98,19 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		ArrayUtils.incrementBy(data, object.data);
 		}
 
+
+	public void decrementByWeighted(ClusterableDoubleArray object, double weight)
+		{
+		//data = ArrayUtils.minus(data, object.data);
+		ArrayUtils.decrementByWeighted(data, object.data, weight);
+		}
+
+	public void incrementByWeighted(ClusterableDoubleArray object, double weight)
+		{
+		//data = ArrayUtils.plus(data, object.data);
+		ArrayUtils.incrementByWeighted(data, object.data, weight);
+		}
+
 	public void multiplyBy(double scalar)
 		{
 		//data = ArrayUtils.times(data, scalar);

@@ -588,6 +588,18 @@ public class RonPST extends RonPSTNode
 		throw new NotImplementedException();
 		}
 
+
+	public void decrementByWeighted(RonPST object, double weight)
+		{
+		throw new NotImplementedException();
+		}
+
+	public void incrementByWeighted(RonPST object, double weight)
+		{
+		throw new NotImplementedException();
+		}
+
+
 	/**
 	 * Returns a new object representing the difference between this one and the given argument.
 	 *

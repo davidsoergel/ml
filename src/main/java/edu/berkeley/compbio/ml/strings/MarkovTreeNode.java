@@ -239,6 +239,18 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new NotImplementedException();
 		}
 
+
+	public void decrementByWeighted(MarkovTreeNode object, double weight)
+		{
+		throw new NotImplementedException();
+		}
+
+	public void incrementByWeighted(MarkovTreeNode object, double weight)
+		{
+		throw new NotImplementedException();
+		}
+
+
 	public MarkovTreeNode minus(MarkovTreeNode object)
 		{
 		throw new NotImplementedException();

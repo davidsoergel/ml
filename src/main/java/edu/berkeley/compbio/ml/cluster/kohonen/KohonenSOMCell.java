@@ -79,7 +79,11 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
 		   {
 		   centroid.multiplyBy(1 - motionFactor);
 		   }*/
-		centroid.incrementBy(point.times(motionFactor));
+
+		// this is slow because point.times() requires an array copy, since we don't want to modify the original
+		//centroid.incrementBy(point.times(motionFactor));
+
+		centroid.incrementByWeighted(point, motionFactor);
 		}
 
 
@@ -90,7 +94,7 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
 		   {
 		   centroid.multiplyBy(1 - motionFactor);
 		   }*/
-		centroid.decrementBy(point.times(motionFactor));
+		centroid.decrementByWeighted(point, motionFactor);
 		}
 
 

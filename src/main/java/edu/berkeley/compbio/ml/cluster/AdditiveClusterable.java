@@ -89,4 +89,8 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 	 * @return
 	 */
 	String getLabel();
+
+	void incrementByWeighted(T point, double motionFactor);
+
+	void decrementByWeighted(T point, double motionFactor);
 	}
