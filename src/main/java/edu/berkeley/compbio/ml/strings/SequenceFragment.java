@@ -594,12 +594,17 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				{
 				if (c.isAssignableFrom(sc))
 					{
+					//logger.debug(c + " is assignable from " + sc + ".");
 					return theSpectra.get(sc);
 					}
 				}
 
 			try
 				{
+				if (factory == null)
+					{
+					throw new SequenceSpectrumException("Need to create new spectrum, but no factory was provided");
+					}
 				s = factory.create(this);
 				//s = c.getConstructor(SequenceFragment.class).newInstance(this);
 				theSpectra.put(c, s);
