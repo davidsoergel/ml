@@ -35,6 +35,7 @@ import com.davidsoergel.stats.SimpleFunction;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
+import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
@@ -109,6 +110,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	private Map<Integer, WeightedMask> weightedMasks = new HashMap<Integer, WeightedMask>();
 	private Map<Integer, WeightedMask> shellMasks = new HashMap<Integer, WeightedMask>();
 
+	private KohonenSOM2DSearchStrategy<T> searchStrategy;
+
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
@@ -118,9 +121,13 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	 */
 	private int listIndexFor(int x, int y)//int[] cellposition)
 		{
-		return x * blockSize[0] + y;
+		return y * blockSize[0] + x;
 		}
 
+	public Cluster<T> clusterAt(int x, int y)
+		{
+		return theClusters.get(listIndexFor(x, y));
+		}
 
 	/**
 	 * assumes inputs are entirely positive and within the bounds given by cellsPerDimension
@@ -154,7 +161,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 	public KohonenSOM2D(Integer[] cellsPerDimension, DistanceMeasure<T> dm, T prototype,
 	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction, SimpleFunction weightFunction,
-	                    boolean decrementLosingNeighborhood, boolean edgesWrap, double minRadius)
+	                    boolean decrementLosingNeighborhood, boolean edgesWrap, double minRadius,
+	                    KohonenSOM2DSearchStrategy<T> searchStrategy)
 		{
 		this.cellsPerDimension = ArrayUtils.toPrimitive(cellsPerDimension);
 		this.measure = dm;
@@ -165,6 +173,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		this.decrementLosingNeighborhood = decrementLosingNeighborhood;
 		this.edgesWrap = edgesWrap;
 		this.minRadius = minRadius;
+		this.searchStrategy = searchStrategy;
 
 		if (dimensions != 2)
 			{
@@ -189,6 +198,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		//	initializeClusters(axisRanges);
 
 		maxRadius = ArrayUtils.norm(this.cellsPerDimension) / 2.;//Math.ceil();
+
+		searchStrategy.setSOM(this);
 		}
 
 	/*
@@ -381,7 +392,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		{
 		KohonenSOMCell<T> winner = (KohonenSOMCell<T>) chooseRandomCluster();
 
-		double moveFactor = 1.;
+		double moveFactor = .5;
 		double radius = maxRadius;
 
 		logger.debug("Adding point with neighborhood radius " + radius + ", moveFactor " + moveFactor);
@@ -752,7 +763,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			}
 		}
 
-	private class WeightedCell
+	class WeightedCell
 		{
 		KohonenSOMCell<T> theCell;
 		double weight;
@@ -776,69 +787,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return theClusters.indexOf(cm.bestCluster);
 		}
 
-	/**
-	 * Copied from KmeansClustering
-	 *
-	 * @param p
-	 * @return
-	 */
 	public ClusterMove bestClusterMove(T p)
 		{
-		ClusterMove result = new ClusterMove();
-		//double bestDistance = Double.MAX_VALUE;
-		//Cluster<T> bestCluster = null;
-
-		String id = p.getId();
-		result.oldCluster = assignments.get(id);
-
-		if (logger.isDebugEnabled())
-			{
-			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
-			}
-		for (Cluster<T> c : theClusters)
-			{
-			// grid already initialized with prototype, never mind all this stuff
-
-			/*
-				  // while initializing the grid, cell centroids are null.  In that case, just assign the present point.
-				  // ** no this won't work right at all
-				  // ** why not?? PCA would be better, but this should work, just slowly.
-				  // ** aha: if there are more grid points than samples
-				  if (c.getCentroid() == null)
-					  {
-					  c.setCentroid(p.clone());
-					  result.bestDistance = 0;
-					  result.bestCluster = c;
-					  return result;
-					  }
-	  */
-			// otherwise find the nearest cluster
-			double d = c.distanceToCentroid(p);//, result.bestDistance);
-			/*	if (logger.isDebugEnabled())
-			   {
-			   logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);
-			   }*/
-			if (d < result.bestDistance)
-				{
-				result.secondBestDistance = result.bestDistance;
-				result.bestDistance = d;
-				result.bestCluster = c;
-				}
-			else if (d < result.secondBestDistance)
-				{
-				result.secondBestDistance = d;
-				}
-			}
-		if (logger.isDebugEnabled())
-			{
-			logger.debug("Chose " + result.bestCluster);
-			}
-		if (result.bestCluster == null)
-			{
-			logger.warn("Can't classify: " + p);
-			assert false;
-			}
-		return result;
+		return searchStrategy.bestClusterMove(p);
 		}
 
 	/*

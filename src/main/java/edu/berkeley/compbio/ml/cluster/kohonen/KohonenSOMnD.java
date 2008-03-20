@@ -35,6 +35,7 @@ import com.davidsoergel.stats.SimpleFunction;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
+import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;

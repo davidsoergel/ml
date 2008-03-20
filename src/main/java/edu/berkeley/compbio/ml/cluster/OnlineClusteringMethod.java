@@ -66,6 +66,11 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	protected int n = 0;
 
 
+	public Cluster<T> getAssignment(String id)
+		{
+		return assignments.get(id);
+		}
+
 	// --------------------- GETTER / SETTER METHODS ---------------------
 
 	public int getN()
@@ -330,25 +335,4 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		}
 
 	// -------------------------- INNER CLASSES --------------------------
-
-	public class ClusterMove
-		{
-		public Cluster<T> bestCluster;
-		public double bestDistance = Double.MAX_VALUE;
-		public Cluster<T> oldCluster;
-		double oldDistance;
-		public double secondBestDistance = 0;
-		//
-		//		public clusterMove(Cluster<T> newC, double newDistance, double oldDistance)
-		//			{
-		//			this.newC = newC;
-		//			this.newDistance = newDistance;
-		//			this.oldDistance = oldDistance;
-		//			}
-
-		public boolean changed()
-			{
-			return (oldCluster == null || (!bestCluster.equals(oldCluster)));
-			}
-		}
 	}

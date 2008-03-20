@@ -36,6 +36,7 @@ import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
+import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
@@ -98,7 +99,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		return true;
 		}
 
-	public OnlineClusteringMethod<T>.ClusterMove bestClusterMove(T p)
+	public ClusterMove bestClusterMove(T p)
 		{
 		return null;
 		}
