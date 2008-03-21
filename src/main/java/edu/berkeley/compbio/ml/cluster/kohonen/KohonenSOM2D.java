@@ -121,7 +121,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	 */
 	private int listIndexFor(int x, int y)//int[] cellposition)
 		{
-		return y * blockSize[0] + x;
+		return x * blockSize[0] + y;
 		}
 
 	public Cluster<T> clusterAt(int x, int y)
@@ -183,7 +183,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		// precompute stuff for listIndexFor
 		blockSize = new int[dimensions];
 		blockSize[1] = 1;
-		blockSize[0] = cellsPerDimension[0];
+		blockSize[0] = cellsPerDimension[1];
 
 		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
 

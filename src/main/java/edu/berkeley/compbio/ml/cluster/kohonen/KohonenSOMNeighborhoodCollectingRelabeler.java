@@ -85,7 +85,7 @@ public class KohonenSOMNeighborhoodCollectingRelabeler implements KohonenSOMLabe
 				e.printStackTrace();
 				cell.setLabelProbabilities(null);
 				}
-			if (i % 100 == 0)
+			if (i % 1000 == 0)
 				{
 				logger.info("Relabeled " + i + " nodes.");
 				}
