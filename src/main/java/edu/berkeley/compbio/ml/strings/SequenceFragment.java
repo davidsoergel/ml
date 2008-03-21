@@ -215,6 +215,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 */
 	public void setBaseSpectrum(SequenceSpectrum spectrum)
 		{
+		if (baseSpectrum == spectrum && theSpectra.size() == 1)
+			{
+			// nothing has changed
+			return;
+			}
 		theSpectra.clear();
 		baseSpectrum = spectrum;
 		if (!ignoreEdges)
