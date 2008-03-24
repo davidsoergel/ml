@@ -112,6 +112,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 	private KohonenSOM2DSearchStrategy<T> searchStrategy;
 
+	// how many point assignments have changed in this epoch
+	int changed = 0;
+
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
@@ -121,6 +124,12 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	 */
 	private int listIndexFor(int x, int y)//int[] cellposition)
 		{
+		if (edgesWrap)
+			{
+			x %= cellsPerDimension[0];
+			y %= cellsPerDimension[1];
+			}
+
 		return x * blockSize[0] + y;
 		}
 
@@ -264,6 +273,15 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
 		ClusterMove cm = bestClusterMove(p);
+
+		if (cm.changed())
+			{
+			changed++;
+			assignments.put(p.getId(), cm.bestCluster);
+			}
+
+		// do the moves whether or not the assignment changed
+
 		KohonenSOMCell<T> loser = (KohonenSOMCell<T>) cm.oldCluster;
 		KohonenSOMCell<T> winner = (KohonenSOMCell<T>) cm.bestCluster;
 
@@ -292,12 +310,12 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				WeightedCell v = i.next();
 				KohonenSOMCell<T> neighbor = v.theCell;
 				/*T motion = p.minus(neighbor.getCentroid());
-				motion.multiplyBy(-moveFactor);
-				if (v.weight != 1)
-					{
-					motion.multiplyBy(v.weight);
-					}
-				neighbor.recenterByAdding(motion);*/
+								 motion.multiplyBy(-moveFactor);
+								 if (v.weight != 1)
+									 {
+									 motion.multiplyBy(v.weight);
+									 }
+								 neighbor.recenterByAdding(motion);*/
 
 				double motionFactor = moveFactor * v.weight;
 				neighbor.recenterByRemovingWeighted(p, motionFactor);
@@ -312,15 +330,15 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 			//** Rearrange to avoid subtraction
 			/*
-			T motion = p.minus(neighbor.getCentroid());
+						 T motion = p.minus(neighbor.getCentroid());
 
-			motion.multiplyBy(moveFactor);
-			if (v.weight != 1)
-				{
-				motion.multiplyBy(v.weight);
-				}
-			neighbor.recenterByAdding(motion);
-			*/
+						 motion.multiplyBy(moveFactor);
+						 if (v.weight != 1)
+							 {
+							 motion.multiplyBy(v.weight);
+							 }
+						 neighbor.recenterByAdding(motion);
+						 */
 
 			double motionFactor = moveFactor * v.weight;
 
@@ -330,6 +348,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			//** REVISIT
 			neighbor.recenterByAddingWeighted(p, motionFactor);
 			}
+
 		time++;
 		return true;
 		}
@@ -408,6 +427,60 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			neighbor.recenterByAddingWeighted(p, motionFactor);
 			}
 		//time++;  // no!
+		}
+
+	public double[] computeCellAverageNeighborDistances()
+		{
+		double[] result = new double[theClusters.size()];
+
+		// assume the distances are symmetric, so we only calculate them once per pair of cells
+
+		// we just average the four straight-line distances per cell (no diagonals)
+
+		int width = cellsPerDimension[0];
+		int height = cellsPerDimension[1];
+		for (int x = 0; x < width; x++)
+			{
+			for (int y = 0; y < height; y++)
+				{
+				if (x != width && y != height)
+					{
+					Cluster<T> here = clusterAt(x, y);
+
+					Cluster<T> right = clusterAt(x + 1, y);
+					double d = here.distanceToCentroid(right.getCentroid());
+
+					result[listIndexFor(x, y)] += d;
+					result[listIndexFor(x + 1, y)] += d;
+
+
+					Cluster<T> down = clusterAt(x, y + 1);
+					d = here.distanceToCentroid(down.getCentroid());
+
+					result[listIndexFor(x, y)] += d;
+					result[listIndexFor(x, y + 1)] += d;
+					}
+				}
+			}
+
+		for (int i = 0; i < result.length; i++)
+			{
+			// if the edges don't wrap, then the edge cells should be divided by 3, not 4.  Oh well.
+
+			result[i] /= 4;
+			}
+
+		return result;//Arrays.asList(ArrayUtils.toObject(result));
+		}
+
+	public void resetChanged()
+		{
+		changed = 0;
+		}
+
+	public int getChanged()
+		{
+		return changed;
 		}
 
 
@@ -787,7 +860,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return theClusters.indexOf(cm.bestCluster);
 		}
 
-	public ClusterMove bestClusterMove(T p)
+	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
 		{
 		return searchStrategy.bestClusterMove(p);
 		}

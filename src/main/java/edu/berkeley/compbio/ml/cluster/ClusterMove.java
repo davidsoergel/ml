@@ -55,4 +55,10 @@ public class ClusterMove<T extends Clusterable<T>>
 		{
 		return (oldCluster == null || (!bestCluster.equals(oldCluster)));
 		}
+
+	public String toString()
+		{
+		return "bestDistance = " + bestDistance + ", bestCluster = " + bestCluster + ", oldCluster = " + oldCluster
+				+ ", oldDistance = " + oldDistance;
+		}
 	}

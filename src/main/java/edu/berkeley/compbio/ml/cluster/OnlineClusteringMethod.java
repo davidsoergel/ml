@@ -88,7 +88,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	 * @param p
 	 * @return
 	 */
-	public abstract ClusterMove bestClusterMove(T p);
+	public abstract ClusterMove bestClusterMove(T p) throws NoGoodClusterException;
 
 
 	/**

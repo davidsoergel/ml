@@ -124,7 +124,9 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		theReader = in;
 		theScanner = scanner;
 		this.desiredlength = desiredlength;
-		if (sequenceName == null && theReader != null)
+
+		// if the sequence name is null but there is a parent, we'll let getSequenceName() build an appropriate string on demand
+		if (sequenceName == null && parent == null && theReader != null)
 			{
 			this.sequenceName = theReader.getName();
 			}

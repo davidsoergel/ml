@@ -32,6 +32,7 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
+import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 
 /* $Id$ */
 
@@ -43,5 +44,5 @@ public interface KohonenSOM2DSearchStrategy<T extends AdditiveClusterable<T>>
 	{
 	void setSOM(KohonenSOM2D<T> som);
 
-	ClusterMove<T> bestClusterMove(T p);
+	ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException;
 	}

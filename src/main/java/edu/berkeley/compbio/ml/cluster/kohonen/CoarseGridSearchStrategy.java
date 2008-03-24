@@ -33,6 +33,7 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
+import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
 import java.util.HashSet;
@@ -77,9 +78,9 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> implemen
 	 * @param p
 	 * @return
 	 */
-	public ClusterMove<T> bestClusterMove(T p)
+	public ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException
 		{
-		ClusterMove<T> result = new ClusterMove();
+		ClusterMove<T> result = new ClusterMove<T>();
 
 		String id = p.getId();
 		result.oldCluster = som.getAssignment(id);
@@ -128,8 +129,8 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> implemen
 			}
 		if (result.bestCluster == null)
 			{
-			logger.warn("Can't classify: " + p);
-			assert false;
+			//logger.error("Can't classify: " + p);
+			throw new NoGoodClusterException("No cluster found for " + p + ": " + result);
 			}
 		return result;
 		}
