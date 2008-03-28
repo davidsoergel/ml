@@ -291,10 +291,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		moveFactor = Math.min(moveFactor, 1);
 		moveFactor = Math.max(moveFactor, 0);
-		double radius = radiusFunction.f(time);
-
-		radius = Math.min(radius, maxRadius);
-		radius = Math.max(radius, minRadius);
+		double radius = getCurrentRadius();
 
 		logger.debug("Adding point with neighborhood radius " + radius + ", moveFactor " + moveFactor);
 
@@ -496,6 +493,16 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	public int getChanged()
 		{
 		return changed;
+		}
+
+	public double getCurrentRadius()
+		{
+		double radius = radiusFunction.f(time);
+
+		radius = Math.min(radius, maxRadius);
+		radius = Math.max(radius, minRadius);
+
+		return radius;
 		}
 
 
