@@ -33,8 +33,12 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryException;
+import com.davidsoergel.dsutils.IteratorProvider;
 import com.davidsoergel.dsutils.MathUtils;
 import com.davidsoergel.dsutils.MersenneTwisterFast;
+import com.davidsoergel.stats.DistributionException;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -42,9 +46,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -52,14 +58,14 @@ import java.util.Map;
  * @author lorax
  * @version 1.0
  */
-public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
+public abstract class OnlineClusteringMethod<T extends Clusterable<T>> implements ClusterSet<T>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
 	private static Logger logger = Logger.getLogger(OnlineClusteringMethod.class);
 	//private Iterator<T> theDataPointProvider;
 
-	protected List<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
+	protected Collection<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
 
 	protected Map<String, Cluster<T>> assignments = new HashMap<String, Cluster<T>>();// see whether anything changed
 
@@ -119,7 +125,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
 	 */
-	public abstract int getBestCluster(T p, List<Double> secondBestDistances)
+	public abstract Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
 			throws ClusterException, NoGoodClusterException;
 
 
@@ -136,7 +142,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	/*
 	   */
 
-	public List<Cluster<T>> getClusters()
+	public Collection<? extends Cluster<T>> getClusters()
 		{
 		return theClusters;
 		}
@@ -144,7 +150,18 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 
 	protected Cluster<T> chooseRandomCluster()
 		{
-		return theClusters.get(MersenneTwisterFast.randomInt(theClusters.size()));
+		//** slow, but rarely used
+
+		int index = MersenneTwisterFast.randomInt(theClusters.size());
+		Iterator<? extends Cluster<T>> iter = theClusters.iterator();
+		Cluster<T> result = iter.next();
+		for (int i = 0; i < index; result = iter.next())
+			{
+			;
+			}
+		return result;
+
+		//return theClusters.get(MersenneTwisterFast.randomInt(theClusters.size()));
 		}
 
 
@@ -163,7 +180,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 	 * consider each of the incoming data points exactly once per iteration.  Note iterations > 1 only makes sense for
 	 * unsupervised clustering.
 	 */
-	public void run(ClusterableIterator<T> theDataPointProvider, int iterations)
+	public void train(IteratorProvider<T> trainingIteratorProvider, int iterations)
 			throws IOException, ClusterException//, int maxpoints) throws IOException
 		{
 		//Date totalstarttime = new Date();
@@ -171,16 +188,16 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		for (int i = 0; i < iterations; i++)
 			{
 			int changed = 0;
-			theDataPointProvider.reset();
+			Iterator<T> trainingIterator = trainingIteratorProvider.next();
 			//normalizeClusters();
 			int c = 0;
 			Date starttime = new Date();
 			secondBestDistances.clear();
-			while (theDataPointProvider.hasNext())
+			while (trainingIterator.hasNext())
 				{
 				try
 					{
-					if (add(theDataPointProvider.next(), secondBestDistances))
+					if (add(trainingIterator.next(), secondBestDistances))
 						{
 						changed++;
 						}
@@ -334,5 +351,65 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>>
 		p.flush();
 		}
 
+	public abstract void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+	                                            GenericFactory<T> prototypeFactory) throws GenericFactoryException;
+
 	// -------------------------- INNER CLASSES --------------------------
+
+	public class TestResults
+		{
+		public double correct = 0;
+		public double wrong = 0;
+		public double unknown = 0;
+
+		public void normalize()
+			{
+			double total = correct + wrong + unknown;
+			correct /= total;
+			wrong /= total;
+			unknown /= total;
+			}
+		}
+
+	public TestResults test(Iterator<T> theTestIterator, double unknownThreshold)
+			throws ClusterException, NoGoodClusterException, DistributionException
+		{
+		// evaluate labeling correctness using the test samples
+
+		List<Double> secondBestDistances = new ArrayList<Double>();
+		TestResults tr = new TestResults();
+
+		int i = 0;
+		while (theTestIterator.hasNext())
+			{
+			T frag = theTestIterator.next();
+			Cluster<T> best = getBestCluster(frag, secondBestDistances);
+			double prob = best.getDominantProbability();
+			if (prob <= unknownThreshold)
+				{
+				tr.unknown++;
+				}
+			else
+				{
+				String dominantLabel = best.getDominantLabel();
+				if (frag.getLabel().equals(dominantLabel))
+					{
+					tr.correct++;
+					}
+				else
+					{
+					tr.wrong++;
+					}
+				}
+			if (i % 100 == 0)
+				{
+				logger.info("Tested " + i + " samples.");
+				}
+			i++;
+			}
+		tr.normalize();
+		logger.info("Tested " + i + " samples.");
+		//	return i;
+		return tr;
+		}
 	}

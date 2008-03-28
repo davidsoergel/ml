@@ -1,4 +1,4 @@
-/* $Id: Clusterable.java 98 2007-07-03 06:37:53Z lorax $ */
+/* $Id$ */
 
 /*
  * Copyright (c) 2007 Regents of the University of California
@@ -67,4 +67,12 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 * @return a unique identifier for this object
 	 */
 	String getId();
+
+
+	/**
+	 * Get a classification label, if available (optional operation)
+	 *
+	 * @return
+	 */
+	String getLabel();
 	}

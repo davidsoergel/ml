@@ -32,6 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster.kmeans;
 
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryException;
 import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
@@ -52,22 +54,29 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 	// ------------------------------ FIELDS ------------------------------
 
 	private static Logger logger = Logger.getLogger(KmeansClustering.class);
+	private DistanceMeasure<T> distanceMeasure;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	//private int k;
 
-	public KmeansClustering(Iterator<T> dpp, int k, DistanceMeasure<T> dm) throws CloneNotSupportedException
+	public KmeansClustering(DistanceMeasure<T> dm) throws CloneNotSupportedException
 		{
 		//super(dpp);
 		//this.k = k;
+		this.distanceMeasure = dm;
+		}
+
+	public void initializeWithRealData(Iterator<T> trainingIterator, int k, GenericFactory<T> prototypeFactory)
+			throws GenericFactoryException
+		{
 
 		for (int i = 0; i < k; i++)
 			{
 			// initialize the clusters with the first k points
 
-			Cluster<T> c = new AdditiveCluster<T>(dm, dpp.next());
+			Cluster<T> c = new AdditiveCluster<T>(distanceMeasure, trainingIterator.next());
 			c.setId(i);
 
 			theClusters.add(c);
@@ -117,10 +126,10 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
 	 */
 	@Override
-	public int getBestCluster(T p, List<Double> secondBestDistances)
+	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
 		{
 		ClusterMove cm = bestClusterMove(p);
-		return theClusters.indexOf(cm.bestCluster);
+		return cm.bestCluster;
 		}
 
 	/**

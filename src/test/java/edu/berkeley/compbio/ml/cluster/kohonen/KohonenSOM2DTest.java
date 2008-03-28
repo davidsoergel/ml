@@ -138,7 +138,7 @@ public class KohonenSOM2DTest
 				0,
 				0,
 				0
-		}), null) != 0;
+		}), null) != som.getClusters().iterator().next();// the first cell in the list, at (0,0)
 		}
 
 	@Test

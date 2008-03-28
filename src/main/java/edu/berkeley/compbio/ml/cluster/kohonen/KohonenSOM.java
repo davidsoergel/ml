@@ -31,10 +31,9 @@
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
+import edu.berkeley.compbio.ml.cluster.ClusterSet;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 /* $Id$ */
@@ -43,13 +42,12 @@ import java.util.Set;
  * @Author David Soergel
  * @Version 1.0
  */
-public interface KohonenSOM<T extends AdditiveClusterable<T>>
+public interface KohonenSOM<T extends AdditiveClusterable<T>> extends ClusterSet<T>
 	{
 	//boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
 
 	Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell);
 
-	List<Cluster<T>> getClusters();
 
 	//int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
 

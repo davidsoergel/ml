@@ -32,8 +32,6 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -41,17 +39,12 @@ import java.util.Iterator;
  * @author lorax
  * @version 1.0
  */
-public abstract class ClusterableIterator<T extends Clusterable<T>>
-		implements Iterator<T>//, Comparable<ClusterableIterator<T>>
+public interface ClusterableIterator<T extends Clusterable<T>> extends Iterator<T>//, Comparable<ClusterableIterator<T>>
 	{
-	// ------------------------------ FIELDS ------------------------------
-
-	private static Logger logger = Logger.getLogger(ClusterableIterator.class);
-
 
 	// -------------------------- OTHER METHODS --------------------------
 
 	//public abstract ClusterableIterator<T> clone() throws CloneNotSupportedException;
 
-	public abstract void reset() throws IOException;
+	void reset() throws IOException;
 	}

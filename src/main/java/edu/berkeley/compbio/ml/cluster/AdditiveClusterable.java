@@ -83,13 +83,6 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 
 	void multiplyBy(double v);
 
-	/**
-	 * Get a classification label, if available (optional operation)
-	 *
-	 * @return
-	 */
-	String getLabel();
-
 	void incrementByWeighted(T point, double motionFactor);
 
 	void decrementByWeighted(T point, double motionFactor);

@@ -31,6 +31,8 @@
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.SimpleFunction;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
@@ -135,7 +137,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 	public Cluster<T> clusterAt(int x, int y)
 		{
-		return theClusters.get(listIndexFor(x, y));
+		return ((List<Cluster<T>>) theClusters).get(listIndexFor(x, y));
 		}
 
 	/**
@@ -351,6 +353,19 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		time++;
 		return true;
+		}
+
+	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+	                                   GenericFactory<T> prototypeFactory) throws GenericFactoryException
+		{
+		for (int i = 0; i < initSamples; i++)
+			{
+			addToRandomCell(trainingIterator.next());
+			if (i % 100 == 0)
+				{
+				logger.info("Initialized with " + i + " samples.");
+				}
+			}
 		}
 
 	WeightedMask getWeightedMask(int radius)
@@ -755,7 +770,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			public MaskIterator(KohonenSOMCell<T> center)
 				{
 				//this.center = center;
-				int[] c = cellPositionFor(theClusters.indexOf(center));
+				int[] c = cellPositionFor(((List<Cluster<T>>) theClusters).indexOf(center));
 				xCenter = c[0];
 				yCenter = c[1];
 				nextCell = findNextCell();
@@ -825,7 +840,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 					}
 
 
-				return new WeightedCell((KohonenSOMCell<T>) theClusters.get(listIndexFor(realX, realY)), weight[trav]);
+				return new WeightedCell(
+						(KohonenSOMCell<T>) ((List<Cluster<T>>) theClusters).get(listIndexFor(realX, realY)),
+						weight[trav]);
 				}
 
 
@@ -854,10 +871,11 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
 	 */
-	public int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
+	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
+			throws ClusterException, NoGoodClusterException
 		{
 		ClusterMove cm = bestClusterMove(p);
-		return theClusters.indexOf(cm.bestCluster);
+		return cm.bestCluster;
 		}
 
 	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException

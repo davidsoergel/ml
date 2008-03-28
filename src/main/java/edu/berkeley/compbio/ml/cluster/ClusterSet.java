@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007 Regents of the University of California
+ * Copyright (c) 2008 Regents of the University of California
  *
  * All rights reserved.
  *
@@ -28,11 +28,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster.kohonen;
+package edu.berkeley.compbio.ml.cluster;
 
-import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
+import java.util.Collection;
 
 /* $Id$ */
 
@@ -40,53 +38,7 @@ import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
+public interface ClusterSet<T extends Clusterable<T>>
 	{
-	public KohonenSOMCell(DistanceMeasure<T> dm, T centroid)
-		{
-		super(dm, centroid);
-		}
-
-	public boolean recenterByAdding(T point)
-		{
-		// we don't increment n here, because moving the centroid and actually assigning a sample to this cell are two different things
-		centroid.incrementBy(point);
-		return true;
-		}
-
-
-	public void recenterByAddingWeighted(T point, double motionFactor)
-		{
-		//** Note assumption of an additive statistical model for the centroids
-		/*		if (!additiveModel)
-		   {
-		   centroid.multiplyBy(1 - motionFactor);
-		   }*/
-
-		// this is slow because point.times() requires an array copy, since we don't want to modify the original
-		//centroid.incrementBy(point.times(motionFactor));
-
-		centroid.incrementByWeighted(point, motionFactor);
-		}
-
-
-	public void recenterByRemovingWeighted(T point, double motionFactor)
-		{
-		//** Note assumption of an additive statistical model for the centroids
-		/*		if (!additiveModel)
-		   {
-		   centroid.multiplyBy(1 - motionFactor);
-		   }*/
-		centroid.decrementByWeighted(point, motionFactor);
-		}
-
-
-	public boolean recenterByRemoving(T point)
-		{
-		centroid.decrementBy(point);
-
-
-		return true;
-		//throw new NotImplementedException();
-		}
+	Collection<? extends Cluster<T>> getClusters();
 	}

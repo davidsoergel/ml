@@ -32,7 +32,11 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
+import org.apache.commons.collections.Bag;
+import org.apache.commons.collections.bag.HashBag;
 import org.apache.log4j.Logger;
 
 import java.util.Formatter;
@@ -60,7 +64,7 @@ public abstract class Cluster<T extends Clusterable<T>>
 	public Cluster(DistanceMeasure<T> dm, T centroid)
 		{
 		this.centroid = centroid;//.clone();
-		n++;
+		//n++;
 		//add(centroid);
 		logger.debug("Created cluster with centroid: " + centroid);
 		theDistanceMeasure = dm;
@@ -171,4 +175,50 @@ public abstract class Cluster<T extends Clusterable<T>>
 	public abstract boolean recenterByAdding(T point);
 
 	public abstract boolean recenterByRemoving(T point);
+
+
+	private Bag labelCounts = new HashBag();
+
+	Multinomial<String> labelProbabilities = new Multinomial<String>();
+
+	public Bag getLabelCounts()
+		{
+		return labelCounts;
+		}
+
+	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
+		{
+		this.labelProbabilities = labelProbabilities;
+		}
+
+	public Multinomial<String> getLabelProbabilities() throws DistributionException
+		{
+		labelProbabilities.normalize();
+		return labelProbabilities;
+		}
+
+	public double getDominantProbability() throws DistributionException
+		{
+		labelProbabilities.normalize();
+		return labelProbabilities.getDominantProbability();
+		}
+
+	public String getDominantLabel()
+		{
+		return labelProbabilities.getDominantKey();
+		}
+
+
+	public void addLabel(T point)
+		{
+		n++;
+		labelCounts.add(point.getLabel());
+		}
+
+	public void removeLabel(T point)
+		{
+		n--;
+		// we don't sanity check that the label was present to begin with
+		labelCounts.remove(point.getLabel());
+		}
 	}

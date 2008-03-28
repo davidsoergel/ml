@@ -32,17 +32,24 @@
 
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryException;
 import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
+import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Performs cluster classification with a naive bayesian classifier
@@ -56,11 +63,12 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	private static Logger logger = Logger.getLogger(BayesianClustering.class);
 
-	private T[] centroids;
+	//private T[] centroids;
 	private DistanceMeasure<T> measure;
-	private double[] priors;
+	//private double[] priors;
 
 	private double unknownThreshold;
+	private Map<String, Cluster<T>> theClusterMap;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
@@ -74,28 +82,60 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	 * @param dm               The distance measure to use
 	 * @param unknownThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public BayesianClustering(T[] theCentroids, double[] thePriors, DistanceMeasure<T> dm, double unknownThreshold)
+	/*	public BayesianClustering(T[] theCentroids, double[] thePriors, DistanceMeasure<T> dm, double unknownThreshold)
+	   {
+	   centroids = theCentroids;
+	   measure = dm;
+	   priors = thePriors;
+	   this.unknownThreshold = unknownThreshold;
+
+	   for (int i = 0; i < centroids.length; i++)
+		   {
+		   Cluster<T> c = new AdditiveCluster<T>(dm, theCentroids[i]);
+		   c.setId(i);
+
+		   theClusters.add(c);
+		   }
+	   logger.debug("initialized " + centroids.length + " clusters");
+	   }*/
+	public BayesianClustering(DistanceMeasure<T> dm, double unknownThreshold)
 		{
-		centroids = theCentroids;
 		measure = dm;
-		priors = thePriors;
 		this.unknownThreshold = unknownThreshold;
+		theClusterMap = new HashMap<String, Cluster<T>>();
+		theClusters = theClusterMap.values();
+		}
 
-		for (int i = 0; i < centroids.length; i++)
+	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+	                                   GenericFactory<T> prototypeFactory) throws GenericFactoryException
+		{
+		// consume the entire iterator, ignoring initsamples
+		int i = 0;
+		while (trainingIterator.hasNext())
 			{
-			Cluster<T> c = new AdditiveCluster<T>(dm, theCentroids[i]);
-			c.setId(i);
+			T point = trainingIterator.next();
+			Cluster<T> cluster = theClusterMap.get(point.getLabel());
 
-			theClusters.add(c);
+			if (cluster == null)
+				{
+				cluster = new AdditiveCluster<T>(measure, prototypeFactory.create());
+				cluster.setId(i++);
+				theClusterMap.put(point.getLabel(), cluster);
+				}
+			cluster.recenterByAdding(point);
 			}
-		logger.debug("initialized " + centroids.length + " clusters");
+		}
+
+	public void train(ClusterableIterator<T> theDataPointProvider, int iterations) throws IOException, ClusterException
+		{
+		// do nothing
 		}
 
 	// -------------------------- OTHER METHODS --------------------------
 
 	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
-		theClusters.get(getBestCluster(p, secondBestDistances)).recenterByAdding(p);
+		getBestCluster(p, secondBestDistances).recenterByAdding(p);
 		return true;
 		}
 
@@ -106,28 +146,42 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	double bestdistance = Double.MAX_VALUE;
 
-	public int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
+	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
+			throws ClusterException, NoGoodClusterException
 		{
-		int i;
+		//int i;
 		double secondbestdistance = Double.MAX_VALUE;
 		bestdistance = Double.MAX_VALUE;
+		Cluster<T> best = null;
 		double temp;
-		int j = -1;
-		for (i = 0; i < theClusters.size(); i++)
+		//int j = -1;
+		int totalSamples = 0;
+		for (Cluster<T> cluster : theClusters)
 			{
-			if ((temp = measure.distanceFromTo(p, centroids[i]) * priors[i]) <= bestdistance)
+			int n = cluster.getN();
+			totalSamples += n;
+
+			//** for now, use the number of samples in each cluster as the prior
+			// really we mean n/totalSamples, of course, but totalSamples isn't tallied yet.
+			// no problem, it's just a constant factor.
+
+			if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * n) <= bestdistance)
 				{
 				secondbestdistance = bestdistance;
 				bestdistance = temp;
-				j = i;
+				best = cluster;
+				//j = i;
 				}
 			else if (temp <= secondbestdistance)
 				{
 				secondbestdistance = temp;
 				}
 			}
+		bestdistance /= totalSamples;// now it's a probability
+		secondbestdistance /= totalSamples;// now it's a probability
+
 		secondBestDistances.add(secondbestdistance);
-		if (j == -1)
+		if (best == null)
 			{
 			throw new ClusterException("Found no cluster at all, that's impossible");
 			}
@@ -135,7 +189,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 			{
 			throw new NoGoodClusterException("Best distance " + bestdistance + " > threshold " + unknownThreshold);
 			}
-		return j;
+		return best;
 		}
 
 	public double getBestdistance()
