@@ -176,8 +176,12 @@ public abstract class Cluster<T extends Clusterable<T>>
 
 	public abstract boolean recenterByRemoving(T point);
 
-
+	// too bad Bag isn't generic; we want Bag<String>
 	private Bag labelCounts = new HashBag();
+
+	// we let the label probabilities be completely distinct from the counts, so that the probabilities
+	// can be set based on outside information (e.g., in the case of the Kohonen map, neighboring cells
+	// may exert an influence)
 
 	Multinomial<String> labelProbabilities = new Multinomial<String>();
 
@@ -185,6 +189,26 @@ public abstract class Cluster<T extends Clusterable<T>>
 		{
 		return labelCounts;
 		}
+
+	public void updateLabelProbabilitiesFromCounts()//throws DistributionException
+		{
+		labelProbabilities = new Multinomial<String>();
+		for (Object o : labelCounts.uniqueSet())// too bad Bag isn't generic
+			{
+			try
+				{
+				labelProbabilities.put((String) o, labelCounts.getCount(o));
+				}
+			catch (DistributionException e)
+				{
+				logger.debug(e);
+				e.printStackTrace();
+				throw new ClusterRuntimeException(e);
+				}
+			}
+		//		labelProbabilities.normalize();  // don't bother, it'll be done on request anyway
+		}
+
 
 	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
 		{

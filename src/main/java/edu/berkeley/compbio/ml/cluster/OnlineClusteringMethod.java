@@ -371,7 +371,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> implement
 			}
 		}
 
-	public TestResults test(Iterator<T> theTestIterator, double unknownThreshold)
+	public TestResults test(Iterator<T> theTestIterator, double unknownLabelProbabilityThreshold)
 			throws ClusterException, NoGoodClusterException, DistributionException
 		{
 		// evaluate labeling correctness using the test samples
@@ -385,7 +385,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> implement
 			T frag = theTestIterator.next();
 			Cluster<T> best = getBestCluster(frag, secondBestDistances);
 			double prob = best.getDominantProbability();
-			if (prob <= unknownThreshold)
+			if (prob <= unknownLabelProbabilityThreshold)
 				{
 				tr.unknown++;
 				}

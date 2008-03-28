@@ -34,18 +34,19 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
+import com.davidsoergel.dsutils.IteratorProvider;
+import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
-import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -67,7 +68,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	private DistanceMeasure<T> measure;
 	//private double[] priors;
 
-	private double unknownThreshold;
+	private double unknownDistanceThreshold;
 	private Map<String, Cluster<T>> theClusterMap;
 
 
@@ -98,37 +99,61 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		   }
 	   logger.debug("initialized " + centroids.length + " clusters");
 	   }*/
-	public BayesianClustering(DistanceMeasure<T> dm, double unknownThreshold)
+	public BayesianClustering(DistanceMeasure<T> dm, double unknownDistanceThreshold)
 		{
 		measure = dm;
-		this.unknownThreshold = unknownThreshold;
+		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		theClusterMap = new HashMap<String, Cluster<T>>();
 		theClusters = theClusterMap.values();
 		}
 
+	private Multinomial<Cluster> priors = new Multinomial<Cluster>();
+
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
-		// consume the entire iterator, ignoring initsamples
-		int i = 0;
-		while (trainingIterator.hasNext())
+		try
 			{
-			T point = trainingIterator.next();
-			Cluster<T> cluster = theClusterMap.get(point.getLabel());
-
-			if (cluster == null)
+			// consume the entire iterator, ignoring initsamples
+			int i = 0;
+			while (trainingIterator.hasNext())
 				{
-				cluster = new AdditiveCluster<T>(measure, prototypeFactory.create());
-				cluster.setId(i++);
-				theClusterMap.put(point.getLabel(), cluster);
+				T point = trainingIterator.next();
+				Cluster<T> cluster = theClusterMap.get(point.getLabel());
+
+				if (cluster == null)
+					{
+					cluster = new AdditiveCluster<T>(measure, prototypeFactory.create());
+					cluster.setId(i++);
+					theClusterMap.put(point.getLabel(), cluster);
+
+					//** for now we make a uniform prior
+					priors.put(cluster, 1);
+					}
+				cluster.recenterByAdding(point);
+				/*		if(cluster.getLabelCounts().uniqueSet().size() != 1)
+				{
+				throw new Error();
+				}*/
 				}
-			cluster.recenterByAdding(point);
+			priors.normalize();
+			}
+		catch (DistributionException e)
+			{
+			throw new Error(e);
 			}
 		}
 
-	public void train(ClusterableIterator<T> theDataPointProvider, int iterations) throws IOException, ClusterException
+
+	public void train(IteratorProvider<T> trainingIteratorProvider, int iterations)
 		{
 		// do nothing
+
+		// after that, normalize the label probabilities
+		for (Cluster c : theClusters)
+			{
+			c.updateLabelProbabilitiesFromCounts();
+			}
 		}
 
 	// -------------------------- OTHER METHODS --------------------------
@@ -155,39 +180,39 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		Cluster<T> best = null;
 		double temp;
 		//int j = -1;
-		int totalSamples = 0;
 		for (Cluster<T> cluster : theClusters)
 			{
-			int n = cluster.getN();
-			totalSamples += n;
 
-			//** for now, use the number of samples in each cluster as the prior
-			// really we mean n/totalSamples, of course, but totalSamples isn't tallied yet.
-			// no problem, it's just a constant factor.
-
-			if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * n) <= bestdistance)
+			try
 				{
-				secondbestdistance = bestdistance;
-				bestdistance = temp;
-				best = cluster;
-				//j = i;
+				if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * priors.get(cluster)) <= bestdistance)
+					{
+					secondbestdistance = bestdistance;
+					bestdistance = temp;
+					best = cluster;
+					//j = i;
+					}
+				else if (temp <= secondbestdistance)
+					{
+					secondbestdistance = temp;
+					}
 				}
-			else if (temp <= secondbestdistance)
+			catch (DistributionException e)
 				{
-				secondbestdistance = temp;
+				throw new ClusterException(e);
 				}
 			}
-		bestdistance /= totalSamples;// now it's a probability
-		secondbestdistance /= totalSamples;// now it's a probability
+
 
 		secondBestDistances.add(secondbestdistance);
 		if (best == null)
 			{
 			throw new ClusterException("Found no cluster at all, that's impossible");
 			}
-		if (bestdistance > unknownThreshold)
+		if (bestdistance > unknownDistanceThreshold)
 			{
-			throw new NoGoodClusterException("Best distance " + bestdistance + " > threshold " + unknownThreshold);
+			throw new NoGoodClusterException(
+					"Best distance " + bestdistance + " > threshold " + unknownDistanceThreshold);
 			}
 		return best;
 		}
