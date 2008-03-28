@@ -397,7 +397,15 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		// the RonPSA implementation uses backlinks and so is vastly more efficient.
 		// We can't use backlinks here because they might point to nodes outside of this subtree
 
-		SequenceReader in = sequenceFragment.getResetReader();
+		SequenceReader in;
+		try
+			{
+			in = sequenceFragment.getResetReader();
+			}
+		catch (NotEnoughSequenceException e)
+			{
+			throw new SequenceSpectrumRuntimeException(e);
+			}
 		int requiredPrefixLength = getMaxDepth();
 		double logprob = 0;
 		CircularFifoBuffer prefix = new CircularFifoBuffer(requiredPrefixLength);

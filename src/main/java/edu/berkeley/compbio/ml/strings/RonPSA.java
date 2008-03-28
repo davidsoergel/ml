@@ -160,7 +160,15 @@ public class RonPSA extends RonPSANode
 	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
 		{
 		// simply follow the MarkovTreeNode as a state machine, using backlinks
-		SequenceReader in = sequenceFragment.getResetReader();
+		SequenceReader in;
+		try
+			{
+			in = sequenceFragment.getResetReader();
+			}
+		catch (NotEnoughSequenceException e)
+			{
+			throw new SequenceSpectrumRuntimeException(e);
+			}
 		in.setTranslationAlphabet(getAlphabet());
 		double logprob = 0;
 		RonPSANode currentNode = this;

@@ -562,7 +562,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		return getBaseSpectrum().getNumberOfSamples();//theKcount.getNumberOfSamples();
 		}
 
-	public SequenceReader getResetReader()
+	public SequenceReader getResetReader() throws NotEnoughSequenceException
 		{
 		try
 			{
@@ -574,6 +574,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			logger.debug(e);
 			e.printStackTrace();
 			throw new SequenceSpectrumRuntimeException(e);
+			}
+		catch (NullPointerException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new NotEnoughSequenceException("This sequence fragment is not based on a reader.");
 			}
 		}
 
