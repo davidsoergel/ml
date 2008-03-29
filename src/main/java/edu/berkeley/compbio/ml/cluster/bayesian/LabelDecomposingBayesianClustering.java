@@ -91,6 +91,8 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				// the resulting clustering may suck, but it should still more or less span the space of the inputs,
 				// so it may work well enough for this purpose.
 
+				// doing proper k-means would be nicer, but then we'd have to store all the  training points, or re-iterate them somehow.
+
 				ClusterMove<T> cm = theIntraLabelClustering.bestClusterMove(point);
 
 				Cluster<T> cluster = cm.bestCluster;
