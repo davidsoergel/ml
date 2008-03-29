@@ -352,7 +352,8 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> implement
 		}
 
 	public abstract void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                            GenericFactory<T> prototypeFactory) throws GenericFactoryException;
+	                                            GenericFactory<T> prototypeFactory)
+			throws GenericFactoryException, ClusterException;
 
 	// -------------------------- INNER CLASSES --------------------------
 

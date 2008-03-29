@@ -61,7 +61,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 
 	//private int k;
 
-	public KmeansClustering(DistanceMeasure<T> dm) throws CloneNotSupportedException
+	public KmeansClustering(DistanceMeasure<T> dm)//throws CloneNotSupportedException
 		{
 		//super(dpp);
 		//this.k = k;
@@ -139,9 +139,9 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 	 * @return
 	 */
 	@Override
-	public ClusterMove bestClusterMove(T p)
+	public ClusterMove<T> bestClusterMove(T p)
 		{
-		ClusterMove result = new ClusterMove();
+		ClusterMove<T> result = new ClusterMove<T>();
 		//double bestDistance = Double.MAX_VALUE;
 		//Cluster<T> bestCluster = null;
 

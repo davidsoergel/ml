@@ -65,11 +65,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	private static Logger logger = Logger.getLogger(BayesianClustering.class);
 
 	//private T[] centroids;
-	private DistanceMeasure<T> measure;
+	protected DistanceMeasure<T> measure;
 	//private double[] priors;
 
-	private double unknownDistanceThreshold;
-	private Map<String, Cluster<T>> theClusterMap;
+	protected double unknownDistanceThreshold;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
@@ -103,15 +102,16 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		{
 		measure = dm;
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
-		theClusterMap = new HashMap<String, Cluster<T>>();
-		theClusters = theClusterMap.values();
 		}
 
-	private Multinomial<Cluster> priors = new Multinomial<Cluster>();
+	protected Multinomial<Cluster> priors = new Multinomial<Cluster>();
 
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                   GenericFactory<T> prototypeFactory) throws GenericFactoryException
+	                                   GenericFactory<T> prototypeFactory)
+			throws GenericFactoryException, ClusterException
 		{
+		Map<String, Cluster<T>> theClusterMap = new HashMap<String, Cluster<T>>();
+
 		try
 			{
 			// consume the entire iterator, ignoring initsamples
@@ -142,6 +142,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 			{
 			throw new Error(e);
 			}
+		theClusters = theClusterMap.values();
 		}
 
 
@@ -185,6 +186,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 			try
 				{
+				//** careful: how to deal with priors depends on the distance measure.
+				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
+
 				if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * priors.get(cluster)) <= bestdistance)
 					{
 					secondbestdistance = bestdistance;
