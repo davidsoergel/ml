@@ -145,6 +145,6 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> implem
 
 	public double getSearchRadius()
 		{
-		return 2;
+		return 3;
 		}
 	}

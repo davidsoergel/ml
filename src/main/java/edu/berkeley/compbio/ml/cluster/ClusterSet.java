@@ -40,5 +40,5 @@ import java.util.Collection;
  */
 public interface ClusterSet<T extends Clusterable<T>>
 	{
-	Collection<? extends Cluster<T>> getClusters();
+	Collection<? extends Cluster<? extends T>> getClusters();
 	}

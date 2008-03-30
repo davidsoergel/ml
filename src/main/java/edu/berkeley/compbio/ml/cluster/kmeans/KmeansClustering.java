@@ -177,7 +177,8 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		if (result.bestCluster == null)
 			{
 			logger.warn("Can't classify: " + p);
-			assert false;
+			// probably this is a GrowingKmeansClustering that has no clusters yet
+			//assert false;
 			}
 		return result;
 		}

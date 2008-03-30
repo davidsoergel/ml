@@ -157,7 +157,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> implement
 		Cluster<T> result = iter.next();
 		for (int i = 0; i < index; result = iter.next())
 			{
-			;
+			i++;
 			}
 		return result;
 
