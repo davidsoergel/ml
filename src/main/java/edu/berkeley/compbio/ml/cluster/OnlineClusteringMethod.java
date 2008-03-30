@@ -362,6 +362,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> implement
 		public double correct = 0;
 		public double wrong = 0;
 		public double unknown = 0;
+		public int numClusters = 0;
 
 		public void normalize()
 			{
@@ -379,6 +380,8 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> implement
 
 		List<Double> secondBestDistances = new ArrayList<Double>();
 		TestResults tr = new TestResults();
+
+		tr.numClusters = theClusters.size();
 
 		int i = 0;
 		while (theTestIterator.hasNext())

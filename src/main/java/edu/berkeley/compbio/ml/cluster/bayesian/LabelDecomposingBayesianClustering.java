@@ -128,8 +128,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				if (logger.isInfoEnabled())
 					{
 					logger.info("Created " + theIntraLabelClustering.getClusters().size() + " clusters from "
-							+ theIntraLabelClustering
-							.getN() + " points for " + label);
+							+ theIntraLabelClustering.getN() + " points for " + label);
 					}
 				}
 			}
