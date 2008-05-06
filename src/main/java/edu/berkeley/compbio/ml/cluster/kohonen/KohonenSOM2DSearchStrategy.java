@@ -36,7 +36,7 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 
-/* $Id$ */
+
 
 /**
  * @Author David Soergel

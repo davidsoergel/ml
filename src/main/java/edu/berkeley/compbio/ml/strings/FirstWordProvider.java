@@ -34,7 +34,7 @@ package edu.berkeley.compbio.ml.strings;
 
 import java.util.List;
 
-/* $Id$ */
+
 
 /**
  * @Author David Soergel

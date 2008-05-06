@@ -30,7 +30,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $Id$ */
 
 package edu.berkeley.compbio.ml.cluster;
 
@@ -40,9 +39,12 @@ import org.apache.log4j.Logger;
 import java.util.HashSet;
 import java.util.Set;
 
+
 /**
- * @author lorax
- * @version 1.0
+ * A Cluster that explicitly stores the set of samples it contains.
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Rev$
  */
 public class BatchCluster<T extends AdditiveClusterable<T>> extends AdditiveCluster<T>
 	{
@@ -50,11 +52,21 @@ public class BatchCluster<T extends AdditiveClusterable<T>> extends AdditiveClus
 
 	private static Logger logger = Logger.getLogger(BatchCluster.class);
 
+	/**
+	 * The set of samples contained in this cluster.
+	 */
 	Set<T> thePoints = new HashSet<T>();
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
-
+	/**
+	 * Constructs a new Cluster with the given DistanceMeasure and centroid.  Note the centroid may be modified in the
+	 * course of running a clustering algorithm, so it may not be a good idea to provide a real data point here (i.e., it's
+	 * probably best to clone it first).
+	 *
+	 * @param dm       the DistanceMeasure<T>
+	 * @param centroid the T
+	 */
 	public BatchCluster(DistanceMeasure<T> dm, T centroid) throws CloneNotSupportedException
 		{
 		super(dm, centroid);

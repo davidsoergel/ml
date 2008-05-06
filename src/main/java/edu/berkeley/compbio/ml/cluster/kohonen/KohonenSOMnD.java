@@ -55,7 +55,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Vector;
 
-/* $Id$ */
+
 
 /**
  * Kohonen Self Organizing Map implementation for a rectangular grid of arbitrary dimensions.

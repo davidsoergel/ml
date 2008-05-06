@@ -30,28 +30,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster.kohonen;
+package edu.berkeley.compbio.ml.cluster;
 
-import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.ClusterSet;
-
-import java.util.Iterator;
-import java.util.Set;
-
+import com.davidsoergel.dsutils.LengthWeightHierarchyNode;
 
 
 /**
- * @Author David Soergel
- * @Version 1.0
+ * A hierarchical clustering method; builds a tree of the input samples.
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Rev$
  */
-public interface KohonenSOM<T extends AdditiveClusterable<T>> extends ClusterSet<T>
+public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extends BatchClusteringMethod<T>
 	{
-	//boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
-
-	Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell);
-
-
-	//int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
-
-	//OnlineClusteringMethod.ClusterMove bestClusterMove(T p);
+	/**
+	 * Returns a LengthWeightHierarchyNode representing the root of the computed clustering tree.  Only valid after
+	 * performClustering() has been run.
+	 *
+	 * @return a LengthWeightHierarchyNode representing the root of the computed clustering tree, or null if the clustering
+	 *         procedure has not been performed yet.
+	 */
+	public abstract LengthWeightHierarchyNode<T> getTree();
 	}

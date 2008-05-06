@@ -34,7 +34,7 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
-/* $Id$ */
+
 
 /**
  * @Author David Soergel

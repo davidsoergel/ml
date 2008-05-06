@@ -36,7 +36,7 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 
-/* $Id$ */
+
 
 /**
  * @Author David Soergel

@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $Id$ */
+
 
 package edu.berkeley.compbio.ml.cluster;
 
@@ -38,8 +38,10 @@ import com.davidsoergel.dsutils.ChainedRuntimeException;
 import org.apache.log4j.Logger;
 
 /**
- * @author lorax
- * @version 1.0
+ * A runtime exception having to do with clustering.
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Rev$
  */
 public class ClusterRuntimeException extends ChainedRuntimeException
 	{

@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $Id$ */
+
 
 package edu.berkeley.compbio.ml.cluster.kmeans;
 
@@ -103,7 +103,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		String id = p.getId();
 		ClusterMove cm = bestClusterMove(p);
 		secondBestDistances.add(cm.secondBestDistance);
-		if (cm.changed())
+		if (cm.isChanged())
 			{
 			try
 				{

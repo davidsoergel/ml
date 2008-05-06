@@ -30,28 +30,31 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster.kohonen;
+package edu.berkeley.compbio.ml.cluster;
 
-import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.ClusterSet;
-
-import java.util.Iterator;
-import java.util.Set;
-
+import java.util.Collection;
 
 
 /**
- * @Author David Soergel
- * @Version 1.0
+ * A clustering method that needs the complete set of samples on hand in order to operate.
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Rev$
  */
-public interface KohonenSOM<T extends AdditiveClusterable<T>> extends ClusterSet<T>
+public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
 	{
-	//boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
+	// different implementations may prefer different data structures
+	//Collection<Clusterable<T>> samples;
 
-	Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell);
+	/**
+	 * Recompute a set of clusters from the stored samples.
+	 */
+	public abstract void performClustering();
 
-
-	//int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
-
-	//OnlineClusteringMethod.ClusterMove bestClusterMove(T p);
+	/**
+	 * Add the given samples to the set to be clustered.
+	 *
+	 * @param samples a Collection of Clusterable objects. 
+	 */
+	public abstract void addAll(Collection<Clusterable<T>> samples);
 	}

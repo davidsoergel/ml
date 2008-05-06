@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $Id$ */
+
 
 package edu.berkeley.compbio.ml.cluster;
 
@@ -38,6 +38,7 @@ package edu.berkeley.compbio.ml.cluster;
  * @author lorax
  * @version 1.0
  */
+@Deprecated
 public class MockClusterableIterator//extends ClusterableIterator<ClusterableDoubleArray>
 	{
 	/*	private static Logger logger = Logger.getLogger(MockClusterableIterator.class);

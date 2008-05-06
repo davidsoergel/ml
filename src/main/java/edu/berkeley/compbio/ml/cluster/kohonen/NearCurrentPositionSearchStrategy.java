@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 
-/* $Id$ */
+
 
 /**
  * @Author David Soergel

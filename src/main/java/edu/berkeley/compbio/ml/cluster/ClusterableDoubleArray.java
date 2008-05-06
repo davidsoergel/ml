@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $Id$ */
+
 
 package edu.berkeley.compbio.ml.cluster;
 
@@ -38,10 +38,7 @@ import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.stats.DoubleArrayContainer;
 import org.apache.log4j.Logger;
 
-/**
- * @author lorax
- * @version 1.0
- */
+
 public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDoubleArray>, DoubleArrayContainer
 	{
 	// ------------------------------ FIELDS ------------------------------

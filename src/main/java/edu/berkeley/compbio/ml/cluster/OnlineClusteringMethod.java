@@ -30,7 +30,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $Id$ */
 
 package edu.berkeley.compbio.ml.cluster;
 
@@ -38,133 +37,39 @@ import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.IteratorProvider;
-import com.davidsoergel.dsutils.MathUtils;
-import com.davidsoergel.dsutils.MersenneTwisterFast;
-import com.davidsoergel.stats.DistributionException;
 import org.apache.log4j.Logger;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+
 
 /**
- * @author lorax
- * @version 1.0
+ * A clustering method that is able to update clusters continuously as samples are added one at a time.
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Rev$
  */
-public abstract class OnlineClusteringMethod<T extends Clusterable<T>> implements ClusterSet<T>
+public abstract class OnlineClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
 	private static Logger logger = Logger.getLogger(OnlineClusteringMethod.class);
 	//private Iterator<T> theDataPointProvider;
 
-	protected Collection<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
-
-	protected Map<String, Cluster<T>> assignments = new HashMap<String, Cluster<T>>();// see whether anything changed
-
-	protected int n = 0;
-
-
-	public Cluster<T> getAssignment(String id)
-		{
-		return assignments.get(id);
-		}
 
 	// --------------------- GETTER / SETTER METHODS ---------------------
-
-	public int getN()
-		{
-		return n;
-		}
 
 	// -------------------------- OTHER METHODS --------------------------
 
 	//public static <T extends AdditiveClusterable<T>> Cluster<T> bestCluster(List<Cluster<T>> theClusters, T p)
 
-	/**
-	 * Return a ClusterMove object describing the best way to reassign the given point to a new cluster.
-	 *
-	 * @param p
-	 * @return
-	 */
-	public abstract ClusterMove bestClusterMove(T p) throws NoGoodClusterException;
-
-
-	/**
-	 * for each cluster, compute the standard deviation of the distance of each point to the centroid. This does not
-	 * reassign points or move the centroids.
-	 *
-	 * @param theDataPointProvider
-	 */
-	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
-		{
-		theDataPointProvider.reset();
-		for (Cluster<T> c : theClusters)
-			{
-			c.setSumOfSquareDistances(0);
-			}
-		while (theDataPointProvider.hasNext())
-			{
-			T p = theDataPointProvider.next();
-			Cluster<T> c = assignments.get(p.getId());
-			double dist = c.distanceToCentroid(p);
-			c.addToSumOfSquareDistances(dist * dist);
-			}
-		}
-
-	/**
-	 * Returns the best cluster without adding the point
-	 *
-	 * @param p                   Point to find the best cluster of
-	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
-	 */
-	public abstract Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
-			throws ClusterException, NoGoodClusterException;
-
-
-	public List<T> getCentroids()
-		{
-		List<T> result = new ArrayList<T>();
-		for (Cluster<T> c : theClusters)
-			{
-			result.add(c.getCentroid());
-			}
-		return result;
-		}
 
 	/*
 	   */
-
-	public Collection<? extends Cluster<T>> getClusters()
-		{
-		return theClusters;
-		}
-
-
-	protected Cluster<T> chooseRandomCluster()
-		{
-		//** slow, but rarely used
-
-		int index = MersenneTwisterFast.randomInt(theClusters.size());
-		Iterator<? extends Cluster<T>> iter = theClusters.iterator();
-		Cluster<T> result = iter.next();
-		for (int i = 0; i < index; result = iter.next())
-			{
-			i++;
-			}
-		return result;
-
-		//return theClusters.get(MersenneTwisterFast.randomInt(theClusters.size()));
-		}
 
 
 	//public abstract void addAndRecenter(T v);
@@ -261,71 +166,6 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> implement
 	//public abstract void add(T v);
 
 
-	public String shortClusteringStats()
-		{
-		List<Double> distances = new ArrayList<Double>();
-		int numDistances = 0;
-		for (Cluster<T> c : theClusters)
-			{
-			for (Cluster<T> d : theClusters)
-				{
-				double distance = c.distanceToCentroid(d.getCentroid());
-				if (c == d && !MathUtils.equalWithinFPError(distance, 0))
-					{
-					logger.warn("Floating point trouble: self distance = " + distance + " " + c);
-					assert false;
-					}
-				if (c != d)
-					{
-					logger.debug("Distance between clusters = " + d);
-					distances.add(distance);
-					}
-				}
-			}
-		double avg = ArrayUtils.sum(distances) / (double) distances.size();
-		double sd = 0;
-		for (double d : distances)
-			{
-			sd += d * d;
-			}
-		sd = Math.sqrt(sd / (double) distances.size());
-
-		return new Formatter().format("Separation: %.3f (%.3f)", avg, sd).toString();
-		}
-
-	public String clusteringStats()
-		{
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		writeClusteringStatsToStream(b);
-		return b.toString();
-		}
-
-	public void writeClusteringStatsToStream(OutputStream outf)
-		{
-		PrintWriter p = new PrintWriter(outf);
-		for (Cluster<T> c : theClusters)
-			{
-			p.println(c);
-			double stddev1 = c.getStdDev();
-			for (Cluster<T> d : theClusters)
-				{
-				double distance = c.distanceToCentroid(d.getCentroid());
-				if (c == d && !MathUtils.equalWithinFPError(distance, 0))
-					{
-					logger.warn("Floating point trouble: self distance = " + distance + " " + c);
-					assert false;
-					}
-				double stddev2 = d.getStdDev();
-				double margin1 = distance - (stddev1 + stddev2);
-				double margin2 = distance - 2 * (stddev1 + stddev2);
-
-				p.printf("\t%.2f (%.2f)", distance, margin1);//,  margin2);
-				}
-			p.println();
-			}
-		p.flush();
-		}
-
 	/*private void normalizeClusters()
 		{
 		// This is a little tricky because we want to set the sample size of each cluster back to 0
@@ -339,83 +179,9 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> implement
 
 		}*/
 
-	/**
-	 * choose the best cluster for each incoming data point and report it
-	 */
-	public void writeAssignmentsAsTextToStream(OutputStream outf)
-		{
-		int c = 0;
-		PrintWriter p = new PrintWriter(outf);
-		for (String s : assignments.keySet())
-			{
-			p.println(s + " " + assignments.get(s).getId());
-			}
-		p.flush();
-		}
-
 	public abstract void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                            GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException;
 
 	// -------------------------- INNER CLASSES --------------------------
-
-	public class TestResults
-		{
-		public double correct = 0;
-		public double wrong = 0;
-		public double unknown = 0;
-		public int numClusters = 0;
-
-		public void normalize()
-			{
-			double total = correct + wrong + unknown;
-			correct /= total;
-			wrong /= total;
-			unknown /= total;
-			}
-		}
-
-	public TestResults test(Iterator<T> theTestIterator, double unknownLabelProbabilityThreshold)
-			throws ClusterException, NoGoodClusterException, DistributionException
-		{
-		// evaluate labeling correctness using the test samples
-
-		List<Double> secondBestDistances = new ArrayList<Double>();
-		TestResults tr = new TestResults();
-
-		tr.numClusters = theClusters.size();
-
-		int i = 0;
-		while (theTestIterator.hasNext())
-			{
-			T frag = theTestIterator.next();
-			Cluster<T> best = getBestCluster(frag, secondBestDistances);
-			double prob = best.getDominantProbability();
-			if (prob <= unknownLabelProbabilityThreshold)
-				{
-				tr.unknown++;
-				}
-			else
-				{
-				String dominantLabel = best.getDominantLabel();
-				if (frag.getLabel().equals(dominantLabel))
-					{
-					tr.correct++;
-					}
-				else
-					{
-					tr.wrong++;
-					}
-				}
-			if (i % 100 == 0)
-				{
-				logger.info("Tested " + i + " samples.");
-				}
-			i++;
-			}
-		tr.normalize();
-		logger.info("Tested " + i + " samples.");
-		//	return i;
-		return tr;
-		}
 	}

@@ -30,9 +30,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $Id$ */
 
-package edu.berkeley.compbio.ml.cluster;
+package edu.berkeley.compbio.ml.cluster.kmeans;
 
 import com.davidsoergel.dsutils.MathUtils;
 import org.apache.log4j.Logger;
@@ -45,11 +44,11 @@ import java.io.IOException;
  * @author lorax
  * @version 1.0
  */
-public class OnlineKmeansClusteringTest
+public class KmeansClusteringTest
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(OnlineKmeansClusteringTest.class);
+	private static Logger logger = Logger.getLogger(KmeansClusteringTest.class);
 
 
 	// -------------------------- OTHER METHODS --------------------------
@@ -63,6 +62,7 @@ public class OnlineKmeansClusteringTest
 	@Test
 	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
 		{
+		// ** Test is commented out!
 		/*
 			  ClusterableIterator ci;
 

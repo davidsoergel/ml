@@ -35,7 +35,7 @@ package edu.berkeley.compbio.ml.distancemeasure;
 import com.davidsoergel.dsutils.ChainedRuntimeException;
 import org.apache.log4j.Logger;
 
-/* $Id$ */
+
 
 /**
  * Thrown when something involving a SequenceSpectrum goes wrong, such as when a requested spectrum cannot be computed.

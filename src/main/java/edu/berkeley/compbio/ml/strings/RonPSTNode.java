@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-/* $Id$ */
+
 
 /**
  * A node of a Probabilistic Suffix Tree, where each symbol is a byte.  Much of this code is very similar to that found

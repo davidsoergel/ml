@@ -37,7 +37,7 @@ import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import org.apache.log4j.Logger;
 
-/* $Id$ */
+
 
 /**
  * @Author David Soergel

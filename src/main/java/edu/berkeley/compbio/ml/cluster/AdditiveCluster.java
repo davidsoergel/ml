@@ -30,7 +30,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $Id$ */
 
 package edu.berkeley.compbio.ml.cluster;
 
@@ -38,8 +37,10 @@ import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
 /**
- * Created by IntelliJ IDEA. User: lorax Date: Jun 24, 2007 Time: 7:20:33 PM To change this template use File | Settings
- * | File Templates.
+ * A cluster whose centroid can be moved by adding or removing individual samples.
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Rev$
  */
 public class AdditiveCluster<T extends AdditiveClusterable<T>> extends Cluster<T>
 	{
@@ -50,6 +51,14 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends Cluster<T
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
+	/**
+	 * Constructs a new AdditiveCluster with the given DistanceMeasure and centroid.  Note the centroid may be modified in
+	 * the course of running a clustering algorithm, so it may not be a good idea to provide a real data point here (i.e.,
+	 * it's probably best to clone it first).
+	 *
+	 * @param dm       the DistanceMeasure<T>
+	 * @param centroid the T
+	 */
 	public AdditiveCluster(DistanceMeasure<T> dm, T centroid)
 		{
 		super(dm, centroid);
@@ -57,25 +66,35 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends Cluster<T
 
 	// -------------------------- OTHER METHODS --------------------------
 
-	public boolean recenterByAdding(T point)//, double distance)
+	/**
+	 * Add the given sample to this cluster.  Does not automatically remove the sample from other clusters of which it is
+	 * already a member.
+	 *
+	 * @param point the sample to add
+	 * @return true if the point was successfully added; false otherwise
+	 */
+	@Override
+	public boolean recenterByAdding(T point)
 		{
-		//n++;
 		addLabel(point);
-		//sumSquareDistances += (distance * distance);  // WRONG
 		logger.debug("Cluster added " + point);
-		centroid.incrementBy(point);// works because Kcounts are "nonscaling additive", but it's not generic
-		//times((double)n/n+1).plus(point.times(1/((double)n+1)));
+		centroid.incrementBy(point);
 		return true;
 		}
 
-	public boolean recenterByRemoving(T point)//, double distance)
+	/**
+	 * Remove the given sample from this cluster.
+	 *
+	 * @param point the sample to remove
+	 * @return true if the point was successfully removed; false otherwise (in particular, if the point is not a member of
+	 *         this cluster in teh first place)
+	 */
+	@Override
+	public boolean recenterByRemoving(T point)
 		{
-		//n--;
 		removeLabel(point);
-		//sumSquareDistances -= (distance * distance);  // WRONG
 		logger.debug("Cluster removed " + point);
-		centroid.decrementBy(point);// works because Kcounts are "nonscaling additive", but it's not generic
-		//times((double)n/n+1).plus(point.times(1/((double)n+1)));
+		centroid.decrementBy(point);
 		return true;
 		}
 	}

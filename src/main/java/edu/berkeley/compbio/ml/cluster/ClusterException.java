@@ -30,16 +30,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $Id$ */
 
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.ChainedException;
 import org.apache.log4j.Logger;
 
+
 /**
- * @author lorax
- * @version 1.0
+ * An exception having to do with clustering.
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Rev$
  */
 public class ClusterException extends ChainedException
 	{

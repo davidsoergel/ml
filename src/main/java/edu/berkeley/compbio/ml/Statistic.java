@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml;
 
-/* $Id$ */
+
 
 /**
  * @Author David Soergel

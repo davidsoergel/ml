@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-/* $Id$ */
+
 
 /**
  * Label each cell in a Kohonen SOM with label proportions according to the label counts that are present in the cell,

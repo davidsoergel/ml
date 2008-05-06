@@ -30,7 +30,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* $Id$ */
 
 package edu.berkeley.compbio.ml.cluster;
 
@@ -38,8 +37,12 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /**
- * @author lorax
- * @version 1.0
+ * Interface for resettable iterators over Clusterable objects.  This is useful because many clustering algorithms need
+ * to consider the entire set of samples repeatedly, but don't want to store the samples explicitly.  In that case we
+ * can just reset the iterator and run through it again.
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Rev$
  */
 public interface ClusterableIterator<T extends Clusterable<T>> extends Iterator<T>//, Comparable<ClusterableIterator<T>>
 	{

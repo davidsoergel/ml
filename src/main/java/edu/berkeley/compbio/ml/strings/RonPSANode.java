@@ -38,7 +38,7 @@ import com.davidsoergel.stats.DistributionException;
 import java.util.Formatter;
 import java.util.Queue;
 
-/* $Id$ */
+
 
 /**
  * Extends a MarkovTreeNode with backlinks, for making make a Probabilistic Suffix Automaton (PSA).

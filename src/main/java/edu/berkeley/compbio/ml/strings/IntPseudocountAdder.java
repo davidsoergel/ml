@@ -37,7 +37,7 @@ import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.IntArrayContainer;
 
-/* $Id$ */
+
 
 /**
  * @Author David Soergel

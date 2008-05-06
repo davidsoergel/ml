@@ -57,7 +57,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-/* $Id$ */
+
 
 /**
  * Kohonen Self Organizing Map implementation for a rectangular grid of two dimensions.
@@ -278,7 +278,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		{
 		ClusterMove cm = bestClusterMove(p);
 
-		if (cm.changed())
+		if (cm.isChanged())
 			{
 			changed++;
 			assignments.put(p.getId(), cm.bestCluster);

@@ -32,32 +32,68 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-/* $Id$ */
 
 /**
- * @Author David Soergel
- * @Version 1.0
+ * Represents a potential move of a sample from one cluster to another.  Doesn't actually refer to the sample itself,
+ * strangely; apparently we haven't needed that yet.
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Rev$
  */
 public class ClusterMove<T extends Clusterable<T>>
 	{
+	/**
+	 * The destination cluster
+	 */
 	public Cluster<T> bestCluster;
-	public double bestDistance = Double.MAX_VALUE;
-	public Cluster<T> oldCluster;
-	double oldDistance;
-	public double secondBestDistance = 0;
-	//
-	//		public clusterMove(Cluster<T> newC, double newDistance, double oldDistance)
-	//			{
-	//			this.newC = newC;
-	//			this.newDistance = newDistance;
-	//			this.oldDistance = oldDistance;
-	//			}
 
-	public boolean changed()
+	/**
+	 * The distance of the point under consideration to the destination cluster centroid
+	 */
+	public double bestDistance = Double.MAX_VALUE;
+
+	/**
+	 * The source cluster
+	 */
+	public Cluster<T> oldCluster;
+
+	/**
+	 * The distance of the point under consideration to the source cluster centroid
+	 */
+	double oldDistance;
+	
+	/**
+	 * Sometimes it's interesting to know how much better the best distance is than the second-best one, so we allow
+	 * recording it here.
+	 */
+	public double secondBestDistance = 0;
+
+
+	/**
+	 * Tells whether this move has any effect.
+	 *
+	 * @return true if the new cluster differs from the old one; false otherwise.
+	 */
+	public boolean isChanged()
 		{
 		return (oldCluster == null || (!bestCluster.equals(oldCluster)));
 		}
 
+	/**
+	 * Returns a string representation of the object. In general, the <code>toString</code> method returns a string that
+	 * "textually represents" this object. The result should be a concise but informative representation that is easy for a
+	 * person to read. It is recommended that all subclasses override this method.
+	 * <p/>
+	 * The <code>toString</code> method for class <code>Object</code> returns a string consisting of the name of the class
+	 * of which the object is an instance, the at-sign character `<code>@</code>', and the unsigned hexadecimal
+	 * representation of the hash code of the object. In other words, this method returns a string equal to the value of:
+	 * <blockquote>
+	 * <pre>
+	 * getClass().getName() + '@' + Integer.toHexString(hashCode())
+	 * </pre></blockquote>
+	 *
+	 * @return a string representation of the object.
+	 */
 	public String toString()
 		{
 		return "bestDistance = " + bestDistance + ", bestCluster = " + bestCluster + ", oldCluster = " + oldCluster

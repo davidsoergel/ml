@@ -34,7 +34,7 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
-/* $Id$ */
+
 
 /**
  * Once a Kohonen SOM is learned, propagate the sample labels around in some way to give label confidences for every
