@@ -34,20 +34,19 @@ package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.HashMap2D;
 import com.davidsoergel.dsutils.LengthWeightHierarchyNode;
+import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
-import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
-import java.util.TreeSet;
-
+import java.util.TreeMap;
 
 
 /**
@@ -65,9 +64,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		{
 		this.distanceMeasure = distanceMeasure;
 
-
-		//** Use Google Collections for bidimap etc.
-		theClusterPairs = new TreeSet<ClusterPair<T>>();
+		theClusterPairs = new TreeMap<ClusterPair<T>, Double>();
 		}
 
 	public LengthWeightHierarchyNode<T> getTree()
@@ -114,12 +111,28 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	public void performClustering()
 		{
+		// find shortest distance
 
+		pair = theClusterPairs.remove(0);  // the map is sorted by distance
+
+		// remove the two merged clusters from consideration
+
+		// compute the distance from the composite node to each remaining cluster
+
+		for()
+			{
+			distance = theClusterPairs.get(a, i) + theClusterPairs.get(b, i);
+			theClusterPairs.add()
+			}
 		}
 
 	public void addAll(Collection<Clusterable<T>> samples)
 		{
 		//theClusters.addAll(samples);
+		for (Clusterable<T> sample : samples)
+			{
+			theActiveNodes.add(new LengthWeightHierarchyNode())
+			}
 		}
 
 	private class SymmetricPairwiseDistanceMatrix<T>
