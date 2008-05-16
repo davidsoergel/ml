@@ -47,9 +47,9 @@ import java.util.Set;
  * @Author David Soergel
  * @Version 1.0
  */
-public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> implements KohonenSOM2DSearchStrategy<T>
+public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
-	private static final Logger logger = Logger.getLogger(BruteForceSearchStrategy.class);
+	private static final Logger logger = Logger.getLogger(CoarseGridSearchStrategy.class);
 
 	//** @Property
 	//private final int gridSpacing = 4;
@@ -57,13 +57,10 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> implemen
 
 	private int gridSpacing;
 	private Set<? extends AbstractCluster<T>> sparseGrid;
-	private KohonenSOM2D<T> som;
 
-	public void setSOM(KohonenSOM2D<T> som)
+	public CoarseGridSearchStrategy()
 		{
-		this.som = som;
-
-		//** @Property
+		super();
 		setGridSpacing(4);
 		}
 
@@ -110,7 +107,7 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> implemen
 		for (Iterator<KohonenSOM2D<T>.WeightedCell> i =
 				som.getWeightedMask(gridSpacing * 2).iterator((KohonenSOMCell<T>) result.bestCluster); i.hasNext();)
 			{
-			KohonenSOMCell c = i.next().theCell;
+			KohonenSOMCell<T> c = i.next().theCell;
 			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{

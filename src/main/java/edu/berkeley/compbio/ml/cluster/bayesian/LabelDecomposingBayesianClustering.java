@@ -102,8 +102,8 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 					{
 					logger.info("Creating new subcluster (" + cm.bestDistance + " > " + unknownDistanceThreshold
 							+ ") for " + point.getLabel());
-					cluster = new AdditiveCluster<T>(prototypeFactory.create());
-					cluster.setId(i++);
+					cluster = new AdditiveCluster<T>(i++, prototypeFactory.create());
+					//cluster.setId(i++);
 
 					// add the new cluster to the local per-label clustering...
 					theIntraLabelClustering.addCluster(cluster);

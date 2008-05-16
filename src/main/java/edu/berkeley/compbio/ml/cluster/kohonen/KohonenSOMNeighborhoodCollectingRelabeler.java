@@ -34,8 +34,8 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
-import org.apache.commons.collections.Bag;
-import org.apache.commons.collections.bag.HashBag;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
@@ -66,7 +66,7 @@ public class KohonenSOMNeighborhoodCollectingRelabeler implements KohonenSOMLabe
 		int i = 0;
 		for (KohonenSOMCell cell : (List<KohonenSOMCell>) theMap.getClusters())
 			{
-			Bag counts = new HashBag();
+			Multiset<String> counts = new HashMultiset<String>();
 			Iterator<Set<KohonenSOMCell>> shells = theMap.getNeighborhoodShellIterator(cell);
 
 			while (counts.size() < requiredLabels)

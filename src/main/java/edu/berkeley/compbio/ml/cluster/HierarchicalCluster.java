@@ -33,18 +33,107 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
+import com.davidsoergel.stats.Multinomial;
+import com.davidsoergel.stats.DistributionException;
+import org.apache.commons.lang.NotImplementedException;
 
 
 /**
- * A tree node representing a hierarchical cluster
+ * A tree node representing a hierarchical cluster.  Fakes multiple inheritance by providing a facade to the contained Cluster.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
  * @version $Rev$
  */
 public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogenyNode<Cluster<T>> implements Cluster<T>
 	{
-	public HierarchicalCluster(Clusterable<T> sample)
+	public HierarchicalCluster(int id, Clusterable<T> sample)
 		{
-		super(new BasicCluster(sample));
+		super(new BasicCluster(id, sample));
+		setWeight(1.);
 		}
+
+	public T getCentroid()
+		{
+		return getValue().getCentroid();
+		}
+
+	public void setCentroid(T centroid)
+		{
+		getValue().setCentroid(centroid);
+		}
+
+	public int getId()
+		{
+		return getValue().getId();
+		}
+
+	public void setId(int id)
+		{
+		getValue().setId(id);
+		}
+
+	public int getN()
+		{
+		return getValue().getN();
+		}
+
+	/**
+	 * Add the given sample to this cluster.  Does not automatically remove the sample from other clusters of which it is
+	 * already a member.
+	 *
+	 * @param point the sample to add
+	 * @return true if the point was successfully added; false otherwise
+	 */
+	public boolean recenterByAdding(T point)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * Remove the given sample from this cluster.
+	 *
+	 * @param point the sample to remove
+	 * @return true if the point was successfully removed; false otherwise (in particular, if the point is not a member of
+	 *         this cluster in teh first place)
+	 */
+	public boolean recenterByRemoving(T point)
+		{
+		throw new NotImplementedException();
+		}
+
+	public void updateLabelProbabilitiesFromCounts()
+		{
+		throw new NotImplementedException();
+		}
+
+	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
+		{
+		throw new NotImplementedException();
+		}
+
+	public Multinomial<String> getLabelProbabilities() throws DistributionException
+		{
+		throw new NotImplementedException();
+		}
+
+	public double getDominantProbability() throws DistributionException
+		{
+		throw new NotImplementedException();
+		}
+
+	public String getDominantLabel()
+		{
+		throw new NotImplementedException();
+		}
+
+	public void addLabel(T point)
+		{
+		throw new NotImplementedException();
+		}
+
+	public void removeLabel(T point)
+		{
+		throw new NotImplementedException();
+		}
+
 	}

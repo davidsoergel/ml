@@ -42,9 +42,9 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
  */
 public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCluster<T>
 	{
-	public KohonenSOMCell(T centroid)//DistanceMeasure<T> dm,
+	public KohonenSOMCell(int id, T centroid)//DistanceMeasure<T> dm,
 		{
-		super(centroid);//dm
+		super(id, centroid);//dm
 		}
 
 	public boolean recenterByAdding(T point)

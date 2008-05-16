@@ -66,9 +66,9 @@ public class BatchCluster<T extends AdditiveClusterable<T>> extends AdditiveClus
 	 * @param dm       the DistanceMeasure<T>
 	 * @param centroid the T
 	 */
-	public BatchCluster(T centroid) throws CloneNotSupportedException
+	public BatchCluster(int id, T centroid) throws CloneNotSupportedException
 		{
-		super(centroid);
+		super(id, centroid);
 		}
 
 	/*	public boolean recalculateCentroid() throws ClusterException

@@ -97,7 +97,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 	int time = 0;
 
-	private DistanceMeasure<T> measure;
+	//private DistanceMeasure<T> measure;
 	private int dimensions;
 	private boolean edgesWrap;
 
@@ -213,6 +213,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		maxRadius = ArrayUtils.norm(this.cellsPerDimension) / 2.;//Math.ceil();
 
 		searchStrategy.setSOM(this);
+		searchStrategy.setDistanceMeasure(measure);
 		}
 
 	/*
@@ -225,7 +226,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		{
 		for (int i = 0; i < totalCells; i++)
 			{
-			KohonenSOMCell<T> c = new KohonenSOMCell<T>(prototype == null ? null : prototype.clone());
+			KohonenSOMCell<T> c = new KohonenSOMCell<T>(i, prototype == null ? null : prototype.clone());
 			c.setId(i);
 			theClusters.add(c);
 			}

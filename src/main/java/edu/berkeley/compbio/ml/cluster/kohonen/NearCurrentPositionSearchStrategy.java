@@ -45,7 +45,7 @@ import java.util.Iterator;
  * @Version 1.0
  */
 public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
-		implements KohonenSOM2DSearchStrategy<T>
+		extends KohonenSOM2DSearchStrategy<T>
 	{
 	private static final Logger logger = Logger.getLogger(NearCurrentPositionSearchStrategy.class);
 
@@ -54,11 +54,10 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 
 
 	//private int searchRadius;
-	protected KohonenSOM2D<T> som;
 
 	public void setSOM(KohonenSOM2D<T> som)
 		{
-		this.som = som;
+		super.setSOM(som);
 
 		fallbackStrategy.setSOM(som);
 		//** @Property
@@ -99,7 +98,7 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 				som.getWeightedMask((int) getSearchRadius()).iterator((KohonenSOMCell<T>) result.oldCluster);
 		     i.hasNext();)
 			{
-			KohonenSOMCell c = i.next().theCell;
+			KohonenSOMCell<T> c = i.next().theCell;
 			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{

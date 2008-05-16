@@ -56,7 +56,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 	// ------------------------------ FIELDS ------------------------------
 
 	private static Logger logger = Logger.getLogger(KmeansClustering.class);
-	private DistanceMeasure<T> distanceMeasure;
+	//private DistanceMeasure<T> distanceMeasure;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
@@ -67,7 +67,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		{
 		//super(dpp);
 		//this.k = k;
-		this.distanceMeasure = dm;
+		this.measure = dm;
 		}
 
 	public void initializeWithRealData(Iterator<T> trainingIterator, int k, GenericFactory<T> prototypeFactory)
@@ -78,8 +78,8 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 			{
 			// initialize the clusters with the first k points
 
-			AbstractCluster<T> c = new AdditiveCluster<T>(trainingIterator.next());
-			c.setId(i);
+			AbstractCluster<T> c = new AdditiveCluster<T>(i, trainingIterator.next());
+			//c.setId(i);
 
 			theClusters.add(c);
 			}

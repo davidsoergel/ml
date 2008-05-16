@@ -44,15 +44,16 @@ import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.HierarchicalCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
-import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 
@@ -65,7 +66,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	private DistanceMeasure<T> distanceMeasure;
 	private SymmetricPairwiseDistanceMatrix theActiveNodeDistanceMatrix = new SymmetricPairwiseDistanceMatrix();
-	private LengthWeightHierarchyNode<T> theRoot;
+	private LengthWeightHierarchyNode<Cluster<T>> theRoot;
 
 	//	private SortedSet<ClusterPair<T>> theClusterPairs;
 
@@ -76,7 +77,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		//		theClusterPairs = new TreeMap<ClusterPair<T>, Double>();
 		}
 
-	public LengthWeightHierarchyNode<T> getTree()
+	public LengthWeightHierarchyNode<Cluster<T>> getTree()
 		{
 		return theRoot;
 		}
@@ -127,8 +128,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			NodePair<T> pair = theActiveNodeDistanceMatrix.getClosestPair();// the map is sorted by distance
 			Double distance = theActiveNodeDistanceMatrix.getDistance(pair) / 2;
 
-			LengthWeightHierarchyNode<T> a = pair.getNode1();
-			LengthWeightHierarchyNode<T> b = pair.getNode2();
+			LengthWeightHierarchyNode<Cluster<T>> a = pair.getNode1();
+			LengthWeightHierarchyNode<Cluster<T>> b = pair.getNode2();
 
 
 			// set the branch lengths
@@ -136,25 +137,31 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			a.setLength(distance);
 			b.setLength(distance);
 
-			// remove the two merged clusters from consideration
-
-			theActiveNodeDistanceMatrix.remove(a);
-			theActiveNodeDistanceMatrix.remove(b);
 
 			// create a composite node
 
-			LengthWeightHierarchyNode<T> composite = new BasicPhylogenyNode();
+			LengthWeightHierarchyNode<Cluster<T>> composite = new HierarchicalCluster<T>(idCount++, null);
 			composite.addChild(a);
 			composite.addChild(b);
 			composite.setWeight(a.getWeight() + b.getWeight());
 
 			// compute the distance from the composite node to each remaining cluster
-			for (LengthWeightHierarchyNode<T> node : theActiveNodeDistanceMatrix.getActiveNodes())
+			for (LengthWeightHierarchyNode<Cluster<T>> node : new HashSet<LengthWeightHierarchyNode<Cluster<T>>>(
+					theActiveNodeDistanceMatrix.getActiveNodes()))
 				{
+				if (node == a || node == b)
+					{
+					continue;
+					}
 				distance = (a.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.getDistance(a, node)
 						+ (b.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.getDistance(b, node);
 				theActiveNodeDistanceMatrix.setDistance(node, composite, distance);
 				}
+
+			// remove the two merged clusters from consideration
+
+			theActiveNodeDistanceMatrix.remove(a);
+			theActiveNodeDistanceMatrix.remove(b);
 
 			// add the composite node to the active list
 			// no longer needed; automatic
@@ -163,13 +170,22 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 		theRoot = theActiveNodeDistanceMatrix.getActiveNodes().iterator().next();
 		}
-
+private int idCount = 0;
 	public void addAll(Collection<Clusterable<T>> samples)
 		{
 		//theClusters.addAll(samples);
-		for (Clusterable<T> sample : samples)
+		Iterator<Clusterable<T>> i = samples.iterator();
+
+		if (theActiveNodeDistanceMatrix.size() == 0)
 			{
-			HierarchicalCluster c = new HierarchicalCluster(sample);
+			theActiveNodeDistanceMatrix
+					.addInitialPair(new HierarchicalCluster(idCount++, i.next()), new HierarchicalCluster(idCount++, i.next()));
+			}
+
+		while (i.hasNext())
+			{
+			Clusterable<T> sample = i.next();
+			HierarchicalCluster c = new HierarchicalCluster(idCount++, sample);
 			theActiveNodeDistanceMatrix.addAndComputeDistances(c);
 			}
 		}
@@ -182,20 +198,39 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		private Map<NodePair<T>, Double> pairToDistance = new HashMap<NodePair<T>, Double>();
 
 		//private Set<LengthWeightHierarchyNode<T>> theActiveNodes = new HashSet<LengthWeightHierarchyNode<T>>();
-		private Multimap<LengthWeightHierarchyNode<T>, NodePair<T>> nodeToPairs = Multimaps.newHashMultimap();
+		private Multimap<LengthWeightHierarchyNode<Cluster<T>>, NodePair<T>> nodeToPairs = Multimaps.newHashMultimap();
 
 
 		/*SymmetricHashMap2D<LengthWeightHierarchyNode<T>, LengthWeightHierarchyNode<T>, Double> theDistanceMatrix =
 				new SymmetricHashMap2D<LengthWeightHierarchyNode<T>, LengthWeightHierarchyNode<T>, Double>();*/
 
 
-		void addAndComputeDistances(LengthWeightHierarchyNode<T> node)
+		void addInitialPair(LengthWeightHierarchyNode<Cluster<T>> node1, LengthWeightHierarchyNode<Cluster<T>> node2)
 			{
-			Set<LengthWeightHierarchyNode<T>> activeNodes =
-					new HashSet(nodeToPairs.keySet());// avoid ConcurrentModigfcationException
-			for (LengthWeightHierarchyNode<T> theActiveNode : activeNodes)
+			Double d = distanceMeasure
+					.distanceFromTo(node1.getValue().getCentroid(), node2.getValue().getCentroid());
+			NodePair<T> pair = getOrCreateNodePair(node1, node2);
+
+			distanceToPair.put(d, pair);
+			pairToDistance.put(pair, d);
+			}
+
+		void addAndComputeDistances(LengthWeightHierarchyNode<Cluster<T>> node)
+			{
+			Set<LengthWeightHierarchyNode<Cluster<T>>> activeNodes =
+					new HashSet(nodeToPairs.keySet());// avoid ConcurrentModificationException
+
+			/*	Double d = distanceMeasure.distanceFromTo(node.getValue().getCentroid(),
+														 node.getValue().getCentroid());// probably 0, but you never know
+			   NodePair<T> pair = getOrCreateNodePair(node, node);
+
+			   distanceToPair.put(d, pair);
+			   pairToDistance.put(pair, d);
+   */
+			for (LengthWeightHierarchyNode<Cluster<T>> theActiveNode : activeNodes)
 				{
-				Double d = distanceMeasure.distanceFromTo(node.getValue(), theActiveNode.getValue());
+				Double d = distanceMeasure
+						.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
 				NodePair<T> pair = getOrCreateNodePair(node, theActiveNode);
 
 				distanceToPair.put(d, pair);
@@ -203,12 +238,14 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 				}
 			}
 
-		void setDistance(LengthWeightHierarchyNode<T> node1, LengthWeightHierarchyNode<T> node2, double d)
+		void setDistance(LengthWeightHierarchyNode<Cluster<T>> node1, LengthWeightHierarchyNode<Cluster<T>> node2,
+		                 double d)
 			{
 			setDistance(getOrCreateNodePair(node1, node2), d);
 			}
 
-		private NodePair getOrCreateNodePair(LengthWeightHierarchyNode<T> node1, LengthWeightHierarchyNode<T> node2)
+		private NodePair getOrCreateNodePair(LengthWeightHierarchyNode<Cluster<T>> node1,
+		                                     LengthWeightHierarchyNode<Cluster<T>> node2)
 			{
 			NodePair<T> pair = getNodePair(node1, node2);
 			if (pair == null)
@@ -220,9 +257,17 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			return pair;
 			}
 
-		private NodePair<T> getNodePair(LengthWeightHierarchyNode<T> node1, LengthWeightHierarchyNode<T> node2)
+		private NodePair<T> getNodePair(LengthWeightHierarchyNode<Cluster<T>> node1,
+		                                LengthWeightHierarchyNode<Cluster<T>> node2)
 			{
-			return CollectionUtils.intersection(nodeToPairs.get(node1), nodeToPairs.get(node2)).iterator().next();
+			try
+				{
+				return CollectionUtils.intersection(nodeToPairs.get(node1), nodeToPairs.get(node2)).iterator().next();
+				}
+			catch (NoSuchElementException e)
+				{
+				return null;
+				}
 			}
 
 		private void setDistance(NodePair nodePair, double d)
@@ -239,10 +284,12 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 		public NodePair<T> getClosestPair()
 			{
-			return distanceToPair.get(distanceToPair.keySet().first()).first();// distanceToPair is sorted
+			Double closestDistance = distanceToPair.keySet().first(); // distanceToPair is sorted
+			return distanceToPair.get(closestDistance).first();
 			}
 
-		public Double getDistance(LengthWeightHierarchyNode<T> node1, LengthWeightHierarchyNode<T> node2)
+		public Double getDistance(LengthWeightHierarchyNode<Cluster<T>> node1,
+		                          LengthWeightHierarchyNode<Cluster<T>> node2)
 			{
 			return getDistance(getNodePair(node1, node2));
 			}
@@ -252,17 +299,24 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			return pairToDistance.get(nodePair);
 			}
 
-		public void remove(LengthWeightHierarchyNode<T> b)
+		public void remove(LengthWeightHierarchyNode<Cluster<T>> b)
 			{
 			for (NodePair<T> pair : nodeToPairs.get(b))
 				{
 				Double oldDistance = pairToDistance.remove(pair);
-				distanceToPair.remove(oldDistance, pair);
+				try
+					{
+					distanceToPair.remove(oldDistance, pair);   asdfasdf
+					}
+				catch (NullPointerException e)
+					{
+					// no problem
+					}
 				}
 			nodeToPairs.removeAll(b);
 			}
 
-		public Set<LengthWeightHierarchyNode<T>> getActiveNodes()
+		public Set<LengthWeightHierarchyNode<Cluster<T>>> getActiveNodes()
 			{
 			return nodeToPairs.keySet();
 			}
@@ -276,12 +330,12 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	/**
 	 * Represent a pair of nodes, guaranteeing that node1 <= node2 for the sake of symmetry
 	 */
-	private class NodePair<T extends Clusterable<T>>
+	private class NodePair<T extends Clusterable<T>> implements Comparable
 		{
-		private LengthWeightHierarchyNode<T> node1;
-		private LengthWeightHierarchyNode<T> node2;
+		private LengthWeightHierarchyNode<Cluster<T>> node1;
+		private LengthWeightHierarchyNode<Cluster<T>> node2;
 
-		private NodePair(LengthWeightHierarchyNode<T> node1, LengthWeightHierarchyNode<T> node2)
+		private NodePair(LengthWeightHierarchyNode<Cluster<T>> node1, LengthWeightHierarchyNode<Cluster<T>> node2)
 			{
 			if (node1.getValue().hashCode() <= node2.getValue().hashCode())
 				//if (node1.getValue().compareTo(node2.getValue()) <= 0)
@@ -329,14 +383,24 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			return result;
 			}
 
-		public LengthWeightHierarchyNode<T> getNode1()
+		public LengthWeightHierarchyNode<Cluster<T>> getNode1()
 			{
 			return node1;
 			}
 
-		public LengthWeightHierarchyNode<T> getNode2()
+		public LengthWeightHierarchyNode<Cluster<T>> getNode2()
 			{
 			return node2;
+			}
+
+		public int compareTo(Object o)
+			{
+			return node1.toString().compareTo(o.toString());
+			}
+
+		public String toString()
+			{
+			return "["+ node1.getValue().getId() + ", " + node2.getValue().getId() + "]";
 			}
 		}
 	}

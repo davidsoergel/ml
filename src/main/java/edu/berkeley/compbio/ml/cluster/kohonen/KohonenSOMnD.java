@@ -169,6 +169,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		 }
  */
+	private int idCount = 0;
 
 	/**
 	 * Create a rectangular grid of cells using the given dimensionality and size, assigning a null vector to each
@@ -181,7 +182,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 		changingDimension++;
 		if (changingDimension == dimensions)
 			{
-			KohonenSOMCell<T> c = new KohonenSOMCell<T>(prototype.clone());//measure,
+			KohonenSOMCell<T> c = new KohonenSOMCell<T>(idCount++, prototype.clone());//measure,
 			((List<AbstractCluster<T>>) theClusters).set(listIndexFor(cellPosition), c);
 			}
 		else

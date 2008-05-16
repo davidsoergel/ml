@@ -125,8 +125,8 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 				if (cluster == null)
 					{
-					cluster = new AdditiveCluster<T>(prototypeFactory.create());//measure
-					cluster.setId(i++);
+					cluster = new AdditiveCluster<T>(i++, prototypeFactory.create());//measure
+					//cluster.setId(i++);
 					theClusterMap.put(point.getLabel(), cluster);
 
 					//** for now we make a uniform prior

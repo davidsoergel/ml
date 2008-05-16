@@ -58,9 +58,9 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 	 * @param dm       the DistanceMeasure<T>
 	 * @param centroid the T
 	 */
-	public AdditiveCluster(T centroid)//DistanceMeasure<T> dm,
+	public AdditiveCluster(int id, T centroid)//DistanceMeasure<T> dm,
 		{
-		super(centroid);
+		super(id, centroid);
 		}
 
 	// -------------------------- OTHER METHODS --------------------------

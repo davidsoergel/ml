@@ -93,9 +93,10 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	 * @param dm       the DistanceMeasure<T>
 	 * @param centroid the T
 	 */
-	public AbstractCluster(T centroid)//DistanceMeasure<T> dm
+	public AbstractCluster(int id, T centroid)//DistanceMeasure<T> dm
 		{
 		this.centroid = centroid;//.clone();
+		this.id = id;
 		//n++;
 		//add(centroid);
 		logger.debug("Created cluster with centroid: " + centroid);
@@ -284,10 +285,10 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 
 	Multinomial<String> labelProbabilities = new Multinomial<String>();
 
-	/*public Bag getLabelCounts()
+	public Multiset<String> getLabelCounts()
 		{
 		return labelCounts;
-		}*/
+		}
 
 	public void updateLabelProbabilitiesFromCounts()//throws DistributionException
 		{
@@ -331,16 +332,22 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return labelProbabilities.getDominantKey();
 		}
 
+private int totalLabels= 0;
+
+	public int getTotalLabels()
+		{
+		return totalLabels;
+		}
 
 	public void addLabel(T point)
 		{
-		n++;
+		totalLabels++;
 		labelCounts.add(point.getLabel());
 		}
 
 	public void removeLabel(T point)
 		{
-		n--;
+		totalLabels--;
 		// we don't sanity check that the label was present to begin with
 		labelCounts.remove(point.getLabel());
 		}

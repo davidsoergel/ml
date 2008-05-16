@@ -35,16 +35,29 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
-
+import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 
 
 /**
  * @Author David Soergel
  * @Version 1.0
  */
-public interface KohonenSOM2DSearchStrategy<T extends AdditiveClusterable<T>>
+public abstract class KohonenSOM2DSearchStrategy<T extends AdditiveClusterable<T>>
 	{
-	void setSOM(KohonenSOM2D<T> som);
+	//void setSOM(KohonenSOM2D<T> som);
 
-	ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException;
+	protected KohonenSOM2D<T> som;
+	protected DistanceMeasure<T> measure;
+
+	public void setSOM(KohonenSOM2D<T> som)
+		{
+		this.som = som;
+		}
+
+	abstract ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException;
+
+	public void setDistanceMeasure(DistanceMeasure<T> measure)
+		{
+		this.measure = measure;
+		}
 	}

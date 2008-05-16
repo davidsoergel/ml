@@ -32,27 +32,50 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
+import org.apache.commons.lang.NotImplementedException;
 
 /**
- * Represents a hierarchical clustering algorithm.  In general an algorithm will group Clusterable samples into a tree
- * of LengthWeightHierarchyNodes, with a corresponding Cluster for each.  Note that this produces overlapping Clusters,
- * as opposed to the usual assumption in the ClusterMethod superclass that the Clusters are discrete.
- * <p/>
- * This interface is agnostic about whether the implementation is supervised or unsupervised, and whether it is online
- * or batch.
- *
- * @Author David Soergel
- * @Version 1.0
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
+ * @version $Rev$
  */
-public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
+public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	{
 	/**
-	 * Returns a LengthWeightHierarchyNode representing the root of the computed clustering tree.  Only valid after
-	 * performClustering() has been run.
+	 * Constructs a new Cluster with the given DistanceMeasure and centroid.  Note the centroid may be modified in the
+	 * course of running a clustering algorithm, so it may not be a good idea to provide a real data point here (i.e., it's
+	 * probably best to clone it first).
 	 *
-	 * @return a LengthWeightHierarchyNode representing the root of the computed clustering tree, or null if the clustering
-	 *         procedure has not been performed yet.
+	 * @param dm       the DistanceMeasure<T>
+	 * @param centroid the T
 	 */
-	public abstract LengthWeightHierarchyNode<Cluster<T>> getTree();
+	public BasicCluster(int id, T centroid)
+		{
+		super(id, centroid);
+		n = 1;
+		}
+
+	/**
+	 * Add the given sample to this cluster.  Does not automatically remove the sample from other clusters of which it is
+	 * already a member.
+	 *
+	 * @param point the sample to add
+	 * @return true if the point was successfully added; false otherwise
+	 */
+	public boolean recenterByAdding(T point)
+		{
+		throw new NotImplementedException();
+		//return false;
+		}
+
+	/**
+	 * Remove the given sample from this cluster.
+	 *
+	 * @param point the sample to remove
+	 * @return true if the point was successfully removed; false otherwise (in particular, if the point is not a member of
+	 *         this cluster in teh first place)
+	 */
+	public boolean recenterByRemoving(T point)
+		{
+		throw new NotImplementedException();
+		}
 	}
