@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.LengthWeightHierarchyNode;
+import java.util.Collection;
 
 
 /**
@@ -41,14 +41,18 @@ import com.davidsoergel.dsutils.LengthWeightHierarchyNode;
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
  * @version $Rev$
  */
-public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extends BatchClusteringMethod<T>
+public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extends HierarchicalClusteringMethod<T>
 	{
+
 	/**
-	 * Returns a LengthWeightHierarchyNode representing the root of the computed clustering tree.  Only valid after
-	 * performClustering() has been run.
-	 *
-	 * @return a LengthWeightHierarchyNode representing the root of the computed clustering tree, or null if the clustering
-	 *         procedure has not been performed yet.
+	 * Recompute a set of clusters from the stored samples.
 	 */
-	public abstract LengthWeightHierarchyNode<T> getTree();
+	public abstract void performClustering();
+
+	/**
+	 * Add the given samples to the set to be clustered.
+	 *
+	 * @param samples a Collection of Clusterable objects.
+	 */
+	public abstract void addAll(Collection<Clusterable<T>> samples);
 	}

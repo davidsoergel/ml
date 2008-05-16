@@ -30,62 +30,29 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package edu.berkeley.compbio.ml.cluster;
 
-package edu.berkeley.compbio.ml.cluster.kmeans;
-
-import com.davidsoergel.dsutils.math.MathUtils;
-import org.apache.log4j.Logger;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
-
-import java.io.IOException;
+import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
 /**
- * @author lorax
- * @version 1.0
+ * Represents a hierarchical clustering algorithm.  In general an algorithm will group Clusterable samples into a tree
+ * of LengthWeightHierarchyNodes, with a corresponding Cluster for each.  Note that this produces overlapping Clusters,
+ * as opposed to the usual assumption in the ClusterMethod superclass that the Clusters are discrete.
+ * <p/>
+ * This interface is agnostic about whether the implementation is supervised or unsupervised, and whether it is online
+ * or batch.
+ *
+ * @Author David Soergel
+ * @Version 1.0
  */
-public class KmeansClusteringTest
+public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
 	{
-	// ------------------------------ FIELDS ------------------------------
-
-	private static Logger logger = Logger.getLogger(KmeansClusteringTest.class);
-
-
-	// -------------------------- OTHER METHODS --------------------------
-
-	@BeforeSuite
-	public void setUp()
-		{
-		MathUtils.initApproximateLog(-12, +12, 3, 100000);
-		}
-
-	@Test
-	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
-		{
-		// ** Test is commented out!
-		/*
-			  ClusterableIterator ci;
-
-			  ci = new MockClusterableIterator().init();
-
-			  KmeansClustering<ClusterableDoubleArray> oc = new KmeansClustering<ClusterableDoubleArray>(ci, 5, EuclideanDistance.getInstance());
-
-			  oc.run(ci, 7);
-
-			  //	batchUpdateAndPrint(oc);
-			  //	batchUpdateAndPrint(oc);
-
-			  List<Cluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
-
-			  for (Cluster<ClusterableDoubleArray> c : theClusters)
-				  {
-				  logger.debug(c);
-
-				  }
-
-			  oc.writeAssignmentsAsTextToStream(System.err);
-
-			  assert true; // this test doesn't assert anything,but looks good
-  */
-		}
+	/**
+	 * Returns a LengthWeightHierarchyNode representing the root of the computed clustering tree.  Only valid after
+	 * performClustering() has been run.
+	 *
+	 * @return a LengthWeightHierarchyNode representing the root of the computed clustering tree, or null if the clustering
+	 *         procedure has not been performed yet.
+	 */
+	public abstract LengthWeightHierarchyNode<T> getTree();
 	}

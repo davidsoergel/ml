@@ -54,7 +54,7 @@ public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends Cl
 	/**
 	 * Add the given samples to the set to be clustered.
 	 *
-	 * @param samples a Collection of Clusterable objects. 
+	 * @param samples a Collection of Clusterable objects.
 	 */
 	public abstract void addAll(Collection<Clusterable<T>> samples);
 	}

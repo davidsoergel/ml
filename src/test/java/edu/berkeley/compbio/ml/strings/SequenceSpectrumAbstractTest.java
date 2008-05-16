@@ -33,11 +33,10 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.ArrayUtils;
-import com.davidsoergel.dsutils.MathUtils;
 import com.davidsoergel.dsutils.TestInstanceFactory;
+import com.davidsoergel.dsutils.math.MathUtils;
 import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
-
 
 
 /**

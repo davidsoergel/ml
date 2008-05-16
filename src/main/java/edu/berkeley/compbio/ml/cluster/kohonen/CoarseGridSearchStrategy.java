@@ -32,8 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
@@ -41,7 +41,6 @@ import org.apache.log4j.Logger;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 
 
 /**
@@ -57,7 +56,7 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> implemen
 
 
 	private int gridSpacing;
-	private Set<? extends Cluster<T>> sparseGrid;
+	private Set<? extends AbstractCluster<T>> sparseGrid;
 	private KohonenSOM2D<T> som;
 
 	public void setSOM(KohonenSOM2D<T> som)
@@ -91,10 +90,10 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> implemen
 			{
 			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (Cluster<T> c : sparseGrid)
+		for (AbstractCluster<T> c : sparseGrid)
 			{
 
-			double d = c.distanceToCentroid(p);
+			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{
 				result.secondBestDistance = result.bestDistance;
@@ -112,7 +111,7 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> implemen
 				som.getWeightedMask(gridSpacing * 2).iterator((KohonenSOMCell<T>) result.bestCluster); i.hasNext();)
 			{
 			KohonenSOMCell c = i.next().theCell;
-			double d = c.distanceToCentroid(p);
+			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{
 				result.secondBestDistance = result.bestDistance;
@@ -137,9 +136,9 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> implemen
 		return result;
 		}
 
-	public Set<? extends Cluster<T>> getSparseGridClusters()
+	public Set<? extends AbstractCluster<T>> getSparseGridClusters()
 		{
-		Set<Cluster<T>> result = new HashSet<Cluster<T>>();
+		Set<AbstractCluster<T>> result = new HashSet<AbstractCluster<T>>();
 		int width = som.cellsPerDimension[0];
 		int height = som.cellsPerDimension[1];
 		for (int x = 0; x < width; x += gridSpacing)

@@ -33,7 +33,6 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
 /**
@@ -42,7 +41,7 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
  * @version $Rev$
  */
-public class AdditiveCluster<T extends AdditiveClusterable<T>> extends Cluster<T>
+public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractCluster<T>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -59,9 +58,9 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends Cluster<T
 	 * @param dm       the DistanceMeasure<T>
 	 * @param centroid the T
 	 */
-	public AdditiveCluster(DistanceMeasure<T> dm, T centroid)
+	public AdditiveCluster(T centroid)//DistanceMeasure<T> dm,
 		{
-		super(dm, centroid);
+		super(centroid);
 		}
 
 	// -------------------------- OTHER METHODS --------------------------

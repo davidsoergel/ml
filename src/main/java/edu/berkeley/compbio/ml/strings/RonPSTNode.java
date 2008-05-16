@@ -34,7 +34,7 @@ package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import com.davidsoergel.dsutils.ArrayUtils;
-import com.davidsoergel.dsutils.MathUtils;
+import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-
 
 
 /**

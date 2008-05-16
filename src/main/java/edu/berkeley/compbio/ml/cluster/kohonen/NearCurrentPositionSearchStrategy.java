@@ -40,7 +40,6 @@ import org.apache.log4j.Logger;
 import java.util.Iterator;
 
 
-
 /**
  * @Author David Soergel
  * @Version 1.0
@@ -101,7 +100,7 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 		     i.hasNext();)
 			{
 			KohonenSOMCell c = i.next().theCell;
-			double d = c.distanceToCentroid(p);
+			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{
 				result.secondBestDistance = result.bestDistance;

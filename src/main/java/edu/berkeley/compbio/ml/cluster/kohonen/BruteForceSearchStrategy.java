@@ -32,11 +32,10 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import org.apache.log4j.Logger;
-
 
 
 /**
@@ -72,7 +71,7 @@ public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> implemen
 			{
 			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (Cluster<T> c : som.getClusters())
+		for (AbstractCluster<T> c : som.getClusters())
 			{
 			// grid already initialized with prototype, never mind all this stuff
 
@@ -90,7 +89,7 @@ public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> implemen
 					  }
 	  */
 			// otherwise find the nearest cluster
-			double d = c.distanceToCentroid(p);//, result.bestDistance);
+			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
 			/*	if (logger.isDebugEnabled())
 			   {
 			   logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);

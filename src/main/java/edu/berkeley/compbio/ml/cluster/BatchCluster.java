@@ -33,7 +33,6 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
 import java.util.HashSet;
@@ -67,9 +66,9 @@ public class BatchCluster<T extends AdditiveClusterable<T>> extends AdditiveClus
 	 * @param dm       the DistanceMeasure<T>
 	 * @param centroid the T
 	 */
-	public BatchCluster(DistanceMeasure<T> dm, T centroid) throws CloneNotSupportedException
+	public BatchCluster(T centroid) throws CloneNotSupportedException
 		{
-		super(dm, centroid);
+		super(centroid);
 		}
 
 	/*	public boolean recalculateCentroid() throws ClusterException

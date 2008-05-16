@@ -31,11 +31,10 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.MathUtils;
 import com.davidsoergel.dsutils.TestInstanceFactory;
+import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import static org.easymock.EasyMock.*;
 import org.testng.annotations.Factory;

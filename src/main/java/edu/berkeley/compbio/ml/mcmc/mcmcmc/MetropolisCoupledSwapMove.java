@@ -31,10 +31,9 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.mcmc.mcmcmc;
 
-import com.davidsoergel.dsutils.MersenneTwisterFast;
+import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import edu.berkeley.compbio.ml.mcmc.MonteCarlo;
 import edu.berkeley.compbio.ml.mcmc.Move;
 import edu.berkeley.compbio.ml.mcmc.ProbabilityMove;

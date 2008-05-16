@@ -32,21 +32,19 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
-
 
 
 /**
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends Cluster<T>
+public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCluster<T>
 	{
-	public KohonenSOMCell(DistanceMeasure<T> dm, T centroid)
+	public KohonenSOMCell(T centroid)//DistanceMeasure<T> dm,
 		{
-		super(dm, centroid);
+		super(centroid);//dm
 		}
 
 	public boolean recenterByAdding(T point)

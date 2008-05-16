@@ -36,6 +36,7 @@ import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.SimpleFunction;
+import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
@@ -56,7 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-
 
 
 /**
@@ -137,9 +137,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return x * blockSize[0] + y;
 		}
 
-	public Cluster<T> clusterAt(int x, int y)
+	public AbstractCluster<T> clusterAt(int x, int y)
 		{
-		return ((List<Cluster<T>>) theClusters).get(listIndexFor(x, y));
+		return ((List<AbstractCluster<T>>) theClusters).get(listIndexFor(x, y));
 		}
 
 	/**
@@ -201,7 +201,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
 
 		// this overwrites the original list of unknown capacity
-		theClusters = new ArrayList<Cluster<T>>(totalCells);
+		theClusters = new ArrayList<AbstractCluster<T>>(totalCells);
 
 		int[] zeroCell = new int[dimensions];
 		Arrays.fill(zeroCell, 0);
@@ -225,7 +225,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		{
 		for (int i = 0; i < totalCells; i++)
 			{
-			KohonenSOMCell<T> c = new KohonenSOMCell<T>(measure, prototype == null ? null : prototype.clone());
+			KohonenSOMCell<T> c = new KohonenSOMCell<T>(prototype == null ? null : prototype.clone());
 			c.setId(i);
 			theClusters.add(c);
 			}
@@ -459,17 +459,19 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				{
 				if (x != width && y != height)
 					{
-					Cluster<T> here = clusterAt(x, y);
+					AbstractCluster<T> here = clusterAt(x, y);
 
 					Cluster<T> right = clusterAt(x + 1, y);
-					double d = here.distanceToCentroid(right.getCentroid());
+					double d = measure.distanceFromTo(here.getCentroid(),
+					                                  right.getCentroid());//here.distanceToCentroid(right.getCentroid());
 
 					result[listIndexFor(x, y)] += d;
 					result[listIndexFor(x + 1, y)] += d;
 
 
 					Cluster<T> down = clusterAt(x, y + 1);
-					d = here.distanceToCentroid(down.getCentroid());
+					d = measure.distanceFromTo(here.getCentroid(),
+					                           down.getCentroid());//here.distanceToCentroid(down.getCentroid());
 
 					result[listIndexFor(x, y)] += d;
 					result[listIndexFor(x, y + 1)] += d;
@@ -779,7 +781,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			public MaskIterator(KohonenSOMCell<T> center)
 				{
 				//this.center = center;
-				int[] c = cellPositionFor(((List<Cluster<T>>) theClusters).indexOf(center));
+				int[] c = cellPositionFor(((List<AbstractCluster<T>>) theClusters).indexOf(center));
 				xCenter = c[0];
 				yCenter = c[1];
 				nextCell = findNextCell();
@@ -850,7 +852,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 
 				return new WeightedCell(
-						(KohonenSOMCell<T>) ((List<Cluster<T>>) theClusters).get(listIndexFor(realX, realY)),
+						(KohonenSOMCell<T>) ((List<AbstractCluster<T>>) theClusters).get(listIndexFor(realX, realY)),
 						weight[trav]);
 				}
 

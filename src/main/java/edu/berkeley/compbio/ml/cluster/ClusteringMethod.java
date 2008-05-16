@@ -33,9 +33,10 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.ArrayUtils;
-import com.davidsoergel.dsutils.MathUtils;
-import com.davidsoergel.dsutils.MersenneTwisterFast;
+import com.davidsoergel.dsutils.math.MathUtils;
+import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DistributionException;
+import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -61,10 +62,15 @@ import java.util.Map;
  */
 public abstract class ClusteringMethod<T extends Clusterable<T>> implements ClusterSet<T>
 	{
+
+
+	protected DistanceMeasure<T> measure;
+
 	private static final Logger logger = Logger.getLogger(ClusteringMethod.class);
 
-	protected Collection<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
-	protected Map<String, Cluster<T>> assignments = new HashMap<String, Cluster<T>>();// see whether anything changed
+	protected Collection<AbstractCluster<T>> theClusters = new ArrayList<AbstractCluster<T>>();
+	protected Map<String, AbstractCluster<T>> assignments =
+			new HashMap<String, AbstractCluster<T>>();// see whether anything changed
 	protected int n = 0;
 
 	/**
@@ -73,7 +79,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 * @param id the unique String identifier of the sample
 	 * @return the Cluster to which the sample belongs
 	 */
-	public Cluster<T> getAssignment(String id)
+	public AbstractCluster<T> getAssignment(String id)
 		{
 		return assignments.get(id);
 		}
@@ -106,15 +112,15 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
 		{
 		theDataPointProvider.reset();
-		for (Cluster<T> c : theClusters)
+		for (AbstractCluster<T> c : theClusters)
 			{
 			c.setSumOfSquareDistances(0);
 			}
 		while (theDataPointProvider.hasNext())
 			{
 			T p = theDataPointProvider.next();
-			Cluster<T> c = assignments.get(p.getId());
-			double dist = c.distanceToCentroid(p);
+			AbstractCluster<T> c = assignments.get(p.getId());
+			double dist = measure.distanceFromTo(c.getCentroid(), p);// c.distanceToCentroid(p);
 			c.addToSumOfSquareDistances(dist * dist);
 			}
 		}
@@ -148,7 +154,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 *
 	 * @return the contained Collection of Clusters.
 	 */
-	public Collection<? extends Cluster<T>> getClusters()
+	public Collection<? extends AbstractCluster<T>> getClusters()
 		{
 		return theClusters;
 		}
@@ -164,7 +170,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 		// we have to iterate since we don't know the underlying Collection type.
 
 		int index = MersenneTwisterFast.randomInt(theClusters.size());
-		Iterator<? extends Cluster<T>> iter = theClusters.iterator();
+		Iterator<? extends AbstractCluster<T>> iter = theClusters.iterator();
 		Cluster<T> result = iter.next();
 		for (int i = 0; i < index; result = iter.next())
 			{
@@ -185,11 +191,12 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 		{
 		List<Double> distances = new ArrayList<Double>();
 		int numDistances = 0;
-		for (Cluster<T> c : theClusters)
+		for (AbstractCluster<T> c : theClusters)
 			{
 			for (Cluster<T> d : theClusters)
 				{
-				double distance = c.distanceToCentroid(d.getCentroid());
+				double distance = measure.distanceFromTo(c.getCentroid(),
+				                                         d.getCentroid());// c.distanceToCentroid(d.getCentroid());
 				if (c == d && !MathUtils.equalWithinFPError(distance, 0))
 					{
 					logger.warn("Floating point trouble: self distance = " + distance + " " + c);
@@ -235,13 +242,14 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	public void writeClusteringStatsToStream(OutputStream outf)
 		{
 		PrintWriter p = new PrintWriter(outf);
-		for (Cluster<T> c : theClusters)
+		for (AbstractCluster<T> c : theClusters)
 			{
 			p.println(c);
 			double stddev1 = c.getStdDev();
-			for (Cluster<T> d : theClusters)
+			for (AbstractCluster<T> d : theClusters)
 				{
-				double distance = c.distanceToCentroid(d.getCentroid());
+				double distance = measure.distanceFromTo(c.getCentroid(),
+				                                         d.getCentroid());// c.distanceToCentroid(d.getCentroid());
 				if (c == d && !MathUtils.equalWithinFPError(distance, 0))
 					{
 					logger.warn("Floating point trouble: self distance = " + distance + " " + c);

@@ -31,11 +31,11 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.cluster.kmeans;
 
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
+import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
@@ -78,7 +78,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 			{
 			// initialize the clusters with the first k points
 
-			Cluster<T> c = new AdditiveCluster<T>(distanceMeasure, trainingIterator.next());
+			AbstractCluster<T> c = new AdditiveCluster<T>(trainingIterator.next());
 			c.setId(i);
 
 			theClusters.add(c);
@@ -154,9 +154,9 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 			{
 			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (Cluster<T> c : theClusters)
+		for (AbstractCluster<T> c : theClusters)
 			{
-			double d = c.distanceToCentroid(p);
+			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
 			if (logger.isDebugEnabled())
 				{
 				logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);

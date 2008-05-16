@@ -32,8 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
@@ -41,7 +41,6 @@ import org.apache.log4j.Logger;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
 
 
 /**
@@ -100,10 +99,10 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> implem
 		KohonenSOM2D<T>.WeightedMask mask = som.getWeightedMask((int) getSearchRadius());
 
 
-		Set<Cluster<T>> alreadyTested = new HashSet<Cluster<T>>(10);
+		Set<AbstractCluster<T>> alreadyTested = new HashSet<AbstractCluster<T>>(10);
 
 		result.bestCluster = result.oldCluster;
-		result.bestDistance = result.bestCluster.distanceToCentroid(p);
+		result.bestDistance = measure.distanceFromTo(result.bestCluster.getCentroid(), p);
 		alreadyTested.add(result.bestCluster);
 		boolean changed = true;
 
@@ -117,7 +116,7 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> implem
 				if (!alreadyTested.contains(c))
 					{
 					alreadyTested.add(c);
-					double d = c.distanceToCentroid(p);
+					double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
 					if (d < result.bestDistance)
 						{
 						result.secondBestDistance = result.bestDistance;

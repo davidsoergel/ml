@@ -31,7 +31,6 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.dsutils.GenericFactory;
@@ -39,6 +38,7 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.IteratorProvider;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
+import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
@@ -67,7 +67,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	private static Logger logger = Logger.getLogger(BayesianClustering.class);
 
 	//private T[] centroids;
-	protected DistanceMeasure<T> measure;
+	//protected DistanceMeasure<T> measure;
 	//private double[] priors;
 
 	protected double unknownDistanceThreshold;
@@ -106,13 +106,13 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		}
 
-	protected Multinomial<Cluster> priors = new Multinomial<Cluster>();
+	protected Multinomial<AbstractCluster> priors = new Multinomial<AbstractCluster>();
 
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException
 		{
-		Map<String, Cluster<T>> theClusterMap = new HashMap<String, Cluster<T>>();
+		Map<String, AbstractCluster<T>> theClusterMap = new HashMap<String, AbstractCluster<T>>();
 
 		try
 			{
@@ -121,11 +121,11 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 			while (trainingIterator.hasNext())
 				{
 				T point = trainingIterator.next();
-				Cluster<T> cluster = theClusterMap.get(point.getLabel());
+				AbstractCluster<T> cluster = theClusterMap.get(point.getLabel());
 
 				if (cluster == null)
 					{
-					cluster = new AdditiveCluster<T>(measure, prototypeFactory.create());
+					cluster = new AdditiveCluster<T>(prototypeFactory.create());//measure
 					cluster.setId(i++);
 					theClusterMap.put(point.getLabel(), cluster);
 
@@ -183,7 +183,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		Cluster<T> best = null;
 		double temp;
 		//int j = -1;
-		for (Cluster<T> cluster : theClusters)
+		for (AbstractCluster<T> cluster : theClusters)
 			{
 
 			try

@@ -130,6 +130,11 @@
 			<version>0.9-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>edu.berkeley.compbio</groupId>
+			<artifactId>phyloutils</artifactId>
+			<version>0.9-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>runutils</artifactId>
 			<version>0.9-SNAPSHOT</version>

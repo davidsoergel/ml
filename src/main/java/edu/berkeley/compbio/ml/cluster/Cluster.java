@@ -30,18 +30,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
-import org.apache.commons.collections.Bag;
-import org.apache.commons.collections.bag.HashBag;
-import org.apache.log4j.Logger;
-
-import java.util.Formatter;
-
 
 /**
  * A cluster, i.e. a grouping of samples, generally learned during a clustering process.  Stores a centroid, an object
@@ -49,233 +41,22 @@ import java.util.Formatter;
  * centroid may or may not be sufficient to describe the cluster (see AdditiveCluster); in the limit, a Cluster subclass
  * may simply store all the samples in the cluster.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Rev$
  */
-public abstract class Cluster<T extends Clusterable<T>>
+public interface Cluster<T extends Clusterable<T>>
 	{
-	// ------------------------------ FIELDS ------------------------------
+	T getCentroid();
 
-	private static Logger logger = Logger.getLogger(Cluster.class);
-	
-	/**
-	 * The distance measure to use for computing distances from samples ot the centroid of this cluster
-	 */
-	protected DistanceMeasure<T> theDistanceMeasure;
+	void setCentroid(T centroid);
 
-	/**
-	 * Field centroid
-	 */
-	protected T centroid;
+	int getId();
 
-	/**
-	 * The number of samples in this cluster
-	 */
-	protected int n = 0;
+	void setId(int id);
 
-	/**
-	 * The sum of the squared distances from samples in this cluster to the centroid
-	 */
-	protected double sumOfSquareDistances = 0;
+	int getN();
 
-	/**
-	 * The unique integer identifier of this cluster
-	 */
-	private int id;
-
-
-	// --------------------------- CONSTRUCTORS ---------------------------
-
-	/**
-	 * Constructs a new Cluster with the given DistanceMeasure and centroid.  Note the centroid may be modified in the
-	 * course of running a clustering algorithm, so it may not be a good idea to provide a real data point here (i.e., it's
-	 * probably best to clone it first).
-	 *
-	 * @param dm       the DistanceMeasure<T>
-	 * @param centroid the T
-	 */
-	public Cluster(DistanceMeasure<T> dm, T centroid)
-		{
-		this.centroid = centroid;//.clone();
-		//n++;
-		//add(centroid);
-		logger.debug("Created cluster with centroid: " + centroid);
-		theDistanceMeasure = dm;
-		}
-
-	// --------------------- GETTER / SETTER METHODS ---------------------
-
-	/**
-	 * Returns the centroid.
-	 *
-	 * @return
-	 */
-	public T getCentroid()
-		{
-		return centroid;
-		}
-
-	/**
-	 * Sets the centroid.
-	 *
-	 * @param centroid the centroid
-	 */
-	public void setCentroid(T centroid)
-		{
-		this.centroid = centroid;
-		}
-
-
-	/**
-	 * Returns the integer id for this cluster
-	 *
-	 * @return
-	 */
-	public int getId()
-		{
-		return id;
-		}
-
-	/**
-	 * Sets the integer id for this cluster
-	 *
-	 * @param id the id
-	 */
-	public void setId(int id)
-		{
-		this.id = id;
-		}
-
-	/**
-	 * Returns the number of samples in this cluster
-	 *
-	 * @return
-	 */
-	public int getN()
-		{
-		return n;
-		}
-
-	/*	public void normalize()
-	   {
-	   centroid.normalize(n);
-	   }*/
-
-	/**
-	 * Returns the DistanceMeasure used for computing distances from samples to this cluster
-	 *
-	 * @return
-	 */
-	public DistanceMeasure<T> getTheDistanceMeasure()
-		{
-		return theDistanceMeasure;
-		}
-
-	/**
-	 * Sets the theDistanceMeasure used for computing distances from samples to this cluster
-	 *
-	 * @param theDistanceMeasure the theDistanceMeasure
-	 */
-	public void setTheDistanceMeasure(DistanceMeasure<T> theDistanceMeasure)
-		{
-		this.theDistanceMeasure = theDistanceMeasure;
-		}
-
-	/**
-	 * Sets the sum of squared distances from the samples in this cluster to its centroid.  Computed externally in {@see
-	 * ClusteringMethod.computeClusterStdDevs}.
-	 *
-	 * @param v the sumOfSquareDistances
-	 */
-	public void setSumOfSquareDistances(double v)
-		{
-		sumOfSquareDistances = v;
-		}
-
-	// ------------------------ CANONICAL METHODS ------------------------
-
-	/*
-	 public Cluster<T> clone()
-		 {
-		 Cluster<T> result = new Cluster<T>(theDistanceMeasure, centroid);
-		 result.addAll(this);
-		 return result;
-		 }
- */
-
-	/**
-	 * Returns a string representation of the object. In general, the <code>toString</code> method returns a string that
-	 * "textually represents" this object. The result should be a concise but informative representation that is easy for a
-	 * person to read. It is recommended that all subclasses override this method.
-	 * <p/>
-	 * The <code>toString</code> method for class <code>Object</code> returns a string consisting of the name of the class
-	 * of which the object is an instance, the at-sign character `<code>@</code>', and the unsigned hexadecimal
-	 * representation of the hash code of the object. In other words, this method returns a string equal to the value of:
-	 * <blockquote>
-	 * <pre>
-	 * getClass().getName() + '@' + Integer.toHexString(hashCode())
-	 * </pre></blockquote>
-	 *
-	 * @return a string representation of the object.
-	 */
-	public String toString()
-		{
-		Formatter f = new Formatter();
-		f.format("\n[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
-
-		return f.out().toString();
-		}
-
-	/**
-	 * Returns the standard deviation of the distances from each sample to the centroid, if this has already been computed.
-	 * Can be used as a (crude?) measure of clusteredness, in combination with the distances between the cluster centroids
-	 * themselves.  May return an obsolete value if the cluster centroid or members have been altered since the standard
-	 * deviation was computed.
-	 *
-	 * @return the standard deviation of the distances from each sample to the centroid
-	 */
-	public double getStdDev()
-		{
-		return Math.sqrt(sumOfSquareDistances / n);
-		}
-
-	// -------------------------- OTHER METHODS --------------------------
-
-
-	/**
-	 * Increments the sum of square distances.  Note there can be no online method of updating the sum of squares, because
-	 * the centroid keeps moving
-	 */
-	public void addToSumOfSquareDistances(double v)
-		{
-		sumOfSquareDistances += v;
-		}
-
-	/**
-	 * Computes the distance from the given point to the centroid of this cluster, using the distance measure previously
-	 * assigned to this cluster.
-	 *
-	 * @param p the point
-	 * @return the distance
-	 */
-	public double distanceToCentroid(T p)
-		{
-		return theDistanceMeasure.distanceFromTo(p, centroid);
-		}
-
-	// premature optimization
-	/*	public double distanceToCentroid(T p, double distanceToBeat)
-	   {
-	   return theDistanceMeasure.distanceFromTo(p, centroid, distanceToBeat);
-	   }*/
-
-	public boolean equals(Cluster<T> other)
-		{
-		boolean result = centroid.equals(other.getCentroid())
-				&& theDistanceMeasure.equals(other.getTheDistanceMeasure()) && super.equals(other);
-		logger.debug("" + this + " equals " + other + ": " + result);
-		return result;
-		}
+	//	boolean equals(Cluster<T> other);
 
 	/**
 	 * Add the given sample to this cluster.  Does not automatically remove the sample from other clusters of which it is
@@ -284,7 +65,7 @@ public abstract class Cluster<T extends Clusterable<T>>
 	 * @param point the sample to add
 	 * @return true if the point was successfully added; false otherwise
 	 */
-	public abstract boolean recenterByAdding(T point);
+	boolean recenterByAdding(T point);
 
 	/**
 	 * Remove the given sample from this cluster.
@@ -293,76 +74,19 @@ public abstract class Cluster<T extends Clusterable<T>>
 	 * @return true if the point was successfully removed; false otherwise (in particular, if the point is not a member of
 	 *         this cluster in teh first place)
 	 */
-	public abstract boolean recenterByRemoving(T point);
+	boolean recenterByRemoving(T point);
 
-	// too bad Bag isn't generic; we want Bag<String>
-	//** find a generic Bag implementation, maybe Apache or Google?
-	private Bag labelCounts = new HashBag();
+	void updateLabelProbabilitiesFromCounts();
 
-	// we let the label probabilities be completely distinct from the counts, so that the probabilities
-	// can be set based on outside information (e.g., in the case of the Kohonen map, neighboring cells
-	// may exert an influence)
+	void setLabelProbabilities(Multinomial<String> labelProbabilities);
 
-	Multinomial<String> labelProbabilities = new Multinomial<String>();
+	Multinomial<String> getLabelProbabilities() throws DistributionException;
 
-	public Bag getLabelCounts()
-		{
-		return labelCounts;
-		}
+	double getDominantProbability() throws DistributionException;
 
-	public void updateLabelProbabilitiesFromCounts()//throws DistributionException
-		{
-		labelProbabilities = new Multinomial<String>();
-		for (Object o : labelCounts.uniqueSet())// too bad Bag isn't generic
-			{
-			try
-				{
-				labelProbabilities.put((String) o, labelCounts.getCount(o));
-				}
-			catch (DistributionException e)
-				{
-				logger.debug(e);
-				e.printStackTrace();
-				throw new ClusterRuntimeException(e);
-				}
-			}
-		//		labelProbabilities.normalize();  // don't bother, it'll be done on request anyway
-		}
+	String getDominantLabel();
 
+	void addLabel(T point);
 
-	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
-		{
-		this.labelProbabilities = labelProbabilities;
-		}
-
-	public Multinomial<String> getLabelProbabilities() throws DistributionException
-		{
-		labelProbabilities.normalize();
-		return labelProbabilities;
-		}
-
-	public double getDominantProbability() throws DistributionException
-		{
-		labelProbabilities.normalize();
-		return labelProbabilities.getDominantProbability();
-		}
-
-	public String getDominantLabel()
-		{
-		return labelProbabilities.getDominantKey();
-		}
-
-
-	public void addLabel(T point)
-		{
-		n++;
-		labelCounts.add(point.getLabel());
-		}
-
-	public void removeLabel(T point)
-		{
-		n--;
-		// we don't sanity check that the label was present to begin with
-		labelCounts.remove(point.getLabel());
-		}
+	void removeLabel(T point);
 	}
