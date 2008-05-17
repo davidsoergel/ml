@@ -38,7 +38,6 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.IteratorProvider;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
-import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
@@ -106,13 +105,13 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		}
 
-	protected Multinomial<AbstractCluster> priors = new Multinomial<AbstractCluster>();
+	protected Multinomial<Cluster> priors = new Multinomial<Cluster>();
 
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException
 		{
-		Map<String, AbstractCluster<T>> theClusterMap = new HashMap<String, AbstractCluster<T>>();
+		Map<String, Cluster<T>> theClusterMap = new HashMap<String, Cluster<T>>();
 
 		try
 			{
@@ -121,7 +120,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 			while (trainingIterator.hasNext())
 				{
 				T point = trainingIterator.next();
-				AbstractCluster<T> cluster = theClusterMap.get(point.getLabel());
+				Cluster<T> cluster = theClusterMap.get(point.getLabel());
 
 				if (cluster == null)
 					{
@@ -183,7 +182,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		Cluster<T> best = null;
 		double temp;
 		//int j = -1;
-		for (AbstractCluster<T> cluster : theClusters)
+		for (Cluster<T> cluster : theClusters)
 			{
 
 			try

@@ -32,8 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
+import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
@@ -98,7 +98,7 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 		KohonenSOM2D<T>.WeightedMask mask = som.getWeightedMask((int) getSearchRadius());
 
 
-		Set<AbstractCluster<T>> alreadyTested = new HashSet<AbstractCluster<T>>(10);
+		Set<Cluster<T>> alreadyTested = new HashSet<Cluster<T>>(10);
 
 		result.bestCluster = result.oldCluster;
 		result.bestDistance = measure.distanceFromTo(result.bestCluster.getCentroid(), p);

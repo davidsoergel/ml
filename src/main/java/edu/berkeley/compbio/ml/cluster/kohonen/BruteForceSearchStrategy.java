@@ -32,8 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
+import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import org.apache.log4j.Logger;
 
@@ -45,7 +45,7 @@ import org.apache.log4j.Logger;
 public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
 	private static final Logger logger = Logger.getLogger(BruteForceSearchStrategy.class);
-	
+
 
 	/**
 	 * Copied from KmeansClustering
@@ -66,7 +66,7 @@ public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends 
 			{
 			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (AbstractCluster<T> c : som.getClusters())
+		for (Cluster<T> c : som.getClusters())
 			{
 			// grid already initialized with prototype, never mind all this stuff
 

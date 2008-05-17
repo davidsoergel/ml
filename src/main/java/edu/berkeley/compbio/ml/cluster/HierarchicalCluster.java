@@ -32,14 +32,17 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
-import com.davidsoergel.stats.Multinomial;
 import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.Multinomial;
+import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
 import org.apache.commons.lang.NotImplementedException;
+
+import java.util.Formatter;
 
 
 /**
- * A tree node representing a hierarchical cluster.  Fakes multiple inheritance by providing a facade to the contained Cluster.
+ * A tree node representing a hierarchical cluster.  Fakes multiple inheritance by providing a facade to the contained
+ * Cluster.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
  * @version $Rev$
@@ -136,4 +139,31 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 		throw new NotImplementedException();
 		}
 
+	public void setSumOfSquareDistances(double i)
+		{
+		throw new NotImplementedException();
+		}
+
+	public void addToSumOfSquareDistances(double v)
+		{
+		throw new NotImplementedException();
+		}
+
+	public double getStdDev()
+		{
+		throw new NotImplementedException();
+		}
+
+	public void setN(int i)
+		{
+		getValue().setN(i);
+		}
+
+	public String toString()
+		{
+		Formatter f = new Formatter();
+		f.format("l=%.2f w=%.2f %s", length, weight, value);//%[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
+
+		return f.out().toString();
+		}
 	}

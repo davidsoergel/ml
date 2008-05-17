@@ -45,7 +45,7 @@ public class ClusterMove<T extends Clusterable<T>>
 	/**
 	 * The destination cluster
 	 */
-	public AbstractCluster<T> bestCluster;
+	public Cluster<T> bestCluster;
 
 	/**
 	 * The distance of the point under consideration to the destination cluster centroid
@@ -55,7 +55,7 @@ public class ClusterMove<T extends Clusterable<T>>
 	/**
 	 * The source cluster
 	 */
-	public AbstractCluster<T> oldCluster;
+	public Cluster<T> oldCluster;
 
 	/**
 	 * The distance of the point under consideration to the source cluster centroid

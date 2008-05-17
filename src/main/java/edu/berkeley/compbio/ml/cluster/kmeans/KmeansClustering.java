@@ -154,7 +154,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 			{
 			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (AbstractCluster<T> c : theClusters)
+		for (Cluster<T> c : theClusters)
 			{
 			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
 			if (logger.isDebugEnabled())

@@ -36,9 +36,9 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistributionException;
-import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
+import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.kmeans.GrowableKmeansClustering;
@@ -96,7 +96,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 				ClusterMove<T> cm = theIntraLabelClustering.bestClusterMove(point);
 
-				AbstractCluster<T> cluster = cm.bestCluster;
+				Cluster<T> cluster = cm.bestCluster;
 
 				if (cm.bestDistance > unknownDistanceThreshold)
 					{

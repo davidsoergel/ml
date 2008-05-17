@@ -32,10 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
-import com.davidsoergel.dsutils.collections.CollectionUtils;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.TreeMultimap;
+import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
 import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
@@ -48,12 +45,9 @@ import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 
@@ -65,8 +59,10 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	{
 
 	private DistanceMeasure<T> distanceMeasure;
-	private SymmetricPairwiseDistanceMatrix theActiveNodeDistanceMatrix = new SymmetricPairwiseDistanceMatrix();
-	private LengthWeightHierarchyNode<Cluster<T>> theRoot;
+	//private SymmetricPairwiseDistanceMatrix theActiveNodeDistanceMatrix = new SymmetricPairwiseDistanceMatrix();
+	private Symmetric2dBiMap<HierarchicalCluster<T>, Double> theActiveNodeDistanceMatrix =
+			new Symmetric2dBiMap<HierarchicalCluster<T>, Double>();
+	private HierarchicalCluster<T> theRoot;
 
 	//	private SortedSet<ClusterPair<T>> theClusterPairs;
 
@@ -121,15 +117,17 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	public void performClustering()
 		{
-		while (theActiveNodeDistanceMatrix.size() > 1)
+		n = theActiveNodeDistanceMatrix.numKeys();
+		HierarchicalCluster<T> composite = null;
+		while (theActiveNodeDistanceMatrix.numKeys() > 1)
 			{
 			// find shortest distance
 
-			NodePair<T> pair = theActiveNodeDistanceMatrix.getClosestPair();// the map is sorted by distance
-			Double distance = theActiveNodeDistanceMatrix.getDistance(pair) / 2;
+			//	NodePair<T> pair = theActiveNodeDistanceMatrix.getClosestPair();// the map is sorted by distance
 
-			LengthWeightHierarchyNode<Cluster<T>> a = pair.getNode1();
-			LengthWeightHierarchyNode<Cluster<T>> b = pair.getNode2();
+			Double distance = theActiveNodeDistanceMatrix.getSmallestValue() / 2;
+			HierarchicalCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
+			HierarchicalCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
 
 
 			// set the branch lengths
@@ -140,22 +138,25 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 			// create a composite node
 
-			LengthWeightHierarchyNode<Cluster<T>> composite = new HierarchicalCluster<T>(idCount++, null);
+			composite = new HierarchicalCluster<T>(idCount++, null);
 			composite.addChild(a);
 			composite.addChild(b);
 			composite.setWeight(a.getWeight() + b.getWeight());
+			composite.setN(a.getN() + b.getN());
+
+			theClusters.add(composite);
 
 			// compute the distance from the composite node to each remaining cluster
-			for (LengthWeightHierarchyNode<Cluster<T>> node : new HashSet<LengthWeightHierarchyNode<Cluster<T>>>(
-					theActiveNodeDistanceMatrix.getActiveNodes()))
+			for (HierarchicalCluster<T> node : new HashSet<HierarchicalCluster<T>>(
+					theActiveNodeDistanceMatrix.getActiveKeys()))
 				{
 				if (node == a || node == b)
 					{
 					continue;
 					}
-				distance = (a.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.getDistance(a, node)
-						+ (b.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.getDistance(b, node);
-				theActiveNodeDistanceMatrix.setDistance(node, composite, distance);
+				distance = (a.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(a, node)
+						+ (b.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(b, node);
+				theActiveNodeDistanceMatrix.put(node, composite, distance);
 				}
 
 			// remove the two merged clusters from consideration
@@ -168,239 +169,70 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			// theActiveNodeDistanceMatrix.add(composite);
 			}
 
-		theRoot = theActiveNodeDistanceMatrix.getActiveNodes().iterator().next();
+		theRoot = composite;//theActiveNodeDistanceMatrix.getActiveKeys().iterator().next();
 		}
-private int idCount = 0;
+
+	private int idCount = 0;
+
 	public void addAll(Collection<Clusterable<T>> samples)
 		{
 		//theClusters.addAll(samples);
 		Iterator<Clusterable<T>> i = samples.iterator();
 
-		if (theActiveNodeDistanceMatrix.size() == 0)
+		if (theActiveNodeDistanceMatrix.numKeys() == 0)
 			{
-			theActiveNodeDistanceMatrix
-					.addInitialPair(new HierarchicalCluster(idCount++, i.next()), new HierarchicalCluster(idCount++, i.next()));
+			HierarchicalCluster a = new HierarchicalCluster(idCount++, i.next());
+			HierarchicalCluster b = new HierarchicalCluster(idCount++, i.next());
+			a.setN(1);
+			b.setN(1);
+
+			addInitialPair(a, b);
 			}
 
 		while (i.hasNext())
 			{
 			Clusterable<T> sample = i.next();
 			HierarchicalCluster c = new HierarchicalCluster(idCount++, sample);
-			theActiveNodeDistanceMatrix.addAndComputeDistances(c);
+			c.setN(1);
+			addAndComputeDistances(c);
 			}
 		}
 
-	private class SymmetricPairwiseDistanceMatrix
+
+	void addInitialPair(HierarchicalCluster<T> node1, HierarchicalCluster<T> node2)
 		{
-		// really we wanted a SortedBiMultimap or something, but lacking that, we just store the inverse map explicitly.
+		theClusters.add(node1);
+		theClusters.add(node2);
 
-		private TreeMultimap<Double, NodePair<T>> distanceToPair = new TreeMultimap<Double, NodePair<T>>();
-		private Map<NodePair<T>, Double> pairToDistance = new HashMap<NodePair<T>, Double>();
-
-		//private Set<LengthWeightHierarchyNode<T>> theActiveNodes = new HashSet<LengthWeightHierarchyNode<T>>();
-		private Multimap<LengthWeightHierarchyNode<Cluster<T>>, NodePair<T>> nodeToPairs = Multimaps.newHashMultimap();
-
-
-		/*SymmetricHashMap2D<LengthWeightHierarchyNode<T>, LengthWeightHierarchyNode<T>, Double> theDistanceMatrix =
-				new SymmetricHashMap2D<LengthWeightHierarchyNode<T>, LengthWeightHierarchyNode<T>, Double>();*/
-
-
-		void addInitialPair(LengthWeightHierarchyNode<Cluster<T>> node1, LengthWeightHierarchyNode<Cluster<T>> node2)
-			{
-			Double d = distanceMeasure
-					.distanceFromTo(node1.getValue().getCentroid(), node2.getValue().getCentroid());
-			NodePair<T> pair = getOrCreateNodePair(node1, node2);
-
-			distanceToPair.put(d, pair);
-			pairToDistance.put(pair, d);
-			}
-
-		void addAndComputeDistances(LengthWeightHierarchyNode<Cluster<T>> node)
-			{
-			Set<LengthWeightHierarchyNode<Cluster<T>>> activeNodes =
-					new HashSet(nodeToPairs.keySet());// avoid ConcurrentModificationException
-
-			/*	Double d = distanceMeasure.distanceFromTo(node.getValue().getCentroid(),
-														 node.getValue().getCentroid());// probably 0, but you never know
-			   NodePair<T> pair = getOrCreateNodePair(node, node);
-
-			   distanceToPair.put(d, pair);
-			   pairToDistance.put(pair, d);
-   */
-			for (LengthWeightHierarchyNode<Cluster<T>> theActiveNode : activeNodes)
-				{
-				Double d = distanceMeasure
-						.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
-				NodePair<T> pair = getOrCreateNodePair(node, theActiveNode);
-
-				distanceToPair.put(d, pair);
-				pairToDistance.put(pair, d);
-				}
-			}
-
-		void setDistance(LengthWeightHierarchyNode<Cluster<T>> node1, LengthWeightHierarchyNode<Cluster<T>> node2,
-		                 double d)
-			{
-			setDistance(getOrCreateNodePair(node1, node2), d);
-			}
-
-		private NodePair getOrCreateNodePair(LengthWeightHierarchyNode<Cluster<T>> node1,
-		                                     LengthWeightHierarchyNode<Cluster<T>> node2)
-			{
-			NodePair<T> pair = getNodePair(node1, node2);
-			if (pair == null)
-				{
-				pair = new NodePair(node1, node2);
-				nodeToPairs.put(node1, pair);
-				nodeToPairs.put(node2, pair);
-				}
-			return pair;
-			}
-
-		private NodePair<T> getNodePair(LengthWeightHierarchyNode<Cluster<T>> node1,
-		                                LengthWeightHierarchyNode<Cluster<T>> node2)
-			{
-			try
-				{
-				return CollectionUtils.intersection(nodeToPairs.get(node1), nodeToPairs.get(node2)).iterator().next();
-				}
-			catch (NoSuchElementException e)
-				{
-				return null;
-				}
-			}
-
-		private void setDistance(NodePair nodePair, double d)
-			{
-			Double oldDistance = pairToDistance.get(nodePair);
-			if (oldDistance != null)
-				{
-				pairToDistance.remove(nodePair);
-				distanceToPair.remove(oldDistance, nodePair);
-				}
-			pairToDistance.put(nodePair, d);
-			distanceToPair.put(d, nodePair);
-			}
-
-		public NodePair<T> getClosestPair()
-			{
-			Double closestDistance = distanceToPair.keySet().first(); // distanceToPair is sorted
-			return distanceToPair.get(closestDistance).first();
-			}
-
-		public Double getDistance(LengthWeightHierarchyNode<Cluster<T>> node1,
-		                          LengthWeightHierarchyNode<Cluster<T>> node2)
-			{
-			return getDistance(getNodePair(node1, node2));
-			}
-
-		private Double getDistance(NodePair nodePair)
-			{
-			return pairToDistance.get(nodePair);
-			}
-
-		public void remove(LengthWeightHierarchyNode<Cluster<T>> b)
-			{
-			for (NodePair<T> pair : nodeToPairs.get(b))
-				{
-				Double oldDistance = pairToDistance.remove(pair);
-				try
-					{
-					distanceToPair.remove(oldDistance, pair);   asdfasdf
-					}
-				catch (NullPointerException e)
-					{
-					// no problem
-					}
-				}
-			nodeToPairs.removeAll(b);
-			}
-
-		public Set<LengthWeightHierarchyNode<Cluster<T>>> getActiveNodes()
-			{
-			return nodeToPairs.keySet();
-			}
-
-		public int size()
-			{
-			return nodeToPairs.keySet().size();
-			}
+		Double d = distanceMeasure
+				.distanceFromTo(node1.getValue().getCentroid(), node2.getValue().getCentroid());
+		theActiveNodeDistanceMatrix.put(node1, node2, d);
 		}
 
 	/**
-	 * Represent a pair of nodes, guaranteeing that node1 <= node2 for the sake of symmetry
+	 * We can't add a single node when the matrix is empty, since it won't make any pairs ard thus won't retain the node at
+	 * all.  Hence the addInitialPair business above.
+	 *
+	 * @param node
 	 */
-	private class NodePair<T extends Clusterable<T>> implements Comparable
+	void addAndComputeDistances(HierarchicalCluster<T> node)
 		{
-		private LengthWeightHierarchyNode<Cluster<T>> node1;
-		private LengthWeightHierarchyNode<Cluster<T>> node2;
+		theClusters.add(node);
+		Set<HierarchicalCluster<T>> activeNodes =
+				new HashSet(theActiveNodeDistanceMatrix.getActiveKeys());// avoid ConcurrentModificationException
 
-		private NodePair(LengthWeightHierarchyNode<Cluster<T>> node1, LengthWeightHierarchyNode<Cluster<T>> node2)
+		/*	Double d = distanceMeasure.distanceFromTo(node.getValue().getCentroid(),
+																 node.getValue().getCentroid());// probably 0, but you never know
+					   NodePair<T> pair = getOrCreateNodePair(node, node);
+
+					   distanceToPair.put(d, pair);
+					   pairToDistance.put(pair, d);
+		   */
+		for (HierarchicalCluster<T> theActiveNode : activeNodes)
 			{
-			if (node1.getValue().hashCode() <= node2.getValue().hashCode())
-				//if (node1.getValue().compareTo(node2.getValue()) <= 0)
-				{
-				this.node1 = node1;
-				this.node2 = node2;
-				}
-			else
-				{
-				this.node1 = node2;
-				this.node2 = node1;
-				}
-			}
-
-		public boolean equals(Object o)
-			{
-			if (this == o)
-				{
-				return true;
-				}
-			if (!(o instanceof NodePair))
-				{
-				return false;
-				}
-
-			NodePair nodePair = (NodePair) o;
-
-			if (node1 != null ? !node1.equals(nodePair.node1) : nodePair.node1 != null)
-				{
-				return false;
-				}
-			if (node2 != null ? !node2.equals(nodePair.node2) : nodePair.node2 != null)
-				{
-				return false;
-				}
-
-			return true;
-			}
-
-		public int hashCode()
-			{
-			int result;
-			result = (node1 != null ? node1.hashCode() : 0);
-			result = 31 * result + (node2 != null ? node2.hashCode() : 0);
-			return result;
-			}
-
-		public LengthWeightHierarchyNode<Cluster<T>> getNode1()
-			{
-			return node1;
-			}
-
-		public LengthWeightHierarchyNode<Cluster<T>> getNode2()
-			{
-			return node2;
-			}
-
-		public int compareTo(Object o)
-			{
-			return node1.toString().compareTo(o.toString());
-			}
-
-		public String toString()
-			{
-			return "["+ node1.getValue().getId() + ", " + node2.getValue().getId() + "]";
+			Double d = distanceMeasure
+					.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
+			theActiveNodeDistanceMatrix.put(node, theActiveNode, d);
 			}
 		}
 	}

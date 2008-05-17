@@ -75,6 +75,7 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 	@Override
 	public boolean recenterByAdding(T point)
 		{
+		n++;
 		addLabel(point);
 		logger.debug("Cluster added " + point);
 		centroid.incrementBy(point);
@@ -91,6 +92,7 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 	@Override
 	public boolean recenterByRemoving(T point)
 		{
+		n--;
 		removeLabel(point);
 		logger.debug("Cluster removed " + point);
 		centroid.decrementBy(point);

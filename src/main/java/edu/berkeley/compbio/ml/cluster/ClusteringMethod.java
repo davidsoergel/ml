@@ -68,9 +68,8 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 
 	private static final Logger logger = Logger.getLogger(ClusteringMethod.class);
 
-	protected Collection<AbstractCluster<T>> theClusters = new ArrayList<AbstractCluster<T>>();
-	protected Map<String, AbstractCluster<T>> assignments =
-			new HashMap<String, AbstractCluster<T>>();// see whether anything changed
+	protected Collection<Cluster<T>> theClusters = new ArrayList<Cluster<T>>();
+	protected Map<String, Cluster<T>> assignments = new HashMap<String, Cluster<T>>();// see whether anything changed
 	protected int n = 0;
 
 	/**
@@ -79,7 +78,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 * @param id the unique String identifier of the sample
 	 * @return the Cluster to which the sample belongs
 	 */
-	public AbstractCluster<T> getAssignment(String id)
+	public Cluster<T> getAssignment(String id)
 		{
 		return assignments.get(id);
 		}
@@ -112,14 +111,14 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
 		{
 		theDataPointProvider.reset();
-		for (AbstractCluster<T> c : theClusters)
+		for (Cluster<T> c : theClusters)
 			{
 			c.setSumOfSquareDistances(0);
 			}
 		while (theDataPointProvider.hasNext())
 			{
 			T p = theDataPointProvider.next();
-			AbstractCluster<T> c = assignments.get(p.getId());
+			Cluster<T> c = assignments.get(p.getId());
 			double dist = measure.distanceFromTo(c.getCentroid(), p);// c.distanceToCentroid(p);
 			c.addToSumOfSquareDistances(dist * dist);
 			}
@@ -154,7 +153,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 *
 	 * @return the contained Collection of Clusters.
 	 */
-	public Collection<? extends AbstractCluster<T>> getClusters()
+	public Collection<? extends Cluster<T>> getClusters()
 		{
 		return theClusters;
 		}
@@ -170,7 +169,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 		// we have to iterate since we don't know the underlying Collection type.
 
 		int index = MersenneTwisterFast.randomInt(theClusters.size());
-		Iterator<? extends AbstractCluster<T>> iter = theClusters.iterator();
+		Iterator<? extends Cluster<T>> iter = theClusters.iterator();
 		Cluster<T> result = iter.next();
 		for (int i = 0; i < index; result = iter.next())
 			{
@@ -191,7 +190,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 		{
 		List<Double> distances = new ArrayList<Double>();
 		int numDistances = 0;
-		for (AbstractCluster<T> c : theClusters)
+		for (Cluster<T> c : theClusters)
 			{
 			for (Cluster<T> d : theClusters)
 				{
@@ -242,11 +241,11 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	public void writeClusteringStatsToStream(OutputStream outf)
 		{
 		PrintWriter p = new PrintWriter(outf);
-		for (AbstractCluster<T> c : theClusters)
+		for (Cluster<T> c : theClusters)
 			{
 			p.println(c);
 			double stddev1 = c.getStdDev();
-			for (AbstractCluster<T> d : theClusters)
+			for (Cluster<T> d : theClusters)
 				{
 				double distance = measure.distanceFromTo(c.getCentroid(),
 				                                         d.getCentroid());// c.distanceToCentroid(d.getCentroid());

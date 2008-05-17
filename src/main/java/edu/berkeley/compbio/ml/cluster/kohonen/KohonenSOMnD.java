@@ -36,7 +36,6 @@ import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.SimpleFunction;
-import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
@@ -183,7 +182,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 		if (changingDimension == dimensions)
 			{
 			KohonenSOMCell<T> c = new KohonenSOMCell<T>(idCount++, prototype.clone());//measure,
-			((List<AbstractCluster<T>>) theClusters).set(listIndexFor(cellPosition), c);
+			((List<Cluster<T>>) theClusters).set(listIndexFor(cellPosition), c);
 			}
 		else
 			{
@@ -278,7 +277,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		public NeighborhoodShellIterator(KohonenSOMCell<T> cell)
 			{
-			centerPos = cellPositionFor(((List<AbstractCluster<T>>) theClusters).indexOf(cell));
+			centerPos = cellPositionFor(((List<Cluster<T>>) theClusters).indexOf(cell));
 			prevShell.add(cell);
 			}
 
@@ -328,7 +327,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		private boolean isWithinCurrentRadius(KohonenSOMCell<T> neighbor)
 			{
-			int pos[] = cellPositionFor(((List<AbstractCluster<T>>) theClusters).indexOf(neighbor));
+			int pos[] = cellPositionFor(((List<Cluster<T>>) theClusters).indexOf(neighbor));
 
 			int sum = 0;
 			for (int i = 0; i < dimensions; i++)
@@ -364,7 +363,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 			// no need to reallocate every time; see immediateNeighbors array
 			//List<KohonenSOMCell<T>> result = new ArrayList<KohonenSOMCell<T>>(2 * dimensions);
 
-			int[] pos = cellPositionFor(((List<AbstractCluster<T>>) theClusters).indexOf(trav));
+			int[] pos = cellPositionFor(((List<Cluster<T>>) theClusters).indexOf(trav));
 			for (int i = 0; i < dimensions; i++)
 				{
 				// the -1 neighbor
@@ -375,7 +374,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 						{
 						pos[i] = cellsPerDimension[i] - 1;
 						immediateNeighbors[2 * i] =
-								(KohonenSOMCell<T>) ((List<AbstractCluster<T>>) theClusters).get(listIndexFor(pos));
+								(KohonenSOMCell<T>) ((List<Cluster<T>>) theClusters).get(listIndexFor(pos));
 						pos[i] = -1;
 						}
 					else
@@ -386,7 +385,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 				else
 					{
 					immediateNeighbors[2 * i] =
-							(KohonenSOMCell<T>) ((List<AbstractCluster<T>>) theClusters).get(listIndexFor(pos));
+							(KohonenSOMCell<T>) ((List<Cluster<T>>) theClusters).get(listIndexFor(pos));
 					}
 
 				// the +1 neighbor
@@ -397,7 +396,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 						{
 						pos[i] = 0;
 						immediateNeighbors[2 * i + 1] =
-								(KohonenSOMCell<T>) ((List<AbstractCluster<T>>) theClusters).get(listIndexFor(pos));
+								(KohonenSOMCell<T>) ((List<Cluster<T>>) theClusters).get(listIndexFor(pos));
 						pos[i] = cellsPerDimension[i] - 1;
 						}
 					else
@@ -408,7 +407,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 				else
 					{
 					immediateNeighbors[2 * i + 1] =
-							(KohonenSOMCell<T>) ((List<AbstractCluster<T>>) theClusters).get(listIndexFor(pos));
+							(KohonenSOMCell<T>) ((List<Cluster<T>>) theClusters).get(listIndexFor(pos));
 					}
 
 				// return to the original position
@@ -502,7 +501,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 			{
 			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (AbstractCluster<T> c : theClusters)
+		for (Cluster<T> c : theClusters)
 			{
 			// grid already initialized with prototype, never mind all this stuff
 

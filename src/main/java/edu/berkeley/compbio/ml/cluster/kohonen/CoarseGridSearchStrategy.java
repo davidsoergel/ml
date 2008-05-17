@@ -32,8 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
+import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
@@ -56,7 +56,7 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 
 
 	private int gridSpacing;
-	private Set<? extends AbstractCluster<T>> sparseGrid;
+	private Set<? extends Cluster<T>> sparseGrid;
 
 	public CoarseGridSearchStrategy()
 		{
@@ -87,7 +87,7 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 			{
 			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (AbstractCluster<T> c : sparseGrid)
+		for (Cluster<T> c : sparseGrid)
 			{
 
 			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
@@ -133,9 +133,9 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 		return result;
 		}
 
-	public Set<? extends AbstractCluster<T>> getSparseGridClusters()
+	public Set<? extends Cluster<T>> getSparseGridClusters()
 		{
-		Set<AbstractCluster<T>> result = new HashSet<AbstractCluster<T>>();
+		Set<Cluster<T>> result = new HashSet<Cluster<T>>();
 		int width = som.cellsPerDimension[0];
 		int height = som.cellsPerDimension[1];
 		for (int x = 0; x < width; x += gridSpacing)

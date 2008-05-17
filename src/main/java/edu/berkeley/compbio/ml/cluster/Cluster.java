@@ -56,6 +56,8 @@ public interface Cluster<T extends Clusterable<T>>
 
 	int getN();
 
+	void setN(int i);
+
 	//	boolean equals(Cluster<T> other);
 
 	/**
@@ -89,4 +91,10 @@ public interface Cluster<T extends Clusterable<T>>
 	void addLabel(T point);
 
 	void removeLabel(T point);
+
+	void setSumOfSquareDistances(double i);
+
+	void addToSumOfSquareDistances(double v);
+
+	double getStdDev();
 	}

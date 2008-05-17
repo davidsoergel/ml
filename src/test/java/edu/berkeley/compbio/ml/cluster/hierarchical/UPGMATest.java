@@ -33,6 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.math.MathUtils;
+import com.davidsoergel.dsutils.tree.TreePrinter;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;
@@ -133,8 +134,10 @@ public class UPGMATest
 		oc.writeAssignmentsAsTextToStream(System.err);
 
 		assert oc.getN() == 6;
-		assert oc.getTree().getLargestLengthSpan() == 55;
+		assert oc.getTree().getValue().getN() == 6;
+		logger.debug("\n" + TreePrinter.prettyPrint(oc.getTree()));
 
-		assert true;// this test doesn't assert anything,but looks good
+		Double largestLengthSpan = oc.getTree().getLargestLengthSpan();
+		assert MathUtils.equalWithinFPError(largestLengthSpan, 108.5638307100105);
 		}
 	}

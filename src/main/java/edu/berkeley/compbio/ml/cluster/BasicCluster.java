@@ -51,7 +51,6 @@ public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	public BasicCluster(int id, T centroid)
 		{
 		super(id, centroid);
-		n = 1;
 		}
 
 	/**

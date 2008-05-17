@@ -48,5 +48,5 @@ public interface ClusterSet<T extends Clusterable<T>>
 	 *
 	 * @return the contained Collection of Clusters.
 	 */
-	Collection<? extends AbstractCluster<? extends T>> getClusters();
+	Collection<? extends Cluster<? extends T>> getClusters();
 	}

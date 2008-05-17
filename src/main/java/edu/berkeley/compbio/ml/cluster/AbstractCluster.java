@@ -156,10 +156,15 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return n;
 		}
 
+	public void setN(int n)
+		{
+		this.n = n;
+		}
+
 	/*	public void normalize()
-	   {
-	   centroid.normalize(n);
-	   }*/
+		   {
+		   centroid.normalize(n);
+		   }*/
 
 	/**
 	 * Returns the DistanceMeasure used for computing distances from samples to this cluster
@@ -221,7 +226,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	public String toString()
 		{
 		Formatter f = new Formatter();
-		f.format("\n[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
+		f.format("[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
 
 		return f.out().toString();
 		}
@@ -332,7 +337,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return labelProbabilities.getDominantKey();
 		}
 
-private int totalLabels= 0;
+	private int totalLabels = 0;
 
 	public int getTotalLabels()
 		{
