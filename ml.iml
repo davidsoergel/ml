@@ -18,52 +18,52 @@
     <orderEntry type="module-library">
       <library name="org.testng:testng:5.5:jdk15">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library name="junit:junit:3.8.1">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="log4j:log4j:1.2.13">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="com.intellij:annotations:6.0.3">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -71,39 +71,39 @@
     <orderEntry type="module-library" exported="">
       <library name="commons-lang:commons-lang:2.1">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="net.sourceforge.collections:collections-generic:4.01">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="com.google:collections:20080321">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/com/google/collections/20080321/collections-20080321.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/google/collections/20080321/collections-20080321.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/com/google/collections/20080321/collections-20080321-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/google/collections/20080321/collections-20080321-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/com/google/collections/20080321/collections-20080321-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/google/collections/20080321/collections-20080321-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -113,13 +113,13 @@
     <orderEntry type="module-library" exported="">
       <library name="com.martiansoftware:JSAP:2.0a-ds1">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -127,468 +127,468 @@
     <orderEntry type="module-library" exported="">
       <library name="org.springframework:spring:2.0.8">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring/2.0.8/spring-2.0.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring/2.0.8/spring-2.0.8.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring/2.0.8/spring-2.0.8-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring/2.0.8/spring-2.0.8-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring/2.0.8/spring-2.0.8-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring/2.0.8/spring-2.0.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="commons-logging:commons-logging:1.1">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-logging/commons-logging/1.1/commons-logging-1.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-logging/commons-logging/1.1/commons-logging-1.1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-logging/commons-logging/1.1/commons-logging-1.1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-logging/commons-logging/1.1/commons-logging-1.1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-logging/commons-logging/1.1/commons-logging-1.1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-logging/commons-logging/1.1/commons-logging-1.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="logkit:logkit:1.0.1">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/logkit/logkit/1.0.1/logkit-1.0.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/logkit/logkit/1.0.1/logkit-1.0.1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/logkit/logkit/1.0.1/logkit-1.0.1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/logkit/logkit/1.0.1/logkit-1.0.1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/logkit/logkit/1.0.1/logkit-1.0.1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/logkit/logkit/1.0.1/logkit-1.0.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="avalon-framework:avalon-framework:4.1.3">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/avalon-framework/avalon-framework/4.1.3/avalon-framework-4.1.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="javax.servlet:servlet-api:2.3">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/javax/servlet/servlet-api/2.3/servlet-api-2.3-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/servlet/servlet-api/2.3/servlet-api-2.3-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/javax/servlet/servlet-api/2.3/servlet-api-2.3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/servlet/servlet-api/2.3/servlet-api-2.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.springframework:spring-jpa:2.0.8">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-jpa/2.0.8/spring-jpa-2.0.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-jpa/2.0.8/spring-jpa-2.0.8.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-jpa/2.0.8/spring-jpa-2.0.8-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-jpa/2.0.8/spring-jpa-2.0.8-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-jpa/2.0.8/spring-jpa-2.0.8-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-jpa/2.0.8/spring-jpa-2.0.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="aopalliance:aopalliance:1.0">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.springframework:spring-beans:2.0.8">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-beans/2.0.8/spring-beans-2.0.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-beans/2.0.8/spring-beans-2.0.8.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-beans/2.0.8/spring-beans-2.0.8-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-beans/2.0.8/spring-beans-2.0.8-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-beans/2.0.8/spring-beans-2.0.8-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-beans/2.0.8/spring-beans-2.0.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.springframework:spring-core:2.0.8">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-core/2.0.8/spring-core-2.0.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-core/2.0.8/spring-core-2.0.8.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-core/2.0.8/spring-core-2.0.8-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-core/2.0.8/spring-core-2.0.8-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-core/2.0.8/spring-core-2.0.8-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-core/2.0.8/spring-core-2.0.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.springframework:spring-context:2.0.8">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-context/2.0.8/spring-context-2.0.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-context/2.0.8/spring-context-2.0.8.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-context/2.0.8/spring-context-2.0.8-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-context/2.0.8/spring-context-2.0.8-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-context/2.0.8/spring-context-2.0.8-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-context/2.0.8/spring-context-2.0.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.springframework:spring-dao:2.0.8">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-dao/2.0.8/spring-dao-2.0.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-dao/2.0.8/spring-dao-2.0.8.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-dao/2.0.8/spring-dao-2.0.8-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-dao/2.0.8/spring-dao-2.0.8-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-dao/2.0.8/spring-dao-2.0.8-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-dao/2.0.8/spring-dao-2.0.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.springframework:spring-jdbc:2.0.8">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-jdbc/2.0.8/spring-jdbc-2.0.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-jdbc/2.0.8/spring-jdbc-2.0.8.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-jdbc/2.0.8/spring-jdbc-2.0.8-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-jdbc/2.0.8/spring-jdbc-2.0.8-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-jdbc/2.0.8/spring-jdbc-2.0.8-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-jdbc/2.0.8/spring-jdbc-2.0.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.springframework:spring-aspects:2.0.8">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-aspects/2.0.8/spring-aspects-2.0.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-aspects/2.0.8/spring-aspects-2.0.8.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-aspects/2.0.8/spring-aspects-2.0.8-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-aspects/2.0.8/spring-aspects-2.0.8-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/springframework/spring-aspects/2.0.8/spring-aspects-2.0.8-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/springframework/spring-aspects/2.0.8/spring-aspects-2.0.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="aspectj:aspectjrt:1.5.3">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/aspectj/aspectjrt/1.5.3/aspectjrt-1.5.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/aspectj/aspectjrt/1.5.3/aspectjrt-1.5.3.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/aspectj/aspectjrt/1.5.3/aspectjrt-1.5.3-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/aspectj/aspectjrt/1.5.3/aspectjrt-1.5.3-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/aspectj/aspectjrt/1.5.3/aspectjrt-1.5.3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/aspectj/aspectjrt/1.5.3/aspectjrt-1.5.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="aspectj:aspectjweaver:1.5.3">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/aspectj/aspectjweaver/1.5.3/aspectjweaver-1.5.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/aspectj/aspectjweaver/1.5.3/aspectjweaver-1.5.3.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/aspectj/aspectjweaver/1.5.3/aspectjweaver-1.5.3-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/aspectj/aspectjweaver/1.5.3/aspectjweaver-1.5.3-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/aspectj/aspectjweaver/1.5.3/aspectjweaver-1.5.3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/aspectj/aspectjweaver/1.5.3/aspectjweaver-1.5.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="commons-collections:commons-collections:3.2">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="xerces:xercesImpl:2.8.1">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/xerces/xercesImpl/2.8.1/xercesImpl-2.8.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/xerces/xercesImpl/2.8.1/xercesImpl-2.8.1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/xerces/xercesImpl/2.8.1/xercesImpl-2.8.1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/xerces/xercesImpl/2.8.1/xercesImpl-2.8.1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/xerces/xercesImpl/2.8.1/xercesImpl-2.8.1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/xerces/xercesImpl/2.8.1/xercesImpl-2.8.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="xml-apis:xml-apis:1.3.03">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/xml-apis/xml-apis/1.3.03/xml-apis-1.3.03.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/xml-apis/xml-apis/1.3.03/xml-apis-1.3.03.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/xml-apis/xml-apis/1.3.03/xml-apis-1.3.03-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/xml-apis/xml-apis/1.3.03/xml-apis-1.3.03-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/xml-apis/xml-apis/1.3.03/xml-apis-1.3.03-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/xml-apis/xml-apis/1.3.03/xml-apis-1.3.03-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="commons-dbcp:commons-dbcp:1.2">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-dbcp/commons-dbcp/1.2/commons-dbcp-1.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-dbcp/commons-dbcp/1.2/commons-dbcp-1.2.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-dbcp/commons-dbcp/1.2/commons-dbcp-1.2-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-dbcp/commons-dbcp/1.2/commons-dbcp-1.2-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-dbcp/commons-dbcp/1.2/commons-dbcp-1.2-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-dbcp/commons-dbcp/1.2/commons-dbcp-1.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="commons-pool:commons-pool:1.2">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-pool/commons-pool/1.2/commons-pool-1.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-pool/commons-pool/1.2/commons-pool-1.2.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-pool/commons-pool/1.2/commons-pool-1.2-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-pool/commons-pool/1.2/commons-pool-1.2-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/commons-pool/commons-pool/1.2/commons-pool-1.2-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-pool/commons-pool/1.2/commons-pool-1.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="concurrent:concurrent:1.3.4">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/concurrent/concurrent/1.3.4/concurrent-1.3.4.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/concurrent/concurrent/1.3.4/concurrent-1.3.4.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/concurrent/concurrent/1.3.4/concurrent-1.3.4-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/concurrent/concurrent/1.3.4/concurrent-1.3.4-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/concurrent/concurrent/1.3.4/concurrent-1.3.4-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/concurrent/concurrent/1.3.4/concurrent-1.3.4-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.hibernate:hibernate:3.2.5.ga">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate/3.2.5.ga/hibernate-3.2.5.ga.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate/3.2.5.ga/hibernate-3.2.5.ga.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate/3.2.5.ga/hibernate-3.2.5.ga-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate/3.2.5.ga/hibernate-3.2.5.ga-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate/3.2.5.ga/hibernate-3.2.5.ga-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate/3.2.5.ga/hibernate-3.2.5.ga-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="net.sf.ehcache:ehcache:1.2.3">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/net/sf/ehcache/ehcache/1.2.3/ehcache-1.2.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/net/sf/ehcache/ehcache/1.2.3/ehcache-1.2.3.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/net/sf/ehcache/ehcache/1.2.3/ehcache-1.2.3-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/net/sf/ehcache/ehcache/1.2.3/ehcache-1.2.3-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/net/sf/ehcache/ehcache/1.2.3/ehcache-1.2.3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/net/sf/ehcache/ehcache/1.2.3/ehcache-1.2.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="javax.transaction:jta:1.0.1B">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/javax/transaction/jta/1.0.1B/jta-1.0.1B.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/transaction/jta/1.0.1B/jta-1.0.1B.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/javax/transaction/jta/1.0.1B/jta-1.0.1B-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/transaction/jta/1.0.1B/jta-1.0.1B-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/javax/transaction/jta/1.0.1B/jta-1.0.1B-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/transaction/jta/1.0.1B/jta-1.0.1B-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="asm:asm-attrs:1.5.3">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/asm/asm-attrs/1.5.3/asm-attrs-1.5.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/asm/asm-attrs/1.5.3/asm-attrs-1.5.3.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/asm/asm-attrs/1.5.3/asm-attrs-1.5.3-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/asm/asm-attrs/1.5.3/asm-attrs-1.5.3-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/asm/asm-attrs/1.5.3/asm-attrs-1.5.3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/asm/asm-attrs/1.5.3/asm-attrs-1.5.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="dom4j:dom4j:1.6.1">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="antlr:antlr:2.7.6">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="cglib:cglib:2.1_3">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/cglib/cglib/2.1_3/cglib-2.1_3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/cglib/cglib/2.1_3/cglib-2.1_3.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/cglib/cglib/2.1_3/cglib-2.1_3-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/cglib/cglib/2.1_3/cglib-2.1_3-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/cglib/cglib/2.1_3/cglib-2.1_3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/cglib/cglib/2.1_3/cglib-2.1_3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="asm:asm:1.5.3">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/asm/asm/1.5.3/asm-1.5.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/asm/asm/1.5.3/asm-1.5.3.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/asm/asm/1.5.3/asm-1.5.3-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/asm/asm/1.5.3/asm-1.5.3-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/asm/asm/1.5.3/asm-1.5.3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/asm/asm/1.5.3/asm-1.5.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.hibernate:hibernate-annotations:3.3.0.ga">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-annotations/3.3.0.ga/hibernate-annotations-3.3.0.ga.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-annotations/3.3.0.ga/hibernate-annotations-3.3.0.ga.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-annotations/3.3.0.ga/hibernate-annotations-3.3.0.ga-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-annotations/3.3.0.ga/hibernate-annotations-3.3.0.ga-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-annotations/3.3.0.ga/hibernate-annotations-3.3.0.ga-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-annotations/3.3.0.ga/hibernate-annotations-3.3.0.ga-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="javax.persistence:persistence-api:1.0">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/javax/persistence/persistence-api/1.0/persistence-api-1.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/persistence/persistence-api/1.0/persistence-api-1.0.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/javax/persistence/persistence-api/1.0/persistence-api-1.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/persistence/persistence-api/1.0/persistence-api-1.0-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/javax/persistence/persistence-api/1.0/persistence-api-1.0-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/javax/persistence/persistence-api/1.0/persistence-api-1.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.hibernate:hibernate-entitymanager:3.3.1.ga">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-entitymanager/3.3.1.ga/hibernate-entitymanager-3.3.1.ga.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-entitymanager/3.3.1.ga/hibernate-entitymanager-3.3.1.ga.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-entitymanager/3.3.1.ga/hibernate-entitymanager-3.3.1.ga-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-entitymanager/3.3.1.ga/hibernate-entitymanager-3.3.1.ga-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-entitymanager/3.3.1.ga/hibernate-entitymanager-3.3.1.ga-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-entitymanager/3.3.1.ga/hibernate-entitymanager-3.3.1.ga-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.hibernate:hibernate-commons-annotations:3.0.0.ga">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-commons-annotations/3.0.0.ga/hibernate-commons-annotations-3.0.0.ga.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-commons-annotations/3.0.0.ga/hibernate-commons-annotations-3.0.0.ga.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-commons-annotations/3.0.0.ga/hibernate-commons-annotations-3.0.0.ga-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-commons-annotations/3.0.0.ga/hibernate-commons-annotations-3.0.0.ga-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-commons-annotations/3.0.0.ga/hibernate-commons-annotations-3.0.0.ga-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-commons-annotations/3.0.0.ga/hibernate-commons-annotations-3.0.0.ga-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="org.hibernate:hibernate-validator:3.0.0.ga">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-validator/3.0.0.ga/hibernate-validator-3.0.0.ga.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-validator/3.0.0.ga/hibernate-validator-3.0.0.ga.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-validator/3.0.0.ga/hibernate-validator-3.0.0.ga-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-validator/3.0.0.ga/hibernate-validator-3.0.0.ga-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/hibernate/hibernate-validator/3.0.0.ga/hibernate-validator-3.0.0.ga-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/hibernate/hibernate-validator/3.0.0.ga/hibernate-validator-3.0.0.ga-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="jboss:javassist:3.3.ga">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/jboss/javassist/3.3.ga/javassist-3.3.ga.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/jboss/javassist/3.3.ga/javassist-3.3.ga.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/jboss/javassist/3.3.ga/javassist-3.3.ga-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/jboss/javassist/3.3.ga/javassist-3.3.ga-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/jboss/javassist/3.3.ga/javassist-3.3.ga-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/jboss/javassist/3.3.ga/javassist-3.3.ga-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="jboss:jboss-common-core:2.0.4.GA">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/jboss/jboss-common-core/2.0.4.GA/jboss-common-core-2.0.4.GA.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/jboss/jboss-common-core/2.0.4.GA/jboss-common-core-2.0.4.GA.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/jboss/jboss-common-core/2.0.4.GA/jboss-common-core-2.0.4.GA-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/jboss/jboss-common-core/2.0.4.GA/jboss-common-core-2.0.4.GA-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/jboss/jboss-common-core/2.0.4.GA/jboss-common-core-2.0.4.GA-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/jboss/jboss-common-core/2.0.4.GA/jboss-common-core-2.0.4.GA-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -596,13 +596,13 @@
     <orderEntry type="module-library">
       <library name="org.easymock:easymock:2.0">
         <CLASSES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/easymock/easymock/2.0/easymock-2.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar:///scratch/soergel/.m2/repository/org/easymock/easymock/2.0/easymock-2.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar:///scratch/soergel/.m2/repository/org/easymock/easymock/2.0/easymock-2.0-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
