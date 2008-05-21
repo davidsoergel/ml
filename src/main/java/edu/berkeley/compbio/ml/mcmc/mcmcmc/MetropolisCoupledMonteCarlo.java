@@ -31,12 +31,10 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.mcmc.mcmcmc;
 
 import edu.berkeley.compbio.ml.mcmc.MonteCarlo;
 import edu.berkeley.compbio.ml.mcmc.MonteCarloFactory;
-import edu.berkeley.compbio.ml.mcmc.MoveTypeSet;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -128,7 +126,8 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	public MetropolisCoupledMonteCarlo() throws IOException
 		{
 		super();
-		movetypes = MoveTypeSet.getInstance("edu.berkeley.compbio.ml.mcmc.mcmcmc");
+		//** auoeu
+		//movetypes = MoveTypeSet.getInstance("edu.berkeley.compbio.ml.mcmc.mcmcmc");
 		logger.debug("Coupling chain: got move types " + movetypes.toString());
 		}
 	}

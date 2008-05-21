@@ -31,7 +31,6 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.mcmc;
 
 import com.davidsoergel.runutils.Property;
@@ -57,7 +56,10 @@ public abstract class MonteCarlo
 
 	@Property(helpmessage = "Collect data to disk every n samples", defaultvalue = "100")
 	public int collectDataToDiskInterval;
-	protected MoveTypeSet movetypes;
+
+	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.MoveTypeSet")
+	public MoveTypeSet movetypes;
+
 	protected int acceptedCount;
 
 	protected double heatFactor = 1;//  = beta = kT.  Must be >= 1.  1 is cold chain

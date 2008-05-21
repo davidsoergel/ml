@@ -31,28 +31,28 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.mcmc;
 
+import com.davidsoergel.dsutils.PluginManager;
 import com.davidsoergel.dsutils.SubclassFinder;
-import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.MultinomialDistribution;
+import com.davidsoergel.runutils.Property;
+import com.davidsoergel.runutils.PropertyConsumer;
+import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
 /**
- * Hold a set of move types, and act as a factory for creating new moves.  Singleton.
+ * Hold a set of move types, and act as a factory for creating new moves.
  *
  * @author lorax
  * @version 1.0
  */
-//@PropertyConsumer
+@PropertyConsumer
 public class MoveTypeSet
 	{
 	// ------------------------------ FIELDS ------------------------------
@@ -61,81 +61,100 @@ public class MoveTypeSet
 
 	//	private static ThreadLocal<HashMap<Object, MoveTypeSet>> _instance_tl =
 	//			new ThreadLocal<HashMap<Object, MoveTypeSet>>();
-	private static HashMap<Object, MoveTypeSet> _instances = new HashMap<Object, MoveTypeSet>();
+	//	private static HashMap<Object, MoveTypeSet> _instances = new HashMap<Object, MoveTypeSet>();
 
 	int numTypes = 0;
 
-	MultinomialDistribution typeProbabilities = new MultinomialDistribution();
+	@Property
+	String packageName;
 
-	Class[] setTypeArgTypes = {int.class};
+	//@Property(pluginpackage="")
+	//PluginMap<Class<Move>, Double> moveProbabilities = new PluginMap;
 
-	private List theTypes = new ArrayList();
+	private Multinomial<Class<Move>> types = new Multinomial<Class<Move>>();
+
+	private Class[] setTypeArgTypes = {int.class};
+
+	//	private List theTypes = new ArrayList();
 	private List<String> theNames = new ArrayList<String>();
 
 
 	// -------------------------- STATIC METHODS --------------------------
 
-	public static MoveTypeSet getInstance(String movePackage) throws IOException
-		{
-		//HashMap<Object, MoveTypeSet> instances = _instance_tl.get();
-		//	if (_instances == null)
-		//		{
-		//		_instances = new HashMap<Object, MoveTypeSet>();
-		//_instance_tl.set(instances);
-		//		}
-		MoveTypeSet result = _instances.get(movePackage);
-		if (result == null)
-			{
-			result = new MoveTypeSet(movePackage);
-			_instances.put(movePackage, result);
-			}
-		return result;
-		}
+	/*	public static MoveTypeSet getInstance(String movePackage) throws IOException
+	   {
+	   //HashMap<Object, MoveTypeSet> instances = _instance_tl.get();
+	   //	if (_instances == null)
+	   //		{
+	   //		_instances = new HashMap<Object, MoveTypeSet>();
+	   //_instance_tl.set(instances);
+	   //		}
+	   MoveTypeSet result = _instances.get(movePackage);
+	   if (result == null)
+		   {
+		   result = new MoveTypeSet(movePackage);
+		   _instances.put(movePackage, result);
+		   }
+	   return result;
+	   }*/
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	//	@Property(helpmessage = "Map of move type names to move probabilities", defaultvalue = "")
-	//	public HashMap<String, Double> moveProbabilities;
+	//	public HashMap<Class<Move>, Double> moveProbabilities;
 
-	public MoveTypeSet(String movePackage) throws IOException
+	public void init()
 		{
-		//		ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
-
-		Double prob;
-		for (Class movetype : SubclassFinder.find(movePackage, Move.class))
-			{
-			if (Modifier.isAbstract(movetype.getModifiers()))
-				{
-				continue;
-				}
-			logger.debug("Found move type class: " + movetype.getName());
-			String shortname = movetype.getName();
-			shortname = shortname.substring(shortname.lastIndexOf(".") + 1);
-
-			// ** eliminate dependency (huh?  looks OK)
-			//prob = moveProbabilities.get(shortname);
-			// ** injection completely broken
-			/* **** commented out only due to refactoring; need to fix ****
-			// hack because we can't inject into a Map
-			prob = ResultsCollectingProgramRun.getProps()
-					.getDouble("edu.berkeley.compbio.ml.mcmc.MoveTypeSet.moveProbabilities." + shortname);
-					*/
-			prob = null;
-			if (prob == null || Double.isNaN(prob))
-				{
-				logger.warn("No move probability found for " + shortname + "; assigning probability zero.");
-				}
-			else if (prob != 0)
-				{
-				registerType(movetype, prob, shortname);
-				}
-			}
 		try
 			{
-			typeProbabilities.normalize();
+			PluginManager.registerPackage(packageName, Move.class);
+
+			//		ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
+
+			Double prob;
+			//for(Class<Move> movetype : PluginManager.getPlugins(Move.class))
+			for (Class movetype : SubclassFinder.find(packageName, Move.class))
+				{
+				if (Modifier.isAbstract(movetype.getModifiers()))
+					{
+					continue;
+					}
+				logger.debug("Found move type class: " + movetype.getName());
+				String shortname = movetype.getName();
+				shortname = shortname.substring(shortname.lastIndexOf(".") + 1);
+
+				// ** eliminate dependency (huh?  looks OK)
+				//		prob = moveProbabilities.get(shortname);
+
+				// ** injection completely broken
+				/* **** commented out only due to refactoring; need to fix ****
+		   // hack because we can't inject into a Map
+		   prob = ResultsCollectingProgramRun.getProps()
+				   .getDouble("edu.berkeley.compbio.ml.mcmc.MoveTypeSet.moveProbabilities." + shortname);
+				   */
+				prob = null;
+				if (prob == null || Double.isNaN(prob))
+					{
+					logger.warn("No move probability found for " + shortname + "; assigning probability zero.");
+					}
+				else if (prob != 0)
+					{
+					registerType(movetype, prob, shortname);
+					}
+				}
+			/*			try
+			   {
+			   typeProbabilities.normalize();
+			   }
+		   catch (DistributionException e)
+			   {
+			   throw new Error(e);
+			   }*/
 			}
-		catch (DistributionException e)
+		catch (IOException e)
 			{
+			logger.debug(e);
+			e.printStackTrace();
 			throw new Error(e);
 			}
 		}
@@ -145,8 +164,8 @@ public class MoveTypeSet
 		logger.debug("Registering move type " + c + " (" + shortname + ") with probability " + probability);
 		try
 			{
-			theTypes.add(c);
-			typeProbabilities.add(probability);
+			//		theTypes.add(c);
+			//		typeProbabilities.add(probability);
 			Object[] setTypeArgs = {new Integer(numTypes)};
 			c.getMethod("setType", setTypeArgTypes).invoke(null, setTypeArgs);
 			//theNames.add(c.getMethod("getName", null).invoke(null, null));
@@ -173,10 +192,10 @@ public class MoveTypeSet
 		Class[] argTypes = {currentMonteCarloState.getClass()};
 		try
 			{
-			Class c = (Class) (theTypes.get(typeProbabilities.sample()));
+			Class<Move> c = types.sample();
 			Object[] args = {currentMonteCarloState};
 			//logger.debug("New Move: " + c.getName());
-			Move theMove = (Move) (c.getConstructor(argTypes).newInstance(args));
+			Move theMove = c.getConstructor(argTypes).newInstance(args);
 			//logger.debug("...Move created.");
 			return theMove;
 			}
@@ -189,6 +208,6 @@ public class MoveTypeSet
 
 	public int size()
 		{
-		return numTypes;
+		return numTypes;//types.size();
 		}
 	}
