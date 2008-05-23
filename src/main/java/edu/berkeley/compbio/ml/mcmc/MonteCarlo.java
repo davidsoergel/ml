@@ -33,23 +33,33 @@
 
 package edu.berkeley.compbio.ml.mcmc;
 
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
 import org.apache.log4j.Logger;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author lorax
  * @version 1.0
  */
 @PropertyConsumer
-public abstract class MonteCarlo
+public class MonteCarlo
 	{
 	// ------------------------------ FIELDS ------------------------------
 
 	private static Logger logger = Logger.getLogger(MonteCarlo.class);
 
+
+	@Property(helpmessage = "", defaultvalue = "0")
+	public int burnIn;
+
+	@Property(helpmessage = "", defaultvalue = "100000")
+	public int numSteps;
 
 	@Property(helpmessage = "Write status to the console every n samples", defaultvalue = "1000")
 	public int writeToConsoleInterval;
@@ -60,13 +70,19 @@ public abstract class MonteCarlo
 	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.MoveTypeSet")
 	public MoveTypeSet movetypes;
 
+	@Property(inherited = true)
+	protected DataCollector dataCollector;
+
+
 	protected int acceptedCount;
 
 	protected double heatFactor = 1;//  = beta = kT.  Must be >= 1.  1 is cold chain
 	protected String id;
-	protected int[] accepted;
-	protected int[] proposed;
-	protected DataCollector dc;
+	//protected int[] accepted;
+	//protected int[] proposed;
+	protected Map<Class<Move>, Integer> accepted;
+	protected Map<Class<Move>, Integer> proposed;
+
 
 	protected boolean isColdest = true;
 
@@ -76,24 +92,34 @@ public abstract class MonteCarlo
 
 
 	// -------------------------- STATIC METHODS --------------------------
-
-	public static void run(MonteCarloFactory mcf, int burnIn, int numSteps)
+	public void run() throws IOException, GenericFactoryException//MonteCarloFactory mcf, int burnIn, int numSteps)
 		{
-		MonteCarlo mc = mcf.newChain(1);
+		burnIn();
+		run(0);
+		}
+
+	public void burnIn() throws IOException, GenericFactoryException
+		{
+		//MonteCarlo mc = mcf.newChain(1);
 		for (int i = 0; i < burnIn; i++)
 			{
-			mc.doStep(0);
+			doStep(0);
 			//System.err.println("Burnin step: " + i);
 			}
+		resetCounts();
+		}
 
-		mc.resetCounts();
-		for (int i = 0; i < numSteps; i++)
+	public void run(int currentStep)
+			throws IOException, GenericFactoryException//MonteCarloFactory mcf, int burnIn, int numSteps)
+		{
+
+		for (int i = currentStep; i < currentStep + numSteps; i++)
 			{
 			/*
 		   if (i % writeToConsoleInterval == 0)
 			   {
 			   }*/
-			mc.doStep(i);
+			doStep(i);
 			//System.err.println("Step: " + i);
 			}
 		}
@@ -102,11 +128,13 @@ public abstract class MonteCarlo
 		{
 		proposedCount = 0;
 		acceptedCount = 0;//writeToConsoleInterval;
-		Arrays.fill(proposed, 0);
-		Arrays.fill(accepted, 0);
+		//Arrays.fill(proposed, 0);
+		//Arrays.fill(accepted, 0);
+		proposed.clear();
+		accepted.clear();
 		}
 
-	public void doStep(int step)
+	public void doStep(int step) throws IOException, GenericFactoryException
 		{
 		//logger.debug(String.format("[ %s ] Doing step %d: %d, %d", getId(), step, writeToConsoleInterval, collectDataToDiskInterval));
 		boolean writeToConsole = ((step % writeToConsoleInterval) == 0);
@@ -123,21 +151,23 @@ public abstract class MonteCarlo
 			newState = ((ProbabilityMove) m).doMove();
 			}
 
-		int movetype = m.getType();
+		Class movetype = m.getClass();
 
 		proposedCount++;
-		proposed[movetype]++;
+		//proposed[movetype]++;
+		proposed.put(movetype, proposed.get(movetype) + 1);
 
 		if (currentState != newState)
 			{
 			acceptedCount++;
-			accepted[movetype]++;
+			//accepted[movetype]++;
+			accepted.put(movetype, accepted.get(movetype) + 1);
 			}
 
 		currentState = newState;
 		if (collectDataToDisk && isColdest)
 			{
-			currentState.writeToDataCollector(step, dc);
+			currentState.writeToDataCollector(step, dataCollector);
 			}
 		if (writeToConsole && logger.isInfoEnabled())
 			{
@@ -147,19 +177,20 @@ public abstract class MonteCarlo
 			logger.info(
 					"[ " + id + " ] Accepted " + acceptedCount + " out of " + proposedCount + " proposed total moves.");
 
-			for (int i = 0; i < movetypes.size(); i++)
+			for (GenericFactory<Move> f : movetypes.getFactories())
 				{
-				logger.info("[ " + id + " ] Accepted " + accepted[i] + " out of " + proposed[i] + " proposed "
-						+ movetypes.getName(i) + " moves.");
+				Class c = f.getCreatesClass();
+				logger.info("[ " + id + " ] Accepted " + accepted.get(c) + " out of " + proposed.get(c) + " proposed "
+						+ c + " moves.");
 				}
 			//System.out.println("\n\n");
 			//acceptedCount = writeToConsoleInterval;
 			resetCounts();
 
 			System.out.println(currentState);
-			if (dc != null)
+			if (dataCollector != null)
 				{
-				System.out.println(dc.toString());
+				System.out.println(dataCollector.toString());
 				}
 			}
 		}
@@ -227,13 +258,13 @@ public abstract class MonteCarlo
 
 	public DataCollector getDataCollector()
 		{
-		return dc;
+		return dataCollector;
 		}
 
 	public void init()
 		{
-		accepted = new int[movetypes.size()];
-		proposed = new int[movetypes.size()];
+		accepted = new HashMap<Class<Move>, Integer>();//int[movetypes.size()];
+		proposed = new HashMap<Class<Move>, Integer>();//int[movetypes.size()];
 
 		//writeToConsoleInterval = (writeToConsoleInterval));
 		//collectDataToDiskInterval = (new Integer(Run.getProps().getProperty("collectDataToDiskInterval")));
@@ -254,7 +285,7 @@ public abstract class MonteCarlo
 
 	public void setDataCollector(DataCollector dc)
 		{
-		this.dc = dc;
+		this.dataCollector = dc;
 		}
 
 	public double unnormalizedLogLikelihood(MonteCarloState mcs)

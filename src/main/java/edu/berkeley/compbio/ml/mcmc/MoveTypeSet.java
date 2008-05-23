@@ -33,16 +33,14 @@
 
 package edu.berkeley.compbio.ml.mcmc;
 
-import com.davidsoergel.dsutils.PluginManager;
-import com.davidsoergel.dsutils.SubclassFinder;
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.runutils.PluginMap;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
+import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -55,6 +53,9 @@ import java.util.List;
 @PropertyConsumer
 public class MoveTypeSet
 	{
+	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.mcmcmc")
+	public PluginMap<GenericFactory<Move>, Double> pluginMap;
+
 	// ------------------------------ FIELDS ------------------------------
 
 	private static Logger logger = Logger.getLogger(MoveTypeSet.class);
@@ -63,20 +64,20 @@ public class MoveTypeSet
 	//			new ThreadLocal<HashMap<Object, MoveTypeSet>>();
 	//	private static HashMap<Object, MoveTypeSet> _instances = new HashMap<Object, MoveTypeSet>();
 
-	int numTypes = 0;
+	//	int numTypes = 0;
 
-	@Property
-	String packageName;
+	//@Property
+	//String packageName;
 
-	//@Property(pluginpackage="")
-	//PluginMap<Class<Move>, Double> moveProbabilities = new PluginMap;
+	//	@PluginMap
+	//	Map<Class<Move>, Double> moveProbabilities;// = new PluginMap;
 
-	private Multinomial<Class<Move>> types = new Multinomial<Class<Move>>();
+	private Multinomial<GenericFactory<Move>> types = new Multinomial<GenericFactory<Move>>();
 
-	private Class[] setTypeArgTypes = {int.class};
+	//	private Class[] setTypeArgTypes = {int.class};
 
 	//	private List theTypes = new ArrayList();
-	private List<String> theNames = new ArrayList<String>();
+	//	private List<String> theNames = new ArrayList<String>();
 
 
 	// -------------------------- STATIC METHODS --------------------------
@@ -107,31 +108,31 @@ public class MoveTypeSet
 		{
 		try
 			{
-			PluginManager.registerPackage(packageName, Move.class);
+			//PluginManager.registerPackage(packageName, Move.class);
 
 			//		ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
 
-			Double prob;
+			//Double prob;
 			//for(Class<Move> movetype : PluginManager.getPlugins(Move.class))
-			for (Class movetype : SubclassFinder.find(packageName, Move.class))
+			for (GenericFactory<Move> movetype : pluginMap.keySet())//SubclassFinder.find(packageName, Move.class))
 				{
-				if (Modifier.isAbstract(movetype.getModifiers()))
-					{
-					continue;
-					}
-				logger.debug("Found move type class: " + movetype.getName());
-				String shortname = movetype.getName();
+				/*	if (Modifier.isAbstract(movetype.getModifiers()))
+								{
+								continue;
+								}
+							logger.debug("Found move type class: " + movetype.getName());*/
+				String shortname = movetype.getCreatesClass().getName();
 				shortname = shortname.substring(shortname.lastIndexOf(".") + 1);
 
 				// ** eliminate dependency (huh?  looks OK)
-				//		prob = moveProbabilities.get(shortname);
+				Double prob = pluginMap.get(movetype);
 
 				// ** injection completely broken
 				/* **** commented out only due to refactoring; need to fix ****
-		   // hack because we can't inject into a Map
-		   prob = ResultsCollectingProgramRun.getProps()
-				   .getDouble("edu.berkeley.compbio.ml.mcmc.MoveTypeSet.moveProbabilities." + shortname);
-				   */
+									   // hack because we can't inject into a Map
+									   prob = ResultsCollectingProgramRun.getProps()
+											   .getDouble("edu.berkeley.compbio.ml.mcmc.MoveTypeSet.moveProbabilities." + shortname);
+											   */
 				prob = null;
 				if (prob == null || Double.isNaN(prob))
 					{
@@ -139,19 +140,21 @@ public class MoveTypeSet
 					}
 				else if (prob != 0)
 					{
-					registerType(movetype, prob, shortname);
+					types.put(movetype, prob);
+					//registerType(movetype, prob, shortname);
 					}
 				}
+			types.normalize();
 			/*			try
-			   {
-			   typeProbabilities.normalize();
-			   }
-		   catch (DistributionException e)
-			   {
-			   throw new Error(e);
-			   }*/
+								   {
+								   typeProbabilities.normalize();
+								   }
+							   catch (DistributionException e)
+								   {
+								   throw new Error(e);
+								   }*/
 			}
-		catch (IOException e)
+		catch (DistributionException e)
 			{
 			logger.debug(e);
 			e.printStackTrace();
@@ -159,43 +162,43 @@ public class MoveTypeSet
 			}
 		}
 
-	private void registerType(Class c, double probability, String shortname)
-		{
-		logger.debug("Registering move type " + c + " (" + shortname + ") with probability " + probability);
-		try
-			{
-			//		theTypes.add(c);
-			//		typeProbabilities.add(probability);
-			Object[] setTypeArgs = {new Integer(numTypes)};
-			c.getMethod("setType", setTypeArgTypes).invoke(null, setTypeArgs);
-			//theNames.add(c.getMethod("getName", null).invoke(null, null));
-			theNames.add(shortname);
-			numTypes++;
-			}
-		catch (Exception e)
-			{
-			//e.printStackTrace();
-			logger.debug(e);
-			throw new Error(e);
-			}
-		}
+	/*	private void registerType(GenericFactory<Move> c, double probability, String shortname)
+	   {
+	   logger.debug("Registering move type " + c.getCreatesClass() + " (" + shortname + ") with probability " + probability);
+	   try
+		   {
+		   //		theTypes.add(c);
+		   //		typeProbabilities.add(probability);
+		   //Object[] setTypeArgs = {new Integer(numTypes)};
+		   //c.put("type", numTypes); //getMethod("setType", setTypeArgTypes).invoke(null, setTypeArgs);
+		   //theNames.add(c.getMethod("getName", null).invoke(null, null));
+		   theNames.add(shortname);
+		   numTypes++;
+		   }
+	   catch (Exception e)
+		   {
+		   //e.printStackTrace();
+		   logger.debug(e);
+		   throw new Error(e);
+		   }
+	   }*/
 
 	// -------------------------- OTHER METHODS --------------------------
 
-	public String getName(int i)
-		{
-		return (theNames.get(i));
-		}
+	/*	public String getName(int i)
+	   {
+	   return (theNames.get(i));
+	   }*/
 
 	public Move newMove(MonteCarloState currentMonteCarloState)
 		{
 		Class[] argTypes = {currentMonteCarloState.getClass()};
 		try
 			{
-			Class<Move> c = types.sample();
+			GenericFactory<Move> c = types.sample();
 			Object[] args = {currentMonteCarloState};
 			//logger.debug("New Move: " + c.getName());
-			Move theMove = c.getConstructor(argTypes).newInstance(args);
+			Move theMove = c.create(args);//getConstructor(argTypes)
 			//logger.debug("...Move created.");
 			return theMove;
 			}
@@ -206,8 +209,13 @@ public class MoveTypeSet
 			}
 		}
 
-	public int size()
+	/*	public int size()
+	   {
+	   return numTypes;//types.size();
+	   }*/
+
+	public List<GenericFactory<Move>> getFactories()
 		{
-		return numTypes;//types.size();
+		return types.getElements();
 		}
 	}

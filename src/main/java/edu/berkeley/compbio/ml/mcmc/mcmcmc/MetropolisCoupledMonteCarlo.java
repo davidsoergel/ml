@@ -33,64 +33,79 @@
 
 package edu.berkeley.compbio.ml.mcmc.mcmcmc;
 
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryException;
+import com.davidsoergel.runutils.Property;
+import com.davidsoergel.runutils.PropertyConsumer;
 import edu.berkeley.compbio.ml.mcmc.MonteCarlo;
-import edu.berkeley.compbio.ml.mcmc.MonteCarloFactory;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA. User: lorax Date: Apr 29, 2004 Time: 4:46:42 PM To change this template use File | Settings
  * | File Templates.
  */
+@PropertyConsumer
 public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	{
 	// ------------------------------ FIELDS ------------------------------
 
 	private static Logger logger = Logger.getLogger(MetropolisCoupledMonteCarlo.class);
 
+	//@Property(helpmessage = "", defaultvalue = "edu.berkeley.compbio.ml.mcmc.MonteCarloFactory")
+	//public MonteCarloFactory mcf;
+	@Property(helpmessage = "", defaultvalue = "edu.berkeley.compbio.ml.mcmc.MonteCarlo")
+	public GenericFactory<MonteCarlo> chainFactory;
+
+	@Property(helpmessage = "", defaultvalue = "1:2:4:8:16:32")
+	public Double[] heatFactors;
+
+	//override to avoid presenting in GUI
+	@Property(ignore = true, isNullable = true)
+	public int writeToConsoleInterval;
+
+	//override to avoid presenting in GUI
+	@Property(ignore = true, isNullable = true)
+	public int collectDataToDiskInterval;
+
+	//	@Property(helpmessage = "", defaultvalue = "10")
+	//	public int swapInterval;
 
 	// -------------------------- STATIC METHODS --------------------------
 
-	public static void run(MonteCarloFactory mcf, int burnIn, int numSteps, List<Double> heatFactors, int swapInterval)
-			throws IOException
+	public void run() throws IOException, GenericFactoryException
 		{
-		assert heatFactors.get(0) == 1;
+		assert heatFactors[0] == 1;
 		ChainList chains = new ChainList();
 		for (double hf : heatFactors)
 			{
-			chains.add(mcf.newChain(hf));
+			MonteCarlo subChain = chainFactory.create();
+			subChain.setHeatFactor(hf);
+			chains.add(subChain);//mcf.newChain(hf));
 			}
 
 		MonteCarlo mc = chains.get(0);
 		mc.setColdest(true);
 
-		MetropolisCoupledMonteCarlo couplingChain = new MetropolisCoupledMonteCarlo();
-		couplingChain.setCurrentChainList(chains);
-		couplingChain.setColdest(true);// suppress any output
-		couplingChain.setId("COUPLING");
-		couplingChain.init();
+		//MetropolisCoupledMonteCarlo couplingChain = new MetropolisCoupledMonteCarlo();
+		setCurrentChainList(chains);
+		setColdest(true);// suppress any output
+		setId("COUPLING");
+		init();
 
 		logger.info("Initialized MCMCMC: " + heatFactors);
 
 		// burn in
 		for (int i = 0; i < burnIn; i++)
 			{
-			couplingChain.doStep(0, swapInterval);
+			doBurnIn();
 			}
-
-		// reset counts
-		for (MonteCarlo chain : chains)
-			{
-			chain.resetCounts();
-			}
-		couplingChain.resetCounts();
 
 		// do the real run
-		for (int i = 0; i < (numSteps / swapInterval); i++)
+		for (int i = 0; i < numSteps; i++)
 			{
-			couplingChain.doStep(i, swapInterval);
+			doStep(i);
 			}
 		}
 
@@ -99,17 +114,37 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		this.currentState = currentChainList;
 		}
 
-	public void doStep(int step, int swapInterval)
+	public void doBurnIn() throws IOException, GenericFactoryException
 		{
 		// run each chain independently for a while
 		// ** parallelizable
 		for (MonteCarlo chain : getCurrentChainList())
 			{
-			int maxStep = step + swapInterval;
-			for (int i = step; i < maxStep; i++)
-				{
-				chain.doStep(i);
-				}
+			chain.burnIn();
+			/*	int maxStep = step + swapInterval;
+		   for (int i = step; i < maxStep; i++)
+			   {
+			   chain.doStep(i);
+			   }*/
+			}
+
+		// do the temperature swap attempt
+		super.doStep(0);
+		resetCounts();
+		}
+
+	public void doStep(int step) throws IOException, GenericFactoryException
+		{
+		// run each chain independently for a while
+		// ** parallelizable
+		for (MonteCarlo chain : getCurrentChainList())
+			{
+			chain.run();
+			/*	int maxStep = step + swapInterval;
+		   for (int i = step; i < maxStep; i++)
+			   {
+			   chain.doStep(i);
+			   }*/
 			}
 
 		// do the temperature swap attempt

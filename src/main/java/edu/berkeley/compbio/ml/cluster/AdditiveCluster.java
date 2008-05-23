@@ -72,7 +72,7 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 	 * @param point the sample to add
 	 * @return true if the point was successfully added; false otherwise
 	 */
-	@Override
+	//@Override
 	public boolean recenterByAdding(T point)
 		{
 		n++;
@@ -89,7 +89,7 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 	 * @return true if the point was successfully removed; false otherwise (in particular, if the point is not a member of
 	 *         this cluster in teh first place)
 	 */
-	@Override
+	//	@Override
 	public boolean recenterByRemoving(T point)
 		{
 		n--;
