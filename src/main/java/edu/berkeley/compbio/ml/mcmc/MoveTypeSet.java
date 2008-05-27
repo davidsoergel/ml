@@ -54,7 +54,7 @@ import java.util.List;
 public class MoveTypeSet
 	{
 	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.mcmcmc")
-	public PluginMap<GenericFactory<Move>, Double> pluginMap;
+	public PluginMap<Move, Double> pluginMap;
 
 	// ------------------------------ FIELDS ------------------------------
 
@@ -114,25 +114,18 @@ public class MoveTypeSet
 
 			//Double prob;
 			//for(Class<Move> movetype : PluginManager.getPlugins(Move.class))
-			for (GenericFactory<Move> movetype : pluginMap.keySet())//SubclassFinder.find(packageName, Move.class))
+			for (Class<Move> movetype : pluginMap.getClasses())//SubclassFinder.find(packageName, Move.class))
 				{
 				/*	if (Modifier.isAbstract(movetype.getModifiers()))
 								{
 								continue;
 								}
 							logger.debug("Found move type class: " + movetype.getName());*/
-				String shortname = movetype.getCreatesClass().getName();
+				String shortname = movetype.getName();
 				shortname = shortname.substring(shortname.lastIndexOf(".") + 1);
 
-				// ** eliminate dependency (huh?  looks OK)
-				Double prob = pluginMap.get(movetype);
+				Double prob = pluginMap.getValue(movetype);
 
-				// ** injection completely broken
-				/* **** commented out only due to refactoring; need to fix ****
-									   // hack because we can't inject into a Map
-									   prob = ResultsCollectingProgramRun.getProps()
-											   .getDouble("edu.berkeley.compbio.ml.mcmc.MoveTypeSet.moveProbabilities." + shortname);
-											   */
 				prob = null;
 				if (prob == null || Double.isNaN(prob))
 					{
@@ -140,7 +133,7 @@ public class MoveTypeSet
 					}
 				else if (prob != 0)
 					{
-					types.put(movetype, prob);
+					types.put(pluginMap.getFactory(movetype), prob);
 					//registerType(movetype, prob, shortname);
 					}
 				}
