@@ -31,7 +31,6 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.mcmc;
 
 /**
@@ -42,7 +41,7 @@ public interface MonteCarloState
 	{
 	// -------------------------- OTHER METHODS --------------------------
 
-	abstract void init();
+	//	abstract void init();
 
 	double unnormalizedLogLikelihood();
 

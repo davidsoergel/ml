@@ -31,14 +31,13 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.mcmc;
 
 /**
  * @author lorax
  * @version 1.0
  */
-public abstract class Move
+public abstract class Move//<T extends MonteCarloState>
 	{
 	// ------------------------------ FIELDS ------------------------------
 

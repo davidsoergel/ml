@@ -31,16 +31,15 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.mcmc;
 
 /**
  * @author lorax
  * @version 1.0
  */
-public interface ProbabilityMove
+public interface ProbabilityMove<T extends MonteCarloState>
 	{
 	// -------------------------- OTHER METHODS --------------------------
 
-	abstract MonteCarloState doMove();
+	abstract T doMove();
 	}

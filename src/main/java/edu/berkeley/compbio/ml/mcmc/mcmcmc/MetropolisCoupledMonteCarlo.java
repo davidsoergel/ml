@@ -38,6 +38,7 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
 import edu.berkeley.compbio.ml.mcmc.MonteCarlo;
+import edu.berkeley.compbio.ml.mcmc.MonteCarloState;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -58,8 +59,8 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	@Property(helpmessage = "", defaultvalue = "edu.berkeley.compbio.ml.mcmc.MonteCarlo")
 	public GenericFactory<MonteCarlo> chainFactory;
 
-	@Property(helpmessage = "", defaultvalue = "1:2:4:8:16:32")
-	public Double[] heatFactors;
+	@Property(helpmessage = "", defaultvalue = "1,2,4,8,16,32")
+	public double[] heatFactors;
 
 	//override to avoid presenting in GUI
 	@Property(ignore = true, isNullable = true)
@@ -68,6 +69,19 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	//override to avoid presenting in GUI
 	@Property(ignore = true, isNullable = true)
 	public int collectDataToDiskInterval;
+
+	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.mcmcmc.ChainList")
+	public ChainList currentState;
+
+	public ChainList getCurrentState()
+		{
+		return currentState;
+		}
+
+	public void setCurrentState(MonteCarloState currentState)
+		{
+		this.currentState = (ChainList) currentState;
+		}
 
 	//	@Property(helpmessage = "", defaultvalue = "10")
 	//	public int swapInterval;
@@ -161,8 +175,5 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	public MetropolisCoupledMonteCarlo() throws IOException
 		{
 		super();
-		//** auoeu
-		//movetypes = MoveTypeSet.getInstance("edu.berkeley.compbio.ml.mcmc.mcmcmc");
-		logger.debug("Coupling chain: got move types " + movetypes.toString());
 		}
 	}

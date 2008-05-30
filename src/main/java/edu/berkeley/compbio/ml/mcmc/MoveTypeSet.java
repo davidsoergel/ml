@@ -34,7 +34,7 @@
 package edu.berkeley.compbio.ml.mcmc;
 
 import com.davidsoergel.dsutils.GenericFactory;
-import com.davidsoergel.runutils.PluginDoubleMap;
+import com.davidsoergel.runutils.PluginMap;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.stats.DistributionException;
@@ -51,10 +51,10 @@ import java.util.List;
  * @version 1.0
  */
 @PropertyConsumer
-public class MoveTypeSet
+public class MoveTypeSet//<T extends MonteCarloState>
 	{
 	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.Move {edu.berkeley.compbio.ml.mcmc.mcmcmc}")
-	public PluginDoubleMap pluginMap;
+	public PluginMap<Double> pluginMap;
 
 	// ------------------------------ FIELDS ------------------------------
 
@@ -114,7 +114,7 @@ public class MoveTypeSet
 
 			//Double prob;
 			//for(Class<Move> movetype : PluginManager.getPlugins(Move.class))
-			for (Class movetype : pluginMap.getClasses())//SubclassFinder.find(packageName, Move.class))
+			for (Class movetype : pluginMap.getAvailablePlugins())//SubclassFinder.find(packageName, Move.class))
 				{
 				/*	if (Modifier.isAbstract(movetype.getModifiers()))
 								{

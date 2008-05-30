@@ -48,7 +48,7 @@ import java.util.Map;
  * @version 1.0
  */
 @PropertyConsumer
-public class MonteCarlo
+public abstract class MonteCarlo//<T extends MonteCarloState>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -86,8 +86,10 @@ public class MonteCarlo
 
 	protected boolean isColdest = true;
 
-	protected MonteCarloState currentState;
-	protected MonteCarloState newState;
+	//@Property(isNullable = true)
+	//public T currentState;
+
+	//protected T newState;
 	private int proposedCount;
 
 
@@ -140,6 +142,10 @@ public class MonteCarlo
 		boolean writeToConsole = ((step % writeToConsoleInterval) == 0);
 		boolean collectDataToDisk = ((step % collectDataToDiskInterval) == 0);
 
+
+		MonteCarloState currentState = getCurrentState();
+		MonteCarloState newState;
+
 		Move m = movetypes.newMove(currentState);
 		if (m instanceof EnergyMove)
 			{
@@ -164,7 +170,7 @@ public class MonteCarlo
 			accepted.put(movetype, accepted.get(movetype) + 1);
 			}
 
-		currentState = newState;
+		setCurrentState(newState);
 		if (collectDataToDisk && isColdest)
 			{
 			currentState.writeToDataCollector(step, dataCollector);
@@ -195,6 +201,10 @@ public class MonteCarlo
 			}
 		}
 
+	public abstract void setCurrentState(MonteCarloState newState);
+
+	public abstract MonteCarloState getCurrentState();
+
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	public MonteCarlo()//String injectorId)
@@ -204,16 +214,17 @@ public class MonteCarlo
 
 	// --------------------- GETTER / SETTER METHODS ---------------------
 
-	public MonteCarloState getCurrentState()
-		{
-		return currentState;
-		}
+	/*
+	 public T getCurrentState()
+		 {
+		 return currentState;
+		 }
 
-	public void setCurrentState(MonteCarloState currentState)
-		{
-		this.currentState = currentState;
-		}
-
+	 public void setCurrentState(T currentState)
+		 {
+		 this.currentState = currentState;
+		 }
+ */
 	public double getHeatFactor()
 		{
 		return heatFactor;
@@ -244,16 +255,17 @@ public class MonteCarlo
 		this.movetypes = movetypes;
 		}
 
-	public MonteCarloState getNewState()
-		{
-		return newState;
-		}
+	/*
+	 public T getNewState()
+		 {
+		 return newState;
+		 }
 
-	public void setNewState(MonteCarloState newState)
-		{
-		this.newState = newState;
-		}
-
+	 public void setNewState(T newState)
+		 {
+		 this.newState = newState;
+		 }
+ */
 	// -------------------------- OTHER METHODS --------------------------
 
 	public DataCollector getDataCollector()
@@ -270,7 +282,7 @@ public class MonteCarlo
 		//collectDataToDiskInterval = (new Integer(Run.getProps().getProperty("collectDataToDiskInterval")));
 		//acceptedCount = writeToConsoleInterval;
 		resetCounts();
-		currentState.init();
+		//currentState = new MonteCarloState(); //.init();
 		}
 
 	public boolean isColdest()
