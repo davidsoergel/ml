@@ -126,7 +126,6 @@ public class MoveTypeSet//<T extends MonteCarloState>
 
 				Double prob = pluginMap.getValue(movetype);
 
-				prob = null;
 				if (prob == null || Double.isNaN(prob))
 					{
 					logger.warn("No move probability found for " + shortname + "; assigning probability zero.");

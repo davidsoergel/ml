@@ -34,7 +34,6 @@
 package edu.berkeley.compbio.ml.mcmc;
 
 import com.davidsoergel.dsutils.tree.HierarchyNode;
-import com.davidsoergel.runutils.ComputedProperty;
 import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
@@ -61,19 +60,19 @@ public class DataCollector
 	private int lastStep;
 	// protected DataCollector chainTo;
 
-	@Property
+	@Property(inherited = true)
 	public String outputDirectoryName;
 
 	private File outputDirectory;
 
-	@Property
+	@Property(defaultvalue = "trajectory")
 	public String trajectoryFilename;
 
-	@Property
+	@Property(defaultvalue = "ensemble")
 	public String ensembleFilename;
 
-	@ComputedProperty("runId")
-	public String runId;
+	//@ComputedProperty("runId")
+	//public String runId;
 
 	private FileWriter trajectoryWriter;
 	private FileWriter ensembleWriter;
@@ -83,31 +82,36 @@ public class DataCollector
 	public void setResults(HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> results)
 		{
 		this.results = results;
+
+		// init() ought to have occurred already
+		//** @Transactional trouble
+		//	HierarchicalTypedPropertyNode<String, Object> resultsNode = results.getValue();
+		//	resultsNode.addChild("trajectoryfile", trajectoryFilename);
+		//	resultsNode.addChild("ensemblefile", ensembleFilename);
 		}
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	public DataCollector(Enum[] tcnames)
 		{
-		outputDirectory = new File(outputDirectoryName + File.separator + runId);
-		logger.info("Writing outputs to " + outputDirectoryName);
-		logger.info("Found directory: " + outputDirectory);
-
 
 		timecourses = new DoubleTimecourse[tcnames.length];
 		for (int i = 0; i < tcnames.length; i++)
 			{
 			timecourses[i] = new DoubleTimecourse(tcnames[i].name());
 			}
+		}
+
+	public void init()
+		{
+		outputDirectory = new File(outputDirectoryName);// + File.separator + runId);
+		logger.info("Writing outputs to " + outputDirectoryName);
+		logger.info("Found directory: " + outputDirectory);
 
 		try
 			{
 			String trajectoryFilename = outputDirectory.getCanonicalPath() + File.separator + "trajectory";
 			ensembleFilename = outputDirectory.getCanonicalPath() + File.separator + "sampleEnsemble";
-
-			HierarchicalTypedPropertyNode<String, Object> resultsNode = results.getValue();
-			resultsNode.addChild("trajectoryfile", trajectoryFilename);
-			resultsNode.addChild("ensemblefile", ensembleFilename);
 
 			trajectoryWriter = new FileWriter(trajectoryFilename);
 			ensembleWriter = new FileWriter(ensembleFilename);

@@ -70,7 +70,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.MoveTypeSet")
 	public MoveTypeSet movetypes;
 
-	@Property(inherited = true)
+	//@Property(inherited = true)
 	protected DataCollector dataCollector;
 
 
@@ -80,9 +80,8 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 	protected String id;
 	//protected int[] accepted;
 	//protected int[] proposed;
-	protected Map<Class<Move>, Integer> accepted;
-	protected Map<Class<Move>, Integer> proposed;
-
+	protected Map<Class<Move>, Integer> accepted = new HashMap<Class<Move>, Integer>();
+	protected Map<Class<Move>, Integer> proposed = new HashMap<Class<Move>, Integer>();
 
 	protected boolean isColdest = true;
 
@@ -132,15 +131,20 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		acceptedCount = 0;//writeToConsoleInterval;
 		//Arrays.fill(proposed, 0);
 		//Arrays.fill(accepted, 0);
-		proposed.clear();
-		accepted.clear();
+		//	proposed.clear();
+		//	accepted.clear();
+		for (Class c : movetypes.pluginMap.getAvailablePlugins())
+			{
+			proposed.put(c, 0);
+			accepted.put(c, 0);
+			}
 		}
 
 	public void doStep(int step) throws IOException, GenericFactoryException
 		{
 		//logger.debug(String.format("[ %s ] Doing step %d: %d, %d", getId(), step, writeToConsoleInterval, collectDataToDiskInterval));
-		boolean writeToConsole = ((step % writeToConsoleInterval) == 0);
-		boolean collectDataToDisk = ((step % collectDataToDiskInterval) == 0);
+		boolean writeToConsole = writeToConsoleInterval != 0 && ((step % writeToConsoleInterval) == 0);
+		boolean collectDataToDisk = collectDataToDiskInterval != 0 && ((step % collectDataToDiskInterval) == 0);
 
 
 		MonteCarloState currentState = getCurrentState();
@@ -225,6 +229,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		 this.currentState = currentState;
 		 }
  */
+
 	public double getHeatFactor()
 		{
 		return heatFactor;
@@ -273,17 +278,18 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		return dataCollector;
 		}
 
-	public void init()
-		{
-		accepted = new HashMap<Class<Move>, Integer>();//int[movetypes.size()];
-		proposed = new HashMap<Class<Move>, Integer>();//int[movetypes.size()];
+	/*
+   public void init()
+	   {
+	   accepted = new HashMap<Class<Move>, Integer>();//int[movetypes.size()];
+	   proposed = new HashMap<Class<Move>, Integer>();//int[movetypes.size()];
 
-		//writeToConsoleInterval = (writeToConsoleInterval));
-		//collectDataToDiskInterval = (new Integer(Run.getProps().getProperty("collectDataToDiskInterval")));
-		//acceptedCount = writeToConsoleInterval;
-		resetCounts();
-		//currentState = new MonteCarloState(); //.init();
-		}
+	   //writeToConsoleInterval = (writeToConsoleInterval));
+	   //collectDataToDiskInterval = (new Integer(Run.getProps().getProperty("collectDataToDiskInterval")));
+	   //acceptedCount = writeToConsoleInterval;
+	   resetCounts();
+	   //currentState = new MonteCarloState(); //.init();
+	   }*/
 
 	public boolean isColdest()
 		{
@@ -308,5 +314,20 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		                           mcs.unnormalizedLogLikelihood(), heatFactor,
 		                           mcs.unnormalizedLogLikelihood() * (1. / heatFactor)));
 		return mcs.unnormalizedLogLikelihood() * (1. / heatFactor);
+		}
+
+	/*
+   public void setChainSharedState(Object chainSharedState)
+	   {
+	   }
+
+   public Object getChainSharedState()
+	   {
+	   return null;
+	   }*/
+
+	public void init()
+		{
+		resetCounts();
 		}
 	}

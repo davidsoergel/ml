@@ -33,8 +33,10 @@
 
 package edu.berkeley.compbio.ml.mcmc.mcmcmc;
 
+import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
+import com.davidsoergel.dsutils.StringUtils;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
 import edu.berkeley.compbio.ml.mcmc.MonteCarlo;
@@ -70,8 +72,9 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	@Property(ignore = true, isNullable = true)
 	public int collectDataToDiskInterval;
 
-	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.mcmcmc.ChainList")
-	public ChainList currentState;
+
+	//@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.mcmcmc.ChainList")
+	public ChainList currentState = new ChainList();
 
 	public ChainList getCurrentState()
 		{
@@ -86,16 +89,26 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	//	@Property(helpmessage = "", defaultvalue = "10")
 	//	public int swapInterval;
 
+	public void init()
+		{
+		super.init();
+		//	super.setDataCollector(dataCollector);
+		}
+
 	// -------------------------- STATIC METHODS --------------------------
 
 	public void run() throws IOException, GenericFactoryException
 		{
 		assert heatFactors[0] == 1;
 		ChainList chains = new ChainList();
+		//	Object subChainSharedState = null;
 		for (double hf : heatFactors)
 			{
 			MonteCarlo subChain = chainFactory.create();
 			subChain.setHeatFactor(hf);
+			subChain.setDataCollector(dataCollector);
+			//	subChain.setChainSharedState(subChainSharedState);
+			//	subChainSharedState = subChain.getChainSharedState();  // should be unchanged after the first
 			chains.add(subChain);//mcf.newChain(hf));
 			}
 
@@ -106,14 +119,13 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		setCurrentChainList(chains);
 		setColdest(true);// suppress any output
 		setId("COUPLING");
-		init();
 
-		logger.info("Initialized MCMCMC: " + heatFactors);
+		logger.info("Initialized MCMCMC: " + StringUtils.join(ArrayUtils.toObject(heatFactors), ", "));
 
 		// burn in
 		for (int i = 0; i < burnIn; i++)
 			{
-			doBurnIn();
+			doBurnInStep();
 			}
 
 		// do the real run
@@ -128,7 +140,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		this.currentState = currentChainList;
 		}
 
-	public void doBurnIn() throws IOException, GenericFactoryException
+	public void doBurnInStep() throws IOException, GenericFactoryException
 		{
 		// run each chain independently for a while
 		// ** parallelizable
