@@ -76,7 +76,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 
 	protected int acceptedCount;
 
-	protected double heatFactor = 1;//  = beta = kT.  Must be >= 1.  1 is cold chain
+	protected double heatFactor = 1;//  = kT.  Must be >= 1.  1 is cold chain
 	protected String id;
 	//protected int[] accepted;
 	//protected int[] proposed;
@@ -158,7 +158,8 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			}
 		else
 			{
-			newState = ((ProbabilityMove) m).doMove();
+			//newState = ((ProbabilityMove) m).doMove();
+            newState = ((ProbabilityMove) m).doMove(heatFactor);
 			}
 
 		Class movetype = m.getClass();

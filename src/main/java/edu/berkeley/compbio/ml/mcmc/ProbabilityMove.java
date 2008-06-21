@@ -41,5 +41,6 @@ public interface ProbabilityMove<T extends MonteCarloState>
 	{
 	// -------------------------- OTHER METHODS --------------------------
 
-	abstract T doMove();
+	//abstract T doMove();
+    abstract T doMove(double temperature);
 	}

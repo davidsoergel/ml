@@ -86,7 +86,7 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 
 	// --------------------- Interface ProbabilityMove ---------------------
 
-	public ChainList doMove()
+	public ChainList doMove(double temperature)
 		{
 		if (isAccepted())
 			{
