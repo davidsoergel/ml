@@ -33,7 +33,6 @@
 
 package edu.berkeley.compbio.ml.mcmc.mcmcmc;
 
-import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.StringUtils;
@@ -61,8 +60,8 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	@Property(helpmessage = "", defaultvalue = "edu.berkeley.compbio.ml.mcmc.MonteCarlo")
 	public GenericFactory<MonteCarlo> chainFactory;
 
-	@Property(helpmessage = "", defaultvalue = "1,2,4,8,16,32")
-	public double[] heatFactors;
+	@Property(helpmessage = "heat factors for each subchain.", defaultvalue = "1,2,4,8,16,32")
+	public Double[] heatFactors;
 
 	//override to avoid presenting in GUI
 	@Property(ignore = true, isNullable = true)
@@ -120,7 +119,8 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		setColdest(true);// suppress any output
 		setId("COUPLING");
 
-		logger.info("Initialized MCMCMC: " + StringUtils.join(ArrayUtils.toObject(heatFactors), ", "));
+		logger.info("Initialized MCMCMC: " + StringUtils.join(heatFactors, ", "));
+		//ArrayUtils.toObject(heatFactors)
 
 		// burn in
 		for (int i = 0; i < burnIn; i++)

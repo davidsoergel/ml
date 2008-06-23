@@ -76,7 +76,9 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 
 	protected int acceptedCount;
 
-	protected double heatFactor = 1;//  = kT.  Must be >= 1.  1 is cold chain
+	@Property(helpmessage = "= kT.  Must be >= 1.  1 is cold chain", defaultvalue = "1")
+	public double heatFactor = 1;
+
 	protected String id;
 	//protected int[] accepted;
 	//protected int[] proposed;
