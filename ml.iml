@@ -10,6 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/target/surefire-reports" />
       <excludeFolder url="file://$MODULE_DIR$/target/test-classes" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -17,52 +18,52 @@
     <orderEntry type="module-library">
       <library name="org.testng:testng:5.5:jdk15">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/testng/testng/5.5/testng-5.5-jdk15-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library name="junit:junit:3.8.1">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/junit/junit/3.8.1/junit-3.8.1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/junit/junit/3.8.1/junit-3.8.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="log4j:log4j:1.2.13">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="com.intellij:annotations:6.0.3">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/intellij/annotations/6.0.3/annotations-6.0.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -70,39 +71,39 @@
     <orderEntry type="module-library" exported="">
       <library name="commons-lang:commons-lang:2.1">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="net.sourceforge.collections:collections-generic:4.01">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/net/sourceforge/collections/collections-generic/4.01/collections-generic-4.01-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="com.google:collections:20080321">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/com/google/collections/20080321/collections-20080321.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/google/collections/20080321/collections-20080321.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/com/google/collections/20080321/collections-20080321-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/google/collections/20080321/collections-20080321-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/com/google/collections/20080321/collections-20080321-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/google/collections/20080321/collections-20080321-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -113,39 +114,39 @@
     <orderEntry type="module-library" exported="">
       <library name="com.martiansoftware:JSAP:2.0a-ds1">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/com/martiansoftware/JSAP/2.0a-ds1/JSAP-2.0a-ds1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library name="org.easymock:easymock:2.0">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/org/easymock/easymock/2.0/easymock-2.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library name="commons-collections:commons-collections:3.2">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar!/" />
         </CLASSES>
         <JAVADOC>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-javadoc.jar!/" />
         </JAVADOC>
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

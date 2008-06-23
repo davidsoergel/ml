@@ -143,8 +143,8 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 	public void doStep(int step) throws IOException, GenericFactoryException
 		{
 		//logger.debug(String.format("[ %s ] Doing step %d: %d, %d", getId(), step, writeToConsoleInterval, collectDataToDiskInterval));
-		boolean writeToConsole = writeToConsoleInterval != 0 && ((step % writeToConsoleInterval) == 0);
-		boolean collectDataToDisk = collectDataToDiskInterval != 0 && ((step % collectDataToDiskInterval) == 0);
+		boolean writeToConsole = writeToConsoleInterval != 0 && (((step + 1) % writeToConsoleInterval) == 0);
+		boolean collectDataToDisk = collectDataToDiskInterval != 0 && (((step + 1) % collectDataToDiskInterval) == 0);
 
 
 		MonteCarloState currentState = getCurrentState();
@@ -159,7 +159,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		else
 			{
 			//newState = ((ProbabilityMove) m).doMove();
-            newState = ((ProbabilityMove) m).doMove(heatFactor);
+			newState = ((ProbabilityMove) m).doMove(heatFactor);
 			}
 
 		Class movetype = m.getClass();
@@ -178,13 +178,13 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		setCurrentState(newState);
 		if (collectDataToDisk && isColdest)
 			{
-			currentState.writeToDataCollector(step, dataCollector);
+			currentState.writeToDataCollector(step + 1, dataCollector);
 			}
 		if (writeToConsole && logger.isInfoEnabled())
 			{
 			//System.out.print("\033c");
 
-			logger.info("Step " + step);
+			logger.info("Step " + (step + 1));
 			logger.info(
 					"[ " + id + " ] Accepted " + acceptedCount + " out of " + proposedCount + " proposed total moves.");
 
@@ -308,7 +308,6 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		}
 
 	public double unnormalizedLogLikelihood(MonteCarloState mcs)
-
 		{
 		//return Math.pow(mcs.unnormalizedLikelihood(), (1./heatFactor));
 		logger.debug(String.format("unnormalizedLogLikelihood: %f, heatFactor = %f, product = %f",
