@@ -71,7 +71,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 	public MoveTypeSet movetypes;
 
 	//@Property(inherited = true)
-	protected DataCollector dataCollector;
+	protected TextFileDataCollector dataCollector;
 
 
 	protected int acceptedCount;
@@ -304,7 +304,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		isColdest = coldest;
 		}
 
-	public void setDataCollector(DataCollector dc)
+	public void setDataCollector(TextFileDataCollector dc)
 		{
 		this.dataCollector = dc;
 		}
