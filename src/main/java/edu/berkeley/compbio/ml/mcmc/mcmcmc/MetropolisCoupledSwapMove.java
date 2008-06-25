@@ -109,6 +109,11 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 				mc2.setColdest(false);
 				mc1.setColdest(true);
 				}
+
+			// hack to make the mcmc realize that the move was accepted
+			ChainList newChains = new ChainList();
+			newChains.addAll(chains);
+			chains = newChains;
 			}
 		return chains;
 		}
@@ -132,13 +137,16 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 						.unnormalizedLogLikelihood(mc2.getCurrentState()));
 
 
-		logger.debug(String.format("Swap log likelihood components: (%f * %f) / (%f * %f)",
-		                           mc1.unnormalizedLogLikelihood(mc2.getCurrentState()),
-		                           mc2.unnormalizedLogLikelihood(mc1.getCurrentState()),
-		                           mc1.unnormalizedLogLikelihood(mc1.getCurrentState()),
-		                           mc2.unnormalizedLogLikelihood(mc2.getCurrentState())));
+		if (logger.isDebugEnabled())
+			{
+			logger.debug(String.format("Swap log likelihood components: (%f * %f) / (%f * %f)",
+			                           mc1.unnormalizedLogLikelihood(mc2.getCurrentState()),
+			                           mc2.unnormalizedLogLikelihood(mc1.getCurrentState()),
+			                           mc1.unnormalizedLogLikelihood(mc1.getCurrentState()),
+			                           mc2.unnormalizedLogLikelihood(mc2.getCurrentState())));
 
-		logger.debug("swapLogLikelihoodRatio = " + swapLogLikelihoodRatio);
+			logger.debug("swapLogLikelihoodRatio = " + swapLogLikelihoodRatio);
+			}
 
 		//double swapProbability = Math.exp(swapLogLikelihoodRatio);
 		//logger.debug("Swap probability = " + swapProbability);
