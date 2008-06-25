@@ -71,7 +71,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 	public MoveTypeSet movetypes;
 
 	//@Property(inherited = true)
-	protected TextFileDataCollector dataCollector;
+	protected DataCollector dataCollector;
 
 
 	protected int acceptedCount;
@@ -93,12 +93,13 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 	//protected T newState;
 	private int proposedCount;
 
+	private int step = 0;
 
 	// -------------------------- STATIC METHODS --------------------------
 	public void run() throws IOException, GenericFactoryException//MonteCarloFactory mcf, int burnIn, int numSteps)
 		{
 		burnIn();
-		run(0);
+		runNoBurnIn();
 		}
 
 	public void burnIn() throws IOException, GenericFactoryException
@@ -106,29 +107,31 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		//MonteCarlo mc = mcf.newChain(1);
 		for (int i = 0; i < burnIn; i++)
 			{
-			doStep(0);
+			doStep();
 			//System.err.println("Burnin step: " + i);
 			}
 		resetCounts();
+		step = 0;
 		}
 
-	public void run(int currentStep)
+	public void runNoBurnIn()
 			throws IOException, GenericFactoryException//MonteCarloFactory mcf, int burnIn, int numSteps)
 		{
 
-		for (int i = currentStep; i < currentStep + numSteps; i++)
+		for (int i = 0; i < numSteps; i++)
 			{
 			/*
 		   if (i % writeToConsoleInterval == 0)
 			   {
 			   }*/
-			doStep(i);
+			doStep();
 			//System.err.println("Step: " + i);
 			}
 		}
 
 	public void resetCounts()
 		{
+
 		proposedCount = 0;
 		acceptedCount = 0;//writeToConsoleInterval;
 		//Arrays.fill(proposed, 0);
@@ -142,11 +145,12 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			}
 		}
 
-	public void doStep(int step) throws IOException, GenericFactoryException
+	public void doStep() throws IOException, GenericFactoryException
 		{
+		step++;// make the modulos and outputs appear 1-based
 		//logger.debug(String.format("[ %s ] Doing step %d: %d, %d", getId(), step, writeToConsoleInterval, collectDataToDiskInterval));
-		boolean writeToConsole = writeToConsoleInterval != 0 && (((step + 1) % writeToConsoleInterval) == 0);
-		boolean collectDataToDisk = collectDataToDiskInterval != 0 && (((step + 1) % collectDataToDiskInterval) == 0);
+		boolean writeToConsole = writeToConsoleInterval != 0 && ((step % writeToConsoleInterval) == 0);
+		boolean collectDataToDisk = collectDataToDiskInterval != 0 && ((step % collectDataToDiskInterval) == 0);
 
 
 		MonteCarloState currentState = getCurrentState();
@@ -178,15 +182,25 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			}
 
 		setCurrentState(newState);
-		if (collectDataToDisk && isColdest)
+		if (collectDataToDisk)// && isColdest)
 			{
-			currentState.writeToDataCollector(step + 1, dataCollector);
+			if (isColdest())
+				{
+				currentState.writeToDataCollector(step, dataCollector);
+				}
+
+			for (GenericFactory<Move> f : movetypes.getFactories())
+				{
+				Class c = f.getCreatesClass();
+				dataCollector.setTimecourseValue(id + "." + c.getSimpleName() + ".proposed", proposed.get(c));
+				dataCollector.setTimecourseValue(id + "." + c.getSimpleName() + ".accepted", accepted.get(c));
+				}
 			}
 		if (writeToConsole && logger.isInfoEnabled())
 			{
 			//System.out.print("\033c");
 
-			logger.info("Step " + (step + 1));
+			logger.info("Step " + step);
 			logger.info(
 					"[ " + id + " ] Accepted " + acceptedCount + " out of " + proposedCount + " proposed total moves.");
 
@@ -304,7 +318,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		isColdest = coldest;
 		}
 
-	public void setDataCollector(TextFileDataCollector dc)
+	public void setDataCollector(DataCollector dc)
 		{
 		this.dataCollector = dc;
 		}

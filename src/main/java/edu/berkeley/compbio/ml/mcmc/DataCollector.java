@@ -10,7 +10,11 @@ public interface DataCollector
 
 	void close();
 
-	void setTimecourse(Enum name, double val);
+	void setTimecourseValue(String name, double val);
+
+	void writeLatestTrajectoryValues();
 
 	void writeSample(String s);
+
+	DataCollector newSubCollector(String name);
 	}

@@ -64,12 +64,12 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	public Double[] heatFactors;
 
 	//override to avoid presenting in GUI
-	@Property(ignore = true, isNullable = true)
-	public int writeToConsoleInterval;
+	//	@Property(ignore = true, isNullable = true)
+	//	public int writeToConsoleInterval;
 
 	//override to avoid presenting in GUI
-	@Property(ignore = true, isNullable = true)
-	public int collectDataToDiskInterval;
+	//	@Property(ignore = true, isNullable = true)
+	//	public int collectDataToDiskInterval;
 
 
 	//@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.mcmcmc.ChainList")
@@ -105,7 +105,9 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 			{
 			MonteCarlo subChain = chainFactory.create();
 			subChain.setHeatFactor(hf);
-			subChain.setDataCollector(dataCollector);
+			subChain.setId("" + hf);
+			subChain.setDataCollector(dataCollector.newSubCollector("" + hf));
+			subChain.setColdest(false);
 			//	subChain.setChainSharedState(subChainSharedState);
 			//	subChainSharedState = subChain.getChainSharedState();  // should be unchanged after the first
 			chains.add(subChain);//mcf.newChain(hf));
@@ -116,7 +118,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 
 		//MetropolisCoupledMonteCarlo couplingChain = new MetropolisCoupledMonteCarlo();
 		setCurrentChainList(chains);
-		setColdest(true);// suppress any output
+		setColdest(true);// we do want output from the coupling chain
 		setId("COUPLING");
 
 		logger.info("Initialized MCMCMC: " + StringUtils.join(heatFactors, ", "));
@@ -131,7 +133,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		// do the real run
 		for (int i = 0; i < numSteps; i++)
 			{
-			doStep(i);
+			doStep();
 			}
 		}
 
@@ -155,17 +157,17 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 			}
 
 		// do the temperature swap attempt
-		super.doStep(0);
+		super.doStep();
 		resetCounts();
 		}
 
-	public void doStep(int step) throws IOException, GenericFactoryException
+	public void doStep() throws IOException, GenericFactoryException
 		{
 		// run each chain independently for a while
 		// ** parallelizable
 		for (MonteCarlo chain : getCurrentChainList())
 			{
-			chain.run();
+			chain.runNoBurnIn();
 			/*	int maxStep = step + swapInterval;
 		   for (int i = step; i < maxStep; i++)
 			   {
@@ -174,7 +176,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 			}
 
 		// do the temperature swap attempt
-		super.doStep(step);
+		super.doStep();
 		}
 
 	public ChainList getCurrentChainList()

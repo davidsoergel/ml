@@ -144,6 +144,7 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 		//logger.debug("Swap probability = " + swapProbability);
 
 		//return mtf.nextDouble() < swapProbability;
+		// **  wrong
 		return Math.log(MersenneTwisterFast.random()) < swapLogLikelihoodRatio;
 		}
 	}

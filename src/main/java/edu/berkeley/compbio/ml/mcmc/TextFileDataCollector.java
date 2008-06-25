@@ -33,17 +33,17 @@
 
 package edu.berkeley.compbio.ml.mcmc;
 
-import com.davidsoergel.dsutils.tree.HierarchyNode;
-import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.stats.DoubleTimecourse;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -56,7 +56,8 @@ public class TextFileDataCollector implements DataCollector
 	// ------------------------------ FIELDS ------------------------------
 
 	protected static Logger logger = Logger.getLogger(TextFileDataCollector.class);
-	private DoubleTimecourse[] timecourses;
+	private HashMap<String, DoubleTimecourse> timecourses = new HashMap<String, DoubleTimecourse>();
+
 	private int lastStep;
 	// protected DataCollector chainTo;
 
@@ -77,31 +78,9 @@ public class TextFileDataCollector implements DataCollector
 	private FileWriter trajectoryWriter;
 	private FileWriter ensembleWriter;
 
-	private HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> results;
-
-	@Transactional
-	public void setResults(HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> results)
-		{
-		this.results = results;
-
-		// init() ought to have occurred already
-		//** @Transactional trouble
-		HierarchicalTypedPropertyNode<String, Object> resultsNode = results.getValue();
-		resultsNode.addChild("trajectoryfile", trajectoryFilename);
-		resultsNode.addChild("ensemblefile", ensembleFilename);
-		}
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
-	public TextFileDataCollector(Enum[] tcnames)
-		{
-
-		timecourses = new DoubleTimecourse[tcnames.length];
-		for (int i = 0; i < tcnames.length; i++)
-			{
-			timecourses[i] = new DoubleTimecourse(tcnames[i].name());
-			}
-		}
 
 	public void init()
 		{
@@ -132,7 +111,7 @@ public class TextFileDataCollector implements DataCollector
 		Formatter formatter = new Formatter(sb, Locale.US);
 
 		//sb.append(getStep()).append("\n");
-		for (DoubleTimecourse t : timecourses)
+		for (DoubleTimecourse t : timecourses.values())
 			{
 			formatter.format("%1$20s = %2$10s, %3$10s\n", t.name(), t.last(), t.runningaverage());
 			}
@@ -176,9 +155,9 @@ public class TextFileDataCollector implements DataCollector
 		this.lastStep = lastStep;
 		}
 
-	public void setTimecourse(Enum name, double val)
+	public void setTimecourseValue(String name, double val)
 		{
-		DoubleTimecourse t = timecourses[name.ordinal()];
+		DoubleTimecourse t = timecourses.get(name);
 		t.set(val);
 
 		//		if (chainTo != null)
@@ -201,12 +180,21 @@ public class TextFileDataCollector implements DataCollector
 			}
 		}
 
-	public void writeTrajectory()
+	public DataCollector newSubCollector(String name)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * Store the current trajectory values.  This is distinct from setTimecourse because we need to set all the timecourse
+	 * values first and only then write them all out on one line.
+	 */
+	public void writeLatestTrajectoryValues()
 		{
 		StringBuffer sb = new StringBuffer();
 
 		sb.append(getStep()).append(", ");
-		for (DoubleTimecourse t : timecourses)
+		for (DoubleTimecourse t : timecourses.values())
 			{
 			sb.append(t.last());
 			sb.append(", ");
