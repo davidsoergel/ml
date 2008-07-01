@@ -54,5 +54,5 @@ public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extend
 	 *
 	 * @param samples a Collection of Clusterable objects.
 	 */
-	public abstract void addAll(Collection<Clusterable<T>> samples);
+	public abstract void addAll(Collection<? extends Clusterable<T>> samples);
 	}
