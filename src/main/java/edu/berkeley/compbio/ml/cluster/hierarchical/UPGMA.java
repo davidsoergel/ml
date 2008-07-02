@@ -174,10 +174,10 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	private int idCount = 0;
 
-	public void addAll(Collection<Clusterable<T>> samples)
+	public void addAll(Collection<? extends Clusterable<T>> samples)
 		{
 		//theClusters.addAll(samples);
-		Iterator<Clusterable<T>> i = samples.iterator();
+		Iterator<? extends Clusterable<T>> i = samples.iterator();
 
 		if (theActiveNodeDistanceMatrix.numKeys() == 0)
 			{
