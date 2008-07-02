@@ -108,7 +108,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		for (int i = 0; i < burnIn; i++)
 			{
 			doStep();
-			//System.err.println("Burnin step: " + i);
+			//logger.warn("Burnin step: " + i);
 			}
 		resetCounts();
 		step = 0;
@@ -125,7 +125,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			   {
 			   }*/
 			doStep();
-			//System.err.println("Step: " + i);
+			//logger.warn("Step: " + i);
 			}
 		}
 
