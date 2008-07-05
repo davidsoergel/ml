@@ -159,8 +159,8 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		Move m = movetypes.newMove(currentState);
 		if (m instanceof EnergyMove)
 			{
-			throw new Error("EnergyMoves are currently prohibited, pending refactoring");
-			//newState = ((EnergyMove) m).doMove(heatFactor);
+			//throw new Error("EnergyMoves are currently prohibited, pending refactoring");
+			newState = ((EnergyMove) m).doMove(heatFactor);
 			}
 		else
 			{
