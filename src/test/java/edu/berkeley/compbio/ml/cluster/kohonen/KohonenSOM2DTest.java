@@ -32,18 +32,17 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.SimpleFunction;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import edu.berkeley.compbio.ml.distancemeasure.EuclideanDistance;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Set;
-
 
 
 /**

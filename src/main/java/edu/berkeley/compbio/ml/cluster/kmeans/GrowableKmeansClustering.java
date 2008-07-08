@@ -32,9 +32,9 @@
 
 package edu.berkeley.compbio.ml.cluster.kmeans;
 
+import com.davidsoergel.stats.DistanceMeasure;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 
 
 /**

@@ -31,9 +31,9 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.distancemeasure;
 
+import com.davidsoergel.stats.DistanceMeasure;
 import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;
 import org.apache.log4j.Logger;
 

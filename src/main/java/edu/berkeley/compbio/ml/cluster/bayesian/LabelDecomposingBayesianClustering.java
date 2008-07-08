@@ -35,6 +35,7 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
+import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.DistributionException;
 import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
@@ -42,7 +43,6 @@ import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.kmeans.GrowableKmeansClustering;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;

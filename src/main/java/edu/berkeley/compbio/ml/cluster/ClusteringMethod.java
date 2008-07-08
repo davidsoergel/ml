@@ -35,8 +35,8 @@ package edu.berkeley.compbio.ml.cluster;
 import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
+import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.DistributionException;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;

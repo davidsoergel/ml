@@ -33,6 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
+import com.davidsoergel.stats.DistanceMeasure;
 import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
@@ -40,7 +41,6 @@ import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.HierarchicalCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
-import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasure;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 import org.apache.commons.lang.NotImplementedException;
 
