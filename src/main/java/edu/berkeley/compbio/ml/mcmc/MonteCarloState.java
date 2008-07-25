@@ -43,6 +43,12 @@ public interface MonteCarloState
 
 	//	abstract void init();
 
+	/**
+	 * Returns the log likelihood of this state.  May be unnormalized; the only requirement for proper operation of the
+	 * MCMC is that ratios of the values returned are log likelihood differences (i.e., log probability ratios).
+	 *
+	 * @return
+	 */
 	double unnormalizedLogLikelihood();
 
 	abstract void writeToDataCollector(int step, DataCollector dc);
