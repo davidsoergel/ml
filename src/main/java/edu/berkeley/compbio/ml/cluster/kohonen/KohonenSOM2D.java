@@ -457,25 +457,25 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			{
 			for (int y = 0; y < height; y++)
 				{
-				if (x != width && y != height)
-					{
-					Cluster<T> here = clusterAt(x, y);
+				//if (x != width && y != height)
+				//	{
+				Cluster<T> here = clusterAt(x, y);
 
-					Cluster<T> right = clusterAt(x + 1, y);
-					double d = measure.distanceFromTo(here.getCentroid(),
-					                                  right.getCentroid());//here.distanceToCentroid(right.getCentroid());
+				Cluster<T> right = clusterAt(x + 1, y);
+				double d = measure.distanceFromTo(here.getCentroid(),
+				                                  right.getCentroid());//here.distanceToCentroid(right.getCentroid());
 
-					result[listIndexFor(x, y)] += d;
-					result[listIndexFor(x + 1, y)] += d;
+				result[listIndexFor(x, y)] += d;
+				result[listIndexFor(x + 1, y)] += d;
 
 
-					Cluster<T> down = clusterAt(x, y + 1);
-					d = measure.distanceFromTo(here.getCentroid(),
-					                           down.getCentroid());//here.distanceToCentroid(down.getCentroid());
+				Cluster<T> down = clusterAt(x, y + 1);
+				d = measure.distanceFromTo(here.getCentroid(),
+				                           down.getCentroid());//here.distanceToCentroid(down.getCentroid());
 
-					result[listIndexFor(x, y)] += d;
-					result[listIndexFor(x, y + 1)] += d;
-					}
+				result[listIndexFor(x, y)] += d;
+				result[listIndexFor(x, y + 1)] += d;
+				//	}
 				}
 			}
 
