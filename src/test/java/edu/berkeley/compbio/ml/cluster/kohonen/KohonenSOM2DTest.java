@@ -41,6 +41,7 @@ import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.distancemeasure.EuclideanDistance;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -230,6 +231,74 @@ public class KohonenSOM2DTest
 			assert !pairSet.contains(pair);
 			pairSet.add(pair);
 			}
+		}
+
+	@Test
+	public void averageDistanceToNeighboringCellsIsComputedCorrectly()
+		{
+		KohonenSOM2D som = new KohonenSOM2D(new Integer[]{
+				5,
+				5
+		}, dm, null, null, null, null, false, false, 0, bruteForceStrategy);
+
+		ClusterableDoubleArray zeroArray = new ClusterableDoubleArray("test1", new double[]{
+				0,
+				0,
+				0,
+				0
+		});
+
+		for (int x = 0; x < 5; x++)
+			{
+			for (int y = 0; y < 5; y++)
+				{
+				som.clusterAt(x, y).setCentroid(zeroArray);
+				}
+			}
+
+		som.clusterAt(2, 2).setCentroid(new ClusterableDoubleArray("test1", new double[]{
+				1,
+				1,
+				1,
+				1
+		}));
+
+		double[] avgDist = som.computeCellAverageNeighborDistances();
+
+		assert Arrays.equals(avgDist, new double[]{
+				//
+				0,
+				0,
+				0,
+				0,
+				0,
+				//
+				0,
+				0,
+				.5,
+				0,
+				0,
+				//
+				0,
+				.5,
+				2,
+				.5,
+				0,
+				//
+				0,
+				0,
+				.5,
+				0,
+				0,
+				//
+				0,
+				0,
+				0,
+				0,
+				0
+		});
+
+		// ** test edges
 		}
 
 	private class XYPair
