@@ -489,24 +489,24 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return result;//Arrays.asList(ArrayUtils.toObject(result));
 		}
 
-	public Set<Cluster<T>> watershedClustering(double threshold)
-		{
-		double[] uMatrix = computeCellAverageNeighborDistances();
+	/*	public Set<Cluster<T>> watershedClustering(double threshold)
+		 {
+		 double[] uMatrix = computeCellAverageNeighborDistances();
 
-		int width = cellsPerDimension[0];
-		int height = cellsPerDimension[1];
-		for (int x = 0; x < width; x++)
-			{
-			for (int y = 0; y < height; y++)
-				{
-				if (uMatrix[listIndexFor(x, y)] < threshold)
-					{
+		 int width = cellsPerDimension[0];
+		 int height = cellsPerDimension[1];
+		 for (int x = 0; x < width; x++)
+			 {
+			 for (int y = 0; y < height; y++)
+				 {
+				 if (uMatrix[listIndexFor(x, y)] < threshold)
+					 {
 
-					}
-				}
-			}
-		}
-
+					 }
+				 }
+			 }
+		 }
+ */
 	public void resetChanged()
 		{
 		changed = 0;
