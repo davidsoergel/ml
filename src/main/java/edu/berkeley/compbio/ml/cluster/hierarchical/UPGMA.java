@@ -51,10 +51,6 @@ import java.util.List;
 import java.util.Set;
 
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T>
 	{
 

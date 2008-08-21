@@ -37,10 +37,6 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 public class GrowableKmeansClustering<T extends AdditiveClusterable<T>> extends KmeansClustering<T>
 	{
 	public GrowableKmeansClustering(DistanceMeasure<T> dm)

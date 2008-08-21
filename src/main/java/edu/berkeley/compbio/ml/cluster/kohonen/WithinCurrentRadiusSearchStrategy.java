@@ -35,11 +35,6 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
 
-
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 public class WithinCurrentRadiusSearchStrategy<T extends AdditiveClusterable<T>>
 		extends NearCurrentPositionSearchStrategy<T>
 	{

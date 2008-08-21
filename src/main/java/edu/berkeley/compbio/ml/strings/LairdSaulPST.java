@@ -31,15 +31,11 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.strings;
 
 import java.io.Reader;
 
-/**
- * Created by IntelliJ IDEA. User: soergel Date: Jun 8, 2007 Time: 4:48:38 PM To change this template use File |
- * Settings | File Templates.
- */
+
 public class LairdSaulPST
 	{
 	// --------------------------- CONSTRUCTORS ---------------------------

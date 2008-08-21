@@ -40,10 +40,7 @@ import static org.easymock.EasyMock.*;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
+
 public class MarkovTreeNodeTest implements TestInstanceFactory
 	{
 	// ------------------------------ FIELDS ------------------------------

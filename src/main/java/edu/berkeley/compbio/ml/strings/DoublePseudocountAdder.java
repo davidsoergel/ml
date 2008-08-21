@@ -37,10 +37,7 @@ import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DoubleArrayContainer;
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
+
 @PropertyConsumer
 public class DoublePseudocountAdder implements DistributionProcessor<DoubleArrayContainer>//extends DoubleArrayProcessor
 	{

@@ -35,11 +35,6 @@ package edu.berkeley.compbio.ml.strings;
 import java.util.List;
 
 
-
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 public interface FirstWordProvider
 	{
 	// -------------------------- OTHER METHODS --------------------------

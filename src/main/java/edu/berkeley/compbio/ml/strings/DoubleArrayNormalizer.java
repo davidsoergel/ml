@@ -36,10 +36,7 @@ import com.davidsoergel.dsutils.ArrayUtils;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DoubleArrayContainer;
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
+
 public class DoubleArrayNormalizer implements DistributionProcessor<DoubleArrayContainer>//extends DoubleArrayProcessor
 	{
 	// ------------------------ INTERFACE METHODS ------------------------

@@ -44,10 +44,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-/**
- * Created by IntelliJ IDEA. User: lorax Date: Apr 29, 2004 Time: 4:46:42 PM To change this template use File | Settings
- * | File Templates.
- */
+
 @PropertyConsumer
 public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	{

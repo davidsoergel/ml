@@ -31,7 +31,6 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.TestInstanceFactory;
@@ -39,10 +38,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
+
 public abstract class KcountAbstractTest
 	{
 	// ------------------------------ FIELDS ------------------------------

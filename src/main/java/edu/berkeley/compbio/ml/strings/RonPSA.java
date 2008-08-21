@@ -47,11 +47,6 @@ import java.util.List;
 import java.util.Queue;
 
 
-
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 public class RonPSA extends RonPSANode
 	{
 	private static final Logger logger = Logger.getLogger(RonPSA.class);

@@ -38,10 +38,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 public class RonPSTNodeTest
 	{
 	private static final Logger logger = Logger.getLogger(RonPSTNodeTest.class);

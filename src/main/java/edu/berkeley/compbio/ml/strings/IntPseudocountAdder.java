@@ -38,11 +38,6 @@ import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.IntArrayContainer;
 
 
-
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 @PropertyConsumer
 public class IntPseudocountAdder implements DistributionProcessor<IntArrayContainer>//extends DoubleArrayProcessor
 	{

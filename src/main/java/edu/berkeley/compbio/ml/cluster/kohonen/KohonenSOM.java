@@ -39,11 +39,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 
-
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 public interface KohonenSOM<T extends AdditiveClusterable<T>> extends ClusterSet<T>
 	{
 	//boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;

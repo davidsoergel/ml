@@ -46,10 +46,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 public class KohonenSOM2DTest
 	{
 	private BruteForceSearchStrategy<ClusterableDoubleArray> bruteForceStrategy =

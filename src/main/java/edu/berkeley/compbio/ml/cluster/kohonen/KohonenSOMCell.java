@@ -36,10 +36,6 @@ import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCluster<T>
 	{
 	public KohonenSOMCell(int id, T centroid)//DistanceMeasure<T> dm,

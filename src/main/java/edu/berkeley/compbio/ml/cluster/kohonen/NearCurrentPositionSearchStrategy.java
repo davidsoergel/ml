@@ -40,12 +40,7 @@ import org.apache.log4j.Logger;
 import java.util.Iterator;
 
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
-public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
-		extends KohonenSOM2DSearchStrategy<T>
+public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
 	private static final Logger logger = Logger.getLogger(NearCurrentPositionSearchStrategy.class);
 

@@ -39,10 +39,6 @@ import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
 
 
-/**
- * @Author David Soergel
- * @Version 1.0
- */
 public abstract class SequenceSpectrumAbstractTest
 	{
 	// ------------------------------ FIELDS ------------------------------
