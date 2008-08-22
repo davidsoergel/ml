@@ -46,12 +46,12 @@ public abstract class SequenceSpectrumAbstractTest
 	private static Logger logger = Logger.getLogger(SequenceSpectrumAbstractTest.class);
 	//public abstract SequenceSpectrum createInstance() throws Exception;
 
-	private TestInstanceFactory tif;
+	private TestInstanceFactory<SequenceSpectrum> tif;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
-	public SequenceSpectrumAbstractTest(TestInstanceFactory tif)
+	public SequenceSpectrumAbstractTest(TestInstanceFactory<SequenceSpectrum> tif)
 		{
 		this.tif = tif;
 		}
@@ -61,7 +61,7 @@ public abstract class SequenceSpectrumAbstractTest
 	@Test
 	public void getRandomReturnsAlphabetSymbols() throws Exception
 		{
-		SequenceSpectrum ss = (SequenceSpectrum) tif.createInstance();
+		SequenceSpectrum ss = tif.createInstance();
 		byte[] alphabet = ss.getAlphabet();
 		for (int count = 0; count < 100; count++)
 			{
@@ -73,7 +73,7 @@ public abstract class SequenceSpectrumAbstractTest
 	@Test
 	public void variousProbabilitiesAreConsistent() throws Exception
 		{
-		SequenceSpectrum ss = (SequenceSpectrum) tif.createInstance();
+		SequenceSpectrum ss = tif.createInstance();
 		int multipliedConditionals = 0;
 		for (int count = 0; count < 100; count++)
 			{

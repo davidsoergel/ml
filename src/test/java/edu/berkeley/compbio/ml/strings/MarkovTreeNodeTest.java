@@ -41,8 +41,29 @@ import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 
-public class MarkovTreeNodeTest implements TestInstanceFactory
+public class MarkovTreeNodeTest implements TestInstanceFactory<SequenceSpectrum>
 	{
+	// --------------------- Interface TestInstanceFactory ---------------------
+
+	public MarkovTreeNode createInstance() throws Exception
+		{
+		SequenceSpectrum ss = createMockSimpleSpectrum();
+		MarkovTreeNode n = createSimpleMarkovTree();
+		n.copyProbsFromSpectrumRecursively(ss);
+		return n;
+		}
+
+	@Factory
+	public Object[] testInterfaces()
+		{
+		TestInstanceFactory t = this;
+		Object[] result = new Object[1];
+		result[0] = new SequenceSpectrumAbstractTest(t)
+		{
+		};
+		return result;
+		}
+
 	// ------------------------------ FIELDS ------------------------------
 
 	private byte[] alphabet = new byte[]{
@@ -55,16 +76,6 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 
 	// ------------------------ INTERFACE METHODS ------------------------
 
-
-	// --------------------- Interface TestInstanceFactory ---------------------
-
-	public MarkovTreeNode createInstance() throws Exception
-		{
-		SequenceSpectrum ss = createMockSimpleSpectrum();
-		MarkovTreeNode n = createSimpleMarkovTree();
-		n.copyProbsFromSpectrumRecursively(ss);
-		return n;
-		}
 
 	// -------------------------- OTHER METHODS --------------------------
 
@@ -341,16 +352,6 @@ public class MarkovTreeNodeTest implements TestInstanceFactory
 		return node;
 		}
 
-	@Factory
-	public Object[] testInterfaces()
-		{
-		TestInstanceFactory t = this;
-		Object[] result = new Object[1];
-		result[0] = new SequenceSpectrumAbstractTest(t)
-		{
-		};
-		return result;
-		}
 
 	@Test
 	public void totalProbabilitiesAreCorrect() throws SequenceSpectrumException, DistributionException
