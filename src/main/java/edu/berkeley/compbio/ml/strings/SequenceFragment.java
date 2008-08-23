@@ -31,7 +31,6 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.GenericFactory;
@@ -626,8 +625,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				}
 			catch (GenericFactoryException e)
 				{
-				//logger.debug(e);
-				//e.printStackTrace();
+				logger.debug(e);
+				e.printStackTrace();
 				throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 				}
 			catch (NullPointerException e)
