@@ -33,6 +33,8 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -52,4 +54,11 @@ public interface ClusterableIterator<T extends Clusterable<T>> extends Iterator<
 	//public abstract ClusterableIterator<T> clone() throws CloneNotSupportedException;
 
 	void reset() throws IOException;
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@NotNull
+	public abstract T next();
 	}
