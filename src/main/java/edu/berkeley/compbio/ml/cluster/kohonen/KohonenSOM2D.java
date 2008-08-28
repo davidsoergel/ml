@@ -297,7 +297,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		logger.debug("Adding point with neighborhood radius " + radius + ", moveFactor " + moveFactor);
 
-		// ** I had a problem with this before??
+		// REVIEW decrementLosingNeighborhood has issues
 		// yeah a couple things:
 		// 1. it produces negative counts, which makes no sense, and
 		// 2. it leaves the average count number very low
@@ -329,7 +329,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			WeightedCell v = i.next();
 			KohonenSOMCell<T> neighbor = v.theCell;
 
-			//** Rearrange to avoid subtraction
+			// REVIEW Rearrange to avoid subtraction
 			/*
 						 T motion = p.minus(neighbor.getCentroid());
 
@@ -346,7 +346,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			//neighbor = (1-motionFactor) * neighbor + motionFactor * p;
 
 
-			//** REVISIT
+			// REVIEW does neighbor recentering work right?
 			neighbor.recenterByAddingWeighted(p, motionFactor);
 			}
 

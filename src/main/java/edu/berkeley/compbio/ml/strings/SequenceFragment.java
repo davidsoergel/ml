@@ -675,7 +675,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		baseSpectrum.runBeginTrainingProcessor();
 		}
 
-	//** Move this to a @PropertyConsumer
+	// REVIEW compute a base spectrum early to manage memory?
 
 	/*	@Property(helpmessage = "A type of spectrum to compute early to manage memory",
 			   defaultvalue = "null", isNullable = true)

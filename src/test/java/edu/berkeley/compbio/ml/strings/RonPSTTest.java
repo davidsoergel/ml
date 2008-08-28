@@ -182,7 +182,7 @@ public class RonPSTTest
 	@Test
 	public void lowRatioThresholdProducesDeepTree() throws SequenceSpectrumException
 		{
-		// todo improve by making a deeper tree to test
+		// ** improve by making a deeper tree to test
 
 		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
 		RonPST pst = new RonPST(0.0001, 0.01, 1, 4, ss);

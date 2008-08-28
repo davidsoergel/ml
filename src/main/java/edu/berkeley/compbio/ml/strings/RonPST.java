@@ -266,7 +266,7 @@ public class RonPST extends RonPSTNode
 
 		// Step 3 (smoothing)
 
-		// ** Smoothing framework
+		// REVIEW Smoothing framework
 		// in this framework, smoothing is accomplished simply by constructing a new
 		// SequenceSpectrum of the appropriate type, i.e. KneserNeySmoothedSpectrum
 

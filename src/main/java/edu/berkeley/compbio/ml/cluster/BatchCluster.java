@@ -73,7 +73,7 @@ public class BatchCluster<T extends AdditiveClusterable<T>> extends AdditiveClus
 
 	/*	public boolean recalculateCentroid() throws ClusterException
 		 {
-		 // TODO
+		 // REVIEW is recalculateCentroid done somewhere else now??
 		 // works because Kcounts are "nonscaling additive", but it's not generic
 
 		 assert thePoints.size() > 0;

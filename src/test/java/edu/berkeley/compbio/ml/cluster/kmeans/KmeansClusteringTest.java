@@ -62,7 +62,7 @@ public class KmeansClusteringTest
 	@Test
 	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
 		{
-		// ** Test is commented out!
+		// BAD Test is commented out!
 		/*
 			  ClusterableIterator ci;
 

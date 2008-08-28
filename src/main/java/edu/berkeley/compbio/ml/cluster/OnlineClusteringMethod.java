@@ -135,7 +135,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> extends C
 				   }*/
 				}
 			logger.info("Changed cluster assignment of " + changed + " points (" + (int) (100 * changed / c) + "%)\n");
-			// computeClusterStdDevs(theDataPointProvider);  // ** Slow, should be optional.  Also, only works for sequential DPP
+			// computeClusterStdDevs(theDataPointProvider);  // PERF cluster stddev is slow, should be optional.  Also, only works for sequential DPP
 			logger.info("\n" + clusteringStats());
 			if (changed == 0)
 				{

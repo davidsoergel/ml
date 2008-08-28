@@ -187,7 +187,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 			try
 				{
-				//** careful: how to deal with priors depends on the distance measure.
+				// ** careful: how to deal with priors depends on the distance measure.
 				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
 
 				if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * priors.get(cluster)) <= bestdistance)

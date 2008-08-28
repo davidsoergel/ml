@@ -66,7 +66,7 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 
 	public void propose()
 		{
-		// ** is it OK to swap only adjacent temperatures?
+		// REVIEW is it OK to swap only adjacent temperatures?
 		// Yes!
 		swap1 = MersenneTwisterFast.randomInt(chains.size() - 1);
 		swap2 = swap1 + 1;

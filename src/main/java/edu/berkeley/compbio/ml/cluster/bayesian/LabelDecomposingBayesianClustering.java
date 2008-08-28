@@ -111,7 +111,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 					// ... and also to the overall clustering
 					theClusters.add(cluster);
 
-					//** for now we make a uniform prior
+					// REVIEW for now we make a uniform prior
 					priors.put(cluster, 1);
 					}
 				cluster.recenterByAdding(point);

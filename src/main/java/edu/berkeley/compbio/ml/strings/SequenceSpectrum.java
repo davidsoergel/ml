@@ -154,7 +154,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	//void addPseudocounts();
 
 
-	// ** really the lifecycle of a SequenceSpectrum should be managed more carefully, i.e. as a Builder
+	// REVIEW really the lifecycle of a SequenceSpectrum should be managed more carefully, i.e. as a Builder
 
 	void runBeginTrainingProcessor() throws DistributionProcessorException;
 

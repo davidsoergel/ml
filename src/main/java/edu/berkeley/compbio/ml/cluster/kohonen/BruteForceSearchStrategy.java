@@ -68,9 +68,9 @@ public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends 
 
 			/*
 				  // while initializing the grid, cell centroids are null.  In that case, just assign the present point.
-				  // ** no this won't work right at all
-				  // ** why not?? PCA would be better, but this should work, just slowly.
-				  // ** aha: if there are more grid points than samples
+				  // no, this won't work right at all
+				  // why not?? PCA would be better, but this should work, just slowly.
+				  //  aha: if there are more grid points than samples
 				  if (c.getCentroid() == null)
 					  {
 					  c.setCentroid(p.clone());

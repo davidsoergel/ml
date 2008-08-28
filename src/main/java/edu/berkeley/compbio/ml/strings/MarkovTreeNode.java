@@ -419,7 +419,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 				try
 					{
-					//** this is terribly inefficient
+					// PERF converting array prefix from circularFifoBuffer to byte[] is terribly inefficient
 					byte[] prefixAsBytes = ArrayUtils.toPrimitive((Byte[]) prefix.toArray(new Byte[]{}));
 
 					// these log probabilities could be cached, e.g. logConditionalProbability(c, prefix)

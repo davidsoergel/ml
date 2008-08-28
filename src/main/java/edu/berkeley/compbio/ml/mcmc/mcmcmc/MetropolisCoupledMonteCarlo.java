@@ -142,7 +142,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	public void doBurnInStep() throws IOException, GenericFactoryException
 		{
 		// run each chain independently for a while
-		// ** parallelizable
+		// PERF parallelizable
 		for (MonteCarlo chain : getCurrentChainList())
 			{
 			chain.burnIn();
@@ -161,7 +161,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	public void doStep() throws IOException, GenericFactoryException
 		{
 		// run each chain independently for a while
-		// ** parallelizable
+		// PERF parallelizable
 		for (MonteCarlo chain : getCurrentChainList())
 			{
 			chain.runNoBurnIn();

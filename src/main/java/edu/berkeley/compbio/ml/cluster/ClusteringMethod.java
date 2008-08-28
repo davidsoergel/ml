@@ -165,7 +165,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 */
 	protected Cluster<T> chooseRandomCluster()
 		{
-		//** slow, but rarely used
+		// PERF slow, but rarely used
 		// we have to iterate since we don't know the underlying Collection type.
 
 		int index = MersenneTwisterFast.randomInt(theClusters.size());
