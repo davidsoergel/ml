@@ -4,7 +4,7 @@ import com.davidsoergel.dsutils.ChainedException;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public class MoveNotPossibleException extends ChainedException
 	{

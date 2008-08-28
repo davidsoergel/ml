@@ -50,7 +50,7 @@ import java.util.Arrays;
  * ("Parent" may not be the best name for this... perhaps "generalized" or some such?)
  *
  * @author David Soergel
- * @version $Id: Kcount.java 121 2007-09-04 20:14:33Z lorax $
+ * @version $Id$
  */
 public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> implements DoubleArrayContainer
 	{

@@ -45,7 +45,7 @@ import java.util.Formatter;
  * Cluster.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogenyNode<Cluster<T>> implements Cluster<T>
 	{

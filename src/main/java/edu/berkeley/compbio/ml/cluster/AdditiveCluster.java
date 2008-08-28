@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
  * A cluster whose centroid can be moved by adding or removing individual samples.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractCluster<T>
 	{

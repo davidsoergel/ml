@@ -44,7 +44,7 @@ import java.util.Iterator;
  * can just reset the iterator and run through it again.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public interface ClusterableIterator<T extends Clusterable<T>> extends Iterator<T>//, Comparable<ClusterableIterator<T>>
 	{

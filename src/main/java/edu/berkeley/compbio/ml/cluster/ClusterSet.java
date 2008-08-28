@@ -39,7 +39,7 @@ import java.util.Collection;
  * Interface for objects that contain a set of Clusters.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public interface ClusterSet<T extends Clusterable<T>>
 	{

@@ -31,7 +31,6 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.ChainedException;
@@ -41,7 +40,7 @@ import org.apache.log4j.Logger;
  * An exception thrown when no satisfactory cluster is found for a sample.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public class NoGoodClusterException extends ChainedException
 	{

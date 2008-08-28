@@ -39,7 +39,7 @@ import java.util.Collection;
  * A clustering method that needs the complete set of samples on hand in order to operate.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
 	{

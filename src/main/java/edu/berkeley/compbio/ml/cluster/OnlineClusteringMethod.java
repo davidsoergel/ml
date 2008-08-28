@@ -51,7 +51,7 @@ import java.util.List;
  * A clustering method that is able to update clusters continuously as samples are added one at a time.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public abstract class OnlineClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
 	{

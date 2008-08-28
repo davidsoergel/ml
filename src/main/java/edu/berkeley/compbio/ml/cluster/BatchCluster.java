@@ -43,7 +43,7 @@ import java.util.Set;
  * A Cluster that explicitly stores the set of samples it contains.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public class BatchCluster<T extends AdditiveClusterable<T>> extends AdditiveCluster<T>
 	{

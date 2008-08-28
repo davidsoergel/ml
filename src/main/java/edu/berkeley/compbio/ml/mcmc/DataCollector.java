@@ -2,7 +2,7 @@ package edu.berkeley.compbio.ml.mcmc;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public interface DataCollector
 	{

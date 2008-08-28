@@ -58,7 +58,7 @@ import java.util.Map;
  * batch.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public abstract class ClusteringMethod<T extends Clusterable<T>> implements ClusterSet<T>
 	{
@@ -344,7 +344,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 * Encapsulates the proportions of test samples classified correctly, incorrectly, or not at all.
 	 *
 	 * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
-	 * @version $Rev$
+	 * @version $Id$
 	 */
 	public class TestResults
 		{

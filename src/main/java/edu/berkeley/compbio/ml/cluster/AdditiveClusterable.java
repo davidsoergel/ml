@@ -41,7 +41,7 @@ package edu.berkeley.compbio.ml.cluster;
  * of "addition") is required for it to be possible to construct clusters in an online manner.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clusterable<T>
 	{
@@ -93,18 +93,22 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 	void multiplyBy(double v);
 
 	/**
-	 * Updates this object by adding another one to it in a weighted manner.  Usually equivalent to incrementBy(point.times(motionFactor)).
+	 * Updates this object by adding another one to it in a weighted manner.  Usually equivalent to
+	 * incrementBy(point.times(motionFactor)).
 	 *
-	 * @param point the object to add to this one
-	 * @param motionFactor the strength of the desired effect in arbitrary units (in many implementations, this will likely be between 0 and 1)
+	 * @param point        the object to add to this one
+	 * @param motionFactor the strength of the desired effect in arbitrary units (in many implementations, this will likely
+	 *                     be between 0 and 1)
 	 */
 	void incrementByWeighted(T point, double motionFactor);
 
 	/**
-	 * Updates this object by subtracting another one from it in a weighted manner.  Usually equivalent to decrementBy(point.times(motionFactor)).
+	 * Updates this object by subtracting another one from it in a weighted manner.  Usually equivalent to
+	 * decrementBy(point.times(motionFactor)).
 	 *
-	 * @param point the object to subtract from this one
-	 * @param motionFactor the strength of the desired effect in arbitrary units (in many implementations, this will likely be between 0 and 1)
+	 * @param point        the object to subtract from this one
+	 * @param motionFactor the strength of the desired effect in arbitrary units (in many implementations, this will likely
+	 *                     be between 0 and 1)
 	 */
 	void decrementByWeighted(T point, double motionFactor);
 

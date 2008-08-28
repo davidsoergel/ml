@@ -39,7 +39,6 @@ import java.util.Formatter;
 import java.util.Queue;
 
 
-
 /**
  * Extends a MarkovTreeNode with backlinks, for making make a Probabilistic Suffix Automaton (PSA).
  *

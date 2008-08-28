@@ -31,7 +31,6 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.mcmc.mcmcmc;
 
 import edu.berkeley.compbio.ml.mcmc.DataCollector;

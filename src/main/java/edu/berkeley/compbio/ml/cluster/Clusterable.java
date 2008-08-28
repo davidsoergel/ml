@@ -33,13 +33,11 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import java.util.Set;
-
 /**
  * Primarily a marker interface for classes that can be clustered by various algorithms.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public interface Clusterable<T extends Clusterable> extends Cloneable
 	{
@@ -81,7 +79,7 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 * @return a set of Strings describing this object
 	 */
 	//** add multi-label classification infrastructure
-//	Set<String> getLabels();
+	//	Set<String> getLabels();
 
 	/**
 	 * Get the primary classification label, if available (optional operation)

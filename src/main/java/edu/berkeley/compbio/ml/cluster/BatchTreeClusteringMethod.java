@@ -39,7 +39,7 @@ import java.util.Collection;
  * A hierarchical clustering method; builds a tree of the input samples.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extends HierarchicalClusteringMethod<T>
 	{

@@ -49,7 +49,7 @@ import java.util.Formatter;
  * may simply store all the samples in the cluster.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public abstract class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	{

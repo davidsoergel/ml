@@ -31,7 +31,6 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.ChainedRuntimeException;
@@ -41,7 +40,7 @@ import org.apache.log4j.Logger;
  * A runtime exception having to do with clustering.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public class ClusterRuntimeException extends ChainedRuntimeException
 	{

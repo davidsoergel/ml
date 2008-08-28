@@ -31,7 +31,6 @@
  */
 
 
-
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.ArrayUtils;

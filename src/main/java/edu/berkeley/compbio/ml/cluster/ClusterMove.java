@@ -38,7 +38,7 @@ package edu.berkeley.compbio.ml.cluster;
  * strangely; apparently we haven't needed that yet.
  *
  * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public class ClusterMove<T extends Clusterable<T>>
 	{

@@ -36,7 +36,7 @@ import org.apache.commons.lang.NotImplementedException;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	{

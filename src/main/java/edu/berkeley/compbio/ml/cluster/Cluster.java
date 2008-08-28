@@ -42,7 +42,7 @@ import com.davidsoergel.stats.Multinomial;
  * may simply store all the samples in the cluster.
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
- * @version $Rev$
+ * @version $Id$
  */
 public interface Cluster<T extends Clusterable<T>>
 	{
