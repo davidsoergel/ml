@@ -273,13 +273,18 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	   {
 	   return theDistanceMeasure.distanceFromTo(p, centroid, distanceToBeat);
 	   }*/
-	public boolean equals(AbstractCluster<T> other)
+	public boolean equals(Object other)
 		{
-		boolean result = centroid.equals(other.getCentroid())
-				// && theDistanceMeasure.equals(other.getTheDistanceMeasure())
-				&& super.equals(other);
-		logger.debug("" + this + " equals " + other + ": " + result);
-		return result;
+		// don't worry about matching the generic type; centroid.equals will take care of that
+		if (other instanceof AbstractCluster)
+			{
+			boolean result = centroid.equals(((AbstractCluster<T>) other).getCentroid())
+					// && theDistanceMeasure.equals(other.getTheDistanceMeasure())
+					&& super.equals(other);
+			logger.debug("" + this + " equals " + other + ": " + result);
+			return result;
+			}
+		return false;
 		}
 
 	private Multiset<String> labelCounts = new HashMultiset<String>();

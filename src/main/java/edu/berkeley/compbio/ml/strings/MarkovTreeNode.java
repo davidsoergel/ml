@@ -48,6 +48,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 
@@ -275,19 +276,19 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	// --------------------- Interface Clusterable ---------------------
 
 	/**
-	 * Recursively tests the deep equality of two PSTNodes.  Requires that the tree structure and the transition
-	 * probabilities are identical.  Ignores the id arrays, though those should match anyway.
+	 * Recursively tests the deep equality of two PSTNodes.  Requires that the id, the alphabet, the tree structure, and
+	 * the transition probabilities are identical.
 	 *
 	 * @param other the MarkovTreeNode to compare
 	 * @return true if the trees have the same structure and transition probabilities, false otherwise
 	 */
 	public boolean equalValue(MarkovTreeNode other)
 		{
-		if (!id.equals(other.id))
+		if (!Arrays.equals(id, other.id))
 			{
 			return false;
 			}
-		if (!alphabet.equals(other.alphabet))
+		if (!Arrays.equals(alphabet, other.alphabet))
 			{
 			return false;
 			}
@@ -378,7 +379,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		MarkovTreeNode node = get(prefix);
 		if (node == null || node.probs == null)
 			{
-			throw new SequenceSpectrumException("Unknown probabilities at " + prefix);
+			throw new SequenceSpectrumException("Unknown probabilities at " + Arrays.toString(prefix));
 			}
 		return node.probs;
 		}
@@ -888,7 +889,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		MarkovTreeNode node = get(prefix);
 		if (node == null || node.probs == null)
 			{
-			throw new SequenceSpectrumException("Unknown probability: " + prefix + " -> " + sigma);
+			throw new SequenceSpectrumException("Unknown probability: " + Arrays.toString(prefix) + " -> " + sigma);
 			}
 		try
 			{

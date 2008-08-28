@@ -145,6 +145,8 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 		this.decrementLosingNeighborhood = decrementLosingNeighborhood;
 		this.edgesWrap = edgesWrap;
 
+		immediateNeighbors = new KohonenSOMCell[2 * dimensions];
+
 		// precompute stuff for listIndexFor
 		blockSize = new int[dimensions];
 		blockSize[dimensions - 1] = 1;
@@ -260,7 +262,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 		//throw new NotImplementedException();
 		}
 
-	KohonenSOMCell<T>[] immediateNeighbors = new KohonenSOMCell[2 * dimensions];
+	KohonenSOMCell<T>[] immediateNeighbors;
 
 	public Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell)
 		{
