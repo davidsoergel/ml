@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DoubleArrayContainer;
 
@@ -47,7 +47,7 @@ public class DoubleArrayNormalizer implements DistributionProcessor<DoubleArrayC
 	public void process(DoubleArrayContainer c)
 		{
 		double[] counts = c.getArray();
-		double total = ArrayUtils.sum(counts);
+		double total = DSArrayUtils.sum(counts);
 
 		for (int i = 0; i < counts.length; i++)
 			{

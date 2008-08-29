@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.stats.DistributionException;
 
 import java.util.Formatter;
@@ -94,7 +94,7 @@ public class RonPSANode extends MarkovTreeNode
 			{
 			try
 				{
-				setBackoffPrior(rootNode.getLongestSuffix(ArrayUtils.suffix(id, 1)));
+				setBackoffPrior(rootNode.getLongestSuffix(DSArrayUtils.suffix(id, 1)));
 				}
 			catch (SequenceSpectrumException e)
 				{
@@ -144,7 +144,7 @@ public class RonPSANode extends MarkovTreeNode
 	 */
 	public RonPSANode nextNode(byte sigma) throws SequenceSpectrumException
 		{
-		return nextNodes[ArrayUtils.indexOf(alphabet, sigma)];
+		return nextNodes[DSArrayUtils.indexOf(alphabet, sigma)];
 		}
 
 	public RonPSANode nextNodeByAlphabetIndex(int c)
@@ -156,7 +156,7 @@ public class RonPSANode extends MarkovTreeNode
 	private void addChild(byte b, RonPSANode child) throws SequenceSpectrumException
 		{
 		leaf = false;
-		int childIndex = ArrayUtils.indexOf(alphabet, b);
+		int childIndex = DSArrayUtils.indexOf(alphabet, b);
 		children[childIndex] = child;
 		nextNodes[childIndex] = child;
 		//children.put(b, child);
@@ -171,11 +171,11 @@ public class RonPSANode extends MarkovTreeNode
 	public RonPSANode addChild(byte sigma)//throws SequenceSpectrumException
 		{
 		leaf = false;
-		int index = ArrayUtils.indexOf(alphabet, sigma);
+		int index = DSArrayUtils.indexOf(alphabet, sigma);
 		RonPSANode result = (RonPSANode) children[index];
 		if (result == null)
 			{
-			result = new RonPSANode(ArrayUtils.append(id, sigma), alphabet);
+			result = new RonPSANode(DSArrayUtils.append(id, sigma), alphabet);
 			nextNodes[index] = result;
 			children[index] = result;
 			}
@@ -221,7 +221,7 @@ public class RonPSANode extends MarkovTreeNode
 			return this;
 			}
 
-		MarkovTreeNode nextChild = nextNodes[ArrayUtils.indexOf(alphabet, seq[0])];
+		MarkovTreeNode nextChild = nextNodes[DSArrayUtils.indexOf(alphabet, seq[0])];
 
 		if (nextChild == null)
 			{
@@ -233,7 +233,7 @@ public class RonPSANode extends MarkovTreeNode
 			}
 		else if (seq.length >= 1)
 			{
-			return nextChild.get(ArrayUtils.suffix(seq, 1));
+			return nextChild.get(DSArrayUtils.suffix(seq, 1));
 			}
 		throw new Error("Impossible");
 		}

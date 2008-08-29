@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.stats.DoubleArrayContainer;
 
 import java.util.Arrays;
@@ -162,6 +162,6 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 
 	public void multiplyBy(double v)
 		{
-		ArrayUtils.multiplyBy(counts, v);
+		DSArrayUtils.multiplyBy(counts, v);
 		}
 	}

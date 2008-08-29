@@ -34,7 +34,7 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
@@ -211,7 +211,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public MarkovTreeNode getChild(byte sigma)//throws SequenceSpectrumException
 		{
 		//return children == null ? null :
-		return children[ArrayUtils.indexOf(alphabet, sigma)];
+		return children[DSArrayUtils.indexOf(alphabet, sigma)];
 		}
 
 	public MarkovTreeNode[] getChildren()
@@ -222,7 +222,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	private void addChild(byte b, MarkovTreeNode child) throws SequenceSpectrumException
 		{
 		leaf = false;
-		int childIndex = ArrayUtils.indexOf(alphabet, b);
+		int childIndex = DSArrayUtils.indexOf(alphabet, b);
 		children[childIndex] = child;
 		}
 
@@ -421,7 +421,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				try
 					{
 					// PERF converting array prefix from circularFifoBuffer to byte[] is terribly inefficient
-					byte[] prefixAsBytes = ArrayUtils.toPrimitive((Byte[]) prefix.toArray(new Byte[]{}));
+					byte[] prefixAsBytes = DSArrayUtils.toPrimitive((Byte[]) prefix.toArray(new Byte[]{}));
 
 					// these log probabilities could be cached, e.g. logConditionalProbability(c, prefix)
 					logprob += MathUtils.approximateLog(conditionalProbability(c, prefixAsBytes));
@@ -514,7 +514,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		catch (SequenceSpectrumException e)
 			{
-			return sample(ArrayUtils.suffix(prefix, 1));
+			return sample(DSArrayUtils.suffix(prefix, 1));
 			/*
 						logger.debug(e);
 						e.printStackTrace();
@@ -611,7 +611,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		else if (prefix.length >= 1)
 			{
-			return addChild(prefix[0]).add(ArrayUtils.suffix(prefix, 1));
+			return addChild(prefix[0]).add(DSArrayUtils.suffix(prefix, 1));
 			}
 		throw new Error("Impossible");
 		}
@@ -625,11 +625,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public MarkovTreeNode addChild(byte sigma) throws SequenceSpectrumException
 		{
 		leaf = false;
-		int index = ArrayUtils.indexOf(alphabet, sigma);
+		int index = DSArrayUtils.indexOf(alphabet, sigma);
 		MarkovTreeNode result = children[index];
 		if (result == null)
 			{
-			result = new MarkovTreeNode(ArrayUtils.append(id, sigma), alphabet);
+			result = new MarkovTreeNode(DSArrayUtils.append(id, sigma), alphabet);
 			children[index] = result;
 			}
 		return result;
@@ -800,8 +800,8 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			{
 			return conditionalProbability(sigma, prefix);
 			}
-		return conditionalProbability(sigma, prefix) * conditionalProbability(ArrayUtils.suffix(suffix, 1),
-		                                                                      ArrayUtils.append(prefix, sigma));
+		return conditionalProbability(sigma, prefix) * conditionalProbability(DSArrayUtils.suffix(suffix, 1),
+		                                                                      DSArrayUtils.append(prefix, sigma));
 		}
 
 	public int countChildren()
@@ -916,7 +916,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			return this;
 			}
 
-		MarkovTreeNode nextChild = children[ArrayUtils.indexOf(alphabet, seq[0])];
+		MarkovTreeNode nextChild = children[DSArrayUtils.indexOf(alphabet, seq[0])];
 
 		if (nextChild == null)
 			{
@@ -928,7 +928,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		else if (seq.length >= 1)
 			{
-			return nextChild.get(ArrayUtils.suffix(seq, 1));
+			return nextChild.get(DSArrayUtils.suffix(seq, 1));
 			}
 		throw new Error("Impossible");
 		}
@@ -968,7 +968,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		{
 		try
 			{
-			return logprobs[ArrayUtils.indexOf(alphabet, sigma)];//alphabetIndexForSymbol(sigma)];
+			return logprobs[DSArrayUtils.indexOf(alphabet, sigma)];//alphabetIndexForSymbol(sigma)];
 			}
 		catch (IndexOutOfBoundsException e)
 			{

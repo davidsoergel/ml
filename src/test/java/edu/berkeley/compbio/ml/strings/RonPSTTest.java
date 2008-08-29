@@ -33,7 +33,7 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
@@ -319,7 +319,7 @@ public class RonPSTTest
 			aCounts.put((byte) 'c', 3.);
 			aCounts.put((byte) 'd', 4.);
 			counts2.put((byte) 'a', aCounts);
-			counts.put((byte) 'a', ArrayUtils.sum(aCounts.values()));
+			counts.put((byte) 'a', DSArrayUtils.sum(aCounts.values()));
 
 			Map<Byte, Double> bCounts = new HashMap<Byte, Double>();
 			bCounts.put((byte) 'a', 3.);
@@ -327,7 +327,7 @@ public class RonPSTTest
 			bCounts.put((byte) 'c', 3.);
 			bCounts.put((byte) 'd', 1.);
 			counts2.put((byte) 'b', bCounts);
-			counts.put((byte) 'b', ArrayUtils.sum(bCounts.values()));
+			counts.put((byte) 'b', DSArrayUtils.sum(bCounts.values()));
 
 			Map<Byte, Double> cCounts = new HashMap<Byte, Double>();
 			cCounts.put((byte) 'a', 2.);
@@ -335,7 +335,7 @@ public class RonPSTTest
 			cCounts.put((byte) 'c', 6.);
 			cCounts.put((byte) 'd', 8.);
 			counts2.put((byte) 'c', cCounts);
-			counts.put((byte) 'c', ArrayUtils.sum(cCounts.values()));
+			counts.put((byte) 'c', DSArrayUtils.sum(cCounts.values()));
 
 			Map<Byte, Double> dCounts = new HashMap<Byte, Double>();
 			dCounts.put((byte) 'a', 4.);
@@ -343,7 +343,7 @@ public class RonPSTTest
 			dCounts.put((byte) 'c', 2.);
 			dCounts.put((byte) 'd', 1.);
 			counts2.put((byte) 'd', dCounts);
-			counts.put((byte) 'd', ArrayUtils.sum(dCounts.values()));
+			counts.put((byte) 'd', DSArrayUtils.sum(dCounts.values()));
 			}
 
 		public StubSequenceSpectrum clone()
@@ -381,7 +381,7 @@ public class RonPSTTest
 				return counts2.get(prefix[0]).get(sigma) / counts.get(prefix[0]);
 				}
 			//backoff to 1-mer composition
-			return conditionalProbability(sigma, ArrayUtils.suffix(prefix, 1));
+			return conditionalProbability(sigma, DSArrayUtils.suffix(prefix, 1));
 			//throw new SequenceSpectrumException("depth oops");
 			}
 
@@ -391,11 +391,11 @@ public class RonPSTTest
 				{
 				if (prefix.length == 0)
 					{
-					return new Multinomial<Byte>(ArrayUtils.toObject(getAlphabet()), counts);
+					return new Multinomial<Byte>(DSArrayUtils.toObject(getAlphabet()), counts);
 					}
 				if (prefix.length == 1)
 					{
-					return new Multinomial<Byte>(ArrayUtils.toObject(getAlphabet()), counts2.get(prefix[0]));
+					return new Multinomial<Byte>(DSArrayUtils.toObject(getAlphabet()), counts2.get(prefix[0]));
 					}
 				}
 			catch (DistributionException e)
@@ -436,11 +436,11 @@ public class RonPSTTest
 				{
 				if (prefix.length == 0)
 					{
-					return new Multinomial<Byte>(ArrayUtils.toObject(getAlphabet()), counts).sample();
+					return new Multinomial<Byte>(DSArrayUtils.toObject(getAlphabet()), counts).sample();
 					}
 				if (prefix.length == 1)
 					{
-					return new Multinomial<Byte>(ArrayUtils.toObject(getAlphabet()), counts2.get(prefix[0])).sample();
+					return new Multinomial<Byte>(DSArrayUtils.toObject(getAlphabet()), counts2.get(prefix[0])).sample();
 					}
 				throw new SequenceSpectrumException("depth oops");
 				}

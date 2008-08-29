@@ -33,7 +33,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.stats.DistributionException;
@@ -203,7 +203,7 @@ public class RonPST extends RonPSTNode
 				try
 					{
 					double conditional = fromSpectrum.conditionalProbability(sigma, s);
-					double suffixConditional = fromSpectrum.conditionalProbability(sigma, ArrayUtils.suffix(s, 1));
+					double suffixConditional = fromSpectrum.conditionalProbability(sigma, DSArrayUtils.suffix(s, 1));
 
 					double probRatio = conditional / suffixConditional;
 					//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
@@ -229,7 +229,7 @@ public class RonPST extends RonPSTNode
 				{
 				for (byte sigma2 : fromSpectrum.getAlphabet())
 					{
-					byte[] s2 = ArrayUtils.prepend(sigma2, s);
+					byte[] s2 = DSArrayUtils.prepend(sigma2, s);
 					try
 						{
 						if (fromSpectrum.totalProbability(s2) >= branchAbsoluteMin)//pMin)
@@ -333,7 +333,7 @@ public class RonPST extends RonPSTNode
 		while (s.length > 0)
 			{
 			addUpstreamNode(s);
-			s = ArrayUtils.suffix(s, 1);
+			s = DSArrayUtils.suffix(s, 1);
 			}
 		}
 

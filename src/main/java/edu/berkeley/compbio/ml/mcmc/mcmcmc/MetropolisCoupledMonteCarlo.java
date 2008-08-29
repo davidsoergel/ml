@@ -33,9 +33,9 @@
 
 package edu.berkeley.compbio.ml.mcmc.mcmcmc;
 
+import com.davidsoergel.dsutils.DSStringUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
-import com.davidsoergel.dsutils.StringUtils;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
 import edu.berkeley.compbio.ml.mcmc.MonteCarlo;
@@ -118,7 +118,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		setColdest(true);// we do want output from the coupling chain
 		setId("COUPLING");
 
-		logger.info("Initialized MCMCMC: " + StringUtils.join(heatFactors, ", "));
+		logger.info("Initialized MCMCMC: " + DSStringUtils.join(heatFactors, ", "));
 		//ArrayUtils.toObject(heatFactors)
 
 		// burn in

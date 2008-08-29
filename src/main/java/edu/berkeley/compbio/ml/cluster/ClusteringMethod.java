@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DistanceMeasure;
@@ -208,7 +208,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 					}
 				}
 			}
-		double avg = ArrayUtils.sum(distances) / (double) distances.size();
+		double avg = DSArrayUtils.sum(distances) / (double) distances.size();
 		double sd = 0;
 		for (double d : distances)
 			{

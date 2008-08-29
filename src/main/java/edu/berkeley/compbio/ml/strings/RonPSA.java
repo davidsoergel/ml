@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.sequtils.FilterException;
@@ -97,7 +97,7 @@ public class RonPSA extends RonPSANode
 		RonPSANode result = getDescendant(id);
 		if (result == null)
 			{
-			RonPSANode parent = getOrAddNodeAndIntermediates(ArrayUtils.prefix(id, id.length - 1), spectrum);
+			RonPSANode parent = getOrAddNodeAndIntermediates(DSArrayUtils.prefix(id, id.length - 1), spectrum);
 			result = parent.addChild(id[id.length - 1]);
 			result.copyProbsFromSpectrumRecursively(spectrum);
 			}

@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistanceMeasure;
@@ -161,7 +161,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 		//List<Interval<Double>> axisRanges;
 		//	initializeClusters(axisRanges);
 
-		maxRadius = ArrayUtils.norm(cellsPerDimension);
+		maxRadius = DSArrayUtils.norm(cellsPerDimension);
 		}
 
 	/*

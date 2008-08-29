@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.TestInstanceFactory;
 import com.davidsoergel.dsutils.math.MathUtils;
 import org.apache.log4j.Logger;
@@ -66,7 +66,7 @@ public abstract class SequenceSpectrumAbstractTest
 		for (int count = 0; count < 100; count++)
 			{
 			byte b = ss.sample(new byte[0]);
-			assert ArrayUtils.contains(alphabet, b);
+			assert DSArrayUtils.contains(alphabet, b);
 			}
 		}
 

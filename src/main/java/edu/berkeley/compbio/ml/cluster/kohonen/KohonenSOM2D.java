@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistanceMeasure;
@@ -176,7 +176,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap, double minRadius,
 	                    KohonenSOM2DSearchStrategy<T> searchStrategy)
 		{
-		this.cellsPerDimension = ArrayUtils.toPrimitive(cellsPerDimension);
+		this.cellsPerDimension = DSArrayUtils.toPrimitive(cellsPerDimension);
 		this.measure = dm;
 		this.dimensions = cellsPerDimension.length;
 		this.moveFactorFunction = moveFactorFunction;
@@ -209,7 +209,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		//List<Interval<Double>> axisRanges;
 		//	initializeClusters(axisRanges);
 
-		maxRadius = ArrayUtils.norm(this.cellsPerDimension) / 2.;//Math.ceil();
+		maxRadius = DSArrayUtils.norm(this.cellsPerDimension) / 2.;//Math.ceil();
 
 		searchStrategy.setSOM(this);
 		searchStrategy.setDistanceMeasure(measure);
@@ -405,8 +405,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 					}
 
 				result = new WeightedMask();
-				result.deltaX = ArrayUtils.toPrimitive(xList.toArray(new Integer[]{}));
-				result.deltaY = ArrayUtils.toPrimitive(yList.toArray(new Integer[]{}));
+				result.deltaX = DSArrayUtils.toPrimitive(xList.toArray(new Integer[]{}));
+				result.deltaY = DSArrayUtils.toPrimitive(yList.toArray(new Integer[]{}));
 				result.weight = new double[result.deltaX.length];
 				Arrays.fill(result.weight, 1);
 				result.numCells = result.deltaX.length;

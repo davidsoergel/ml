@@ -33,7 +33,7 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
@@ -97,7 +97,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		{
 		try
 			{
-			return upstreamNodes[ArrayUtils.indexOf(alphabet, b)];
+			return upstreamNodes[DSArrayUtils.indexOf(alphabet, b)];
 			}
 		catch (Exception e)
 			{
@@ -229,7 +229,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		else if (suffix.length >= 1)
 			{
 			return addUpstreamNode(suffix[suffix.length - 1])
-					.addUpstreamNode(ArrayUtils.prefix(suffix, suffix.length - 1));
+					.addUpstreamNode(DSArrayUtils.prefix(suffix, suffix.length - 1));
 			}
 		throw new Error("Impossible");
 		}
@@ -244,11 +244,11 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	public RonPSTNode addUpstreamNode(byte sigma) throws SequenceSpectrumException
 		{
 		leaf = false;
-		int index = ArrayUtils.indexOf(alphabet, sigma);
+		int index = DSArrayUtils.indexOf(alphabet, sigma);
 		RonPSTNode result = upstreamNodes[index];
 		if (result == null)
 			{
-			result = new RonPSTNode(ArrayUtils.prepend(sigma, id), alphabet);
+			result = new RonPSTNode(DSArrayUtils.prepend(sigma, id), alphabet);
 			upstreamNodes[index] = result;
 			}
 		return result;

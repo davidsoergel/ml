@@ -33,7 +33,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.stats.DoubleArrayContainer;
 import org.apache.log4j.Logger;
 
@@ -87,54 +87,54 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	public void decrementBy(ClusterableDoubleArray object)
 		{
 		//data = ArrayUtils.minus(data, object.data);
-		ArrayUtils.decrementBy(data, object.data);
+		DSArrayUtils.decrementBy(data, object.data);
 		}
 
 	public void incrementBy(ClusterableDoubleArray object)
 		{
 		//data = ArrayUtils.plus(data, object.data);
-		ArrayUtils.incrementBy(data, object.data);
+		DSArrayUtils.incrementBy(data, object.data);
 		}
 
 
 	public void decrementByWeighted(ClusterableDoubleArray object, double weight)
 		{
 		//data = ArrayUtils.minus(data, object.data);
-		ArrayUtils.decrementByWeighted(data, object.data, weight);
+		DSArrayUtils.decrementByWeighted(data, object.data, weight);
 		}
 
 	public void incrementByWeighted(ClusterableDoubleArray object, double weight)
 		{
 		//data = ArrayUtils.plus(data, object.data);
-		ArrayUtils.incrementByWeighted(data, object.data, weight);
+		DSArrayUtils.incrementByWeighted(data, object.data, weight);
 		}
 
 	public void multiplyBy(double scalar)
 		{
 		//data = ArrayUtils.times(data, scalar);
-		ArrayUtils.multiplyBy(data, scalar);
+		DSArrayUtils.multiplyBy(data, scalar);
 		}
 
 	public ClusterableDoubleArray minus(ClusterableDoubleArray object)
 		{
-		return new ClusterableDoubleArray(id + "+" + object.getId(), ArrayUtils.minus(data, object.data));
+		return new ClusterableDoubleArray(id + "+" + object.getId(), DSArrayUtils.minus(data, object.data));
 		}
 
 	public ClusterableDoubleArray plus(ClusterableDoubleArray object)
 		{
-		return new ClusterableDoubleArray(id + "+" + object.getId(), ArrayUtils.plus(data, object.data));
+		return new ClusterableDoubleArray(id + "+" + object.getId(), DSArrayUtils.plus(data, object.data));
 		}
 
 	public ClusterableDoubleArray times(double scalar)
 		{
-		return new ClusterableDoubleArray(id + "*" + scalar, ArrayUtils.times(data, scalar));
+		return new ClusterableDoubleArray(id + "*" + scalar, DSArrayUtils.times(data, scalar));
 		}
 
 	// --------------------- Interface Clusterable ---------------------
 
 	public boolean equalValue(ClusterableDoubleArray object)
 		{
-		return id.equals(object.id) && ArrayUtils.equalWithinFPError(data, object.data);
+		return id.equals(object.id) && DSArrayUtils.equalWithinFPError(data, object.data);
 		}
 
 	public String getId()

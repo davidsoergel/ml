@@ -33,7 +33,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.ArrayUtils;
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.IteratorProvider;
@@ -124,7 +124,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> extends C
 
 					logger.info(new Formatter().format("%d p/%d sec = %d p/sec; specificity = %.3f; %s", c,
 					                                   (int) realtime, (int) (c / realtime),
-					                                   (ArrayUtils.sum(secondBestDistances) / (double) c),
+					                                   (DSArrayUtils.sum(secondBestDistances) / (double) c),
 					                                   shortClusteringStats()));
 					//					logger.info("" + c + " p/" + (int) realtime + " sec = " + (int) (c / realtime)
 					//							+ " p/sec; specificity = " + (ArrayUtils.sum(secondBestDistances) / (double) c) + " " + shortClusteringStats());
