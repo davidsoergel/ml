@@ -49,7 +49,7 @@ public class BatchCluster<T extends AdditiveClusterable<T>> extends AdditiveClus
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(BatchCluster.class);
+	private static final Logger logger = Logger.getLogger(BatchCluster.class);
 
 	/**
 	 * The set of samples contained in this cluster.

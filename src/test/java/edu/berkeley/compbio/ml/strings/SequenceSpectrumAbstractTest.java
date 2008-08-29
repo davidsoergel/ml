@@ -43,7 +43,7 @@ public abstract class SequenceSpectrumAbstractTest
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(SequenceSpectrumAbstractTest.class);
+	private static final Logger logger = Logger.getLogger(SequenceSpectrumAbstractTest.class);
 	//public abstract SequenceSpectrum createInstance() throws Exception;
 
 	private TestInstanceFactory<SequenceSpectrum> tif;

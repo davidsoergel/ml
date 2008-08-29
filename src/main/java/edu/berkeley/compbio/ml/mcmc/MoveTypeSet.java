@@ -58,7 +58,7 @@ public class MoveTypeSet//<T extends MonteCarloState>
 
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(MoveTypeSet.class);
+	private static final Logger logger = Logger.getLogger(MoveTypeSet.class);
 
 	//	private static ThreadLocal<HashMap<Object, MoveTypeSet>> _instance_tl =
 	//			new ThreadLocal<HashMap<Object, MoveTypeSet>>();
@@ -184,7 +184,7 @@ public class MoveTypeSet//<T extends MonteCarloState>
 
 	public Move newMove(MonteCarloState currentMonteCarloState)
 		{
-		Class[] argTypes = {currentMonteCarloState.getClass()};
+		//	Class[] argTypes = {currentMonteCarloState.getClass()};
 		try
 			{
 			GenericFactory<Move> c = types.sample();

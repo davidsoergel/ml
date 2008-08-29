@@ -45,7 +45,7 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(AdditiveCluster.class);
+	private static final Logger logger = Logger.getLogger(AdditiveCluster.class);
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------

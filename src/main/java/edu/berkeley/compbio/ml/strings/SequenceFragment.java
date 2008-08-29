@@ -58,7 +58,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(SequenceFragment.class);
+	private static final Logger logger = Logger.getLogger(SequenceFragment.class);
 
 	protected Map<Class, SequenceSpectrum> theSpectra = new HashMap<Class, SequenceSpectrum>();
 

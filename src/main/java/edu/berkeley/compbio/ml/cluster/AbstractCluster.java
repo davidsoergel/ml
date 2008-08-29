@@ -55,7 +55,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(AbstractCluster.class);
+	private static final Logger logger = Logger.getLogger(AbstractCluster.class);
 
 	/**
 	 * The distance measure to use for computing distances from samples to the centroid of this cluster

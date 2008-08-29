@@ -48,7 +48,7 @@ public class KmeansClusteringTest
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(KmeansClusteringTest.class);
+	private static final Logger logger = Logger.getLogger(KmeansClusteringTest.class);
 
 
 	// -------------------------- OTHER METHODS --------------------------

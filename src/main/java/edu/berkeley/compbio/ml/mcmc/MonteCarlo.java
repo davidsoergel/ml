@@ -52,7 +52,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(MonteCarlo.class);
+	private static final Logger logger = Logger.getLogger(MonteCarlo.class);
 
 
 	@Property(helpmessage = "", defaultvalue = "0")

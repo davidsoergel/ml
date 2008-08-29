@@ -37,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Interface for resettable iterators over Clusterable objects.  This is useful because many clustering algorithms need
@@ -60,5 +61,5 @@ public interface ClusterableIterator<T extends Clusterable<T>> extends Iterator<
 	 * {@inheritDoc}
 	 */
 	@NotNull
-	public abstract T next();
+	T next() throws NoSuchElementException;
 	}

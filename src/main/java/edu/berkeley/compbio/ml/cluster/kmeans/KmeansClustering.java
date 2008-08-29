@@ -55,7 +55,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(KmeansClustering.class);
+	private static final Logger logger = Logger.getLogger(KmeansClustering.class);
 	//private DistanceMeasure<T> distanceMeasure;
 
 

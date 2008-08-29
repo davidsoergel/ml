@@ -51,7 +51,7 @@ public class RonPSTTest
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(RonPSTTest.class);
+	private static final Logger logger = Logger.getLogger(RonPSTTest.class);
 
 
 	// -------------------------- OTHER METHODS --------------------------

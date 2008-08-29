@@ -57,7 +57,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> extends C
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(OnlineClusteringMethod.class);
+	private static final Logger logger = Logger.getLogger(OnlineClusteringMethod.class);
 	//private Iterator<T> theDataPointProvider;
 
 

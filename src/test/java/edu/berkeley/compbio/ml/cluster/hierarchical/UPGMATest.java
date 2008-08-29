@@ -56,7 +56,7 @@ public class UPGMATest
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(UPGMATest.class);
+	private static final Logger logger = Logger.getLogger(UPGMATest.class);
 
 	List<Clusterable<ClusterableDoubleArray>> points = new ArrayList<Clusterable<ClusterableDoubleArray>>();
 

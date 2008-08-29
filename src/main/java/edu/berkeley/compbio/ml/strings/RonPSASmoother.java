@@ -46,7 +46,7 @@ public class RonPSASmoother implements DistributionProcessor<RonPSA>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(RonPSASmoother.class);
+	private static final Logger logger = Logger.getLogger(RonPSASmoother.class);
 
 	@Property(helpmessage = "Smoothing factor (aka gammaMin)", defaultvalue = "0.01")
 	public Double smoothFactor;

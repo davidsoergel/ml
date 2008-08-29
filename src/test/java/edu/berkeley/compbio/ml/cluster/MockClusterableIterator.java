@@ -40,7 +40,7 @@ package edu.berkeley.compbio.ml.cluster;
 @Deprecated
 public class MockClusterableIterator//extends ClusterableIterator<ClusterableDoubleArray>
 	{
-	/*	private static Logger logger = Logger.getLogger(MockClusterableIterator.class);
+	/*	private static final Logger logger = Logger.getLogger(MockClusterableIterator.class);
 
    int count;
    int max = 100;

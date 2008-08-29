@@ -43,7 +43,7 @@ public class SequenceSpectrumRuntimeException extends ChainedRuntimeException
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(SequenceSpectrumRuntimeException.class);
+	private static final Logger logger = Logger.getLogger(SequenceSpectrumRuntimeException.class);
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------

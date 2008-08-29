@@ -63,7 +63,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(BayesianClustering.class);
+	private static final Logger logger = Logger.getLogger(BayesianClustering.class);
 
 	//private T[] centroids;
 	//protected DistanceMeasure<T> measure;

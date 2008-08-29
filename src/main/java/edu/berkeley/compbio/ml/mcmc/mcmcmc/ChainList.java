@@ -48,7 +48,7 @@ public class ChainList extends ArrayList<MonteCarlo> implements MonteCarloState
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(ChainList.class);
+	private static final Logger logger = Logger.getLogger(ChainList.class);
 
 
 	// ------------------------ INTERFACE METHODS ------------------------

@@ -45,7 +45,7 @@ public class EuclideanDistance implements DistanceMeasure<ClusterableDoubleArray
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(EuclideanDistance.class);
+	private static final Logger logger = Logger.getLogger(EuclideanDistance.class);
 
 	private static EuclideanDistance _instance = new EuclideanDistance();
 

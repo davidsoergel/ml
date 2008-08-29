@@ -42,7 +42,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(ClusterableDoubleArray.class);
+	private static final Logger logger = Logger.getLogger(ClusterableDoubleArray.class);
 
 	protected String id;
 	protected double[] data;

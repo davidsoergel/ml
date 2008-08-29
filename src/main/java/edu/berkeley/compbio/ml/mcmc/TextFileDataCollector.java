@@ -55,7 +55,7 @@ public class TextFileDataCollector implements DataCollector
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	protected static Logger logger = Logger.getLogger(TextFileDataCollector.class);
+	private static final Logger logger = Logger.getLogger(TextFileDataCollector.class);
 	private HashMap<String, DoubleTimecourse> timecourses = new HashMap<String, DoubleTimecourse>();
 
 	private int lastStep;

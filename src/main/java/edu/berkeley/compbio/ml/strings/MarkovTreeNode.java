@@ -66,7 +66,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(MarkovTreeNode.class);
+	private static final Logger logger = Logger.getLogger(MarkovTreeNode.class);
 	protected byte[] id;
 	protected byte[] alphabet;
 	private double[] logprobs;
@@ -831,7 +831,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			throws SequenceSpectrumException
 		{
 		IntKcount kc = (IntKcount) sequenceFragment.getSpectrum(IntKcount.class, null);
-		int k = kc.getK();
+		//int k = kc.getK();
 
 		double result = 0;
 

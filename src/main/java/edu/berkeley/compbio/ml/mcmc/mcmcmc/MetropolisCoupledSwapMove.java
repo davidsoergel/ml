@@ -47,7 +47,7 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(MetropolisCoupledSwapMove.class);
+	private static final Logger logger = Logger.getLogger(MetropolisCoupledSwapMove.class);
 
 	//private static MersenneTwisterFast mtf = new MersenneTwisterFast();
 

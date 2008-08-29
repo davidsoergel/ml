@@ -63,7 +63,7 @@ public class RonPST extends RonPSTNode
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(RonPST.class);
+	private static final Logger logger = Logger.getLogger(RonPST.class);
 	//private double eta0, eta1, eta2, gammaMin, L;
 
 	//private double pMin, alpha, pRatioMinMax, gammaMin;

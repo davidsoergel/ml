@@ -41,7 +41,7 @@ public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<R
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(SimplexVectorTargetAndProportion.class);
+	private static final Logger logger = Logger.getLogger(SimplexVectorTargetAndProportion.class);
 	Multinomial<T> target = new Multinomial<T>();
 	double mixingProportion;
 	//	protected MarkovTreeNode backoffParent;

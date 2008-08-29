@@ -43,7 +43,7 @@ public class DistanceMeasureRuntimeException extends ChainedRuntimeException
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(DistanceMeasureRuntimeException.class);
+	private static final Logger logger = Logger.getLogger(DistanceMeasureRuntimeException.class);
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------

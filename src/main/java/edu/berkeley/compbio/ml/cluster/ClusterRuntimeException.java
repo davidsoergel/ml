@@ -46,7 +46,7 @@ public class ClusterRuntimeException extends ChainedRuntimeException
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(ClusterException.class);
+	private static final Logger logger = Logger.getLogger(ClusterException.class);
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------

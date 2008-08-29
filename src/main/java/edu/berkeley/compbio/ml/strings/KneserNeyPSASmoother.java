@@ -47,7 +47,7 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(KneserNeyPSASmoother.class);
+	private static final Logger logger = Logger.getLogger(KneserNeyPSASmoother.class);
 
 	@Property(helpmessage = "Smoothing factor", defaultvalue = "0.1")
 	public Double smoothFactor;

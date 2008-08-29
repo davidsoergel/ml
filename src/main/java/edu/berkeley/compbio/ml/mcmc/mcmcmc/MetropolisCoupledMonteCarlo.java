@@ -50,7 +50,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static Logger logger = Logger.getLogger(MetropolisCoupledMonteCarlo.class);
+	private static final Logger logger = Logger.getLogger(MetropolisCoupledMonteCarlo.class);
 
 	//@Property(helpmessage = "", defaultvalue = "edu.berkeley.compbio.ml.mcmc.MonteCarloFactory")
 	//public MonteCarloFactory mcf;
