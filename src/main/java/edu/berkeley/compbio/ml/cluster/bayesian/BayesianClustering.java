@@ -46,6 +46,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -168,7 +169,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	public ClusterMove bestClusterMove(T p)
 		{
-		return null;
+		throw new NotImplementedException("hmph");
 		}
 
 	double bestdistance = Double.MAX_VALUE;
