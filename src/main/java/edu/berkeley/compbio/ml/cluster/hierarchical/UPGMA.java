@@ -69,7 +69,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		//		theClusterPairs = new TreeMap<ClusterPair<T>, Double>();
 		}
 
-	public LengthWeightHierarchyNode<Cluster<T>> getTree()
+	public LengthWeightHierarchyNode<Cluster<T>, ? extends LengthWeightHierarchyNode> getTree()
 		{
 		return theRoot;
 		}

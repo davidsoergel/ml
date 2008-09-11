@@ -54,5 +54,5 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>> ext
 	 * @return a LengthWeightHierarchyNode representing the root of the computed clustering tree, or null if the clustering
 	 *         procedure has not been performed yet.
 	 */
-	public abstract LengthWeightHierarchyNode<Cluster<T>> getTree();
+	public abstract LengthWeightHierarchyNode<Cluster<T>, ? extends LengthWeightHierarchyNode> getTree();
 	}
