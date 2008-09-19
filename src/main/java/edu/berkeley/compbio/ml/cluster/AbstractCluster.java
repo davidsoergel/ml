@@ -287,6 +287,13 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return false;
 		}
 
+	public int hashCode()
+		{
+		int result = super.hashCode();
+		result = 31 * result + (centroid != null ? centroid.hashCode() : 0);
+		return result;
+		}
+
 	private Multiset<String> labelCounts = new HashMultiset<String>();
 
 	// we let the label probabilities be completely distinct from the counts, so that the probabilities

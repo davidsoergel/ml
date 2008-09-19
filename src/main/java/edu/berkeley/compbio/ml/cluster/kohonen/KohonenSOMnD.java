@@ -50,10 +50,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.Vector;
 
 
 /**
@@ -90,7 +88,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 	// the product of the first i dimensions, precomputed for convenience
 	int[] blockSize;
 
-	Map<Vector<Integer>, T> centroidsByPosition;
+	//Map<Vector<Integer>, T> centroidsByPosition;
 
 	int time = 0;
 
@@ -428,7 +426,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 	private class NeighborhoodIterator implements Iterator<KohonenSOMCell<T>>
 		{
 
-		KohonenSOMCell<T> center;
+		//	KohonenSOMCell<T> center;
 		private NeighborhoodShellIterator shells;
 		private Set<KohonenSOMCell<T>> currentShell;
 		private Iterator<KohonenSOMCell<T>> currentShellIterator;

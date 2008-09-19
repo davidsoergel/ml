@@ -123,9 +123,10 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 			priors.normalize();
 			//theClusters = theSubclusteringMap.values();
 
-			for (String label : theSubclusteringMap.keySet())
+			for (Map.Entry<String, GrowableKmeansClustering<T>> entry : theSubclusteringMap.entrySet())
 				{
-				GrowableKmeansClustering<T> theIntraLabelClustering = theSubclusteringMap.get(label);
+				String label = entry.getKey();
+				GrowableKmeansClustering<T> theIntraLabelClustering = entry.getValue();
 				if (logger.isInfoEnabled())
 					{
 					logger.info("Created " + theIntraLabelClustering.getClusters().size() + " clusters from "

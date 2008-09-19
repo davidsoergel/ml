@@ -166,4 +166,9 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 
 		return f.out().toString();
 		}
+
+	public HierarchicalCluster<T> clone()
+		{
+		return (HierarchicalCluster<T>) super.clone();
+		}
 	}

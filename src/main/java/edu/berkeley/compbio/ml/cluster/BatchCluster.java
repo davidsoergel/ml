@@ -90,39 +90,37 @@ public class BatchCluster<T extends AdditiveClusterable<T>> extends AdditiveClus
 		 centroid = sum;
 		 return true;
 		 }
+*/
+
+	public boolean addAndRecenter(T point)
+		{
+		if (thePoints.add(point))
+			{
+			recenterByAdding(point);
+			return true;
+			}
+		return false;
+		}
 
 
-	 public boolean addAndRecenter(T point)
-		 {
-		 if (thePoints.add(point))
-			 {
-			 recenterByAdding(point);
-			 return true;
-			 }
-		 return false;
-		 }
+	public boolean removeAndRecenter(T point)
+		{
+		if (thePoints.remove(point))
+			{
+			recenterByRemoving(point);
+			return true;
+			}
+		return false;
+		}
 
-
-	 public boolean removeAndRecenter(T point)
-		 {
-		 if (thePoints.remove(point))
-			 {
-			 recenterByRemoving(point);
-			 return true;
-			 }
-		 return false;
-		 }
-
-	 public String toString()
-		 {
-		 StringBuffer sb = new StringBuffer("\nCluster:");
-		 sb.append(" ").append(centroid).append("\n");
-		 for (T t : thePoints)
-			 {
-			 sb.append(" ").append(t).append("\n");
-			 }
-		 return sb.toString();
-		 }
-
- */
+	public String toString()
+		{
+		StringBuffer sb = new StringBuffer("\nCluster:");
+		sb.append(" ").append(centroid).append("\n");
+		for (T t : thePoints)
+			{
+			sb.append(" ").append(t).append("\n");
+			}
+		return sb.toString();
+		}
 	}

@@ -165,10 +165,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 */
 	public MarkovTreeNode clone()
 		{
-		MarkovTreeNode result = new MarkovTreeNode(id, alphabet);
-		result.probs = probs.clone();
 		try
 			{
+			MarkovTreeNode result = (MarkovTreeNode) super.clone();//new MarkovTreeNode(id, alphabet);
+			result.setAlphabet(alphabet);
+			result.probs = probs.clone();
 			for (byte b : alphabet)//children.keySet())
 				{
 				MarkovTreeNode child = getChild(b);
@@ -177,9 +178,16 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 					result.addChild(b, child.clone());
 					}
 				}
+			return result;
 			}
 		catch (SequenceSpectrumException e)
 			{
+			throw new Error("Impossible");
+			}
+		catch (CloneNotSupportedException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
 			throw new Error("Impossible");
 			}
 		/*		try
@@ -199,7 +207,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				   {
 				   throw new SequenceSpectrumRuntimeException(e);
 				   }*/
-		return result;
 		}
 
 	/**

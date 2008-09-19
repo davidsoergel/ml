@@ -55,7 +55,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 
 /**
@@ -92,7 +91,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	// the product of the first i dimensions, precomputed for convenience
 	int[] blockSize;
 
-	Map<Vector<Integer>, T> centroidsByPosition;
+	//	Map<Vector<Integer>, T> centroidsByPosition;
 
 	int time = 0;
 
@@ -147,18 +146,17 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	 * @param cellposition
 	 * @return
 	 */
-	private int listIndexFor(int[] cellposition)
-		{
-		int result = 0;
-		assert cellposition.length == cellsPerDimension.length;
-		for (int i = 0; i < dimensions; i++)
-			{
-			result += cellposition[i] * blockSize[i];
-			}
-		return result;
-		}
-
-
+	/*	private int listIndexFor(int[] cellposition)
+		 {
+		 int result = 0;
+		 assert cellposition.length == cellsPerDimension.length;
+		 for (int i = 0; i < dimensions; i++)
+			 {
+			 result += cellposition[i] * blockSize[i];
+			 }
+		 return result;
+		 }
+ */
 	private int[] cellPositionFor(int listIndex)
 		{
 		int[] result = new int[dimensions];
@@ -983,7 +981,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 	private class NeighborhoodShellIterator implements Iterator<Set<KohonenSOMCell<T>>>
 		{
-		WeightedMask oldMask, currentMask;
+		//	WeightedMask oldMask, currentMask;
 		int radius = 0;
 		private KohonenSOMCell<T> center;
 

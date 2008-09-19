@@ -152,15 +152,16 @@ public class RonPSANode extends MarkovTreeNode
 		return nextNodes[c];
 		}
 
-
-	private void addChild(byte b, RonPSANode child) throws SequenceSpectrumException
-		{
-		leaf = false;
-		int childIndex = DSArrayUtils.indexOf(alphabet, b);
-		children[childIndex] = child;
-		nextNodes[childIndex] = child;
-		//children.put(b, child);
-		}
+	/*
+	 private void addChild(byte b, RonPSANode child) throws SequenceSpectrumException
+		 {
+		 leaf = false;
+		 int childIndex = DSArrayUtils.indexOf(alphabet, b);
+		 children[childIndex] = child;
+		 nextNodes[childIndex] = child;
+		 //children.put(b, child);
+		 }
+ */
 
 	/**
 	 * Gets the child node associated with the given symbol, creating it first if needed.
