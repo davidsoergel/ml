@@ -68,6 +68,8 @@ import java.util.Set;
  * just initialize the grid with a uniform prototype; after placing the first incoming point with a neighborhood
  * encompassing the whole grid, all cells will be differentiated.
  *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
  * @Author David Soergel
  * @Version 1.0
  */
@@ -272,6 +274,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	 * @throws ClusterException
 	 * @throws NoGoodClusterException
 	 */
+	@Override
 	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
 		ClusterMove cm = bestClusterMove(p);
@@ -352,6 +355,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return true;
 		}
 
+	@Override
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
@@ -899,6 +903,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
 	 */
+	@Override
 	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
 			throws ClusterException, NoGoodClusterException
 		{
@@ -906,6 +911,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return cm.bestCluster;
 		}
 
+	@Override
 	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
 		{
 		return searchStrategy.bestClusterMove(p);

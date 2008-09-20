@@ -43,6 +43,11 @@ import java.util.Iterator;
 import java.util.Set;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
 	private static final Logger logger = Logger.getLogger(CoarseGridSearchStrategy.class);
@@ -72,6 +77,7 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 	 * @param p
 	 * @return
 	 */
+	@Override
 	public ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException
 		{
 		ClusterMove<T> result = new ClusterMove<T>();

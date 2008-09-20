@@ -39,6 +39,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> extends AbstractGenericFactoryAware
 		implements SequenceSpectrum<T>
 	{

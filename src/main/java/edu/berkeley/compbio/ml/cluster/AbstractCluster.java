@@ -223,6 +223,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	 *
 	 * @return a string representation of the object.
 	 */
+	@Override
 	public String toString()
 		{
 		Formatter f = new Formatter();
@@ -273,6 +274,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	   {
 	   return theDistanceMeasure.distanceFromTo(p, centroid, distanceToBeat);
 	   }*/
+	@Override
 	public boolean equals(Object other)
 		{
 		// don't worry about matching the generic type; centroid.equals will take care of that
@@ -287,6 +289,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return false;
 		}
 
+	@Override
 	public int hashCode()
 		{
 		int result = super.hashCode();

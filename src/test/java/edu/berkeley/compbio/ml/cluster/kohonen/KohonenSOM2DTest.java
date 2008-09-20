@@ -46,6 +46,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class KohonenSOM2DTest
 	{
 	private BruteForceSearchStrategy<ClusterableDoubleArray> bruteForceStrategy =
@@ -307,6 +312,10 @@ public class KohonenSOM2DTest
 			this.y = y;
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		public boolean equals(Object o)
 			{
 			if (this == o)
@@ -332,6 +341,10 @@ public class KohonenSOM2DTest
 			return true;
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		public int hashCode()
 			{
 			int result;

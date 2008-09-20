@@ -54,6 +54,7 @@ import java.util.Map;
  *
  * @author David Tulga
  * @author David Soergel
+ * @version $Id$
  */
 public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>> extends BayesianClustering<T>
 	{
@@ -65,6 +66,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 		}
 
 
+	@Override
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory) throws ClusterException
 		{

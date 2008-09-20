@@ -35,9 +35,15 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class WithinCurrentRadiusSearchStrategy<T extends AdditiveClusterable<T>>
 		extends NearCurrentPositionSearchStrategy<T>
 	{
+	@Override
 	public double getSearchRadius()
 		{
 		return som.getCurrentRadius();//** times a constant?

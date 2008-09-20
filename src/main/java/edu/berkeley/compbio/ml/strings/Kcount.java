@@ -35,6 +35,11 @@ package edu.berkeley.compbio.ml.strings;
 import com.davidsoergel.stats.DiscreteDistribution1D;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		implements AdditiveClusterable<T>, SequenceSpectrum<T>, DiscreteDistribution1D
 	{
@@ -161,6 +166,7 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		originalSequenceLength++;
 		}
 
+	@Override
 	public boolean hasParent()
 		{
 		return k > 0;

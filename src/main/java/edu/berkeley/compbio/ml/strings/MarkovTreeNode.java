@@ -57,6 +57,8 @@ import java.util.List;
  * parent node).  If the tree is completely filled out with respect to its alphabet up to a depth k, then it represents
  * a k-order Markov model.  If it is incompletely filled out, it may represent a Variable Memory Markov model (VMM).
  *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
  * @see RonPSANode
  *      <p/>
  *      This class should not be used to represent a Probabilistic Suffix Tree, because that is likely to be confusing.
@@ -163,6 +165,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 *
 	 * @return a copy of this node, including a deep copy of its children and their probabilities
 	 */
+	@Override
 	public MarkovTreeNode clone()
 		{
 		try

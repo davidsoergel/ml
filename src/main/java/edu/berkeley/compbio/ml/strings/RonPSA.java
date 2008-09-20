@@ -47,6 +47,11 @@ import java.util.List;
 import java.util.Queue;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class RonPSA extends RonPSANode
 	{
 	private static final Logger logger = Logger.getLogger(RonPSA.class);
@@ -154,6 +159,7 @@ public class RonPSA extends RonPSANode
 	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
 	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
 	 */
+	@Override
 	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
 		{
 		// simply follow the MarkovTreeNode as a state machine, using backlinks

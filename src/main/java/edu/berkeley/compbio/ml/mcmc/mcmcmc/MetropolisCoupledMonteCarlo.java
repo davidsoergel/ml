@@ -45,6 +45,11 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 @PropertyConsumer
 public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	{
@@ -72,11 +77,19 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	//@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.mcmcmc.ChainList")
 	public ChainList currentState = new ChainList();
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public ChainList getCurrentState()
 		{
 		return currentState;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void setCurrentState(MonteCarloState currentState)
 		{
 		this.currentState = (ChainList) currentState;
@@ -85,6 +98,10 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	//	@Property(helpmessage = "", defaultvalue = "10")
 	//	public int swapInterval;
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void init()
 		{
 		super.init();
@@ -93,6 +110,10 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 
 	// -------------------------- STATIC METHODS --------------------------
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void run() throws IOException, GenericFactoryException
 		{
 		assert heatFactors[0] == 1;
@@ -158,6 +179,10 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		resetCounts();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void doStep() throws IOException, GenericFactoryException
 		{
 		// run each chain independently for a while

@@ -38,6 +38,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class RonPSTNodeTest
 	{
 	private static final Logger logger = Logger.getLogger(RonPSTNodeTest.class);
@@ -46,7 +51,7 @@ public class RonPSTNodeTest
 	@BeforeMethod
 	public void setUp()
 		{
-		//MathUtils.initApproximateLog(-12, 12, 3, 100000);
+		MathUtils.initApproximateLog(-12, 12, 3, 100000);
 		try
 			{
 			buildSimplePST();

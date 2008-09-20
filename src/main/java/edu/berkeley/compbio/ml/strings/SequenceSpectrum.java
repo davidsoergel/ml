@@ -79,6 +79,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @see Object#clone
 	 * @see java.lang.Cloneable
 	 */
+	@Override
 	T clone();
 
 	/**

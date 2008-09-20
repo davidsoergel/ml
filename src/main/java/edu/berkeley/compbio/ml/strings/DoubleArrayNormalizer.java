@@ -37,6 +37,11 @@ import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DoubleArrayContainer;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class DoubleArrayNormalizer implements DistributionProcessor<DoubleArrayContainer>//extends DoubleArrayProcessor
 	{
 	// ------------------------ INTERFACE METHODS ------------------------

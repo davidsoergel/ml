@@ -70,6 +70,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		this.measure = dm;
 		}
 
+	@Override
 	public void initializeWithRealData(Iterator<T> trainingIterator, int k, GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException
 		{

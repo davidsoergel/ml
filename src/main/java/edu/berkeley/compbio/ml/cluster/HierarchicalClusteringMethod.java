@@ -42,6 +42,8 @@ import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
  * This interface is agnostic about whether the implementation is supervised or unsupervised, and whether it is online
  * or batch.
  *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
  * @Author David Soergel
  * @Version 1.0
  */

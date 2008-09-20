@@ -38,6 +38,11 @@ import com.davidsoergel.stats.DoubleArrayContainer;
 import org.apache.log4j.Logger;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDoubleArray>, DoubleArrayContainer
 	{
 	// ------------------------------ FIELDS ------------------------------
@@ -73,6 +78,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 
 	// ------------------------ CANONICAL METHODS ------------------------
 
+	@Override
 	public ClusterableDoubleArray clone()
 		{
 		return new ClusterableDoubleArray(id,

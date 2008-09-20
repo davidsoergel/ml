@@ -33,23 +33,29 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.AtomicContractTest;
 import com.davidsoergel.dsutils.TestInstanceFactory;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 
 
-public abstract class KcountAbstractTest
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
+public class KcountAbstractTest<T extends Kcount> extends AtomicContractTest
 	{
 	// ------------------------------ FIELDS ------------------------------
 
 	//public abstract Kcount createInstance() throws Exception;
-	private TestInstanceFactory tif;
+	private TestInstanceFactory<T> tif;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
-	public KcountAbstractTest(TestInstanceFactory tif)
+	public KcountAbstractTest(TestInstanceFactory<T> tif)
 		{
 		this.tif = tif;
 		}

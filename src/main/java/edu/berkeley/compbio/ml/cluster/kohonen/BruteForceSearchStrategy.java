@@ -38,6 +38,11 @@ import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import org.apache.log4j.Logger;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
 	private static final Logger logger = Logger.getLogger(BruteForceSearchStrategy.class);
@@ -49,6 +54,7 @@ public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends 
 	 * @param p
 	 * @return
 	 */
+	@Override
 	public ClusterMove<T> bestClusterMove(T p)
 		{
 		ClusterMove<T> result = new ClusterMove<T>();

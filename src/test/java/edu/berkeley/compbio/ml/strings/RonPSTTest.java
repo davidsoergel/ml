@@ -33,7 +33,10 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
+import com.davidsoergel.dsutils.ContractTest;
+import com.davidsoergel.dsutils.ContractTestAware;
 import com.davidsoergel.dsutils.DSArrayUtils;
+import com.davidsoergel.dsutils.TestInstanceFactory;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
@@ -41,18 +44,40 @@ import com.davidsoergel.stats.Multinomial;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
-public class RonPSTTest
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
+public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestInstanceFactory<SequenceSpectrum>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(RonPSTTest.class);
 
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void addContractTestsToQueue(Queue<ContractTest> theContractTests)
+		{
+		theContractTests.add(new SequenceSpectrumInterfaceTest(this));
+		}
+
+	@Factory
+	public Object[] instantiateAllContractTests()
+		{
+		return super.instantiateAllContractTestsWithName(RonPST.class.getCanonicalName());
+		}
 
 	// -------------------------- OTHER METHODS --------------------------
 
@@ -60,13 +85,16 @@ public class RonPSTTest
 	public void afterCompleteEveryNodeHasTransitionsForEverySymbolOrNone()
 			throws SequenceSpectrumException, DistributionException
 		{
-		RonPST pst = createSimplePST();
+		RonPST pst = createInstance();
 
 		byte[] alphabet = pst.getAlphabet();
 		assert allNodesAreCompleteOrEmpty(pst, alphabet.length);
 		}
 
-	private RonPST createSimplePST() throws SequenceSpectrumException
+	/**
+	 * {@inheritDoc}
+	 */
+	public RonPST createInstance() throws SequenceSpectrumException
 		{
 		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
 		RonPST pst = new RonPST(0.0001, 0.01, 1.1, 4, ss);
@@ -140,7 +168,7 @@ public class RonPSTTest
 	@Test
 	public void conditionalProbabilitiesAreGivenBasedOnLongestAvailableSuffix() throws SequenceSpectrumException
 		{
-		RonPST pst = createSimplePST();
+		RonPST pst = createInstance();
 
 		// really should use a 3-level pst for this
 
@@ -195,7 +223,7 @@ public class RonPSTTest
 	@Test
 	public void maxDepthIsCalculated() throws SequenceSpectrumException
 		{
-		RonPST pst = createSimplePST();
+		RonPST pst = createInstance();
 		assert pst.getMaxDepth() == 2;
 		}
 
@@ -234,11 +262,17 @@ public class RonPSTTest
 		Map<Byte, Map<Byte, Double>> counts2 = new HashMap<Byte, Map<Byte, Double>>();
 
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public String getLabel()
 			{
 			return "Stub";
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void multiplyBy(double v)
 			{
 			throw new NotImplementedException();
@@ -254,6 +288,9 @@ public class RonPSTTest
 			throw new NotImplementedException();
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void decrementByWeighted(StubSequenceSpectrum object, double weight)
 			{
 			throw new NotImplementedException();
@@ -269,6 +306,9 @@ public class RonPSTTest
 			throw new NotImplementedException();
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void incrementByWeighted(StubSequenceSpectrum object, double weight)
 			{
 			throw new NotImplementedException();
@@ -296,11 +336,17 @@ public class RonPSTTest
 			throw new NotImplementedException();
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public StubSequenceSpectrum times(double v)
 			{
 			throw new NotImplementedException();
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public int getOriginalSequenceLength()
 			{
 			throw new NotImplementedException();
@@ -346,6 +392,10 @@ public class RonPSTTest
 			counts.put((byte) 'd', DSArrayUtils.sum(dCounts.values()));
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
 		public StubSequenceSpectrum clone()
 			{
 			throw new NotImplementedException();
@@ -365,11 +415,17 @@ public class RonPSTTest
 			}
 
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public String getId()
 			{
 			return "Test Spectrum";
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public double conditionalProbability(byte sigma, byte[] prefix) throws SequenceSpectrumException
 			{
 			if (prefix.length == 0)
@@ -385,6 +441,9 @@ public class RonPSTTest
 			//throw new SequenceSpectrumException("depth oops");
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
 			{
 			try
@@ -405,11 +464,17 @@ public class RonPSTTest
 			throw new SequenceSpectrumException("depth oops");
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public double fragmentLogProbability(SequenceFragment sequenceFragment)
 			{
 			throw new NotImplementedException();
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public byte[] getAlphabet()
 			{
 			return new byte[]{
@@ -420,16 +485,25 @@ public class RonPSTTest
 			};
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public int getMaxDepth()
 			{
 			return 2;
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public int getNumberOfSamples()
 			{
 			return 50;
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public byte sample(byte[] prefix) throws SequenceSpectrumException
 			{
 			try
@@ -452,21 +526,24 @@ public class RonPSTTest
 			}
 
 		/**
-		 * Chooses a random string according to the conditional probabilities of symbols.
-		 *
-		 * @param length the length of the desired random string
-		 * @return a byte[] of the desired length sampled from this distribution
+		 * {@inheritDoc}
 		 */
 		public byte[] sample(int length) throws SequenceSpectrumException
 			{
 			throw new NotImplementedException();
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public boolean spectrumEquals(SequenceSpectrum spectrum)
 			{
 			return spectrum == this;
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public double totalProbability(byte[] s) throws SequenceSpectrumException
 			{
 			if (s.length == 0)
@@ -484,11 +561,17 @@ public class RonPSTTest
 			throw new SequenceSpectrumException("depth oops");
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void runBeginTrainingProcessor() throws DistributionProcessorException
 			{
 			// do nothing
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void runFinishTrainingProcessor() throws DistributionProcessorException
 			{
 			// do nothing
@@ -500,11 +583,17 @@ public class RonPSTTest
 			throw new NotImplementedException();
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void setIgnoreEdges(boolean ignoreEdges)
 			{
 			// not relevant here...
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void setImmutable()
 			{
 			// not relevant here

@@ -59,6 +59,7 @@ import java.util.Map;
  *
  * @author David Tulga
  * @author David Soergel
+ * @version $Id$
  */
 public class BayesianClustering<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T>
 	{
@@ -108,6 +109,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	protected Multinomial<Cluster> priors = new Multinomial<Cluster>();
 
+	@Override
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException
@@ -148,6 +150,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		}
 
 
+	@Override
 	public void train(IteratorProvider<T> trainingIteratorProvider, int iterations)
 		{
 		// do nothing
@@ -161,12 +164,14 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	// -------------------------- OTHER METHODS --------------------------
 
+	@Override
 	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
 		getBestCluster(p, secondBestDistances).recenterByAdding(p);
 		return true;
 		}
 
+	@Override
 	public ClusterMove bestClusterMove(T p)
 		{
 		throw new NotImplementedException("hmph");
@@ -174,6 +179,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	double bestdistance = Double.MAX_VALUE;
 
+	@Override
 	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
 			throws ClusterException, NoGoodClusterException
 		{

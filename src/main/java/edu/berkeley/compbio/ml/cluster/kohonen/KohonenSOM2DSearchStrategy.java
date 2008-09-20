@@ -38,6 +38,11 @@ import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public abstract class KohonenSOM2DSearchStrategy<T extends AdditiveClusterable<T>>
 	{
 	//void setSOM(KohonenSOM2D<T> som);

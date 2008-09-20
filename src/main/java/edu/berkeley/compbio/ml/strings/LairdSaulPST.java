@@ -36,6 +36,11 @@ package edu.berkeley.compbio.ml.strings;
 import java.io.Reader;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class LairdSaulPST
 	{
 	// --------------------------- CONSTRUCTORS ---------------------------

@@ -79,6 +79,7 @@ public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implement
 	 * @see Object#clone
 	 * @see java.lang.Cloneable
 	 */
+	@Override
 	public abstract T clone();
 
 

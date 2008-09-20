@@ -53,6 +53,9 @@ import java.util.Map;
  * from the sequence, in the form of SequenceSpectra.  It is assumed that any SequenceSpectrum objects stored here are
  * all derived from a single "base spectrum" (which could in the worst case be a SequenceSpectrum implementation that
  * simply stores the entire input sequence).
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
  */
 public class SequenceFragment extends SequenceFragmentMetadata implements AdditiveClusterable<SequenceFragment>
 	{
@@ -265,6 +268,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 * @see Object#clone
 	 * @see java.lang.Cloneable
 	 */
+	@Override
 	public SequenceFragment clone()
 		{
 		scanIfNeeded();

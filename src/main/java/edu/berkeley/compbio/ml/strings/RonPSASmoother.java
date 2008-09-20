@@ -41,6 +41,11 @@ import org.apache.log4j.Logger;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 @PropertyConsumer
 public class RonPSASmoother implements DistributionProcessor<RonPSA>
 	{

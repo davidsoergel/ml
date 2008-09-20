@@ -94,6 +94,7 @@ public class ClusterMove<T extends Clusterable<T>>
 	 *
 	 * @return a string representation of the object.
 	 */
+	@Override
 	public String toString()
 		{
 		return "bestDistance = " + bestDistance + ", bestCluster = " + bestCluster + ", oldCluster = " + oldCluster

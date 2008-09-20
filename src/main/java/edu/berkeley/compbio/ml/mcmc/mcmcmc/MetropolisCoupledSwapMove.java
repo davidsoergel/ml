@@ -64,6 +64,10 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 		propose();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void propose()
 		{
 		// REVIEW is it OK to swap only adjacent temperatures?
@@ -86,6 +90,9 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 
 	// --------------------- Interface ProbabilityMove ---------------------
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public ChainList doMove(double temperature)
 		{
 		if (isAccepted())

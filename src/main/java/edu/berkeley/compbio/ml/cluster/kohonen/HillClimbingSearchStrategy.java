@@ -43,6 +43,11 @@ import java.util.Iterator;
 import java.util.Set;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
 	private static final Logger logger = Logger.getLogger(HillClimbingSearchStrategy.class);
@@ -53,6 +58,7 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 
 	//private int searchRadius;
 
+	@Override
 	public void setSOM(KohonenSOM2D<T> som)
 		{
 		super.setSOM(som);
@@ -75,6 +81,7 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 	 * @param p
 	 * @return
 	 */
+	@Override
 	public ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException
 		{
 		ClusterMove<T> result = new ClusterMove<T>();

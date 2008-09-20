@@ -40,6 +40,11 @@ import org.apache.log4j.Logger;
 import java.util.Iterator;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
 	private static final Logger logger = Logger.getLogger(NearCurrentPositionSearchStrategy.class);
@@ -50,6 +55,7 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 
 	//private int searchRadius;
 
+	@Override
 	public void setSOM(KohonenSOM2D<T> som)
 		{
 		super.setSOM(som);
@@ -72,6 +78,7 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 	 * @param p
 	 * @return
 	 */
+	@Override
 	public ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException
 		{
 		ClusterMove<T> result = new ClusterMove<T>();

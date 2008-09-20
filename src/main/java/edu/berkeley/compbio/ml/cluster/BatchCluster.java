@@ -113,6 +113,7 @@ public class BatchCluster<T extends AdditiveClusterable<T>> extends AdditiveClus
 		return false;
 		}
 
+	@Override
 	public String toString()
 		{
 		StringBuffer sb = new StringBuffer("\nCluster:");

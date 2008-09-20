@@ -159,6 +159,7 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 		getValue().setN(i);
 		}
 
+	@Override
 	public String toString()
 		{
 		Formatter f = new Formatter();
@@ -167,6 +168,7 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 		return f.out().toString();
 		}
 
+	@Override
 	public HierarchicalCluster<T> clone()
 		{
 		return (HierarchicalCluster<T>) super.clone();

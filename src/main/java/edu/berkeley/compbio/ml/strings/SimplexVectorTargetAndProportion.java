@@ -37,6 +37,11 @@ import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<RelativeMarkovTreeNode>
 	{
 	// ------------------------------ FIELDS ------------------------------

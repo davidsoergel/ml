@@ -33,6 +33,8 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.ContractTest;
+import com.davidsoergel.dsutils.ContractTestAware;
 import com.davidsoergel.dsutils.TestInstanceFactory;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
@@ -40,11 +42,22 @@ import static org.easymock.EasyMock.*;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
 
+import java.util.Queue;
 
-public class MarkovTreeNodeTest implements TestInstanceFactory<SequenceSpectrum>
+
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
+public class MarkovTreeNodeTest extends ContractTestAware<MarkovTreeNode>
+		implements TestInstanceFactory<SequenceSpectrum>
 	{
 	// --------------------- Interface TestInstanceFactory ---------------------
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public MarkovTreeNode createInstance() throws Exception
 		{
 		SequenceSpectrum ss = createMockSimpleSpectrum();
@@ -53,15 +66,20 @@ public class MarkovTreeNodeTest implements TestInstanceFactory<SequenceSpectrum>
 		return n;
 		}
 
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void addContractTestsToQueue(Queue<ContractTest> theContractTests)
+		{
+		theContractTests.add(new SequenceSpectrumInterfaceTest(this));
+		}
+
 	@Factory
-	public Object[] testInterfaces()
+	public Object[] instantiateAllContractTests()
 		{
-		TestInstanceFactory t = this;
-		Object[] result = new Object[1];
-		result[0] = new SequenceSpectrumAbstractTest(t)
-		{
-		};
-		return result;
+		return super.instantiateAllContractTestsWithName(MarkovTreeNode.class.getCanonicalName());
 		}
 
 	// ------------------------------ FIELDS ------------------------------

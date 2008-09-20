@@ -35,6 +35,11 @@ package edu.berkeley.compbio.ml.strings;
 import java.util.List;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public interface FirstWordProvider
 	{
 	// -------------------------- OTHER METHODS --------------------------

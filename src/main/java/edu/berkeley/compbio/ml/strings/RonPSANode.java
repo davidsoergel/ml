@@ -42,6 +42,8 @@ import java.util.Queue;
 /**
  * Extends a MarkovTreeNode with backlinks, for making make a Probabilistic Suffix Automaton (PSA).
  *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
  * @Author David Soergel
  * @Version 1.0
  */
@@ -66,6 +68,7 @@ public class RonPSANode extends MarkovTreeNode
 		super(id, alphabet);
 		}
 
+	@Override
 	public void setAlphabet(byte[] alphabet)
 		{
 		super.setAlphabet(alphabet);
@@ -169,6 +172,7 @@ public class RonPSANode extends MarkovTreeNode
 	 * @param sigma the transition to follow from this node
 	 * @return the node at the other end of the transition
 	 */
+	@Override
 	public RonPSANode addChild(byte sigma)//throws SequenceSpectrumException
 		{
 		leaf = false;
@@ -184,6 +188,7 @@ public class RonPSANode extends MarkovTreeNode
 		}
 
 
+	@Override
 	public void appendString(Formatter formatter, String indent)
 		{
 		for (int i = 0; i < alphabet.length; i++)
@@ -214,6 +219,7 @@ public class RonPSANode extends MarkovTreeNode
 	 * @param seq the sequence of symbols to follow from this node
 	 * @return the node at the end of the chain of transitions, or null if that leaf does not exist
 	 */
+	@Override
 	public MarkovTreeNode get(byte[] seq) throws SequenceSpectrumException
 		{
 		if (seq.length == 0)
@@ -263,11 +269,13 @@ public class RonPSANode extends MarkovTreeNode
 		 return (RonPSANode[]) children;
 		 }
  */
+	@Override
 	public RonPSANode getChild(byte sigma)//throws SequenceSpectrumException
 		{
 		return (RonPSANode) (super.getChild(sigma));
 		}
 
+	@Override
 	public RonPSANode getDescendant(byte[] descendantId)//throws SequenceSpectrumException
 		{
 		return (RonPSANode) super.getDescendant(descendantId);

@@ -61,11 +61,17 @@ public class ChainList extends ArrayList<MonteCarlo> implements MonteCarloState
 		//To change body of implemented methods use File | Settings | File Templates.
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public double unnormalizedLogLikelihood()
 		{
 		return 1;// never used, irrelevant
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void writeToDataCollector(int step, DataCollector dc)
 		{
 		// ignore, this never happens

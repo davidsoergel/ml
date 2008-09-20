@@ -105,6 +105,7 @@ public class TextFileDataCollector implements DataCollector
 
 	// ------------------------ CANONICAL METHODS ------------------------
 
+	@Override
 	public String toString()
 		{
 		StringBuffer sb = new StringBuffer();

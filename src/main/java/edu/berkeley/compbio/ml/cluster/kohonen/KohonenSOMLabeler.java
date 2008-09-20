@@ -39,6 +39,8 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
  * Once a Kohonen SOM is learned, propagate the sample labels around in some way to give label confidences for every
  * cell
  *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
  * @Author David Soergel
  * @Version 1.0
  */

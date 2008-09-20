@@ -51,6 +51,11 @@ import java.util.List;
 import java.util.Set;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T>
 	{
 
@@ -69,6 +74,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		//		theClusterPairs = new TreeMap<ClusterPair<T>, Double>();
 		}
 
+	@Override
 	public LengthWeightHierarchyNode<Cluster<T>, ? extends LengthWeightHierarchyNode> getTree()
 		{
 		return theRoot;
@@ -81,6 +87,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
 	 */
+	@Override
 	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
 			throws ClusterException, NoGoodClusterException
 		{
@@ -106,11 +113,13 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	 * @param p
 	 * @return
 	 */
+	@Override
 	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
 		{
 		throw new NotImplementedException("");
 		}
 
+	@Override
 	public void performClustering()
 		{
 		n = theActiveNodeDistanceMatrix.numKeys();
@@ -170,6 +179,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	private int idCount = 0;
 
+	@Override
 	public void addAll(Collection<? extends Clusterable<T>> samples)
 		{
 		//theClusters.addAll(samples);

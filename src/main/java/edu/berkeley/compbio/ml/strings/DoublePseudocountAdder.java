@@ -38,6 +38,11 @@ import com.davidsoergel.stats.DistributionProcessor;
 import com.davidsoergel.stats.DoubleArrayContainer;
 
 
+/**
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
+ */
+
 @PropertyConsumer
 public class DoublePseudocountAdder implements DistributionProcessor<DoubleArrayContainer>//extends DoubleArrayProcessor
 	{

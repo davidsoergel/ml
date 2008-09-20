@@ -47,6 +47,8 @@ import java.util.Set;
  * Label each cell in a Kohonen SOM with label proportions according to the label counts that are present in the cell,
  * or in the smallest neighborhood around the cell including a given number of real data points.
  *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
  * @Author David Soergel
  * @Version 1.0
  */

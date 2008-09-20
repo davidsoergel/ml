@@ -80,6 +80,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	 * @see Object#clone
 	 * @see Cloneable
 	 */
+	@Override
 	public abstract T clone();
 
 
