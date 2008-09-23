@@ -52,7 +52,6 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 * @see Object#clone
 	 * @see java.lang.Cloneable
 	 */
-	@Override
 	T clone();
 
 	/**
