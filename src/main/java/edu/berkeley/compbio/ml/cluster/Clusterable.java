@@ -36,7 +36,7 @@ package edu.berkeley.compbio.ml.cluster;
 /**
  * Primarily a marker interface for classes that can be clustered by various algorithms.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public interface Clusterable<T extends Clusterable> extends Cloneable

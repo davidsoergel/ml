@@ -40,7 +40,7 @@ package edu.berkeley.compbio.ml.cluster;
  * store only the centroids of each cluster rather than the list of all members.  That is, additivity (for some concept
  * of "addition") is required for it to be possible to construct clusters in an online manner.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clusterable<T>

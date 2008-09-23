@@ -39,7 +39,7 @@ import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 
 
 /**
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 

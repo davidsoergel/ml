@@ -70,6 +70,9 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		this.measure = dm;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void initializeWithRealData(Iterator<T> trainingIterator, int k, GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException
@@ -123,10 +126,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		}
 
 	/**
-	 * Returns the best cluster without adding the point
-	 *
-	 * @param p                   Point to find the best cluster of
-	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
@@ -136,10 +136,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		}
 
 	/**
-	 * Return a ClusterMove object describing the best way to reassign the given point to a new cluster.
-	 *
-	 * @param p
-	 * @return
+	 * {@inheritDoc}
 	 */
 	@Override
 	public ClusterMove<T> bestClusterMove(T p)

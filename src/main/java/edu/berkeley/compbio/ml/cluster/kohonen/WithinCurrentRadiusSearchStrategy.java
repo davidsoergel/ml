@@ -36,13 +36,16 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
 
 /**
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 
 public class WithinCurrentRadiusSearchStrategy<T extends AdditiveClusterable<T>>
 		extends NearCurrentPositionSearchStrategy<T>
 	{
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public double getSearchRadius()
 		{

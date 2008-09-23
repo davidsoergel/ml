@@ -65,7 +65,7 @@ import java.util.Set;
  * just initialize the grid with a uniform prototype; after placing the first incoming point with a neighborhood
  * encompassing the whole grid, all cells will be differentiated.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  * @Author David Soergel
  * @Version 1.0
@@ -208,6 +208,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 	// -------------------------- OTHER METHODS --------------------------
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
@@ -238,6 +241,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return true;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory) throws GenericFactoryException
@@ -266,6 +272,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 	KohonenSOMCell<T>[] immediateNeighbors;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell)
 		{
 		return new NeighborhoodShellIterator(cell);
@@ -292,6 +301,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 			}
 
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public boolean hasNext()
 			{
 			return (radius + 1) <= maxRadius;
@@ -303,6 +315,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 		;
 
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public Set<KohonenSOMCell<T>> next()
 			{
 			Set<KohonenSOMCell<T>> shell = new HashSet<KohonenSOMCell<T>>();
@@ -348,6 +363,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 			}
 
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void remove()
 			{
 			throw new NotImplementedException();
@@ -442,11 +460,17 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 			maxRadius = radiusFunction.f(time);
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public boolean hasNext()
 			{
 			return currentShellIterator.hasNext() || (shells.hasNext() && shells.getNextRadius() <= maxRadius);
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public KohonenSOMCell<T> next()
 			{
 			try
@@ -467,6 +491,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 			}
 
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void remove()
 			{
 			throw new NotImplementedException();
@@ -474,10 +501,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 		}
 
 	/**
-	 * Returns the best cluster without adding the point
-	 *
-	 * @param p                   Point to find the best cluster of
-	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)

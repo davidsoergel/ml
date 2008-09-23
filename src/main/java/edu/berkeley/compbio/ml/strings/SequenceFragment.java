@@ -54,7 +54,7 @@ import java.util.Map;
  * all derived from a single "base spectrum" (which could in the worst case be a SequenceSpectrum implementation that
  * simply stores the entire input sequence).
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public class SequenceFragment extends SequenceFragmentMetadata implements AdditiveClusterable<SequenceFragment>

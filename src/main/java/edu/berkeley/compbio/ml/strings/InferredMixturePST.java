@@ -33,7 +33,7 @@
 package edu.berkeley.compbio.ml.strings;
 
 /**
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 

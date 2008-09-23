@@ -109,6 +109,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	protected Multinomial<Cluster> priors = new Multinomial<Cluster>();
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory)
@@ -150,6 +153,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void train(IteratorProvider<T> trainingIteratorProvider, int iterations)
 		{
@@ -164,6 +170,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	// -------------------------- OTHER METHODS --------------------------
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
@@ -171,6 +180,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		return true;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ClusterMove bestClusterMove(T p)
 		{
@@ -179,6 +191,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	double bestdistance = Double.MAX_VALUE;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
 			throws ClusterException, NoGoodClusterException

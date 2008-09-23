@@ -37,7 +37,7 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
 
 /**
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 
@@ -48,6 +48,9 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCl
 		super(id, centroid);//dm
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean recenterByAdding(T point)
 		{
 		// we don't increment n here, because moving the centroid and actually assigning a sample to this cell are two different things
@@ -82,6 +85,9 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCl
 		}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean recenterByRemoving(T point)
 		{
 		centroid.decrementBy(point);

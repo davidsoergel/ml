@@ -57,7 +57,7 @@ import java.util.Map;
  * interface is agnostic about whether the implementation is supervised or unsupervised, and whether it is online or
  * batch.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public abstract class ClusteringMethod<T extends Clusterable<T>> implements ClusterSet<T>
@@ -149,9 +149,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 		}
 
 	/**
-	 * Returns the contained Collection of Clusters.
-	 *
-	 * @return the contained Collection of Clusters.
+	 * {@inheritDoc}
 	 */
 	public Collection<? extends Cluster<T>> getClusters()
 		{
@@ -343,7 +341,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	/**
 	 * Encapsulates the proportions of test samples classified correctly, incorrectly, or not at all.
 	 *
-	 * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+	 * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
 	 * @version $Id$
 	 */
 	public class TestResults

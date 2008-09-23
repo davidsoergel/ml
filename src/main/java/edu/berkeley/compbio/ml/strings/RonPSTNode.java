@@ -52,7 +52,7 @@ import java.util.List;
  * A PST node by itself doesn't represent a spectrum like a MarkovTreeNode does; for that you need the root.  So, we
  * don't implement SequenceSpectrum or MutableDistribution here.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  * @Author David Soergel
  * @Version 1.0

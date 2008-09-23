@@ -38,7 +38,7 @@ import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
 /**
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 

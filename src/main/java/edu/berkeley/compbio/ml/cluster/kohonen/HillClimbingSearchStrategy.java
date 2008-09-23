@@ -44,7 +44,7 @@ import java.util.Set;
 
 
 /**
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 
@@ -58,6 +58,9 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 
 	//private int searchRadius;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setSOM(KohonenSOM2D<T> som)
 		{

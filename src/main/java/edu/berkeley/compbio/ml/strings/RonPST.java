@@ -55,7 +55,7 @@ import java.util.Set;
  * D. Ron, Y. Singer and N. Tishby. The power of amnesia: learning probabilistic automata with variable memory length.
  * Machine Learning, 25:117-149, 1996.  http://citeseer.ist.psu.edu/article/ron96power.html
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  * @Author David Soergel (soergel@compbio.berkeley.edu)
  */

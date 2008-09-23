@@ -53,18 +53,9 @@ public interface KcountScanner extends SequenceSpectrumScanner
 
 	// --------------------- Interface SequenceSpectrumScanner ---------------------
 
+
 	/**
-	 * Scan a sequence to count pattern frequencies.
-	 *
-	 * @param sequenceReader the SequenceReader providing the sequence to be scanned
-	 * @param desiredLength  the number of symbols to read before returning
-	 * @return a Kcount containing the counts of all patterns being scanned for
-	 * @throws IOException                when an input/output error occurs on the reader
-	 * @throws FilterException            when the scanner is filtering the sequence while reading it, but the filter
-	 *                                    throws an exception
-	 * @throws NotEnoughSequenceException when the reader cannot supply the desired amound of sequence (some scanners may
-	 *                                    not throw this exception, but instead simply return a Kcount based on the short
-	 *                                    sequence)
+	 * {@inheritDoc}
 	 */
 	Kcount scanSequence(SequenceFragment fragment)//SequenceReader sequenceReader, int desiredLength)//,
 			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
@@ -76,6 +67,9 @@ public interface KcountScanner extends SequenceSpectrumScanner
 	/*	void checkSequenceAvailable(SequenceReader theReader, int desiredlength)
 				throws IOException, FilterException, NotEnoughSequenceException;*/
 
+	/**
+	 * {@inheritDoc}
+	 */
 	Kcount scanSequence(SequenceFragment fragment, byte[] prefix)//SequenceReader resetReader, int desiredLength
 			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
 			       GenericFactoryException;

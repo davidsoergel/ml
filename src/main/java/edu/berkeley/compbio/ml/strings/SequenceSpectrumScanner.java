@@ -42,8 +42,8 @@ import java.io.IOException;
 /**
  * Provides an interface for classes that can scan sequences to count the occurrences of substrings
  *
- * @author David Soergel
- * @version $Id
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
  */
 public interface SequenceSpectrumScanner
 	{
@@ -52,15 +52,26 @@ public interface SequenceSpectrumScanner
 	/*	Kcount scanSequence(SequenceReader in, int desiredlength, List<byte[]> firstWords) //, int firstWordLength)
 				throws IOException, FilterException, NotEnoughSequenceException;*/
 
+	/**
+	 * Check whether the reader associated with this scanner is able to provide the sequence specified by the provided
+	 * SequenceFragment.  Essentially, this seeks the reader to the start of the fragment and attempts to read symbols up
+	 * to the length of the fragment.  If the method returns without throwing a NotEnoughSequenceException, then the
+	 * requested fragment is available.
+	 *
+	 * @param fragment the SequenceFragment
+	 * @throws IOException                when an input/output error occurs on the reader
+	 * @throws FilterException            when the scanner is filtering the sequence while reading it, but the filter
+	 *                                    throws an exception
+	 * @throws NotEnoughSequenceException when the reader cannot supply the desired amound of sequence
+	 */
 	void checkSequenceAvailable(SequenceFragment fragment)//SequenceReader theReader, int desiredlength)
 			throws IOException, FilterException, NotEnoughSequenceException;
 
 	/**
-	 * Scan a sequence to count pattern frequencies.
+	 * Scans a sequence to count pattern frequencies.
 	 *
-	 * @param sequenceReader the SequenceReader providing the sequence to be scanned
-	 * @param desiredLength  the number of symbols to read before returning
-	 * @return a Kcount containing the counts of all patterns being scanned for
+	 * @param fragment the SequenceFragment providing the sequence to be scanned
+	 * @return a SequenceSpectrum containing the counts of all patterns being scanned for
 	 * @throws java.io.IOException when an input/output error occurs on the reader
 	 * @throws edu.berkeley.compbio.sequtils.FilterException
 	 *                             when the scanner is filtering the sequence while reading it, but the filter throws an
@@ -73,9 +84,27 @@ public interface SequenceSpectrumScanner
 			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
 			       GenericFactoryException;
 
+	/**
+	 * Scans a sequence to count pattern frequencies, considering only words that follow the given prefix.  Primarily used
+	 * for multi-pass scanning, to achieve a large effective word length within reasonable memory.
+	 *
+	 * @param fragment the SequenceFragment providing the sequence to be scanned
+	 * @param prefix   the word that must precede each pattern in order for it to be counted
+	 * @return a SequenceSpectrum based on words immediately following the prefix
+	 * @throws IOException
+	 * @throws edu.berkeley.compbio.sequtils.FilterException
+	 *
+	 * @throws NotEnoughSequenceException
+	 */
 	SequenceSpectrum scanSequence(SequenceFragment fragment, //SequenceReader resetReader, int desiredLength,
 	                              byte[] prefix) throws IOException, FilterException, NotEnoughSequenceException,
 	                                                    DistributionProcessorException, GenericFactoryException;
 
+	/**
+	 * Returns an empty SequenceSpectrum of the appropriate type.  This spectrum is "empty" in the sense that it is not
+	 * based on any sequence, but it may nonetheless represent some prior, e.g. uniform.
+	 *
+	 * @return an empty SequenceSpectrum of the appropriate type.
+	 */
 	SequenceSpectrum getEmpty();
 	}

@@ -37,7 +37,7 @@ package edu.berkeley.compbio.ml.cluster;
  * Represents a potential move of a sample from one cluster to another.  Doesn't actually refer to the sample itself,
  * strangely; apparently we haven't needed that yet.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public class ClusterMove<T extends Clusterable<T>>

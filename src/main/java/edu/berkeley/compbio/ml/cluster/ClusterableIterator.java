@@ -44,7 +44,7 @@ import java.util.NoSuchElementException;
  * to consider the entire set of samples repeatedly, but don't want to store the samples explicitly.  In that case we
  * can just reset the iterator and run through it again.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public interface ClusterableIterator<T extends Clusterable<T>> extends Iterator<T>//, Comparable<ClusterableIterator<T>>
@@ -54,11 +54,16 @@ public interface ClusterableIterator<T extends Clusterable<T>> extends Iterator<
 
 	//public abstract ClusterableIterator<T> clone() throws CloneNotSupportedException;
 
+	/**
+	 * Resets the iterator to the beginning, so that the next call to next() will return the first element.
+	 *
+	 * @throws IOException when something goes wrong
+	 */
 	void reset() throws IOException;
 
 
 	/**
-	 * {@inheritDoc}
+	 * Returns the next object from the iterator
 	 */
 	@NotNull
 	T next() throws NoSuchElementException;

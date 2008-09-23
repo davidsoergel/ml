@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 /**
  * A runtime exception having to do with clustering.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public class ClusterRuntimeException extends ChainedRuntimeException

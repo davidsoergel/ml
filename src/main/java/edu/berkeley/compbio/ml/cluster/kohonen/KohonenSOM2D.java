@@ -68,7 +68,7 @@ import java.util.Set;
  * just initialize the grid with a uniform prototype; after placing the first incoming point with a neighborhood
  * encompassing the whole grid, all cells will be differentiated.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  * @Author David Soergel
  * @Version 1.0
@@ -355,6 +355,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return true;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory) throws GenericFactoryException
@@ -418,6 +421,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return result;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell)
 		{
 		return new NeighborhoodShellIterator(cell);
@@ -808,11 +814,17 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				nextCell = findNextCell();
 				}
 
+			/**
+			 * {@inheritDoc}
+			 */
 			public boolean hasNext()
 				{
 				return nextCell != null;
 				}
 
+			/**
+			 * {@inheritDoc}
+			 */
 			public WeightedCell next()
 				{
 				currentCell = nextCell;
@@ -878,6 +890,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				}
 
 
+			/**
+			 * {@inheritDoc}
+			 */
 			public void remove()
 				{
 				throw new NotImplementedException();
@@ -898,10 +913,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		}
 
 	/**
-	 * Returns the best cluster without adding the point
-	 *
-	 * @param p                   Point to find the best cluster of
-	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
+	 * {@inheritDoc}
 	 */
 	@Override
 	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
@@ -911,6 +923,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return cm.bestCluster;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
 		{
@@ -996,11 +1011,17 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			this.center = center;
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public boolean hasNext()
 			{
 			return true;
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		// This is horribly inefficient but we don't do it often
 		public Set<KohonenSOMCell<T>> next()
 			{
@@ -1029,6 +1050,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			return result;
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
 		public void remove()
 			{
 			throw new NotImplementedException();

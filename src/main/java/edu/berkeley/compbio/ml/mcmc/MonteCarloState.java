@@ -34,8 +34,10 @@
 package edu.berkeley.compbio.ml.mcmc;
 
 /**
- * @author lorax
- * @version 1.0
+ * Interface for objects representing the current state of a Monte Carlo simulation.
+ *
+ * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @version $Id$
  */
 public interface MonteCarloState
 	{
@@ -51,5 +53,11 @@ public interface MonteCarloState
 	 */
 	double unnormalizedLogLikelihood();
 
+	/**
+	 * store the current state (or some summary of it) in the provided data collector
+	 *
+	 * @param step the current step number of the simulation (i.e., time)
+	 * @param dc   the DataCollector into which to record the present state
+	 */
 	abstract void writeToDataCollector(int step, DataCollector dc);
 	}

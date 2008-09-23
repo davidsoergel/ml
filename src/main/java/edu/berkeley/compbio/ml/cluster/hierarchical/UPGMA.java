@@ -52,7 +52,7 @@ import java.util.Set;
 
 
 /**
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 
@@ -74,6 +74,9 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		//		theClusterPairs = new TreeMap<ClusterPair<T>, Double>();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public LengthWeightHierarchyNode<Cluster<T>, ? extends LengthWeightHierarchyNode> getTree()
 		{
@@ -108,10 +111,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		}
 
 	/**
-	 * Return a ClusterMove object describing the best way to reassign the given point to a new cluster.
-	 *
-	 * @param p
-	 * @return
+	 * {@inheritDoc}
 	 */
 	@Override
 	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
@@ -119,6 +119,9 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		throw new NotImplementedException("");
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void performClustering()
 		{
@@ -179,6 +182,9 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	private int idCount = 0;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addAll(Collection<? extends Clusterable<T>> samples)
 		{

@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 
 
 /**
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 
@@ -54,6 +54,9 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 
 	private String label;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getLabel()
 		{
 		return label;
@@ -78,6 +81,9 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 
 	// ------------------------ CANONICAL METHODS ------------------------
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ClusterableDoubleArray clone()
 		{
@@ -90,12 +96,18 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 
 	// --------------------- Interface AdditiveClusterable ---------------------
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void decrementBy(ClusterableDoubleArray object)
 		{
 		//data = ArrayUtils.minus(data, object.data);
 		DSArrayUtils.decrementBy(data, object.data);
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void incrementBy(ClusterableDoubleArray object)
 		{
 		//data = ArrayUtils.plus(data, object.data);
@@ -103,34 +115,52 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void decrementByWeighted(ClusterableDoubleArray object, double weight)
 		{
 		//data = ArrayUtils.minus(data, object.data);
 		DSArrayUtils.decrementByWeighted(data, object.data, weight);
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void incrementByWeighted(ClusterableDoubleArray object, double weight)
 		{
 		//data = ArrayUtils.plus(data, object.data);
 		DSArrayUtils.incrementByWeighted(data, object.data, weight);
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void multiplyBy(double scalar)
 		{
 		//data = ArrayUtils.times(data, scalar);
 		DSArrayUtils.multiplyBy(data, scalar);
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public ClusterableDoubleArray minus(ClusterableDoubleArray object)
 		{
 		return new ClusterableDoubleArray(id + "+" + object.getId(), DSArrayUtils.minus(data, object.data));
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public ClusterableDoubleArray plus(ClusterableDoubleArray object)
 		{
 		return new ClusterableDoubleArray(id + "+" + object.getId(), DSArrayUtils.plus(data, object.data));
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public ClusterableDoubleArray times(double scalar)
 		{
 		return new ClusterableDoubleArray(id + "*" + scalar, DSArrayUtils.times(data, scalar));
@@ -138,11 +168,17 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 
 	// --------------------- Interface Clusterable ---------------------
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean equalValue(ClusterableDoubleArray object)
 		{
 		return id.equals(object.id) && DSArrayUtils.equalWithinFPError(data, object.data);
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getId()
 		{
 		return null;
@@ -151,6 +187,9 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	// --------------------- Interface DoubleArrayContainer ---------------------
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public double[] getArray()
 		{
 		return data;

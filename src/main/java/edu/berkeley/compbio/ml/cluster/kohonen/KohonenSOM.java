@@ -40,7 +40,9 @@ import java.util.Set;
 
 
 /**
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * A Kohonen Self-Organizing Map.
+ *
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 
@@ -48,6 +50,13 @@ public interface KohonenSOM<T extends AdditiveClusterable<T>> extends ClusterSet
 	{
 	//boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
 
+	/**
+	 * Gets an iterator over cells in the neighborhood of the given cell.  The definition of "neighborhood" is
+	 * implementation-specific, and may have parameters (such as a radius).
+	 *
+	 * @param cell the cell whose neighborhood to iterate over.
+	 * @return an iterator over cells in the neighborhood, in no particular order.
+	 */
 	Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell);
 
 

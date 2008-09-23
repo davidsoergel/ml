@@ -62,6 +62,9 @@ public class EuclideanDistance implements DistanceMeasure<ClusterableDoubleArray
 
 	// --------------------- Interface DistanceMeasure ---------------------
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public double distanceFromTo(ClusterableDoubleArray a, ClusterableDoubleArray b)
 		{
 		double sum = 0;

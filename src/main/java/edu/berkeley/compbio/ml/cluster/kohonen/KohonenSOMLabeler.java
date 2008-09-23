@@ -37,14 +37,18 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
 /**
  * Once a Kohonen SOM is learned, propagate the sample labels around in some way to give label confidences for every
- * cell
+ * cell.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
- * @Author David Soergel
- * @Version 1.0
  */
 public interface KohonenSOMLabeler<T extends AdditiveClusterable<T>>
 	{
+	/**
+	 * Once a Kohonen SOM is learned, propagate the sample labels around in some way to give label confidences for every
+	 * cell.
+	 *
+	 * @param theMap the KohonenSOM<T>
+	 */
 	void propagateLabels(KohonenSOM<T> theMap);
 	}

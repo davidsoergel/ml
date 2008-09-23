@@ -38,7 +38,7 @@ import org.apache.log4j.Logger;
 /**
  * A cluster whose centroid can be moved by adding or removing individual samples.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractCluster<T>
@@ -66,11 +66,7 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 	// -------------------------- OTHER METHODS --------------------------
 
 	/**
-	 * Add the given sample to this cluster.  Does not automatically remove the sample from other clusters of which it is
-	 * already a member.
-	 *
-	 * @param point the sample to add
-	 * @return true if the point was successfully added; false otherwise
+	 * {@inheritDoc}
 	 */
 	//@Override
 	public boolean recenterByAdding(T point)
@@ -83,11 +79,7 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 		}
 
 	/**
-	 * Remove the given sample from this cluster.
-	 *
-	 * @param point the sample to remove
-	 * @return true if the point was successfully removed; false otherwise (in particular, if the point is not a member of
-	 *         this cluster in teh first place)
+	 * {@inheritDoc}
 	 */
 	//	@Override
 	public boolean recenterByRemoving(T point)

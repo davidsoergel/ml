@@ -44,7 +44,7 @@ import java.util.Formatter;
  * A tree node representing a hierarchical cluster.  Fakes multiple inheritance by providing a facade to the contained
  * Cluster.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogenyNode<Cluster<T>> implements Cluster<T>
@@ -55,37 +55,48 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 		setWeight(1.);
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public T getCentroid()
 		{
 		return getValue().getCentroid();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setCentroid(T centroid)
 		{
 		getValue().setCentroid(centroid);
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public int getId()
 		{
 		return getValue().getId();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setId(int id)
 		{
 		getValue().setId(id);
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public int getN()
 		{
 		return getValue().getN();
 		}
 
 	/**
-	 * Add the given sample to this cluster.  Does not automatically remove the sample from other clusters of which it is
-	 * already a member.
-	 *
-	 * @param point the sample to add
-	 * @return true if the point was successfully added; false otherwise
+	 * {@inheritDoc}
 	 */
 	public boolean recenterByAdding(T point)
 		{
@@ -93,72 +104,104 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 		}
 
 	/**
-	 * Remove the given sample from this cluster.
-	 *
-	 * @param point the sample to remove
-	 * @return true if the point was successfully removed; false otherwise (in particular, if the point is not a member of
-	 *         this cluster in teh first place)
+	 * {@inheritDoc}
 	 */
 	public boolean recenterByRemoving(T point)
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void updateLabelProbabilitiesFromCounts()
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Multinomial<String> getLabelProbabilities() throws DistributionException
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public double getDominantProbability() throws DistributionException
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getDominantLabel()
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void addLabel(T point)
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void removeLabel(T point)
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setSumOfSquareDistances(double i)
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void addToSumOfSquareDistances(double v)
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public double getStdDev()
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setN(int i)
 		{
 		getValue().setN(i);
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString()
 		{
@@ -168,6 +211,9 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 		return f.out().toString();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public HierarchicalCluster<T> clone()
 		{

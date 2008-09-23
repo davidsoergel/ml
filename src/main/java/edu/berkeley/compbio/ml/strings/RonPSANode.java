@@ -42,7 +42,7 @@ import java.util.Queue;
 /**
  * Extends a MarkovTreeNode with backlinks, for making make a Probabilistic Suffix Automaton (PSA).
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  * @Author David Soergel
  * @Version 1.0

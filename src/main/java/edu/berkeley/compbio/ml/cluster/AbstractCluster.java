@@ -48,7 +48,7 @@ import java.util.Formatter;
  * centroid may or may not be sufficient to describe the cluster (see AdditiveCluster); in the limit, a Cluster subclass
  * may simply store all the samples in the cluster.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public abstract class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
@@ -106,9 +106,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	// --------------------- GETTER / SETTER METHODS ---------------------
 
 	/**
-	 * Returns the centroid.
-	 *
-	 * @return
+	 * {@inheritDoc}
 	 */
 	public T getCentroid()
 		{
@@ -116,9 +114,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		}
 
 	/**
-	 * Sets the centroid.
-	 *
-	 * @param centroid the centroid
+	 * {@inheritDoc}
 	 */
 	public void setCentroid(T centroid)
 		{
@@ -127,9 +123,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 
 
 	/**
-	 * Returns the integer id for this cluster
-	 *
-	 * @return
+	 * {@inheritDoc}
 	 */
 	public int getId()
 		{
@@ -137,9 +131,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		}
 
 	/**
-	 * Sets the integer id for this cluster
-	 *
-	 * @param id the id
+	 * {@inheritDoc}
 	 */
 	public void setId(int id)
 		{
@@ -147,15 +139,16 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		}
 
 	/**
-	 * Returns the number of samples in this cluster
-	 *
-	 * @return
+	 * {@inheritDoc}
 	 */
 	public int getN()
 		{
 		return n;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setN(int n)
 		{
 		this.n = n;
@@ -187,10 +180,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	   }*/
 
 	/**
-	 * Sets the sum of squared distances from the samples in this cluster to its centroid.  Computed externally in {@see
-	 * ClusteringMethod.computeClusterStdDevs}.
-	 *
-	 * @param v the sumOfSquareDistances
+	 * {@inheritDoc}
 	 */
 	public void setSumOfSquareDistances(double v)
 		{
@@ -209,19 +199,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
  */
 
 	/**
-	 * Returns a string representation of the object. In general, the <code>toString</code> method returns a string that
-	 * "textually represents" this object. The result should be a concise but informative representation that is easy for a
-	 * person to read. It is recommended that all subclasses override this method.
-	 * <p/>
-	 * The <code>toString</code> method for class <code>Object</code> returns a string consisting of the name of the class
-	 * of which the object is an instance, the at-sign character `<code>@</code>', and the unsigned hexadecimal
-	 * representation of the hash code of the object. In other words, this method returns a string equal to the value of:
-	 * <blockquote>
-	 * <pre>
-	 * getClass().getName() + '@' + Integer.toHexString(hashCode())
-	 * </pre></blockquote>
-	 *
-	 * @return a string representation of the object.
+	 * {@inheritDoc}
 	 */
 	@Override
 	public String toString()
@@ -232,13 +210,9 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return f.out().toString();
 		}
 
+
 	/**
-	 * Returns the standard deviation of the distances from each sample to the centroid, if this has already been computed.
-	 * Can be used as a (crude?) measure of clusteredness, in combination with the distances between the cluster centroids
-	 * themselves.  May return an obsolete value if the cluster centroid or members have been altered since the standard
-	 * deviation was computed.
-	 *
-	 * @return the standard deviation of the distances from each sample to the centroid
+	 * {@inheritDoc}
 	 */
 	public double getStdDev()
 		{
@@ -249,8 +223,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 
 
 	/**
-	 * Increments the sum of square distances.  Note there can be no online method of updating the sum of squares, because
-	 * the centroid keeps moving
+	 * {@inheritDoc}
 	 */
 	public void addToSumOfSquareDistances(double v)
 		{
@@ -289,6 +262,9 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return false;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode()
 		{
@@ -310,6 +286,9 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return labelCounts;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void updateLabelProbabilitiesFromCounts()//throws DistributionException
 		{
 		labelProbabilities = new Multinomial<String>();
@@ -330,23 +309,35 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
 		{
 		this.labelProbabilities = labelProbabilities;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Multinomial<String> getLabelProbabilities() throws DistributionException
 		{
 		labelProbabilities.normalize();
 		return labelProbabilities;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public double getDominantProbability() throws DistributionException
 		{
 		labelProbabilities.normalize();
 		return labelProbabilities.getDominantProbability();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getDominantLabel()
 		{
 		return labelProbabilities.getDominantKey();
@@ -359,12 +350,18 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return totalLabels;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void addLabel(T point)
 		{
 		totalLabels++;
 		labelCounts.add(point.getLabel());
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void removeLabel(T point)
 		{
 		totalLabels--;

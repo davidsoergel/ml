@@ -54,11 +54,7 @@ public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 		}
 
 	/**
-	 * Add the given sample to this cluster.  Does not automatically remove the sample from other clusters of which it is
-	 * already a member.
-	 *
-	 * @param point the sample to add
-	 * @return true if the point was successfully added; false otherwise
+	 * {@inheritDoc}
 	 */
 	public boolean recenterByAdding(T point)
 		{
@@ -67,11 +63,7 @@ public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 		}
 
 	/**
-	 * Remove the given sample from this cluster.
-	 *
-	 * @param point the sample to remove
-	 * @return true if the point was successfully removed; false otherwise (in particular, if the point is not a member of
-	 *         this cluster in teh first place)
+	 * {@inheritDoc}
 	 */
 	public boolean recenterByRemoving(T point)
 		{

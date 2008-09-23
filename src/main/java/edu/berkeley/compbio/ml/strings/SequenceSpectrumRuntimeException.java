@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
 /**
  * Thrown when something involving a SequenceSpectrum goes wrong, such as when a requested spectrum cannot be computed.
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public class SequenceSpectrumRuntimeException extends ChainedRuntimeException

@@ -57,7 +57,7 @@ import java.util.List;
  * parent node).  If the tree is completely filled out with respect to its alphabet up to a depth k, then it represents
  * a k-order Markov model.  If it is incompletely filled out, it may represent a Variable Memory Markov model (VMM).
  *
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  * @see RonPSANode
  *      <p/>

@@ -41,7 +41,7 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a statistical model of a sequence of bytes.  The generic type tells what other kinds of SequenceSpecturm
+ * Represents a statistical model of a sequence of bytes.  The generic type tells what other kinds of SequenceSpectrum
  * classes this one is compatible with under addition; frequently this is just the implementation class itself, but it
  * may also be a superclass or interface that is compatible under addition via {@link AdditiveClusterable}.  The fact
  * that this class extends AdditiveClusterable expresses the requirement that there be a sensible (i.e., commutative and
@@ -59,10 +59,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	// --------------------- Interface GenericFactoryAware ---------------------
 
 	/**
-	 * Returns the factory that produced this SequenceSpectrum.  This is useful because the factory may have some
-	 * configuration parameters, and we may want to construct a new SequenceSpectrum using the same parameters.
-	 *
-	 * @return
+	 * {@inheritDoc}
 	 */
 	@NotNull
 	GenericFactory getFactory();
@@ -71,13 +68,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	// -------------------------- OTHER METHODS --------------------------
 
 	/**
-	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
-	 * requires no cast.  Also, we insist that this method be implemented in inheriting classes, so it does not throw
-	 * CloneNotSupportedException.
-	 *
-	 * @return a clone of this instance.
-	 * @see Object#clone
-	 * @see java.lang.Cloneable
+	 * {@inheritDoc}
 	 */
 	@Override
 	T clone();
@@ -157,8 +148,21 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 
 	// REVIEW really the lifecycle of a SequenceSpectrum should be managed more carefully, i.e. as a Builder
 
+	/**
+	 * A SequenceSpectrum object that is being learned from data may have a DistributionProcessor associated with it that
+	 * should be run before the training begins, such as a pseudocountadder; if so, this method executes the processor.
+	 *
+	 * @throws DistributionProcessorException when the processor fails for any reason
+	 */
 	void runBeginTrainingProcessor() throws DistributionProcessorException;
 
+	/**
+	 * A SequenceSpectrum object that is being learned from data may have a DistributionProcessor associated with it that
+	 * should be run after the training is finished, such as a smoothing processor; if so, this method executes the
+	 * processor.
+	 *
+	 * @throws DistributionProcessorException when the processor fails for any reason
+	 */
 	void runFinishTrainingProcessor() throws DistributionProcessorException;
 
 	/**
@@ -180,8 +184,21 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 
 	//void runCompletionProcessor() throws DistributionProcessorException;
 
+	/**
+	 * Specify whether or not this sequence spectrum attempts to account for edge effects, i.e. the first and last words of
+	 * each sequence.  Accounting for these properly introduces a good deal of complexity and requires extra time, so
+	 * considering spectra to describe biases is infinitely long sequn
+	 *
+	 * @param b the ignoreEdges
+	 * @see FirstWordProvider
+	 */
 	void setIgnoreEdges(boolean b);
 
+
+	/**
+	 * Declare that this spectrum should not change anymore.  In practice this is not enforced; this is used only to free
+	 * up memory by forgetting data that would be needed to recompute the spectrum if it were to change.
+	 */
 	void setImmutable();
 
 	/**

@@ -36,7 +36,7 @@ import com.davidsoergel.stats.DiscreteDistribution1D;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 
 /**
- * @author <a href="mailto:dev.davidsoergel.com">David Soergel</a>
+ * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 
