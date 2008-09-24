@@ -38,7 +38,6 @@ import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;
 import org.apache.log4j.Logger;
 
 /**
- * @author lorax
  * @version 1.0
  */
 public class EuclideanDistance implements DistanceMeasure<ClusterableDoubleArray>

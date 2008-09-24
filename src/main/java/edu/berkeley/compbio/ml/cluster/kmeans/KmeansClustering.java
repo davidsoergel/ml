@@ -48,7 +48,6 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author lorax
  * @version 1.0
  */
 public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T>

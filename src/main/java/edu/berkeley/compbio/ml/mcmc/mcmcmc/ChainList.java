@@ -41,7 +41,6 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 
 /**
- * @author lorax
  * @version 1.0
  */
 public class ChainList extends ArrayList<MonteCarlo> implements MonteCarloState

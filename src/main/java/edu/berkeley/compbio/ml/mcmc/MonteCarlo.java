@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author lorax
  * @version 1.0
  */
 @PropertyConsumer

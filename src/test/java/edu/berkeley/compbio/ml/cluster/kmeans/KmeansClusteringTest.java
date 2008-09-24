@@ -41,7 +41,6 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 
 /**
- * @author lorax
  * @version 1.0
  */
 public class KmeansClusteringTest

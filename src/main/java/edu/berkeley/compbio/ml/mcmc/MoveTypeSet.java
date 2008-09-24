@@ -47,7 +47,6 @@ import java.util.List;
 /**
  * Hold a set of move types, and act as a factory for creating new moves.
  *
- * @author lorax
  * @version 1.0
  */
 @PropertyConsumer

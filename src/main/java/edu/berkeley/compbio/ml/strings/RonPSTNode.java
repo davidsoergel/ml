@@ -55,7 +55,6 @@ import java.util.List;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  * @Author David Soergel
- * @Version 1.0
  */
 public class RonPSTNode extends AbstractGenericFactoryAware
 	{

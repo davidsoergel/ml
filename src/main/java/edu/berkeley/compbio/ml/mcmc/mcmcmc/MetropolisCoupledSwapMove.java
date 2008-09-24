@@ -40,7 +40,6 @@ import edu.berkeley.compbio.ml.mcmc.ProbabilityMove;
 import org.apache.log4j.Logger;
 
 /**
- * @author lorax
  * @version 1.0
  */
 public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove

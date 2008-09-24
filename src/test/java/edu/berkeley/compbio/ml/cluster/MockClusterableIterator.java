@@ -34,7 +34,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
 /**
- * @author lorax
  * @version 1.0
  */
 @Deprecated

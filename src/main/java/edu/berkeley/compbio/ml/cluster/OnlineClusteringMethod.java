@@ -33,10 +33,10 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
-import com.davidsoergel.dsutils.IteratorProvider;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -87,7 +87,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> extends C
 	 * consider each of the incoming data points exactly once per iteration.  Note iterations > 1 only makes sense for
 	 * unsupervised clustering.
 	 */
-	public void train(IteratorProvider<T> trainingIteratorProvider, int iterations)
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
 			throws IOException, ClusterException//, int maxpoints) throws IOException
 		{
 		//Date totalstarttime = new Date();
@@ -95,7 +95,7 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> extends C
 		for (int i = 0; i < iterations; i++)
 			{
 			int changed = 0;
-			Iterator<T> trainingIterator = trainingIteratorProvider.next();
+			Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
 			//normalizeClusters();
 			int c = 0;
 			Date starttime = new Date();

@@ -79,6 +79,9 @@ public class RonPST extends RonPSTNode
 
 	private String label;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getLabel()
 		{
 		return label;
@@ -432,9 +435,7 @@ public class RonPST extends RonPSTNode
 		}
 
 	/**
-	 * Returns the alphabet of this SequenceSpectrum object.
-	 *
-	 * @return the alphabet (type byte[]) of this SequenceSpectrum object.
+	 * {@inheritDoc}
 	 */
 	public byte[] getAlphabet()
 		{
@@ -454,13 +455,7 @@ public class RonPST extends RonPSTNode
 		}
 
 	/**
-	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
-	 * implicit assumption is that the sequences being modeled have some correlation length, and thus that statistical
-	 * models of them can be built from substrings up to that length.  Thus, this method tells the maximum correlation
-	 * length provided by the model.  A manifestation of this is that conditional probabilities of symbols given a prefix
-	 * will cease to change as the prefix is lengthened (to the left) past this length.
-	 *
-	 * @return the maximum correlation length considered in the model.
+	 * {@inheritDoc}
 	 */
 	@Override
 	public int getMaxDepth()
@@ -469,68 +464,70 @@ public class RonPST extends RonPSTNode
 		}
 
 	/**
-	 * Returns the number of samples on which this spectrum is based.
-	 *
-	 * @return The number of samples
+	 * {@inheritDoc}
 	 */
 	public int getNumberOfSamples()
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void runBeginTrainingProcessor() throws DistributionProcessorException
 		{
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void runFinishTrainingProcessor() throws DistributionProcessorException
 		{
 		}
 
 	/**
-	 * Chooses a random symbol according to the conditional probabilities of symbols following the given prefix.  Shortcut
-	 * equivalent to conditionalsFrom(prefix).sample().byteValue()
-	 *
-	 * @param prefix a byte array providing the conditioning prefix
-	 * @return the chosen symbol
+	 * {@inheritDoc}
 	 */
 	public byte sample(byte[] prefix) throws SequenceSpectrumException
 		{
-		throw new NotImplementedException();
+		try
+			{
+			return conditionalsFrom(prefix).sample();
+			}
+		catch (DistributionException e)
+			{
+			logger.debug(e);
+			e.printStackTrace();
+			throw new SequenceSpectrumException(e);
+			}
 		}
 
 	/**
-	 * Chooses a random string according to the conditional probabilities of symbols.
-	 *
-	 * @param length the length of the desired random string
-	 * @return a byte[] of the desired length sampled from this distribution
+	 * {@inheritDoc}
 	 */
 	public byte[] sample(int length) throws SequenceSpectrumException
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setIgnoreEdges(boolean b)
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setImmutable()
 		{
 		throw new NotImplementedException();
 		}
 
 	/**
-	 * Test whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
-	 * implementations of this interface may contain additional state which make them not strictly equal; here we're only
-	 * interested in whether they're equal as far as this interface is concerned.
-	 * <p/>
-	 * Naive implementations will simply test for exact equality; more sophisticated implementations ought to use a more
-	 * rigorous idea of "statistically equivalent", though in that case we'll probabably need to provide more parameters,
-	 * such as a p-value threshold to use.  Note that the spectra know the number of samples used to generate them, so at
-	 * least that's covered.
-	 *
-	 * @param spectrum the SequenceSpectrum to compare
-	 * @return True if the spectra are equivalent, false otherwise
+	 * {@inheritDoc}
 	 */
 	public boolean spectrumEquals(SequenceSpectrum spectrum)
 		{
@@ -538,10 +535,7 @@ public class RonPST extends RonPSTNode
 		}
 
 	/**
-	 * Computes the probability of generating the given sequence under the model.
-	 *
-	 * @param s a byte array
-	 * @return the probability, a double value between 0 and 1, inclusive
+	 * {@inheritDoc}
 	 */
 	public double totalProbability(byte[] s) throws SequenceSpectrumException
 		{
@@ -594,11 +588,17 @@ public class RonPST extends RonPSTNode
 		}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void decrementByWeighted(RonPST object, double weight)
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void incrementByWeighted(RonPST object, double weight)
 		{
 		throw new NotImplementedException();
@@ -627,11 +627,17 @@ public class RonPST extends RonPSTNode
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public RonPST times(double v)
 		{
 		throw new NotImplementedException();
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void multiplyBy(double v)
 		{
 		throw new NotImplementedException();

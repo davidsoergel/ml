@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.Locale;
 
 /**
- * @author lorax
  * @version 1.0
  */
 @PropertyConsumer

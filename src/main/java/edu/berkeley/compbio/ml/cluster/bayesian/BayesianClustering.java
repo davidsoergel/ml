@@ -33,9 +33,9 @@
 
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
+import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
-import com.davidsoergel.dsutils.IteratorProvider;
 import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
@@ -157,7 +157,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void train(IteratorProvider<T> trainingIteratorProvider, int iterations)
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
 		{
 		// do nothing
 
