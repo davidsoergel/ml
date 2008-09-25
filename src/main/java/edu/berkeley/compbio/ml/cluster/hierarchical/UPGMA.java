@@ -43,6 +43,7 @@ import edu.berkeley.compbio.ml.cluster.HierarchicalCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 import org.apache.commons.lang.NotImplementedException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -90,6 +91,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
 	 */
+	@Nullable
 	@Override
 	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
 			throws ClusterException, NoGoodClusterException
@@ -147,8 +149,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			// create a composite node
 
 			composite = new HierarchicalCluster<T>(idCount++, null);
-			composite.addChild(a);
-			composite.addChild(b);
+			a.setParent(composite);
+			b.setParent(composite);
 			composite.setWeight(a.getWeight() + b.getWeight());
 			composite.setN(a.getN() + b.getN());
 

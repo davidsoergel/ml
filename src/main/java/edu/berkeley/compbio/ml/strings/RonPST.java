@@ -525,7 +525,15 @@ public class RonPST extends RonPSTNode
 	 */
 	public double totalProbability(byte[] s) throws SequenceSpectrumException
 		{
-		throw new NotImplementedException();
+		double result = 1.;
+		// PERF inefficient due to allocating a separate byte[] for each prefix
+
+		for (int i = 0; i < s.length; i++)
+			{
+			result *= conditionalProbability(s[i], DSArrayUtils.prefix(s, i));
+			}
+
+		return result;
 		}
 
 	// -------------------------- OTHER METHODS --------------------------

@@ -33,6 +33,8 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Primarily a marker interface for classes that can be clustered by various algorithms.
  *
@@ -70,6 +72,7 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 *
 	 * @return a unique identifier for this object
 	 */
+	@Nullable
 	String getId();
 
 

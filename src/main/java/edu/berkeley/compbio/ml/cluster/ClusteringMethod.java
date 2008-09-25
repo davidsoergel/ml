@@ -38,6 +38,7 @@ import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.DistributionException;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -130,6 +131,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
 	 */
+	@Nullable
 	public abstract Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
 			throws NoGoodClusterException, ClusterException;
 

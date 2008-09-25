@@ -35,6 +35,7 @@ package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AtomicContractTest;
 import com.davidsoergel.dsutils.TestInstanceFactory;
+import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -87,7 +88,8 @@ public class KcountAbstractTest<T extends Kcount> extends AtomicContractTest
 			byte[] seq = new byte[kc.getK()];
 			for (int i = 0; i < kc.getK(); i++)
 				{
-				seq[i] = kc.sample(new byte[0]);
+				int r = MersenneTwisterFast.randomInt(4);
+				seq[i] = kc.getAlphabet()[r];//kc.sample(new byte[0]);
 				}
 			int id = kc.idForSequence(seq);
 			byte[] a = kc.sequenceForId(id);
