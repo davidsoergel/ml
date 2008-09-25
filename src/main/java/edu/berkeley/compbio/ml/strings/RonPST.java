@@ -370,14 +370,6 @@ public class RonPST extends RonPSTNode
 		throw new NotImplementedException();
 		}
 
-	/**
-	 * Test whether the given object is the same as this one.  Differs from equals() in that implementations of this
-	 * interface may contain additional state which make them not strictly equal; here we're only interested in whether
-	 * they're equal as far as this interface is concerned, i.e., for purposes of clustering.
-	 *
-	 * @param other The clusterable object to compare against
-	 * @return True if they are equivalent, false otherwise
-	 */
 	public boolean equalValue(RonPST other)
 		{
 		throw new NotImplementedException();
@@ -442,13 +434,7 @@ public class RonPST extends RonPSTNode
 		return alphabet;
 		}
 
-	/**
-	 * Returns the length of the sequence that was scanned to produce this spectrum.  This number may be greater than that
-	 * given by {@link #getNumberOfSamples()} because every symbol is not necessarily counted as a sample, depending on the
-	 * implementation.
-	 *
-	 * @return the length (type int) of this Kcount object.
-	 */
+
 	public int getOriginalSequenceLength()
 		{
 		throw new NotImplementedException();
@@ -567,21 +553,12 @@ public class RonPST extends RonPSTNode
 		}
 
 
-	/**
-	 * updates this object by subtracting another one from it.
-	 *
-	 * @param object the object to subtract from this one
-	 */
 	public void decrementBy(RonPST object)
 		{
 		throw new NotImplementedException();
 		}
 
-	/**
-	 * updates this object by adding another one to it.
-	 *
-	 * @param object the object to add to this one
-	 */
+
 	public void incrementBy(RonPST object)
 		{
 		throw new NotImplementedException();
@@ -606,10 +583,7 @@ public class RonPST extends RonPSTNode
 
 
 	/**
-	 * Returns a new object representing the difference between this one and the given argument.
-	 *
-	 * @param object the object to be subtracted from this one
-	 * @return the difference between this object and the argument
+	 * {@inheritDoc}
 	 */
 	public RonPST minus(RonPST object)
 		{
@@ -617,10 +591,7 @@ public class RonPST extends RonPSTNode
 		}
 
 	/**
-	 * Returns a new object representing the sum of this one and the given argument.
-	 *
-	 * @param object the object to be added to this one
-	 * @return the sum of this object and the argument
+	 * {@inheritDoc}
 	 */
 	public RonPST plus(RonPST object)
 		{
