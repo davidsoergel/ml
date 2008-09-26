@@ -34,6 +34,8 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
+import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
 import com.davidsoergel.stats.DistributionException;
@@ -90,6 +92,13 @@ public class RonPST extends RonPSTNode
 	public void setLabel(String label)
 		{
 		this.label = label;
+		}
+
+	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+
+	public WeightedSet<String> getWeightedLabels()
+		{
+		return weightedLabels;
 		}
 
 	@Property(helpmessage = "A distribution processor to run on this PST, typically used for smoothing",

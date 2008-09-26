@@ -72,7 +72,6 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	private int desiredlength;
 	private boolean ignoreEdges;
 
-
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	//private List<byte[]> firstWords;//prefix;

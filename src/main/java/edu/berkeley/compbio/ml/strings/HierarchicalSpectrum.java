@@ -33,6 +33,8 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
+import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -132,5 +134,25 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 			}
 		result.add(this);
 		return result;
+		}
+
+
+	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+
+	public WeightedSet<String> getWeightedLabels()
+		{
+		return weightedLabels;
+		}
+
+	protected String label;
+
+	public String getLabel()
+		{
+		return label;
+		}
+
+	public void setLabel(String label)
+		{
+		this.label = label;
 		}
 	}

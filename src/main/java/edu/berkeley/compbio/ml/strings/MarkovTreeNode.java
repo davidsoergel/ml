@@ -35,6 +35,8 @@ package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import com.davidsoergel.dsutils.DSArrayUtils;
+import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
@@ -94,6 +96,13 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public void setLabel(String label)
 		{
 		this.label = label;
+		}
+
+	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+
+	public WeightedSet<String> getWeightedLabels()
+		{
+		return weightedLabels;
 		}
 
 	// --------------------------- CONSTRUCTORS ---------------------------

@@ -33,6 +33,8 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import com.google.common.collect.HashMultiset;
@@ -56,6 +58,12 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(AbstractCluster.class);
+
+	// we let the label probabilities be completely distinct from the counts, so that the probabilities
+	// can be set based on outside information (e.g., in the case of the Kohonen map, neighboring cells
+	// may exert an influence)
+
+	Multinomial<String> labelProbabilities = new Multinomial<String>();
 
 	/**
 	 * The distance measure to use for computing distances from samples to the centroid of this cluster
@@ -81,6 +89,13 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	 * The unique integer identifier of this cluster
 	 */
 	private int id;
+
+	private Multiset<String> labelCounts = new HashMultiset<String>();
+
+
+	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+
+	private int totalLabels = 0;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
@@ -121,7 +136,6 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		this.centroid = centroid;
 		}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -138,6 +152,28 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		this.id = id;
 		}
 
+	public Multiset<String> getLabelCounts()
+		{
+		return labelCounts;
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Multinomial<String> getLabelProbabilities() throws DistributionException
+		{
+		labelProbabilities.normalize();
+		return labelProbabilities;
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
+		{
+		this.labelProbabilities = labelProbabilities;
+		}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -152,6 +188,11 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	public void setN(int n)
 		{
 		this.n = n;
+		}
+
+	public int getTotalLabels()
+		{
+		return totalLabels;
 		}
 
 	/*	public void normalize()
@@ -188,47 +229,6 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		}
 
 	// ------------------------ CANONICAL METHODS ------------------------
-
-	/*
-	 public Cluster<T> clone()
-		 {
-		 Cluster<T> result = new Cluster<T>(theDistanceMeasure, centroid);
-		 result.addAll(this);
-		 return result;
-		 }
- */
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString()
-		{
-		Formatter f = new Formatter();
-		f.format("[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
-
-		return f.out().toString();
-		}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public double getStdDev()
-		{
-		return Math.sqrt(sumOfSquareDistances / n);
-		}
-
-	// -------------------------- OTHER METHODS --------------------------
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void addToSumOfSquareDistances(double v)
-		{
-		sumOfSquareDistances += v;
-		}
 
 	/**
 	 * Computes the distance from the given point to the centroid of this cluster, using the distance measure previously
@@ -273,18 +273,40 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return result;
 		}
 
-	private Multiset<String> labelCounts = new HashMultiset<String>();
+	/*
+	 public Cluster<T> clone()
+		 {
+		 Cluster<T> result = new Cluster<T>(theDistanceMeasure, centroid);
+		 result.addAll(this);
+		 return result;
+		 }
+ */
 
-	// we let the label probabilities be completely distinct from the counts, so that the probabilities
-	// can be set based on outside information (e.g., in the case of the Kohonen map, neighboring cells
-	// may exert an influence)
-
-	Multinomial<String> labelProbabilities = new Multinomial<String>();
-
-	public Multiset<String> getLabelCounts()
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
 		{
-		return labelCounts;
+		Formatter f = new Formatter();
+		f.format("[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
+
+		return f.out().toString();
 		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public double getStdDev()
+		{
+		return Math.sqrt(sumOfSquareDistances / n);
+		}
+
+	// ------------------------ INTERFACE METHODS ------------------------
+
+
+	// --------------------- Interface Cluster ---------------------
+
 
 	/**
 	 * {@inheritDoc}
@@ -308,24 +330,6 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		//		labelProbabilities.normalize();  // don't bother, it'll be done on request anyway
 		}
 
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
-		{
-		this.labelProbabilities = labelProbabilities;
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Multinomial<String> getLabelProbabilities() throws DistributionException
-		{
-		labelProbabilities.normalize();
-		return labelProbabilities;
-		}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -343,13 +347,6 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		return labelProbabilities.getDominantKey();
 		}
 
-	private int totalLabels = 0;
-
-	public int getTotalLabels()
-		{
-		return totalLabels;
-		}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -357,6 +354,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		{
 		totalLabels++;
 		labelCounts.add(point.getLabel());
+		weightedLabels.addAll(point.getWeightedLabels());
 		}
 
 	/**
@@ -367,5 +365,19 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		totalLabels--;
 		// we don't sanity check that the label was present to begin with
 		labelCounts.remove(point.getLabel());
+		weightedLabels.removeAll(point.getWeightedLabels());
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void addToSumOfSquareDistances(double v)
+		{
+		sumOfSquareDistances += v;
+		}
+
+	public WeightedSet<String> getWeightedLabels()
+		{
+		return weightedLabels;
 		}
 	}

@@ -37,6 +37,8 @@ import com.davidsoergel.dsutils.ContractTest;
 import com.davidsoergel.dsutils.ContractTestAware;
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.TestInstanceFactory;
+import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.DistributionProcessorException;
@@ -268,6 +270,13 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		public String getLabel()
 			{
 			return "Stub";
+			}
+
+		private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+
+		public WeightedSet<String> getWeightedLabels()
+			{
+			return weightedLabels;
 			}
 
 		/**

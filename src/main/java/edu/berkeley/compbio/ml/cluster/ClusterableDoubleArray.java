@@ -34,6 +34,8 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
+import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DoubleArrayContainer;
 import org.apache.log4j.Logger;
 
@@ -205,5 +207,12 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	public int length()
 		{
 		return data.length;
+		}
+
+	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+
+	public WeightedSet<String> getWeightedLabels()
+		{
+		return weightedLabels;
 		}
 	}

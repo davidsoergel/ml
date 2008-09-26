@@ -50,17 +50,6 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 
 	protected int originalSequenceLength;
 
-	private String label;
-
-	public String getLabel()
-		{
-		return label;
-		}
-
-	public void setLabel(String label)
-		{
-		this.label = label;
-		}
 
 	// --------------------- GETTER / SETTER METHODS ---------------------
 

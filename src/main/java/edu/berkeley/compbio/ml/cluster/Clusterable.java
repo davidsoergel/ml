@@ -33,6 +33,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -77,12 +78,12 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 
 
 	/**
-	 * Get a set of classification labels, if available (optional operation)
+	 * Get a set of classification labels, if available, with associated weights between 0 and 1. (optional operation)
 	 *
 	 * @return a set of Strings describing this object
 	 */
 	//** add multi-label classification infrastructure
-	//	Set<String> getLabels();
+	WeightedSet<String> getWeightedLabels();
 
 	/**
 	 * Get the primary classification label, if available (optional operation)
