@@ -234,7 +234,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		secondBestDistances.add(secondbestdistance);
 		if (best == null)
 			{
-			throw new ClusterException("Found no cluster at all, that's impossible");
+			throw new ClusterException("Found no cluster at all, that's impossible: " + p);
 			}
 		if (bestdistance > unknownDistanceThreshold)
 			{
