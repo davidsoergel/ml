@@ -34,6 +34,8 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import edu.berkeley.compbio.ml.cluster.AbstractCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
+import edu.berkeley.compbio.ml.cluster.Cluster;
+import org.apache.commons.lang.NotImplementedException;
 
 
 /**
@@ -58,6 +60,13 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCl
 		return true;
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean recenterByAddingAll(Cluster<T> otherCluster)
+		{
+		throw new NotImplementedException();
+		}
 
 	public void recenterByAddingWeighted(T point, double motionFactor)
 		{
@@ -95,5 +104,13 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCl
 
 		return true;
 		//throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean recenterByRemovingAll(Cluster<T> otherCluster)
+		{
+		throw new NotImplementedException();
 		}
 	}

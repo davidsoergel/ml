@@ -46,6 +46,7 @@ import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,7 +146,6 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	/**
 	 * assumes inputs are entirely positive and within the bounds given by cellsPerDimension
 	 *
-	 * @param cellposition
 	 * @return
 	 */
 	/*	private int listIndexFor(int[] cellposition)
@@ -306,7 +306,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		if (decrementLosingNeighborhood && loser != null)
 			{
-			loser.removeLabel(p);
+			winner.getWeightedLabels().removeAll(p.getWeightedLabels());
 			for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(loser); i.hasNext();)
 				{
 				WeightedCell v = i.next();
@@ -324,7 +324,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				}
 			}
 
-		winner.addLabel(p);
+		winner.getWeightedLabels().addAll(p.getWeightedLabels());
 		for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(winner); i.hasNext();)
 			{
 			WeightedCell v = i.next();
@@ -835,6 +835,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				return currentCell;
 				}
 
+			@Nullable
 			private WeightedCell findNextCell()
 				{
 				trav++;

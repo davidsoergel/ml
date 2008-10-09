@@ -38,7 +38,7 @@ import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.DistributionException;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -131,7 +132,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
 	 */
-	@Nullable
+	@NotNull
 	public abstract Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
 			throws NoGoodClusterException, ClusterException;
 
@@ -296,8 +297,9 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 * @throws DistributionException  when something goes wrong in computing the label probabilities
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public TestResults test(Iterator<T> theTestIterator, double unknownLabelProbabilityThreshold)
-			throws NoGoodClusterException, DistributionException, ClusterException
+	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels,
+	                        double unknownLabelProbabilityThreshold) throws // NoGoodClusterException,
+			DistributionException, ClusterException
 		{
 		// evaluate labeling correctness using the test samples
 
@@ -310,23 +312,42 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 		while (theTestIterator.hasNext())
 			{
 			T frag = theTestIterator.next();
-			Cluster<T> best = getBestCluster(frag, secondBestDistances);
-			double prob = best.getDominantProbability();
-			if (prob <= unknownLabelProbabilityThreshold)
+			try
 				{
-				tr.unknown++;
-				}
-			else
-				{
-				String dominantLabel = best.getDominantLabel();
-				if (frag.getLabel().equals(dominantLabel))
+				Cluster<T> best = getBestCluster(frag, secondBestDistances);
+
+				// there are two ways to get classified "unknown":
+				// if no bin is within the max distance from the sample, then NoGoodClusterException is thrown
+				// if we got a bin, but no label is sufficiently certain in the bin, that's "unknown" too
+
+				Map.Entry<String, Double> dominant =
+						best.getDerivedLabelProbabilities().getDominantEntryInSet(mutuallyExclusiveLabels);
+				String dominantExclusiveLabel = dominant.getKey();//best.getDominantLabelInSet(mutuallyExclusiveLabels);
+
+				if (dominant.getValue() <= unknownLabelProbabilityThreshold)
 					{
-					tr.correct++;
+					tr.unknown++;
 					}
 				else
 					{
-					tr.wrong++;
+					// the "dominant" label is the one assigned by this clustering process.
+					// if the fragment's best label from the same exclusive set is the same one, that's a match.
+
+					//	if (frag.getExclusiveLabel().equals(dominantExclusiveLabel))
+					if (frag.getWeightedLabels().getDominantEntryInSet(mutuallyExclusiveLabels)
+							.equals(dominantExclusiveLabel))
+						{
+						tr.correct++;
+						}
+					else
+						{
+						tr.wrong++;
+						}
 					}
+				}
+			catch (NoGoodClusterException e)
+				{
+				tr.unknown++;
 				}
 			if (i % 100 == 0)
 				{

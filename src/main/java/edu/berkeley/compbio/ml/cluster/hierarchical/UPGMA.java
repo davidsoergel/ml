@@ -108,7 +108,10 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 				bestDistance = distance;
 				}
 			}
-
+		if (best == null)
+			{
+			throw new NoGoodClusterException("No cluster found for point: " + p);
+			}
 		return best;
 		}
 
@@ -151,8 +154,13 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			composite = new HierarchicalCluster<T>(idCount++, null);
 			a.setParent(composite);
 			b.setParent(composite);
+
+			composite.recenterByAddingAll(a);
+			composite.recenterByAddingAll(b);
+
+			// weight and weightedLabels.getItemCount() are maybe redundant; too bad
 			composite.setWeight(a.getWeight() + b.getWeight());
-			composite.setN(a.getN() + b.getN());
+			//composite.setN(a.getN() + b.getN());
 
 			theClusters.add(composite);
 
@@ -197,8 +205,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			{
 			HierarchicalCluster a = new HierarchicalCluster(idCount++, i.next());
 			HierarchicalCluster b = new HierarchicalCluster(idCount++, i.next());
-			a.setN(1);
-			b.setN(1);
+			//a.setN(1);
+			//b.setN(1);
 
 			addInitialPair(a, b);
 			}
@@ -207,7 +215,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			{
 			Clusterable<T> sample = i.next();
 			HierarchicalCluster c = new HierarchicalCluster(idCount++, sample);
-			c.setN(1);
+			//c.setN(1);
 			addAndComputeDistances(c);
 			}
 		}

@@ -267,7 +267,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public String getLabel()
+		public String getExclusiveLabel()
 			{
 			return "Stub";
 			}

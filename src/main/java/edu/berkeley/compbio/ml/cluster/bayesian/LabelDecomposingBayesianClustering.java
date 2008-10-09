@@ -83,12 +83,17 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 			while (trainingIterator.hasNext())
 				{
 				T point = trainingIterator.next();
-				GrowableKmeansClustering<T> theIntraLabelClustering = theSubclusteringMap.get(point.getLabel());
+
+				String bestLabel = point.getWeightedLabels().getDominantEntryInSet(mutuallyExclusiveLabels).getKey();
+				//Cluster<T> cluster = theClusterMap.get(bestLabel);
+
+
+				GrowableKmeansClustering<T> theIntraLabelClustering = theSubclusteringMap.get(bestLabel);
 
 				if (theIntraLabelClustering == null)
 					{
 					theIntraLabelClustering = new GrowableKmeansClustering<T>(measure);
-					theSubclusteringMap.put(point.getLabel(), theIntraLabelClustering);
+					theSubclusteringMap.put(bestLabel, theIntraLabelClustering);
 					}
 
 				// naive online agglomerative clustering:
@@ -106,7 +111,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				if (cm.bestDistance > unknownDistanceThreshold)
 					{
 					logger.info("Creating new subcluster (" + cm.bestDistance + " > " + unknownDistanceThreshold
-							+ ") for " + point.getLabel());
+							+ ") for " + bestLabel);
 					cluster = new AdditiveCluster<T>(i++, prototypeFactory.create());
 					//cluster.setId(i++);
 

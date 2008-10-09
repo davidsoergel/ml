@@ -88,7 +88,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 	private String label;
 
-	public String getLabel()
+	public String getExclusiveLabel()
 		{
 		return label;
 		}

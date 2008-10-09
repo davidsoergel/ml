@@ -101,6 +101,11 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		   }
 	   logger.debug("initialized " + centroids.length + " clusters");
 	   }*/
+
+	/**
+	 * @param dm                       The distance measure to use
+	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
+	 */
 	public BayesianClustering(DistanceMeasure<T> dm, double unknownDistanceThreshold)
 		{
 		measure = dm;
@@ -126,13 +131,17 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 			while (trainingIterator.hasNext())
 				{
 				T point = trainingIterator.next();
-				Cluster<T> cluster = theClusterMap.get(point.getLabel());
+
+				// generate one cluster per exclusive label.
+
+				String clusterLabel = point.getWeightedLabels().getDominantEntryInSet(mutuallyExclusiveLabels).getKey();
+				Cluster<T> cluster = theClusterMap.get(clusterLabel);
 
 				if (cluster == null)
 					{
 					cluster = new AdditiveCluster<T>(i++, prototypeFactory.create());//measure
 					//cluster.setId(i++);
-					theClusterMap.put(point.getLabel(), cluster);
+					theClusterMap.put(clusterLabel, cluster);
 
 					//** for now we make a uniform prior
 					priors.put(cluster, 1);
@@ -164,7 +173,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		// after that, normalize the label probabilities
 		for (Cluster c : theClusters)
 			{
-			c.updateLabelProbabilitiesFromCounts();
+			c.updateDerivedWeightedLabelsFromLocal();
 			}
 		}
 

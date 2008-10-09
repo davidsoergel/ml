@@ -45,6 +45,7 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -182,6 +183,18 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> extends C
 	public abstract void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                            GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException;
+
+	protected Set<String> mutuallyExclusiveLabels;
+
+	/**
+	 * Sets a list of labels wo be used for classification.  For a supervised method, this must be called before training.
+	 *
+	 * @param mutuallyExclusiveLabels
+	 */
+	public void setLabels(Set<String> mutuallyExclusiveLabels)
+		{
+		this.mutuallyExclusiveLabels = mutuallyExclusiveLabels;
+		}
 
 	// -------------------------- INNER CLASSES --------------------------
 	}

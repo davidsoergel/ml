@@ -59,7 +59,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getLabel()
+	public String getExclusiveLabel()
 		{
 		return label;
 		}

@@ -32,10 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.Multinomial;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
+import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
@@ -70,27 +68,27 @@ public class KohonenSOMNeighborhoodCollectingRelabeler implements KohonenSOMLabe
 		int i = 0;
 		for (KohonenSOMCell cell : (List<KohonenSOMCell>) theMap.getClusters())
 			{
-			Multiset<String> counts = new HashMultiset<String>();
+			WeightedSet<String> counts = new HashWeightedSet<String>();
 			Iterator<Set<KohonenSOMCell>> shells = theMap.getNeighborhoodShellIterator(cell);
 
 			while (counts.size() < requiredLabels)
 				{
 				for (KohonenSOMCell shellMember : shells.next())
 					{
-					counts.addAll(shellMember.getLabelCounts());
+					counts.addAll(shellMember.getWeightedLabels());
 					}
 				}
 
-			try
-				{
-				cell.setLabelProbabilities(new Multinomial(counts));
-				}
+			//try
+			//	{
+			cell.setDerivedLabelProbabilities(counts);
+			/*	}
 			catch (DistributionException e)
 				{
 				logger.warn("Empty bag?", e);
 				e.printStackTrace();
-				cell.setLabelProbabilities(null);
-				}
+				cell.setDerivedLabelProbabilities(null);
+				}*/
 			if (i % 1000 == 0)
 				{
 				logger.info("Relabeled " + i + " nodes.");

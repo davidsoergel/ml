@@ -32,8 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.Multinomial;
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
 import org.apache.commons.lang.NotImplementedException;
 
@@ -114,7 +113,7 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 	/**
 	 * {@inheritDoc}
 	 */
-	public void updateLabelProbabilitiesFromCounts()
+	public boolean recenterByAddingAll(Cluster<T> point)
 		{
 		throw new NotImplementedException();
 		}
@@ -122,47 +121,7 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Multinomial<String> getLabelProbabilities() throws DistributionException
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public double getDominantProbability() throws DistributionException
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getDominantLabel()
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void addLabel(T point)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void removeLabel(T point)
+	public boolean recenterByRemovingAll(Cluster<T> point)
 		{
 		throw new NotImplementedException();
 		}
@@ -194,10 +153,10 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setN(int i)
-		{
-		getValue().setN(i);
-		}
+	/*	public void setN(int i)
+	   {
+	   getValue().setN(i);
+	   }*/
 
 	/**
 	 * {@inheritDoc}
@@ -219,4 +178,52 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 		{
 		return (HierarchicalCluster<T>) super.clone();
 		}
+
+	/**
+	 * Recomputes the probabilities of labels, based on the actual labels observed in the contained samples.  This must be
+	 * called explicitly to avoid unnecessary recomputation on every sample addition.
+	 */
+	public WeightedSet<String> getDerivedLabelProbabilities()
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * Sets the probabilities of String labels.  The labels need not be mututally exclusive, so the weights need not sum to
+	 * one.
+	 *
+	 * @param derivedLabelProbabilities a WeightedSet giving the probabilities of mutually exclusive String labels.
+	 */
+	public void setDerivedLabelProbabilities(WeightedSet<String> derivedLabelProbabilities)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * Copy the local label weights into the derived label weights.
+	 */
+	public void updateDerivedWeightedLabelsFromLocal()
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * Gets the probabilities of mutually exclusive String labels.
+	 *
+	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
+	 */
+	public WeightedSet<String> getWeightedLabels()
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * Gets the probabilities of mutually exclusive String labels.
+	 *
+	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
+	 */
+	/*public WeightedSet<String> addWeightedLabels(WeightedSet<String> l)
+		{
+		throw new NotImplementedException();
+		}*/
 	}

@@ -41,11 +41,11 @@ import org.apache.commons.lang.NotImplementedException;
 public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	{
 	/**
-	 * Constructs a new Cluster with the given DistanceMeasure and centroid.  Note the centroid may be modified in the
-	 * course of running a clustering algorithm, so it may not be a good idea to provide a real data point here (i.e., it's
-	 * probably best to clone it first).
+	 * Constructs a new Cluster with the given id and centroid.  Note the centroid may be modified in the course of running
+	 * a clustering algorithm, so it may not be a good idea to provide a real data point here (i.e., it's probably best to
+	 * clone it first).
 	 *
-	 * @param dm       the DistanceMeasure<T>
+	 * @param id       an int uniquely identifying this cluster
 	 * @param centroid the T
 	 */
 	public BasicCluster(int id, T centroid)
@@ -65,7 +65,23 @@ public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	/**
 	 * {@inheritDoc}
 	 */
+	public boolean recenterByAddingAll(Cluster<T> point)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean recenterByRemoving(T point)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean recenterByRemovingAll(Cluster<T> point)
 		{
 		throw new NotImplementedException();
 		}

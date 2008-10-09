@@ -146,7 +146,7 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 
 	protected String label;
 
-	public String getLabel()
+	public String getExclusiveLabel()
 		{
 		return label;
 		}

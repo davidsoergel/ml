@@ -90,5 +90,5 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 *
 	 * @return a Strings describing this object
 	 */
-	String getLabel();
+	//	String getExclusiveLabel();
 	}

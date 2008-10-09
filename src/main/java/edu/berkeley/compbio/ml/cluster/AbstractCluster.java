@@ -35,10 +35,6 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
-import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.Multinomial;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import org.apache.log4j.Logger;
 
 import java.util.Formatter;
@@ -59,12 +55,6 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 
 	private static final Logger logger = Logger.getLogger(AbstractCluster.class);
 
-	// we let the label probabilities be completely distinct from the counts, so that the probabilities
-	// can be set based on outside information (e.g., in the case of the Kohonen map, neighboring cells
-	// may exert an influence)
-
-	Multinomial<String> labelProbabilities = new Multinomial<String>();
-
 	/**
 	 * The distance measure to use for computing distances from samples to the centroid of this cluster
 	 */
@@ -78,7 +68,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	/**
 	 * The number of samples in this cluster
 	 */
-	protected int n = 0;
+	//protected int n = 0;
 
 	/**
 	 * The sum of the squared distances from samples in this cluster to the centroid
@@ -90,22 +80,29 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	 */
 	private int id;
 
-	private Multiset<String> labelCounts = new HashMultiset<String>();
+	//private Multiset<String> exclusiveLabelCounts = new HashMultiset<String>();
 
 
-	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+	protected WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
-	private int totalLabels = 0;
+	// we let the label probabilities be completely distinct from the local weights themselves, so that the probabilities
+	// can be set based on outside information (e.g., in the case of the Kohonen map, neighboring cells
+	// may exert an influence)
+
+	private WeightedSet<String> derivedLabelProbabilities = new HashWeightedSet<String>();
+	//	new Multinomial<String>();
+
+	//private int totalLabels = 0;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
-	 * Constructs a new Cluster with the given DistanceMeasure and centroid.  Note the centroid may be modified in the
-	 * course of running a clustering algorithm, so it may not be a good idea to provide a real data point here (i.e., it's
-	 * probably best to clone it first).
+	 * Constructs a new Cluster with the given id and centroid.  Note the centroid may be modified in the course of running
+	 * a clustering algorithm, so it may not be a good idea to provide a real data point here (i.e., it's probably best to
+	 * clone it first).
 	 *
-	 * @param dm       the DistanceMeasure<T>
+	 * @param id       an integer uniquely identifying this cluster
 	 * @param centroid the T
 	 */
 	public AbstractCluster(int id, T centroid)//DistanceMeasure<T> dm
@@ -152,26 +149,26 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 		this.id = id;
 		}
 
-	public Multiset<String> getLabelCounts()
+	/*	public Multiset<String> getExclusiveLabelCounts()
+	   {
+	   return exclusiveLabelCounts;
+	   }*/
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public WeightedSet<String> getDerivedLabelProbabilities()//throws DistributionException
 		{
-		return labelCounts;
+		//derivedWeightedLabels.normalize();
+		return derivedLabelProbabilities;
 		}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public Multinomial<String> getLabelProbabilities() throws DistributionException
+	public void setDerivedLabelProbabilities(WeightedSet<String> derivedLabelProbabilities)
 		{
-		labelProbabilities.normalize();
-		return labelProbabilities;
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setLabelProbabilities(Multinomial<String> labelProbabilities)
-		{
-		this.labelProbabilities = labelProbabilities;
+		this.derivedLabelProbabilities = derivedLabelProbabilities;
 		}
 
 	/**
@@ -179,21 +176,21 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	 */
 	public int getN()
 		{
-		return n;
+		return weightedLabels.getItemCount();
 		}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setN(int n)
-		{
-		this.n = n;
-		}
+	/*	public void setN(int n)
+	   {
+	   this.n = n;
+	   }*/
 
-	public int getTotalLabels()
-		{
-		return totalLabels;
-		}
+	/*	public int getTotalLabels()
+	   {
+	   return totalLabels;
+	   }*/
 
 	/*	public void normalize()
 		   {
@@ -247,6 +244,10 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	   {
 	   return theDistanceMeasure.distanceFromTo(p, centroid, distanceToBeat);
 	   }*/
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals(Object other)
 		{
@@ -289,7 +290,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	public String toString()
 		{
 		Formatter f = new Formatter();
-		f.format("[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
+		f.format("[Cluster %d] n=%d sd=%.2f", id, getN(), getStdDev());
 
 		return f.out().toString();
 		}
@@ -299,7 +300,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	 */
 	public double getStdDev()
 		{
-		return Math.sqrt(sumOfSquareDistances / n);
+		return Math.sqrt(sumOfSquareDistances / getN());
 		}
 
 	// ------------------------ INTERFACE METHODS ------------------------
@@ -311,14 +312,15 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 	/**
 	 * {@inheritDoc}
 	 */
-	public void updateLabelProbabilitiesFromCounts()//throws DistributionException
+	public void updateDerivedWeightedLabelsFromLocal()//throws DistributionException
 		{
-		labelProbabilities = new Multinomial<String>();
-		for (Multiset.Entry<String> o : labelCounts.entrySet())// too bad Bag isn't generic
+		derivedLabelProbabilities = new HashWeightedSet<String>();
+		derivedLabelProbabilities.addAll(weightedLabels);
+		/*for (Multiset.Entry<String> o : exclusiveLabelCounts.entrySet())// too bad Bag isn't generic
 			{
 			try
 				{
-				labelProbabilities.put(o.getElement(), o.getCount());
+				exclusiveLabelProbabilities.put(o.getElement(), o.getCount());
 				}
 			catch (DistributionException e)
 				{
@@ -326,47 +328,47 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 				e.printStackTrace();
 				throw new ClusterRuntimeException(e);
 				}
-			}
+			}*/
 		//		labelProbabilities.normalize();  // don't bother, it'll be done on request anyway
 		}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public double getDominantProbability() throws DistributionException
-		{
-		labelProbabilities.normalize();
-		return labelProbabilities.getDominantProbability();
-		}
+	/*	public double getDominantProbability() throws DistributionException
+	   {
+	   exclusiveLabelProbabilities.normalize();
+	   return exclusiveLabelProbabilities.getDominantProbability();
+	   }*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getDominantLabel()
-		{
-		return labelProbabilities.getDominantKey();
-		}
+	/*	public String getDominantExclusiveLabel()
+	   {
+	   return exclusiveLabelProbabilities.getDominantKey();
+	   }*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void addLabel(T point)
-		{
-		totalLabels++;
-		labelCounts.add(point.getLabel());
-		weightedLabels.addAll(point.getWeightedLabels());
-		}
+	/*	public void addExclusiveLabel(T point)
+	   {
+	   totalLabels++;
+	   exclusiveLabelCounts.add(point.getExclusiveLabel());
+	   weightedLabels.addAll(point.getWeightedLabels());
+	   }*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void removeLabel(T point)
-		{
-		totalLabels--;
-		// we don't sanity check that the label was present to begin with
-		labelCounts.remove(point.getLabel());
-		weightedLabels.removeAll(point.getWeightedLabels());
-		}
+	/*	public void removeExclusiveLabel(T point)
+	   {
+	   totalLabels--;
+	   // we don't sanity check that the label was present to begin with
+	   exclusiveLabelCounts.remove(point.getExclusiveLabel());
+	   weightedLabels.removeAll(point.getWeightedLabels());
+	   }*/
 
 	/**
 	 * {@inheritDoc}

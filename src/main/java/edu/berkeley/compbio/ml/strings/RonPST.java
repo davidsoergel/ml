@@ -84,7 +84,7 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getLabel()
+	public String getExclusiveLabel()
 		{
 		return label;
 		}

@@ -32,8 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.Multinomial;
 
 /**
  * A cluster, i.e. a grouping of samples, generally learned during a clustering process.  Stores a centroid, an object
@@ -94,7 +94,7 @@ public interface Cluster<T extends Clusterable<T>>
 	 *
 	 * @param i the n umber of samples in thie cluster
 	 */
-	void setN(int i);
+	//void setN(int i);
 
 	//	boolean equals(Cluster<T> other);
 
@@ -108,6 +108,15 @@ public interface Cluster<T extends Clusterable<T>>
 	boolean recenterByAdding(T point);
 
 	/**
+	 * Add all the samples in the given cluster to this cluster.  Does not automatically remove the samples from other
+	 * clusters of which they are already members.
+	 *
+	 * @param point the sample to add
+	 * @return true if the point was successfully added; false otherwise
+	 */
+	boolean recenterByAddingAll(Cluster<T> point);
+
+	/**
 	 * Remove the given sample from this cluster.
 	 *
 	 * @param point the sample to remove
@@ -117,24 +126,50 @@ public interface Cluster<T extends Clusterable<T>>
 	boolean recenterByRemoving(T point);
 
 	/**
+	 * Remove all the samples in the given cluster from this cluster.
+	 *
+	 * @param point the sample to add
+	 * @return true if the point was successfully added; false otherwise
+	 */
+	boolean recenterByRemovingAll(Cluster<T> point);
+
+	/**
 	 * Recomputes the probabilities of labels, based on the actual labels observed in the contained samples.  This must be
 	 * called explicitly to avoid unnecessary recomputation on every sample addition.
 	 */
-	void updateLabelProbabilitiesFromCounts();
+	//	void updateExclusiveLabelProbabilitiesFromCounts();
+
+
+	WeightedSet<String> getDerivedLabelProbabilities();
 
 	/**
-	 * Sets the probabilities of mutually exclusive String labels.
+	 * Sets the probabilities of String labels.  The labels need not be mututally exclusive, so the weights need not sum to
+	 * one.
 	 *
-	 * @param labelProbabilities a Multinomial giving the probabilities of mutually exclusive String labels.
+	 * @param derivedLabelProbabilities a WeightedSet giving the probabilities of mutually exclusive String labels.
 	 */
-	void setLabelProbabilities(Multinomial<String> labelProbabilities);
+	void setDerivedLabelProbabilities(WeightedSet<String> derivedLabelProbabilities);
+
+	/**
+	 * Copy the local label weights into the derived label weights.
+	 */
+	void updateDerivedWeightedLabelsFromLocal();
+
+	/**
+	 * Sets the weights of String labels.  Generally should be probabilities.  No guarantee of exclusivity.
+	 *
+	 * @param labelWeights a WeightedSet giving the probabilities of mutually exclusive String labels.
+	 */
+	//void setDerivedLabelWeights(WeightedSet<String> labelWeights);
 
 	/**
 	 * Gets the probabilities of mutually exclusive String labels.
 	 *
 	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
 	 */
-	Multinomial<String> getLabelProbabilities() throws DistributionException;
+	WeightedSet<String> getWeightedLabels();// throws DistributionException;
+
+	// WeightedSet<String> addWeightedLabels(WeightedSet<String> l);
 
 	/**
 	 * Returns the probability of the most probable label
@@ -142,7 +177,7 @@ public interface Cluster<T extends Clusterable<T>>
 	 * @return the probability of the most probable label
 	 * @throws DistributionException when something goes wrong
 	 */
-	double getDominantProbability() throws DistributionException;
+	//	double getDominantProbability() throws DistributionException;
 
 	/**
 	 * Returns the most probable label
@@ -150,7 +185,7 @@ public interface Cluster<T extends Clusterable<T>>
 	 * @return the most probable label
 	 * @throws DistributionException when something goes wrong
 	 */
-	String getDominantLabel();
+	//	String getDominantExclusiveLabel();
 
 
 	/**
@@ -158,20 +193,20 @@ public interface Cluster<T extends Clusterable<T>>
 	 *
 	 * @param point the sample whose label to count.
 	 */
-	void addLabel(T point);
+	//	void addExclusiveLabel(T point);
 
 	/**
 	 * Remove the label on the given sample from the counts.
 	 *
 	 * @param point the sample whose label to remove.
 	 */
-	void removeLabel(T point);
+	//	void removeExclusiveLabel(T point);
 
 	/**
 	 * Sets the sum of squared distances from the samples in this cluster to its centroid.  Computed externally in {@see
 	 * ClusteringMethod.computeClusterStdDevs}.
 	 *
-	 * @param v the sumOfSquareDistances
+	 * @param i the sumOfSquareDistances
 	 */
 	void setSumOfSquareDistances(double i);
 
@@ -190,4 +225,6 @@ public interface Cluster<T extends Clusterable<T>>
 	 * @return the standard deviation of the distances from each sample to the centroid
 	 */
 	double getStdDev();
+
+	//	String getDominantLabelInSet(Set<String> mutuallyExclusiveLabels);
 	}
