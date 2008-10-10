@@ -38,8 +38,10 @@ import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.FixedWidthHistogram1D;
+import com.davidsoergel.stats.Histogram1D;
+import com.davidsoergel.stats.StatsException;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -133,9 +135,11 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
 	 */
-	@NotNull
-	public abstract Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
-			throws NoGoodClusterException, ClusterException;
+	/*	@NotNull
+		public abstract Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
+				throws NoGoodClusterException, ClusterException;
+
+		public abstract double getBestDistance();*/
 
 	/**
 	 * Returns a List of the current Cluster centroids
@@ -298,8 +302,8 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 * @throws DistributionException  when something goes wrong in computing the label probabilities
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels,
-	                        double unknownLabelProbabilityThreshold) throws // NoGoodClusterException,
+	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels)
+			throws // NoGoodClusterException,
 			DistributionException, ClusterException
 		{
 		// evaluate labeling correctness using the test samples
@@ -315,7 +319,10 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 			T frag = theTestIterator.next();
 			try
 				{
-				Cluster<T> best = getBestCluster(frag, secondBestDistances);
+				ClusterMove<T> cm = bestClusterMove(frag);
+				secondBestDistances.add(cm.secondBestDistance);
+				//Cluster<T> best = getBestCluster(frag, secondBestDistances);
+				//double bestDistance = getBestDistance();
 
 				// there are two ways to get classified "unknown":
 				// if no bin is within the max distance from the sample, then NoGoodClusterException is thrown
@@ -326,30 +333,26 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 				//Map.Entry<String, Double> dominant =
 				//		best.getDerivedLabelProbabilities().getDominantEntryInSet(mutuallyExclusiveLabels);
 
-				WeightedSet<String> clusterLabels = best.getDerivedLabelProbabilities();
+				WeightedSet<String> clusterLabels = cm.bestCluster.getDerivedLabelProbabilities();
 
+				// the "dominant" label is the one assigned by this clustering process.
 				String dominantExclusiveLabel = clusterLabels.getDominantKeyInSet(mutuallyExclusiveLabels);
 
-				if (clusterLabels.getNormalized(dominantExclusiveLabel) <= unknownLabelProbabilityThreshold)
+				// if the fragment's best label from the same exclusive set is the same one, that's a match.
+				String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+
+				double clusterProb = clusterLabels.getNormalized(dominantExclusiveLabel);
+
+
+				if (fragDominantLabel.equals(dominantExclusiveLabel))
 					{
-					tr.unknown++;
+					tr.correctProbabilities.add(clusterProb);
+					tr.correctDistances.add(cm.bestDistance);
 					}
 				else
 					{
-					// the "dominant" label is the one assigned by this clustering process.
-					// if the fragment's best label from the same exclusive set is the same one, that's a match.
-
-					//	if (frag.getExclusiveLabel().equals(dominantExclusiveLabel))
-					String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
-
-					if (fragDominantLabel.equals(dominantExclusiveLabel))
-						{
-						tr.correct++;
-						}
-					else
-						{
-						tr.wrong++;
-						}
+					tr.wrongProbabilities.add(clusterProb);
+					tr.wrongDistances.add(cm.bestDistance);
 					}
 				}
 			catch (NoGoodClusterException e)
@@ -362,34 +365,97 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 				}
 			i++;
 			}
-		tr.normalize();
+		tr.finish();
 		logger.info("Tested " + i + " samples.");
 		//	return i;
 		return tr;
 		}
 
 	/**
-	 * Encapsulates the proportions of test samples classified correctly, incorrectly, or not at all.
+	 * Encapsulates the probability histograms of test samples classified correctly, incorrectly, or not at all.
 	 *
 	 * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
 	 * @version $Id$
 	 */
 	public class TestResults
 		{
-		public double correct = 0;
-		public double wrong = 0;
-		public double unknown = 0;
+		public Histogram1D correctProbabilities = new FixedWidthHistogram1D(0., 1., .01);
+		public Histogram1D wrongProbabilities = new FixedWidthHistogram1D(0., 1., .01);
+
+		public List<Double> correctDistances = new ArrayList<Double>();
+		public List<Double> wrongDistances = new ArrayList<Double>();
+
+		//public double correct = 0;
+		//public double wrong = 0;
+		public int unknown = 0;
 		public int numClusters = 0;
 
 		/**
 		 * Normalize the proportions to 1.  Useful for instance if the proportion fields are initially set to raw counts.
 		 */
-		public void normalize()
+		/*public void normalize()
 			{
 			double total = correct + wrong + unknown;
 			correct /= total;
 			wrong /= total;
 			unknown /= total;
+			}*/
+
+		public double[] correctPercentages;
+		public double[] wrongPercentages;
+
+		public double[] correctDistanceHistogram;
+		public double[] wrongDistanceHistogram;
+		public double[] distanceBinCenters;
+
+		public void finish()
+			{
+			int[] correctCounts = correctProbabilities.getCounts();
+			int[] wrongCounts = correctProbabilities.getCounts();
+
+			int correctTotal = DSArrayUtils.sum(correctCounts);
+			int wrongTotal = DSArrayUtils.sum(wrongCounts);
+
+			int total = correctTotal + wrongTotal;
+
+			correctPercentages = DSArrayUtils.castToDouble(correctCounts);
+			wrongPercentages = DSArrayUtils.castToDouble(wrongCounts);
+
+			DSArrayUtils.multiplyBy(correctPercentages, 1. / total);
+			DSArrayUtils.multiplyBy(wrongPercentages, 1. / total);
+
+			double[] correctDistancesPrimitive =
+					DSArrayUtils.toPrimitive((Double[]) correctDistances.toArray(new Double[0]));
+			double[] wrongDistancesPrimitive =
+					DSArrayUtils.toPrimitive((Double[]) wrongDistances.toArray(new Double[0]));
+
+			double minDistance =
+					Math.min(DSArrayUtils.min(correctDistancesPrimitive), DSArrayUtils.min(wrongDistancesPrimitive));
+			double maxDistance =
+					Math.max(DSArrayUtils.max(correctDistancesPrimitive), DSArrayUtils.max(wrongDistancesPrimitive));
+
+
+			double binwidth = (maxDistance - minDistance) / 100.;
+
+			Histogram1D cHist =
+					new FixedWidthHistogram1D(minDistance, maxDistance, binwidth, correctDistancesPrimitive);
+			try
+				{
+				distanceBinCenters = cHist.getBinCenters();
+				}
+			catch (StatsException e)
+				{
+				logger.debug(e);
+				e.printStackTrace();
+				throw new Error(e);
+				}
+
+			correctDistanceHistogram =
+
+					cHist.getFractions();
+			wrongDistanceHistogram =
+					new FixedWidthHistogram1D(minDistance, maxDistance, binwidth, wrongDistancesPrimitive)
+							.getFractions();
 			}
 		}
 	}

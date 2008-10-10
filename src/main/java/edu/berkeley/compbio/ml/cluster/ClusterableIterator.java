@@ -47,7 +47,8 @@ import java.util.NoSuchElementException;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface ClusterableIterator<T extends Clusterable<T>> extends Iterator<T>//, Comparable<ClusterableIterator<T>>
+public interface ClusterableIterator<T extends Clusterable<T>>
+		extends Iterator<T>, Iterable<T>//, Comparable<ClusterableIterator<T>>
 	{
 
 	// -------------------------- OTHER METHODS --------------------------

@@ -44,9 +44,9 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
+import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -131,10 +131,11 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 			int sampleCount = 0;
 			while (trainingIterator.hasNext())
 				{
-				if (sampleCount++ % 1000 == 0)
+				if (sampleCount % 1000 == 0)
 					{
 					logger.info("Processed " + sampleCount + " training samples.");
 					}
+				sampleCount++;
 
 				T point = trainingIterator.next();
 
@@ -195,7 +196,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	@Override
 	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
-		getBestCluster(p, secondBestDistances).recenterByAdding(p);
+		ClusterMove best = bestClusterMove(p);
+		secondBestDistances.add(best.secondBestDistance);
+		best.bestCluster.recenterByAdding(p);
 		return true;
 		}
 
@@ -203,24 +206,13 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ClusterMove bestClusterMove(T p)
+	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
 		{
-		throw new NotImplementedException("hmph");
-		}
-
-	double bestdistance = Double.MAX_VALUE;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
-			throws ClusterException, NoGoodClusterException
-		{
+		ClusterMove result = new ClusterMove();
 		//int i;
-		double secondbestdistance = Double.MAX_VALUE;
-		bestdistance = Double.MAX_VALUE;
-		Cluster<T> best = null;
+		result.secondBestDistance = Double.MAX_VALUE;
+		result.bestDistance = Double.MAX_VALUE;
+		//Cluster<T> best = null;
 		double temp;
 		//int j = -1;
 		for (Cluster<T> cluster : theClusters)
@@ -231,40 +223,35 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 				// ** careful: how to deal with priors depends on the distance measure.
 				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
 
-				if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * priors.get(cluster)) <= bestdistance)
+				if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * priors.get(cluster)) <= result
+						.bestDistance)
 					{
-					secondbestdistance = bestdistance;
-					bestdistance = temp;
-					best = cluster;
+					result.secondBestDistance = result.bestDistance;
+					result.bestDistance = temp;
+					result.bestCluster = cluster;
 					//j = i;
 					}
-				else if (temp <= secondbestdistance)
+				else if (temp <= result.secondBestDistance)
 					{
-					secondbestdistance = temp;
+					result.secondBestDistance = temp;
 					}
 				}
 			catch (DistributionException e)
 				{
-				throw new ClusterException(e);
+				throw new ClusterRuntimeException(e);
 				}
 			}
 
 
-		secondBestDistances.add(secondbestdistance);
-		if (best == null)
+		if (result.bestCluster == null)
 			{
-			throw new ClusterException("Found no cluster at all, that's impossible: " + p);
+			throw new ClusterRuntimeException("Found no cluster at all, that's impossible: " + p);
 			}
-		if (bestdistance > unknownDistanceThreshold)
+		if (result.bestDistance > unknownDistanceThreshold)
 			{
 			throw new NoGoodClusterException(
-					"Best distance " + bestdistance + " > threshold " + unknownDistanceThreshold);
+					"Best distance " + result.bestDistance + " > threshold " + unknownDistanceThreshold);
 			}
-		return best;
-		}
-
-	public double getBestdistance()
-		{
-		return bestdistance;
+		return result;
 		}
 	}

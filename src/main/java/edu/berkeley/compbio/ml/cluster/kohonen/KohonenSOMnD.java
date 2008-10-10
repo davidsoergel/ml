@@ -503,14 +503,14 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
-			throws ClusterException, NoGoodClusterException
-		{
-		ClusterMove cm = bestClusterMove(p);
-		return cm.bestCluster;
-		}
-
+	/*	@Override
+	 public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
+			 throws ClusterException, NoGoodClusterException
+		 {
+		 ClusterMove cm = bestClusterMove(p);
+		 return cm.bestCluster;
+		 }
+ */
 	/**
 	 * Copied from KmeansClustering
 	 *

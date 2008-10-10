@@ -70,7 +70,6 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	T clone();
 
 	/**

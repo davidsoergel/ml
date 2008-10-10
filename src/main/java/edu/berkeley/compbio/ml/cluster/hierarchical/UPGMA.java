@@ -36,19 +36,15 @@ import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
 import com.davidsoergel.stats.DistanceMeasure;
 import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.Cluster;
-import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.HierarchicalCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
-import org.apache.commons.lang.NotImplementedException;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 
@@ -91,29 +87,29 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	 * @param p                   Point to find the best cluster of
 	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
 	 */
-	@Nullable
-	@Override
-	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
-			throws ClusterException, NoGoodClusterException
-		{
-		Cluster<T> best = null;
-		double bestDistance = Double.MAX_VALUE;
+	/*	@Nullable
+   @Override
+   public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
+		   throws ClusterException, NoGoodClusterException
+	   {
+	   Cluster<T> best = null;
+	   double bestDistance = Double.MAX_VALUE;
 
-		for (Cluster<T> theCluster : theClusters)
-			{
-			double distance = distanceMeasure.distanceFromTo(p, theCluster.getCentroid());
-			if (distance < bestDistance)
-				{
-				best = theCluster;
-				bestDistance = distance;
-				}
-			}
-		if (best == null)
-			{
-			throw new NoGoodClusterException("No cluster found for point: " + p);
-			}
-		return best;
-		}
+	   for (Cluster<T> theCluster : theClusters)
+		   {
+		   double distance = distanceMeasure.distanceFromTo(p, theCluster.getCentroid());
+		   if (distance < bestDistance)
+			   {
+			   best = theCluster;
+			   bestDistance = distance;
+			   }
+		   }
+	   if (best == null)
+		   {
+		   throw new NoGoodClusterException("No cluster found for point: " + p);
+		   }
+	   return best;
+	   }*/
 
 	/**
 	 * {@inheritDoc}
@@ -121,7 +117,23 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	@Override
 	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
 		{
-		throw new NotImplementedException("");
+		ClusterMove result = new ClusterMove();
+		result.bestDistance = Double.MAX_VALUE;
+
+		for (Cluster<T> theCluster : theClusters)
+			{
+			double distance = distanceMeasure.distanceFromTo(p, theCluster.getCentroid());
+			if (distance < result.bestDistance)
+				{
+				result.bestCluster = theCluster;
+				result.bestDistance = distance;
+				}
+			}
+		if (result.bestCluster == null)
+			{
+			throw new NoGoodClusterException("No cluster found for point: " + p);
+			}
+		return result;
 		}
 
 	/**

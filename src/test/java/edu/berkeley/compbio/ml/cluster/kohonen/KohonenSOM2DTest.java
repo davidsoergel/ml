@@ -135,13 +135,13 @@ public class KohonenSOM2DTest
 				5
 		}), null);
 
-		assert som.getBestCluster(new ClusterableDoubleArray("test1", new double[]{
+		assert som.bestClusterMove(new ClusterableDoubleArray("test1", new double[]{
 				0,
 				0,
 				0,
 				0,
 				0
-		}), null) != som.getClusters().iterator().next();// the first cell in the list, at (0,0)
+		})).bestCluster != som.getClusters().iterator().next();// the first cell in the list, at (0,0)
 		}
 
 	@Test

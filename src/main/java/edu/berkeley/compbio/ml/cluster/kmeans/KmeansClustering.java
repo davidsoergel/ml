@@ -127,13 +127,13 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
-		{
-		ClusterMove cm = bestClusterMove(p);
-		return cm.bestCluster;
-		}
-
+	/*	@Override
+	 public Cluster<T> getBestCluster(T p, List<Double> secondBestDistances)
+		 {
+		 ClusterMove cm = bestClusterMove(p);
+		 return cm.bestCluster;
+		 }
+ */
 	/**
 	 * {@inheritDoc}
 	 */
