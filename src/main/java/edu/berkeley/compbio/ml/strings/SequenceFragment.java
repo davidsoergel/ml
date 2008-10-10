@@ -135,6 +135,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		}
 
+	public SequenceSpectrumScanner getScanner()
+		{
+		return theScanner;
+		}
+
 	// --------------------- GETTER / SETTER METHODS ---------------------
 
 	/**
