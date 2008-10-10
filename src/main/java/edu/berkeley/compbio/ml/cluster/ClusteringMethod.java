@@ -33,6 +33,7 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DistanceMeasure;
@@ -320,11 +321,16 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 				// if no bin is within the max distance from the sample, then NoGoodClusterException is thrown
 				// if we got a bin, but no label is sufficiently certain in the bin, that's "unknown" too
 
-				Map.Entry<String, Double> dominant =
-						best.getDerivedLabelProbabilities().getDominantEntryInSet(mutuallyExclusiveLabels);
-				String dominantExclusiveLabel = dominant.getKey();//best.getDominantLabelInSet(mutuallyExclusiveLabels);
+				// to be classified correct, the dominant label of the fragment must match the dominant label of the cluster
 
-				if (dominant.getValue() <= unknownLabelProbabilityThreshold)
+				//Map.Entry<String, Double> dominant =
+				//		best.getDerivedLabelProbabilities().getDominantEntryInSet(mutuallyExclusiveLabels);
+
+				WeightedSet<String> clusterLabels = best.getDerivedLabelProbabilities();
+
+				String dominantExclusiveLabel = clusterLabels.getDominantKeyInSet(mutuallyExclusiveLabels);
+
+				if (clusterLabels.getNormalized(dominantExclusiveLabel) <= unknownLabelProbabilityThreshold)
 					{
 					tr.unknown++;
 					}
@@ -334,8 +340,9 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 					// if the fragment's best label from the same exclusive set is the same one, that's a match.
 
 					//	if (frag.getExclusiveLabel().equals(dominantExclusiveLabel))
-					if (frag.getWeightedLabels().getDominantEntryInSet(mutuallyExclusiveLabels)
-							.equals(dominantExclusiveLabel))
+					String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+
+					if (fragDominantLabel.equals(dominantExclusiveLabel))
 						{
 						tr.correct++;
 						}

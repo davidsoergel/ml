@@ -329,7 +329,7 @@ public abstract class AbstractCluster<T extends Clusterable<T>> implements Clust
 				throw new ClusterRuntimeException(e);
 				}
 			}*/
-		//		labelProbabilities.normalize();  // don't bother, it'll be done on request anyway
+		//derivedLabelProbabilities.normalize();  // don't bother, it'll be done on request anyway
 		}
 
 	/**

@@ -128,13 +128,19 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 			{
 			// consume the entire iterator, ignoring initsamples
 			int i = 0;
+			int sampleCount = 0;
 			while (trainingIterator.hasNext())
 				{
+				if (sampleCount++ % 1000 == 0)
+					{
+					logger.info("Processed " + sampleCount + " training samples.");
+					}
+
 				T point = trainingIterator.next();
 
 				// generate one cluster per exclusive label.
 
-				String clusterLabel = point.getWeightedLabels().getDominantEntryInSet(mutuallyExclusiveLabels).getKey();
+				String clusterLabel = point.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
 				Cluster<T> cluster = theClusterMap.get(clusterLabel);
 
 				if (cluster == null)
@@ -152,6 +158,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 				throw new Error();
 				}*/
 				}
+
+
+			logger.info("Done processing " + sampleCount + " training samples.");
+
 			priors.normalize();
 			}
 		catch (DistributionException e)
