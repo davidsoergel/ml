@@ -285,6 +285,10 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 		p.flush();
 		}
 
+	/* * @param unknownLabelProbabilityThreshold
+		 *                        The smallest label probability to accept as a classification, as opposed to considering the
+		 *                        point unclassifiable (this occurs when a sample matches a cluster which contains a diversity
+		 *                        of labels, none of them dominant).*/
 
 	/**
 	 * Evaluates the classification accuracy of this clustering using an iterator of test samples.  These samples should
@@ -292,10 +296,6 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 * classified correctly, incorrectly, or not at all.
 	 *
 	 * @param theTestIterator an Iterator of test samples.
-	 * @param unknownLabelProbabilityThreshold
-	 *                        The smallest label probability to accept as a classification, as opposed to considering the
-	 *                        point unclassifiable (this occurs when a sample matches a cluster which contains a diversity
-	 *                        of labels, none of them dominant).
 	 * @return a TestResults object encapsulating the proportions of test samples classified correctly, incorrectly, or not
 	 *         at all.
 	 * @throws NoGoodClusterException when a test sample cannot be assigned to any cluster
@@ -411,7 +411,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 		public void finish()
 			{
 			int[] correctCounts = correctProbabilities.getCounts();
-			int[] wrongCounts = correctProbabilities.getCounts();
+			int[] wrongCounts = wrongProbabilities.getCounts();
 
 			int correctTotal = DSArrayUtils.sum(correctCounts);
 			int wrongTotal = DSArrayUtils.sum(wrongCounts);
@@ -435,10 +435,11 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 					Math.max(DSArrayUtils.max(correctDistancesPrimitive), DSArrayUtils.max(wrongDistancesPrimitive));
 
 
-			double binwidth = (maxDistance - minDistance) / 100.;
+			double binwidth = (maxDistance - minDistance) / 1000.;
 
 			Histogram1D cHist =
 					new FixedWidthHistogram1D(minDistance, maxDistance, binwidth, correctDistancesPrimitive);
+			cHist.setTotalcounts(total);
 			try
 				{
 				distanceBinCenters = cHist.getBinCenters();
@@ -450,12 +451,13 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 				throw new Error(e);
 				}
 
-			correctDistanceHistogram =
+			correctDistanceHistogram = cHist.getCumulativeFractions();
 
-					cHist.getFractions();
-			wrongDistanceHistogram =
-					new FixedWidthHistogram1D(minDistance, maxDistance, binwidth, wrongDistancesPrimitive)
-							.getFractions();
+
+			FixedWidthHistogram1D wHist =
+					new FixedWidthHistogram1D(minDistance, maxDistance, binwidth, wrongDistancesPrimitive);
+			wHist.setTotalcounts(total);
+			wrongDistanceHistogram = wHist.getCumulativeFractions();
 			}
 		}
 	}
