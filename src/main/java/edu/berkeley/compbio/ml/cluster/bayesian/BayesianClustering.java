@@ -213,7 +213,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		result.secondBestDistance = Double.MAX_VALUE;
 		result.bestDistance = Double.MAX_VALUE;
 		//Cluster<T> best = null;
-		double temp;
+		double temp = -1;
 		//int j = -1;
 		for (Cluster<T> cluster : theClusters)
 			{
@@ -242,10 +242,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 				}
 			}
 
-
 		if (result.bestCluster == null)
 			{
-			throw new ClusterRuntimeException("Found no cluster at all, that's impossible: " + p);
+			throw new ClusterRuntimeException(
+					"None of the " + theClusters.size() + " clusters matched: " + p + ", last distance = " + temp);
 			}
 		if (result.bestDistance > unknownDistanceThreshold)
 			{
