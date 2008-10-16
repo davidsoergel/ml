@@ -42,6 +42,7 @@ import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
 import edu.berkeley.compbio.sequtils.SequenceFragmentMetadata;
 import edu.berkeley.compbio.sequtils.SequenceReader;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -121,7 +122,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *                                    sequence)
 	 */
 	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, int startPosition, SequenceReader in,
-	                        int desiredlength, SequenceSpectrumScanner scanner)
+	                        int desiredlength, @NotNull SequenceSpectrumScanner scanner)
 		{
 		this(parent, sequenceName, startPosition, 0);// length = 0 because nothing is scanned so far
 		theReader = in;
@@ -196,8 +197,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (NotEnoughSequenceException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			//logger.debug(e);
+			//e.printStackTrace();
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (DistributionProcessorException e)
