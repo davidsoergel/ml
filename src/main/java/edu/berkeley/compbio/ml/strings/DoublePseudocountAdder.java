@@ -48,7 +48,7 @@ public class DoublePseudocountAdder implements DistributionProcessor<DoubleArray
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	@Property(helpmessage = "Pseudocounts to add to every bin", defaultvalue = "0")
+	@Property(helpmessage = "Pseudocounts to add to every bin", defaultvalue = "1e-6")
 	public double uniformPseudoCount;
 
 
