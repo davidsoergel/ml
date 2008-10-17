@@ -69,7 +69,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	protected SequenceSpectrum baseSpectrum;
 	private FirstWordProvider firstWordProvider;
 	private SequenceReader theReader;
-	private SequenceSpectrumScanner theScanner;
+	protected SequenceSpectrumScanner theScanner;
 	private int desiredlength;
 	private boolean ignoreEdges;
 

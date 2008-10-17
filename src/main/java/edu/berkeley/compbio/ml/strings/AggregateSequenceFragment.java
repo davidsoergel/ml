@@ -19,6 +19,7 @@ public class AggregateSequenceFragment extends SequenceFragment
 
 	private Collection<SequenceFragment> theSFs = new HashSet<SequenceFragment>();
 
+	//	private AggregateReader theAggregateReader;
 	/**
 	 * Constructs a new SequenceFragment by specifying its coordinates with respect to a containing parent sequence.
 	 *
@@ -30,6 +31,8 @@ public class AggregateSequenceFragment extends SequenceFragment
 		{
 		super(parent, sequenceName, 0, UNKNOWN_LENGTH);
 		theSFs.addAll(sequenceFragments);
+		theScanner = theSFs.iterator().next().getScanner();
+		//	theAggregateReader = new AggregateReader();
 		}
 
 	/*	public void add(SequenceFragment sf)
@@ -43,7 +46,7 @@ public class AggregateSequenceFragment extends SequenceFragment
 			{
 			return;
 			}
-		baseSpectrum = theSFs.iterator().next().getScanner().getEmpty();
+		baseSpectrum = theScanner.getEmpty();
 		length = 0;
 
 		for (SequenceFragment sf : theSFs)
@@ -65,11 +68,19 @@ public class AggregateSequenceFragment extends SequenceFragment
 
 	public SequenceReader getResetReader() throws NotEnoughSequenceException
 		{
-		throw new NotImplementedException("Can't get a reader on an aggregate");
+		throw new NotImplementedException("Can't fet a reader on an aggregate");
+		//	theAggregateReader.reset();
+		//	return theAggregateReader;
 		}
 
-	public SequenceSpectrumScanner getScanner()
+	/*
+   public class AggregateReader implements SequenceReader
+	   {
+
+	   }*/
+
+	public Collection<SequenceFragment> getSequenceFragments()
 		{
-		throw new NotImplementedException("Can't get a scanner on an aggregate");
+		return theSFs;
 		}
 	}
