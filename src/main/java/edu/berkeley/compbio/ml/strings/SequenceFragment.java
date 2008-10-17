@@ -66,7 +66,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	protected Map<Class, SequenceSpectrum> theSpectra = new HashMap<Class, SequenceSpectrum>();
 
-	private SequenceSpectrum baseSpectrum;
+	protected SequenceSpectrum baseSpectrum;
 	private FirstWordProvider firstWordProvider;
 	private SequenceReader theReader;
 	private SequenceSpectrumScanner theScanner;
@@ -328,10 +328,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	public void incrementBy(SequenceFragment object)
 		{
 		scanIfNeeded();
+
 		if (sequenceName == null)
 			{
-			this.sequenceName += object.getSequenceName();
+			this.sequenceName = object.getSequenceName();
 			}
+
 		try
 			{
 			length += object.getLength();
@@ -443,6 +445,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	public void checkAvailable() throws NotEnoughSequenceException
 		{
+		if (desiredlength == UNKNOWN_LENGTH)
+			{
+			return;
+			}
+
 		try
 			{
 			if (baseSpectrum == null)
@@ -451,7 +458,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				//prefix = new byte[PREFIX_LENGTH];
 				theScanner.checkSequenceAvailable(this);//theReader, desiredlength);
 
-				if (desiredlength != Integer.MAX_VALUE && theReader.getTotalSequence() < desiredlength)
+				if (theReader.getTotalSequence() < desiredlength)
 					{
 					throw new NotEnoughSequenceException("Not enough sequence: " + desiredlength + " requested, "
 							+ theReader.getTotalSequence() + " available.");
@@ -750,5 +757,10 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			// the object being compared doesn't even have a base spectrum of the proper type, so it's definitely not equal
 			return false;
 			}
+		}
+
+	public boolean desiredLengthUnknown()
+		{
+		return desiredlength == UNKNOWN_LENGTH;
 		}
 	}
