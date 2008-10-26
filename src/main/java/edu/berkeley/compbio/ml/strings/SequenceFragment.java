@@ -574,11 +574,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *
 	 * @return The number of samples
 	 */
-	public int getNumberOfSamples()
-		{
-		return getBaseSpectrum().getNumberOfSamples();//theKcount.getNumberOfSamples();
-		}
-
+	/*	public int getNumberOfSamples()
+		 {
+		 return getBaseSpectrum().getNumberOfSamples();//theKcount.getNumberOfSamples();
+		 }
+ */
 	public SequenceReader getResetReader() throws NotEnoughSequenceException
 		{
 		try

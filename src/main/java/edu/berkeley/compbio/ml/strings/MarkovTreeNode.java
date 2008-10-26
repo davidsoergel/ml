@@ -507,11 +507,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 *
 	 * @return The number of samples
 	 */
-	public int getNumberOfSamples()
-		{
-		throw new NotImplementedException();
-		}
-
+	/*	public int getNumberOfSamples()
+		 {
+		 throw new NotImplementedException();
+		 }
+ */
 	public int getOriginalSequenceLength()
 		{
 		throw new NotImplementedException();

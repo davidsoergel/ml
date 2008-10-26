@@ -439,7 +439,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			{
 			if (prefix.length == 0)
 				{
-				return counts.get(sigma) / getNumberOfSamples();
+				return counts.get(sigma) / getSumOfCounts();//NumberOfSamples();  // should really be getSumOfCounts
 				}
 			if (prefix.length == 1)
 				{
@@ -505,7 +505,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public int getNumberOfSamples()
+		public int getSumOfCounts()
 			{
 			return 50;
 			}

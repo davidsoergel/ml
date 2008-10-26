@@ -104,15 +104,6 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 
 	// --------------------- Interface SequenceSpectrum ---------------------
 
-	/*		{
-	   if (numberOfBins == 1)
-		   {
-		   return counts[0];
-		   }
-	   return getParent().getNumberOfSamples() - getLastWords().size();// due to last word
-	   }*/
-
-	//	public abstract List<Integer> getLastWords();
 
 	/**
 	 * Tests whether the given sequence statistics are equivalent to this one.  Differs from equals() in that

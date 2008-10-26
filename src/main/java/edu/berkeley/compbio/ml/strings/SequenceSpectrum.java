@@ -140,7 +140,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 *
 	 * @return The number of samples
 	 */
-	int getNumberOfSamples();
+	//	int getNumberOfSamples();
 
 	//void addPseudocounts();
 

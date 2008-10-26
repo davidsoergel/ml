@@ -48,6 +48,12 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	protected int k;
 	protected int numberOfBins;
 
+	protected static final double UNKNOWN_SUM_OF_COUNTS = -1;
+
+	protected static final int UNKNOWN_NUMBER_OF_SAMPLES = -1;
+
+	//protected int numberOfSamples = UNKNOWN_NUMBER_OF_SAMPLES;
+
 	protected int originalSequenceLength;
 
 
@@ -137,12 +143,20 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	// --------------------- Interface SequenceSpectrum ---------------------
 
 	/**
-	 * Returns the number of samples, which equals the sum of the counts.
+	 * Returns the number of real samples on which this Kcount is based, not including pseudocounts.
 	 *
 	 * @return The number of samples
 	 */
-	public abstract int getNumberOfSamples();
-
+	/*	public int getNumberOfSamples()
+		 {
+		 return numberOfSamples;
+		 }
+ */
+	/**
+	 * Returns the the sum of the counts.  May be completely different from the number of samples due to smoothing or
+	 * normalization.  Even for raw counts, this may be greater than the number of samples due to pseudocounts.
+	 */
+	public abstract double getSumOfCounts();
 
 	// -------------------------- OTHER METHODS --------------------------
 

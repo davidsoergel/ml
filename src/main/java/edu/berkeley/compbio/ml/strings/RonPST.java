@@ -461,11 +461,11 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public int getNumberOfSamples()
-		{
-		throw new NotImplementedException();
-		}
-
+	/*	public int getNumberOfSamples()
+		 {
+		 throw new NotImplementedException();
+		 }
+ */
 	/**
 	 * {@inheritDoc}
 	 */
