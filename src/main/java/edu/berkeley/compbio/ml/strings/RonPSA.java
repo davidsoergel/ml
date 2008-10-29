@@ -160,7 +160,8 @@ public class RonPSA extends RonPSANode
 	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
 	 */
 	@Override
-	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
+	public double fragmentLogProbability(SequenceFragment sequenceFragment, boolean perSample)
+			throws SequenceSpectrumException
 		{
 		// simply follow the MarkovTreeNode as a state machine, using backlinks
 		SequenceReader in;
@@ -176,6 +177,7 @@ public class RonPSA extends RonPSANode
 		double logprob = 0;
 		RonPSANode currentNode = this;
 		int count = 0;
+		int samples = 0;
 		int desiredLength = sequenceFragment.getDesiredLength();
 		while (count < desiredLength)
 			{
@@ -185,9 +187,9 @@ public class RonPSA extends RonPSANode
 				double logConditionalProbability = currentNode.logConditionalProbabilityByAlphabetIndex(c);
 
 				logger.debug("Conditional at " + new String(currentNode.getIdBytes()) + " " + (char) getAlphabet()[c]
-						+ " = " + currentNode
-						.conditionalProbabilityByAlphabetIndex(c));
+						+ " = " + currentNode.conditionalProbabilityByAlphabetIndex(c));
 				logprob += logConditionalProbability;
+				samples++;
 				currentNode = currentNode.nextNodeByAlphabetIndex(c);
 				}
 			catch (NotEnoughSequenceException e)
@@ -218,6 +220,16 @@ public class RonPSA extends RonPSANode
 				}
 			count++;
 			}
+
+
+		if (perSample)
+			{
+			// we have ln(product(p) == sum(ln(p)).
+			// The geometric mean is exp(sum(ln(p))/n), so to get ln(geometric mean) we need only divide by n.
+			logprob /= samples;
+			}
+
+
 		return logprob;
 		}
 	}

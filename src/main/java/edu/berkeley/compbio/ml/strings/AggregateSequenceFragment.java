@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.ml.strings;
 
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
+import edu.berkeley.compbio.sequtils.SequenceException;
 import edu.berkeley.compbio.sequtils.SequenceFragmentMetadata;
 import edu.berkeley.compbio.sequtils.SequenceReader;
 import org.apache.commons.lang.NotImplementedException;
@@ -78,6 +79,12 @@ public class AggregateSequenceFragment extends SequenceFragment
 	   {
 
 	   }*/
+
+
+	public boolean overlaps(SequenceFragmentMetadata other) throws SequenceException
+		{
+		throw new NotImplementedException();
+		}
 
 	public Collection<SequenceFragment> getSequenceFragments()
 		{

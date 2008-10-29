@@ -430,7 +430,8 @@ public class RonPST extends RonPSTNode
 	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
 	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
 	 */
-	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
+	public double fragmentLogProbability(SequenceFragment sequenceFragment, boolean perSample)
+			throws SequenceSpectrumException
 		{
 		throw new NotImplementedException();
 		}
@@ -465,7 +466,7 @@ public class RonPST extends RonPSTNode
 		 {
 		 throw new NotImplementedException();
 		 }
- */
+*/
 	/**
 	 * {@inheritDoc}
 	 */

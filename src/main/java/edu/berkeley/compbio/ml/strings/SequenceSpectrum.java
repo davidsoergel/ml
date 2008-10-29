@@ -103,9 +103,12 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * returned in log space (indeed implementations will likely compute them in log space).
 	 *
 	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
+	 * @param perSample        normalize the probability by the number of samples found in the SequenceFragment, i.e., take
+	 *                         the geometric mean
 	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
 	 */
-	double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException;
+	double fragmentLogProbability(SequenceFragment sequenceFragment, boolean perSample)
+			throws SequenceSpectrumException;
 
 	/**
 	 * Returns the alphabet of this SequenceSpectrum object.
@@ -136,11 +139,12 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	int getMaxDepth();
 
 	/**
-	 * Returns the number of samples on which this spectrum is based.
+	 * Returns the number of real samples on which this spectrum is based, not including pseudocounts or any other smoothing whatnot.
 	 *
 	 * @return The number of samples
 	 */
-	//	int getNumberOfSamples();
+
+	//	int getNumberOfSamples();  // turns out we don't need this
 
 	//void addPseudocounts();
 

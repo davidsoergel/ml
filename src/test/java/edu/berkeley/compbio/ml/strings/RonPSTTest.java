@@ -476,7 +476,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public double fragmentLogProbability(SequenceFragment sequenceFragment)
+		public double fragmentLogProbability(SequenceFragment sequenceFragment, boolean perSample)
 			{
 			throw new NotImplementedException();
 			}
@@ -510,6 +510,15 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			return 50;
 			}
 
+		/**
+		 * {@inheritDoc}
+		 */
+		/*		public int getNumberOfSamples()
+			  {
+			  throw new NotImplementedException();
+			  //return 50;
+			  }
+  */
 		/**
 		 * {@inheritDoc}
 		 */

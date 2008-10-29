@@ -154,7 +154,8 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
  */
 	/**
 	 * Returns the the sum of the counts.  May be completely different from the number of samples due to smoothing or
-	 * normalization.  Even for raw counts, this may be greater than the number of samples due to pseudocounts.
+	 * normalization.  Even for raw counts, this may be greater than the number of samples due to pseudocounts.  May differ
+	 * on different levels of a Kcount due to lastwords.
 	 */
 	public abstract double getSumOfCounts();
 

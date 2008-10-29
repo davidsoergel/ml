@@ -413,7 +413,8 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
 	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
 	 */
-	public double fragmentLogProbability(SequenceFragment sequenceFragment) throws SequenceSpectrumException
+	public double fragmentLogProbability(SequenceFragment sequenceFragment, boolean perSample)
+			throws SequenceSpectrumException
 		{
 		// the RonPSA implementation uses backlinks and so is vastly more efficient.
 		// We can't use backlinks here because they might point to nodes outside of this subtree
@@ -431,6 +432,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		double logprob = 0;
 		CircularFifoBuffer prefix = new CircularFifoBuffer(requiredPrefixLength);
 
+		int samples = 0;
 		while (true)
 			{
 			try
@@ -444,6 +446,9 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 					// these log probabilities could be cached, e.g. logConditionalProbability(c, prefix)
 					logprob += MathUtils.approximateLog(conditionalProbability(c, prefixAsBytes));
+
+					samples++;
+
 					prefix.add(c);
 					}
 				catch (SequenceSpectrumException e)
@@ -471,6 +476,14 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				throw new SequenceSpectrumException(e);
 				}
 			}
+
+		if (perSample)
+			{
+			// we have ln(product(p) == sum(ln(p)).
+			// The geometric mean is exp(sum(ln(p))/n), so to get ln(geometric mean) we need only divide by n.
+			logprob /= samples;
+			}
+
 		return logprob;
 		}
 
@@ -511,7 +524,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		 {
 		 throw new NotImplementedException();
 		 }
- */
+*/
 	public int getOriginalSequenceLength()
 		{
 		throw new NotImplementedException();
