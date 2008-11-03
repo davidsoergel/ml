@@ -38,9 +38,6 @@ import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.FixedWidthHistogram1D;
-import com.davidsoergel.stats.Histogram1D;
-import com.davidsoergel.stats.StatsException;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -67,8 +64,6 @@ import java.util.Set;
  */
 public abstract class ClusteringMethod<T extends Clusterable<T>> implements ClusterSet<T>
 	{
-
-
 	protected DistanceMeasure<T> measure;
 
 	private static final Logger logger = Logger.getLogger(ClusteringMethod.class);
@@ -295,20 +290,25 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 * not have been used in learning the cluster positions.  Determines what proportions of the test samples are
 	 * classified correctly, incorrectly, or not at all.
 	 *
-	 * @param theTestIterator an Iterator of test samples.
+	 * @param theTestIterator         an Iterator of test samples.
+	 * @param mutuallyExclusiveLabels a Set of labels that we're trying to classify
+	 * @param intraLabelDistances     a measure of how different the labels are from each other.  For simply determining
+	 *                                whether the classification is correct or wrong, use a delta function (i.e. equals).
+	 *                                Sometimes, however, one label may be more wrong than another; this allows us to track
+	 *                                that.
 	 * @return a TestResults object encapsulating the proportions of test samples classified correctly, incorrectly, or not
 	 *         at all.
 	 * @throws NoGoodClusterException when a test sample cannot be assigned to any cluster
 	 * @throws DistributionException  when something goes wrong in computing the label probabilities
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels)
-			throws // NoGoodClusterException,
+	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels,
+	                        DistanceMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
 			DistributionException, ClusterException
 		{
 		// evaluate labeling correctness using the test samples
 
-		List<Double> secondBestDistances = new ArrayList<Double>();
+		//	List<Double> secondBestDistances = new ArrayList<Double>();
 		TestResults tr = new TestResults();
 
 		tr.numClusters = theClusters.size();
@@ -320,7 +320,8 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 			try
 				{
 				ClusterMove<T> cm = bestClusterMove(frag);
-				secondBestDistances.add(cm.secondBestDistance);
+
+				//			secondBestDistances.add(cm.secondBestDistance);
 				//Cluster<T> best = getBestCluster(frag, secondBestDistances);
 				//double bestDistance = getBestDistance();
 
@@ -343,17 +344,22 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 
 				double clusterProb = clusterLabels.getNormalized(dominantExclusiveLabel);
 
+				double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, dominantExclusiveLabel);
 
-				if (fragDominantLabel.equals(dominantExclusiveLabel))
-					{
-					tr.correctProbabilities.add(clusterProb);
-					tr.correctDistances.add(cm.bestDistance);
-					}
-				else
-					{
-					tr.wrongProbabilities.add(clusterProb);
-					tr.wrongDistances.add(cm.bestDistance);
-					}
+				tr.computedDistances.add(cm.bestDistance);
+				tr.clusterProbabilities.add(clusterProb);
+				tr.labelDistances.add(wrongness);
+
+				/*		if (fragDominantLabel.equals(dominantExclusiveLabel))
+				   {
+				   tr.correctProbabilities.add(clusterProb);
+				   tr.correctDistances.add(cm.bestDistance);
+				   }
+			   else
+				   {
+				   tr.wrongProbabilities.add(clusterProb);
+				   tr.wrongDistances.add(cm.bestDistance);
+				   }*/
 				}
 			catch (NoGoodClusterException e)
 				{
@@ -379,11 +385,16 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 	 */
 	public class TestResults
 		{
-		public Histogram1D correctProbabilities = new FixedWidthHistogram1D(0., 1., .01);
-		public Histogram1D wrongProbabilities = new FixedWidthHistogram1D(0., 1., .01);
+		//	public Histogram1D correctProbabilities = new FixedWidthHistogram1D(0., 1., .01);
+		//	public Histogram1D wrongProbabilities = new FixedWidthHistogram1D(0., 1., .01);
 
-		public List<Double> correctDistances = new ArrayList<Double>();
-		public List<Double> wrongDistances = new ArrayList<Double>();
+		//public List<Double> correctDistances = new ArrayList<Double>();
+		//public List<Double> wrongDistances = new ArrayList<Double>();
+
+
+		public List<Double> computedDistances = new ArrayList<Double>();
+		public List<Double> clusterProbabilities = new ArrayList<Double>();
+		public List<Double> labelDistances = new ArrayList<Double>();
 
 		//public double correct = 0;
 		//public double wrong = 0;
@@ -401,16 +412,15 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 			unknown /= total;
 			}*/
 
-		public double[] correctPercentages;
-		public double[] wrongPercentages;
+		//	public double[] correctPercentages;
+		//	public double[] wrongPercentages;
 
-		public double[] correctDistanceHistogram;
-		public double[] wrongDistanceHistogram;
-		public double[] distanceBinCenters;
-
+		//	public double[] correctDistanceHistogram;
+		//	public double[] wrongDistanceHistogram;
+		//	public double[] distanceBinCenters;
 		public void finish()
 			{
-			int[] correctCounts = correctProbabilities.getCounts();
+			/*		int[] correctCounts = correctProbabilities.getCounts();
 			int[] wrongCounts = wrongProbabilities.getCounts();
 
 			int correctTotal = DSArrayUtils.sum(correctCounts);
@@ -458,6 +468,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>> implements Clus
 					new FixedWidthHistogram1D(minDistance, maxDistance, binwidth, wrongDistancesPrimitive);
 			wHist.setTotalcounts(total);
 			wrongDistanceHistogram = wHist.getCumulativeFractions();
+			*/
 			}
 		}
 	}

@@ -180,6 +180,15 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>> extends C
 
 		}*/
 
+	/**
+	 * Create some initial clusters using the first few training samples.  This is not the same as the training itself!
+	 *
+	 * @param trainingIterator
+	 * @param initSamples
+	 * @param prototypeFactory
+	 * @throws GenericFactoryException
+	 * @throws ClusterException
+	 */
 	public abstract void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                            GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException;
