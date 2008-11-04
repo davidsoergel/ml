@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import edu.berkeley.compbio.ml.cluster.AbstractCluster;
+import edu.berkeley.compbio.ml.cluster.AbstractCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import org.apache.commons.lang.NotImplementedException;
@@ -43,7 +43,7 @@ import org.apache.commons.lang.NotImplementedException;
  * @version $Id$
  */
 
-public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCluster<T>
+public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCentroidCluster<T>
 	{
 	public KohonenSOMCell(int id, T centroid)//DistanceMeasure<T> dm,
 		{
@@ -53,7 +53,8 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCl
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByAdding(T point)
+	@Override
+	public boolean add(T point)
 		{
 		// we don't increment n here, because moving the centroid and actually assigning a sample to this cell are two different things
 		centroid.incrementBy(point);
@@ -63,7 +64,8 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCl
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByAddingAll(Cluster<T> otherCluster)
+	@Override
+	public boolean addAll(Cluster<T> otherCluster)
 		{
 		throw new NotImplementedException();
 		}
@@ -97,7 +99,8 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCl
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByRemoving(T point)
+	@Override
+	public boolean remove(T point)
 		{
 		centroid.decrementBy(point);
 
@@ -109,7 +112,8 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCl
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByRemovingAll(Cluster<T> otherCluster)
+	@Override
+	public boolean removeAll(Cluster<T> otherCluster)
 		{
 		throw new NotImplementedException();
 		}

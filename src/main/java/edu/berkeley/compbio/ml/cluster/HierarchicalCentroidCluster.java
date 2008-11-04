@@ -46,11 +46,12 @@ import java.util.Formatter;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogenyNode<Cluster<T>> implements Cluster<T>
+public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends BasicPhylogenyNode<CentroidCluster<T>>
+		implements CentroidCluster<T>
 	{
-	public HierarchicalCluster(int id, Clusterable<T> sample)
+	public HierarchicalCentroidCluster(int id, Clusterable<T> sample)
 		{
-		super(new BasicCluster(id, sample));
+		super(new BasicCentroidCluster(id, sample));
 		setWeight(1.);
 		}
 
@@ -97,7 +98,7 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByAdding(T point)
+	public boolean add(T point)
 		{
 		throw new NotImplementedException();
 		}
@@ -105,7 +106,7 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByRemoving(T point)
+	public boolean remove(T point)
 		{
 		throw new NotImplementedException();
 		}
@@ -113,7 +114,7 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByAddingAll(Cluster<T> point)
+	public boolean addAll(Cluster<T> point)
 		{
 		throw new NotImplementedException();
 		}
@@ -121,7 +122,7 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByRemovingAll(Cluster<T> point)
+	public boolean removeAll(Cluster<T> point)
 		{
 		throw new NotImplementedException();
 		}
@@ -174,9 +175,9 @@ public class HierarchicalCluster<T extends Clusterable<T>> extends BasicPhylogen
 	 * {@inheritDoc}
 	 */
 	@Override
-	public HierarchicalCluster<T> clone()
+	public HierarchicalCentroidCluster<T> clone()
 		{
-		return (HierarchicalCluster<T>) super.clone();
+		return (HierarchicalCentroidCluster<T>) super.clone();
 		}
 
 	/**

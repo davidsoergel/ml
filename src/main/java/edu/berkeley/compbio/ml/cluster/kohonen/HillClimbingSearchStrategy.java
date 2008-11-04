@@ -33,7 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
+import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
@@ -85,9 +85,9 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 	 * @return
 	 */
 	@Override
-	public ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
-		ClusterMove<T> result = new ClusterMove<T>();
+		ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
 
 		String id = p.getId();
 		result.oldCluster = som.getAssignment(id);
@@ -104,7 +104,7 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 		KohonenSOM2D<T>.WeightedMask mask = som.getWeightedMask((int) getSearchRadius());
 
 
-		Set<Cluster<T>> alreadyTested = new HashSet<Cluster<T>>(10);
+		Set<CentroidCluster<T>> alreadyTested = new HashSet<CentroidCluster<T>>(10);
 
 		result.bestCluster = result.oldCluster;
 		result.bestDistance = measure.distanceFromTo(result.bestCluster.getCentroid(), p);

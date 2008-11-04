@@ -82,9 +82,9 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 	 * @return
 	 */
 	@Override
-	public ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
-		ClusterMove<T> result = new ClusterMove<T>();
+		ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
 
 		String id = p.getId();
 		result.oldCluster = som.getAssignment(id);

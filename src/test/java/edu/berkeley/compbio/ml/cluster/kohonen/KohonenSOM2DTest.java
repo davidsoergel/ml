@@ -34,7 +34,7 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.SimpleFunction;
-import edu.berkeley.compbio.ml.cluster.Cluster;
+import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
@@ -105,7 +105,7 @@ public class KohonenSOM2DTest
 				5
 		}), null);
 
-		for (Cluster<ClusterableDoubleArray> cell : som.getClusters())
+		for (CentroidCluster<ClusterableDoubleArray> cell : som.getClusters())
 			{
 			assert cell.getCentroid() != null;
 			assert !cell.getCentroid().equalValue(prototype);

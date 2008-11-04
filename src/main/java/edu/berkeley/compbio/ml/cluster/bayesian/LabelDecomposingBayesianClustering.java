@@ -37,9 +37,9 @@ import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.DistributionException;
-import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
+import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
+import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.kmeans.GrowableKmeansClustering;
@@ -104,15 +104,15 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 				// doing proper k-means would be nicer, but then we'd have to store all the  training points, or re-iterate them somehow.
 
-				ClusterMove<T> cm = theIntraLabelClustering.bestClusterMove(point);
+				ClusterMove<T, CentroidCluster<T>> cm = theIntraLabelClustering.bestClusterMove(point);
 
-				Cluster<T> cluster = cm.bestCluster;
+				CentroidCluster<T> cluster = cm.bestCluster;
 
 				if (cm.bestDistance > unknownDistanceThreshold)
 					{
 					logger.info("Creating new subcluster (" + cm.bestDistance + " > " + unknownDistanceThreshold
 							+ ") for " + bestLabel);
-					cluster = new AdditiveCluster<T>(i++, prototypeFactory.create());
+					cluster = new AdditiveCentroidCluster<T>(i++, prototypeFactory.create());
 					//cluster.setId(i++);
 
 					// add the new cluster to the local per-label clustering...
@@ -124,7 +124,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 					// REVIEW for now we make a uniform prior
 					priors.put(cluster, 1);
 					}
-				cluster.recenterByAdding(point);
+				cluster.add(point);
 				/*		if(cluster.getLabelCounts().uniqueSet().size() != 1)
 				{
 				throw new Error();

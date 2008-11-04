@@ -47,7 +47,7 @@ import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
  * @Author David Soergel
  * @Version 1.0
  */
-public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
+public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
 	/**
 	 * Returns a LengthWeightHierarchyNode representing the root of the computed clustering tree.  Only valid after
@@ -56,5 +56,5 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>> ext
 	 * @return a LengthWeightHierarchyNode representing the root of the computed clustering tree, or null if the clustering
 	 *         procedure has not been performed yet.
 	 */
-	public abstract LengthWeightHierarchyNode<Cluster<T>, ? extends LengthWeightHierarchyNode> getTree();
+	public abstract LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree();
 	}

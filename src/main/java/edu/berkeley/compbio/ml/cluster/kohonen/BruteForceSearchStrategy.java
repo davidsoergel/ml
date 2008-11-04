@@ -33,7 +33,6 @@
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import org.apache.log4j.Logger;
 
@@ -55,9 +54,9 @@ public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends 
 	 * @return
 	 */
 	@Override
-	public ClusterMove<T> bestClusterMove(T p)
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p)
 		{
-		ClusterMove<T> result = new ClusterMove<T>();
+		ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
 		//double bestDistance = Double.MAX_VALUE;
 		//Cluster<T> bestCluster = null;
 
@@ -68,7 +67,7 @@ public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends 
 			{
 			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (Cluster<T> c : som.getClusters())
+		for (KohonenSOMCell<T> c : som.getClusters())
 			{
 			// grid already initialized with prototype, never mind all this stuff
 

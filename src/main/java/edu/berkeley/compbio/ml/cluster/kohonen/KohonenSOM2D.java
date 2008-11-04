@@ -38,7 +38,7 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistanceMeasure;
 import com.davidsoergel.stats.SimpleFunction;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
+import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
@@ -74,7 +74,8 @@ import java.util.Set;
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T> implements KohonenSOM<T>
+public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T, KohonenSOMCell<T>>
+		implements KohonenSOM<T>
 	{
 	// we jump through some hoops to avoid actually storing the cells in an array,
 	// since we don't know a priori how many dimensions it should have, and it would be redundant with
@@ -138,9 +139,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return x * blockSize[0] + y;
 		}
 
-	public Cluster<T> clusterAt(int x, int y)
+	public KohonenSOMCell<T> clusterAt(int x, int y)
 		{
-		return ((List<Cluster<T>>) theClusters).get(listIndexFor(x, y));
+		return ((List<KohonenSOMCell<T>>) theClusters).get(listIndexFor(x, y));
 		}
 
 	/**
@@ -200,7 +201,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
 
 		// this overwrites the original list of unknown capacity
-		theClusters = new ArrayList<Cluster<T>>(totalCells);
+		theClusters = new ArrayList<KohonenSOMCell<T>>(totalCells);
 
 		int[] zeroCell = new int[dimensions];
 		Arrays.fill(zeroCell, 0);
@@ -277,7 +278,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	@Override
 	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
 		{
-		ClusterMove cm = bestClusterMove(p);
+		ClusterMove<T, KohonenSOMCell<T>> cm = bestClusterMove(p);
 
 		if (cm.isChanged())
 			{
@@ -287,8 +288,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		// do the moves whether or not the assignment changed
 
-		KohonenSOMCell<T> loser = (KohonenSOMCell<T>) cm.oldCluster;
-		KohonenSOMCell<T> winner = (KohonenSOMCell<T>) cm.bestCluster;
+		KohonenSOMCell<T> loser = cm.oldCluster;
+		KohonenSOMCell<T> winner = cm.bestCluster;
 
 		double moveFactor = moveFactorFunction.f(time);
 
@@ -467,9 +468,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				{
 				//if (x != width && y != height)
 				//	{
-				Cluster<T> here = clusterAt(x, y);
+				CentroidCluster<T> here = clusterAt(x, y);
 
-				Cluster<T> right = clusterAt(x + 1, y);
+				CentroidCluster<T> right = clusterAt(x + 1, y);
 				double d = measure.distanceFromTo(here.getCentroid(),
 				                                  right.getCentroid());//here.distanceToCentroid(right.getCentroid());
 
@@ -477,7 +478,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				result[listIndexFor(x + 1, y)] += d;
 
 
-				Cluster<T> down = clusterAt(x, y + 1);
+				CentroidCluster<T> down = clusterAt(x, y + 1);
 				d = measure.distanceFromTo(here.getCentroid(),
 				                           down.getCentroid());//here.distanceToCentroid(down.getCentroid());
 
@@ -808,7 +809,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			public MaskIterator(KohonenSOMCell<T> center)
 				{
 				//this.center = center;
-				int[] c = cellPositionFor(((List<Cluster<T>>) theClusters).indexOf(center));
+				int[] c = cellPositionFor(((List<KohonenSOMCell<T>>) theClusters).indexOf(center));
 				xCenter = c[0];
 				yCenter = c[1];
 				nextCell = findNextCell();
@@ -886,7 +887,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 
 				return new WeightedCell(
-						(KohonenSOMCell<T>) ((List<Cluster<T>>) theClusters).get(listIndexFor(realX, realY)),
+						(KohonenSOMCell<T>) ((List<KohonenSOMCell<T>>) theClusters).get(listIndexFor(realX, realY)),
 						weight[trav]);
 				}
 

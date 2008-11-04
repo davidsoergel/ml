@@ -41,7 +41,7 @@ import java.util.Collection;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
+public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
 	// different implementations may prefer different data structures
 	//Collection<Clusterable<T>> samples;

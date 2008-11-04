@@ -35,10 +35,10 @@ package edu.berkeley.compbio.ml.cluster.hierarchical;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
 import com.davidsoergel.stats.DistanceMeasure;
 import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
-import edu.berkeley.compbio.ml.cluster.Cluster;
+import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
-import edu.berkeley.compbio.ml.cluster.HierarchicalCluster;
+import edu.berkeley.compbio.ml.cluster.HierarchicalCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
@@ -58,9 +58,9 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	private DistanceMeasure<T> distanceMeasure;
 	//private SymmetricPairwiseDistanceMatrix theActiveNodeDistanceMatrix = new SymmetricPairwiseDistanceMatrix();
-	private Symmetric2dBiMap<HierarchicalCluster<T>, Double> theActiveNodeDistanceMatrix =
-			new Symmetric2dBiMap<HierarchicalCluster<T>, Double>();
-	private HierarchicalCluster<T> theRoot;
+	private Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix =
+			new Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double>();
+	private HierarchicalCentroidCluster<T> theRoot;
 
 	//	private SortedSet<ClusterPair<T>> theClusterPairs;
 
@@ -75,7 +75,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	 * {@inheritDoc}
 	 */
 	@Override
-	public LengthWeightHierarchyNode<Cluster<T>, ? extends LengthWeightHierarchyNode> getTree()
+	public LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree()
 		{
 		return theRoot;
 		}
@@ -120,7 +120,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		ClusterMove result = new ClusterMove();
 		result.bestDistance = Double.MAX_VALUE;
 
-		for (Cluster<T> theCluster : theClusters)
+		for (CentroidCluster<T> theCluster : theClusters)
 			{
 			double distance = distanceMeasure.distanceFromTo(p, theCluster.getCentroid());
 			if (distance < result.bestDistance)
@@ -143,7 +143,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	public void performClustering()
 		{
 		n = theActiveNodeDistanceMatrix.numKeys();
-		HierarchicalCluster<T> composite = null;
+		HierarchicalCentroidCluster<T> composite = null;
 		while (theActiveNodeDistanceMatrix.numKeys() > 1)
 			{
 			// find shortest distance
@@ -151,8 +151,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			//	NodePair<T> pair = theActiveNodeDistanceMatrix.getClosestPair();// the map is sorted by distance
 
 			Double distance = theActiveNodeDistanceMatrix.getSmallestValue() / 2;
-			HierarchicalCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
-			HierarchicalCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
+			HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
+			HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
 
 
 			// set the branch lengths
@@ -163,12 +163,12 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 			// create a composite node
 
-			composite = new HierarchicalCluster<T>(idCount++, null);
+			composite = new HierarchicalCentroidCluster<T>(idCount++, null);
 			a.setParent(composite);
 			b.setParent(composite);
 
-			composite.recenterByAddingAll(a);
-			composite.recenterByAddingAll(b);
+			composite.addAll(a);
+			composite.addAll(b);
 
 			// weight and weightedLabels.getItemCount() are maybe redundant; too bad
 			composite.setWeight(a.getWeight() + b.getWeight());
@@ -177,7 +177,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			theClusters.add(composite);
 
 			// compute the distance from the composite node to each remaining cluster
-			for (HierarchicalCluster<T> node : new HashSet<HierarchicalCluster<T>>(
+			for (HierarchicalCentroidCluster<T> node : new HashSet<HierarchicalCentroidCluster<T>>(
 					theActiveNodeDistanceMatrix.getActiveKeys()))
 				{
 				if (node == a || node == b)
@@ -215,8 +215,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 		if (theActiveNodeDistanceMatrix.numKeys() == 0)
 			{
-			HierarchicalCluster a = new HierarchicalCluster(idCount++, i.next());
-			HierarchicalCluster b = new HierarchicalCluster(idCount++, i.next());
+			HierarchicalCentroidCluster a = new HierarchicalCentroidCluster(idCount++, i.next());
+			HierarchicalCentroidCluster b = new HierarchicalCentroidCluster(idCount++, i.next());
 			//a.setN(1);
 			//b.setN(1);
 
@@ -226,14 +226,14 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		while (i.hasNext())
 			{
 			Clusterable<T> sample = i.next();
-			HierarchicalCluster c = new HierarchicalCluster(idCount++, sample);
+			HierarchicalCentroidCluster c = new HierarchicalCentroidCluster(idCount++, sample);
 			//c.setN(1);
 			addAndComputeDistances(c);
 			}
 		}
 
 
-	void addInitialPair(HierarchicalCluster<T> node1, HierarchicalCluster<T> node2)
+	void addInitialPair(HierarchicalCentroidCluster<T> node1, HierarchicalCentroidCluster<T> node2)
 		{
 		theClusters.add(node1);
 		theClusters.add(node2);
@@ -249,10 +249,10 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	 *
 	 * @param node
 	 */
-	void addAndComputeDistances(HierarchicalCluster<T> node)
+	void addAndComputeDistances(HierarchicalCentroidCluster<T> node)
 		{
 		theClusters.add(node);
-		Set<HierarchicalCluster<T>> activeNodes =
+		Set<HierarchicalCentroidCluster<T>> activeNodes =
 				new HashSet(theActiveNodeDistanceMatrix.getActiveKeys());// avoid ConcurrentModificationException
 
 		/*	Double d = distanceMeasure.distanceFromTo(node.getValue().getCentroid(),
@@ -262,7 +262,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 					   distanceToPair.put(d, pair);
 					   pairToDistance.put(pair, d);
 		   */
-		for (HierarchicalCluster<T> theActiveNode : activeNodes)
+		for (HierarchicalCentroidCluster<T> theActiveNode : activeNodes)
 			{
 			Double d = distanceMeasure
 					.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());

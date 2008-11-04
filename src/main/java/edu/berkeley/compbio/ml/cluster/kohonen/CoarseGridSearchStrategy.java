@@ -33,7 +33,6 @@
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
@@ -57,7 +56,7 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 
 
 	private int gridSpacing;
-	private Set<? extends Cluster<T>> sparseGrid;
+	private Set<? extends KohonenSOMCell<T>> sparseGrid;
 
 	public CoarseGridSearchStrategy()
 		{
@@ -78,9 +77,9 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 	 * @return
 	 */
 	@Override
-	public ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
-		ClusterMove<T> result = new ClusterMove<T>();
+		ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
 
 		String id = p.getId();
 		result.oldCluster = som.getAssignment(id);
@@ -89,7 +88,7 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 			{
 			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (Cluster<T> c : sparseGrid)
+		for (KohonenSOMCell<T> c : sparseGrid)
 			{
 
 			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
@@ -135,9 +134,9 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 		return result;
 		}
 
-	public Set<? extends Cluster<T>> getSparseGridClusters()
+	public Set<? extends KohonenSOMCell<T>> getSparseGridClusters()
 		{
-		Set<Cluster<T>> result = new HashSet<Cluster<T>>();
+		Set<KohonenSOMCell<T>> result = new HashSet<KohonenSOMCell<T>>();
 		int width = som.cellsPerDimension[0];
 		int height = som.cellsPerDimension[1];
 		for (int x = 0; x < width; x += gridSpacing)

@@ -10,9 +10,9 @@ import java.util.List;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class SupervisedOnlineClusteringMethod<T extends Clusterable<T>> extends OnlineClusteringMethod<T>
+public abstract class SupervisedOnlineClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
+		extends OnlineClusteringMethod<T, C>
 	{
-
 	/**
 	 * Adds a point to the best cluster.  Generally it's not a good idea to store the point itself in the cluster for
 	 * memory reasons; so this method is primarily useful for updating the position of the centroid.

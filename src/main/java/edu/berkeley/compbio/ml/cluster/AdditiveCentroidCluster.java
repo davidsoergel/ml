@@ -41,11 +41,11 @@ import org.apache.log4j.Logger;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractCluster<T>
+public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends AbstractCentroidCluster<T>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	private static final Logger logger = Logger.getLogger(AdditiveCluster.class);
+	private static final Logger logger = Logger.getLogger(AdditiveCentroidCluster.class);
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
@@ -55,10 +55,9 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 	 * the course of running a clustering algorithm, so it may not be a good idea to provide a real data point here (i.e.,
 	 * it's probably best to clone it first).
 	 *
-	 * @param dm       the DistanceMeasure<T>
 	 * @param centroid the T
 	 */
-	public AdditiveCluster(int id, T centroid)//DistanceMeasure<T> dm,
+	public AdditiveCentroidCluster(int id, T centroid)//DistanceMeasure<T> dm,
 		{
 		super(id, centroid);
 		}
@@ -68,18 +67,18 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 	/**
 	 * {@inheritDoc}
 	 */
-	//@Override
-	public boolean recenterByAdding(T point)
+	@Override
+	public boolean add(T point)
 		{
-		//n++;
-		weightedLabels.addAll(point.getWeightedLabels());
-		logger.debug("Cluster added " + point);
+		super.add(point);
 		centroid.incrementBy(point);
 		return true;
 		}
 
-	public boolean recenterByAddingAll(Cluster<T> otherCluster)
+	@Override
+	public boolean addAll(Cluster<T> otherCluster)
 		{
+		super.addAll(otherCluster);
 		/*
 		for(T point : otherCluster.getPoints())
 			{
@@ -88,28 +87,26 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 			*/
 
 		int otherN = otherCluster.getN();
-		centroid.incrementByWeighted(otherCluster.getCentroid(), otherN / (otherN + getN()));
-		weightedLabels.addAll(otherCluster.getWeightedLabels());
-		logger.debug("Cluster added " + otherCluster);
+		centroid.incrementByWeighted(((CentroidCluster<T>) otherCluster).getCentroid(), otherN / (otherN + getN()));
 		return true;
 		}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	//	@Override
-	public boolean recenterByRemoving(T point)
+	@Override
+	public boolean remove(T point)
 		{
-		//n--;
-		weightedLabels.removeAll(point.getWeightedLabels());
-		logger.debug("Cluster removed " + point);
+		super.remove(point);
 		centroid.decrementBy(point);
 		return true;
 		}
 
 
-	public boolean recenterByRemovingAll(Cluster<T> otherCluster)
+	@Override
+	public boolean removeAll(Cluster<T> otherCluster)
 		{
+		super.removeAll(otherCluster);
 		/*
 		for(T point : otherCluster.getPoints())
 			{
@@ -118,8 +115,7 @@ public class AdditiveCluster<T extends AdditiveClusterable<T>> extends AbstractC
 			*/
 
 		int otherN = otherCluster.getN();
-		centroid.decrementByWeighted(otherCluster.getCentroid(), otherN / (otherN + getN()));
-		weightedLabels.removeAll(otherCluster.getWeightedLabels());
+		centroid.decrementByWeighted(((CentroidCluster<T>) otherCluster).getCentroid(), otherN / (otherN + getN()));
 		logger.debug("Cluster removed " + otherCluster);
 		return true;
 		}

@@ -1,72 +1,13 @@
-/*
- * Copyright (c) 2001-2008 David Soergel
- * 418 Richmond St., El Cerrito, CA  94530
- * dev@davidsoergel.com
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *     * Redistributions of source code must retain the above copyright notice,
- *       this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the author nor the names of any contributors may
- *       be used to endorse or promote products derived from this software
- *       without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.collections.WeightedSet;
-import com.davidsoergel.stats.DistributionException;
 
 /**
- * A cluster, i.e. a grouping of samples, generally learned during a clustering process.  Stores a centroid, an object
- * of the same type as the samples representing the location of the cluster.  Depending on the clustering algorithm, the
- * centroid may or may not be sufficient to describe the cluster (see AdditiveCluster); in the limit, a Cluster subclass
- * may simply store all the samples in the cluster.
- * <p/>
- * A Cluster keeps track of the probabilities of labels on the samples within it, assuming that each sample has a single
- * label and these are mutually exclusive.
- * <p/>
- * We let the label probabilities be completely distinct from the actual counts of labels observed on the samples, so
- * that the probabilities can be set based on outside information (e.g., in the case of the Kohonen map, neighboring
- * cells may exert an influence)These probabilities are stored separately from the samples themselves.
- *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public interface Cluster<T extends Clusterable<T>>
 	{
-	/**
-	 * Returns the centroid
-	 *
-	 * @return the centroid
-	 */
-	T getCentroid();
-
-	/**
-	 * Sets the centroid
-	 *
-	 * @param centroid the centroid
-	 */
-	void setCentroid(T centroid);
-
 	/**
 	 * Returns the id
 	 *
@@ -88,50 +29,6 @@ public interface Cluster<T extends Clusterable<T>>
 	 * @return the number of samples in thie cluster
 	 */
 	int getN();
-
-	/**
-	 * Sets the number of samples in thie cluster
-	 *
-	 * @param i the n umber of samples in thie cluster
-	 */
-	//void setN(int i);
-
-	//	boolean equals(Cluster<T> other);
-
-	/**
-	 * Add the given sample to this cluster.  Does not automatically remove the sample from other clusters of which it is
-	 * already a member.
-	 *
-	 * @param point the sample to add
-	 * @return true if the point was successfully added; false otherwise
-	 */
-	boolean recenterByAdding(T point);
-
-	/**
-	 * Add all the samples in the given cluster to this cluster.  Does not automatically remove the samples from other
-	 * clusters of which they are already members.
-	 *
-	 * @param point the sample to add
-	 * @return true if the point was successfully added; false otherwise
-	 */
-	boolean recenterByAddingAll(Cluster<T> point);
-
-	/**
-	 * Remove the given sample from this cluster.
-	 *
-	 * @param point the sample to remove
-	 * @return true if the point was successfully removed; false otherwise (in particular, if the point is not a member of
-	 *         this cluster in teh first place)
-	 */
-	boolean recenterByRemoving(T point);
-
-	/**
-	 * Remove all the samples in the given cluster from this cluster.
-	 *
-	 * @param point the sample to add
-	 * @return true if the point was successfully added; false otherwise
-	 */
-	boolean recenterByRemovingAll(Cluster<T> point);
 
 	/**
 	 * Recomputes the probabilities of labels, based on the actual labels observed in the contained samples.  This must be
@@ -156,75 +53,45 @@ public interface Cluster<T extends Clusterable<T>>
 	void updateDerivedWeightedLabelsFromLocal();
 
 	/**
-	 * Sets the weights of String labels.  Generally should be probabilities.  No guarantee of exclusivity.
-	 *
-	 * @param labelWeights a WeightedSet giving the probabilities of mutually exclusive String labels.
-	 */
-	//void setDerivedLabelWeights(WeightedSet<String> labelWeights);
-
-	/**
 	 * Gets the probabilities of mutually exclusive String labels.
 	 *
 	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
 	 */
 	WeightedSet<String> getWeightedLabels();// throws DistributionException;
 
-	// WeightedSet<String> addWeightedLabels(WeightedSet<String> l);
 
 	/**
-	 * Returns the probability of the most probable label
+	 * Add the given sample to this cluster.  Does not automatically remove the sample from other clusters of which it is
+	 * already a member.
 	 *
-	 * @return the probability of the most probable label
-	 * @throws DistributionException when something goes wrong
+	 * @param point the sample to add
+	 * @return true if the point was successfully added; false otherwise
 	 */
-	//	double getDominantProbability() throws DistributionException;
+	boolean add(T point);
 
 	/**
-	 * Returns the most probable label
+	 * Add all the samples in the given cluster to this cluster.  Does not automatically remove the samples from other
+	 * clusters of which they are already members.
 	 *
-	 * @return the most probable label
-	 * @throws DistributionException when something goes wrong
+	 * @param point the sample to add
+	 * @return true if the point was successfully added; false otherwise
 	 */
-	//	String getDominantExclusiveLabel();
-
+	boolean addAll(Cluster<T> point);
 
 	/**
-	 * Add the label on the given sample to the counts.
+	 * Remove the given sample from this cluster.
 	 *
-	 * @param point the sample whose label to count.
+	 * @param point the sample to remove
+	 * @return true if the point was successfully removed; false otherwise (in particular, if the point is not a member of
+	 *         this cluster in the first place)
 	 */
-	//	void addExclusiveLabel(T point);
+	boolean remove(T point);
 
 	/**
-	 * Remove the label on the given sample from the counts.
+	 * Remove all the samples in the given cluster from this cluster.
 	 *
-	 * @param point the sample whose label to remove.
+	 * @param point the sample to add
+	 * @return true if the point was successfully added; false otherwise
 	 */
-	//	void removeExclusiveLabel(T point);
-
-	/**
-	 * Sets the sum of squared distances from the samples in this cluster to its centroid.  Computed externally in {@see
-	 * ClusteringMethod.computeClusterStdDevs}.
-	 *
-	 * @param i the sumOfSquareDistances
-	 */
-	void setSumOfSquareDistances(double i);
-
-	/**
-	 * Increments the sum of square distances.  Note there can be no online method of updating the sum of squares, because
-	 * the centroid keeps moving
-	 */
-	void addToSumOfSquareDistances(double v);
-
-	/**
-	 * Returns the standard deviation of the distances from each sample to the centroid, if this has already been computed.
-	 * Can be used as a (crude?) measure of clusteredness, in combination with the distances between the cluster centroids
-	 * themselves.  May return an obsolete value if the cluster centroid or members have been altered since the standard
-	 * deviation was computed.
-	 *
-	 * @return the standard deviation of the distances from each sample to the centroid
-	 */
-	double getStdDev();
-
-	//	String getDominantLabelInSet(Set<String> mutuallyExclusiveLabels);
+	boolean removeAll(Cluster<T> point);
 	}

@@ -55,7 +55,7 @@ public abstract class KohonenSOM2DSearchStrategy<T extends AdditiveClusterable<T
 		this.som = som;
 		}
 
-	abstract ClusterMove<T> bestClusterMove(T p) throws NoGoodClusterException;
+	abstract ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p) throws NoGoodClusterException;
 
 	public void setDistanceMeasure(DistanceMeasure<T> measure)
 		{

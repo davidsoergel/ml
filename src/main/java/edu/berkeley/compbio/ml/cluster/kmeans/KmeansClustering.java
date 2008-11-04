@@ -36,10 +36,10 @@ package edu.berkeley.compbio.ml.cluster.kmeans;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistanceMeasure;
-import edu.berkeley.compbio.ml.cluster.AbstractCluster;
-import edu.berkeley.compbio.ml.cluster.AdditiveCluster;
+import edu.berkeley.compbio.ml.cluster.AbstractCentroidCluster;
+import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.Cluster;
+import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
 import org.apache.log4j.Logger;
@@ -50,7 +50,7 @@ import java.util.List;
 /**
  * @version 1.0
  */
-public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T>
+public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T, CentroidCluster<T>>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -81,7 +81,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 			{
 			// initialize the clusters with the first k points
 
-			AbstractCluster<T> c = new AdditiveCluster<T>(i, trainingIterator.next());
+			AbstractCentroidCluster<T> c = new AdditiveCentroidCluster<T>(i, trainingIterator.next());
 			//c.setId(i);
 
 			theClusters.add(c);
@@ -104,20 +104,19 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		assert p != null;
 		//n++;
 		String id = p.getId();
-		ClusterMove cm = bestClusterMove(p);
+		ClusterMove<T, CentroidCluster<T>> cm = bestClusterMove(p);
 		secondBestDistances.add(cm.secondBestDistance);
 		if (cm.isChanged())
 			{
 			try
 				{
-				cm.oldCluster.recenterByRemoving(p);//, cm.oldDistance);
+				cm.oldCluster.remove(p);//, cm.oldDistance);
 				}
 			catch (NullPointerException e)
 				{// probably just the first round
 				}
 			cm.bestCluster
-					.recenterByAdding(
-							p);//, cm.bestDistance);  // this will automatically recalculate the centroid, etc.
+					.add(p);//, cm.bestDistance);  // this will automatically recalculate the centroid, etc.
 			assignments.put(id, cm.bestCluster);
 			return true;
 			}
@@ -138,9 +137,9 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ClusterMove<T> bestClusterMove(T p)
+	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p)
 		{
-		ClusterMove<T> result = new ClusterMove<T>();
+		ClusterMove<T, CentroidCluster<T>> result = new ClusterMove<T, CentroidCluster<T>>();
 		//double bestDistance = Double.MAX_VALUE;
 		//Cluster<T> bestCluster = null;
 
@@ -151,7 +150,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 			{
 			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (Cluster<T> c : theClusters)
+		for (CentroidCluster<T> c : theClusters)
 			{
 			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
 			if (logger.isDebugEnabled())

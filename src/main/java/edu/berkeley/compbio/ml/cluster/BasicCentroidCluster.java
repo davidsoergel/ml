@@ -38,7 +38,7 @@ import org.apache.commons.lang.NotImplementedException;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
+public class BasicCentroidCluster<T extends Clusterable<T>> extends AbstractCentroidCluster<T>
 	{
 	/**
 	 * Constructs a new Cluster with the given id and centroid.  Note the centroid may be modified in the course of running
@@ -48,15 +48,17 @@ public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	 * @param id       an int uniquely identifying this cluster
 	 * @param centroid the T
 	 */
-	public BasicCluster(int id, T centroid)
+	public BasicCentroidCluster(int id, T centroid)
 		{
 		super(id, centroid);
 		}
 
+	// we can't support adding and removing points because we don't know how to modify the centroid if it's not additive
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByAdding(T point)
+	public boolean add(T point)
 		{
 		throw new NotImplementedException();
 		//return false;
@@ -65,7 +67,7 @@ public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByAddingAll(Cluster<T> point)
+	public boolean addAll(CentroidCluster<T> point)
 		{
 		throw new NotImplementedException();
 		}
@@ -73,7 +75,7 @@ public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByRemoving(T point)
+	public boolean remove(T point)
 		{
 		throw new NotImplementedException();
 		}
@@ -81,7 +83,7 @@ public class BasicCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean recenterByRemovingAll(Cluster<T> point)
+	public boolean removeAll(CentroidCluster<T> point)
 		{
 		throw new NotImplementedException();
 		}

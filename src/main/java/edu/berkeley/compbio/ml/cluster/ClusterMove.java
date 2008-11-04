@@ -40,12 +40,12 @@ package edu.berkeley.compbio.ml.cluster;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class ClusterMove<T extends Clusterable<T>>
+public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>>
 	{
 	/**
 	 * The destination cluster
 	 */
-	public Cluster<T> bestCluster;
+	public C bestCluster;
 
 	/**
 	 * The distance of the point under consideration to the destination cluster centroid
@@ -55,7 +55,7 @@ public class ClusterMove<T extends Clusterable<T>>
 	/**
 	 * The source cluster
 	 */
-	public Cluster<T> oldCluster;
+	public C oldCluster;
 
 	/**
 	 * The distance of the point under consideration to the source cluster centroid

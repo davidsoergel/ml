@@ -69,7 +69,7 @@ public class AggregateSequenceFragment extends SequenceFragment
 
 	public SequenceReader getResetReader() throws NotEnoughSequenceException
 		{
-		throw new NotImplementedException("Can't fet a reader on an aggregate");
+		throw new NotImplementedException("Can't get a reader on an aggregate");
 		//	theAggregateReader.reset();
 		//	return theAggregateReader;
 		}
