@@ -165,5 +165,10 @@
 			<version>3.2</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>libsvm</groupId>
+			<artifactId>libsvm</artifactId>
+			<version>2.88</version>
+		</dependency>
 	</dependencies>
 </project>

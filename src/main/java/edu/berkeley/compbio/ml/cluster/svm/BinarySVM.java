@@ -2,6 +2,10 @@ package edu.berkeley.compbio.ml.cluster.svm;
 
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
+import libsvm.svm;
+import libsvm.svm_model;
+import libsvm.svm_parameter;
+import libsvm.svm_problem;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Collection;
@@ -17,6 +21,8 @@ public class BinarySVM<T extends Clusterable<T>, C extends Cluster<T>> implement
 	Cluster<T> cluster1;
 	Cluster<T> cluster2;
 
+	svm_model model;
+
 	public BinarySVM(Cluster<T> cluster1, Cluster<T> cluster2)
 		{
 		this.cluster1 = cluster1;
@@ -30,6 +36,9 @@ public class BinarySVM<T extends Clusterable<T>, C extends Cluster<T>> implement
 
 	public void train(Collection<T> points1, Collection<T> points2)
 		{
+		svm_problem problem;
+		svm_parameter parameters;
+		model = svm.svm_train(problem, parameters);
 		throw new NotImplementedException();
 		}
 
