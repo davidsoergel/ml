@@ -35,7 +35,7 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
-import com.davidsoergel.stats.DistanceMeasure;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
@@ -60,7 +60,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	{
 	private static final Logger logger = Logger.getLogger(LabelDecomposingBayesianClustering.class);
 
-	public LabelDecomposingBayesianClustering(DistanceMeasure<T> dm, double unknownDistanceThreshold)
+	public LabelDecomposingBayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold)
 		{
 		super(dm, unknownDistanceThreshold);
 		}

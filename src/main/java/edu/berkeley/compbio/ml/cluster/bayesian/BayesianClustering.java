@@ -36,7 +36,7 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
-import com.davidsoergel.stats.DistanceMeasure;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
@@ -107,7 +107,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public BayesianClustering(DistanceMeasure<T> dm, double unknownDistanceThreshold)
+	public BayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold)
 		{
 		measure = dm;
 		this.unknownDistanceThreshold = unknownDistanceThreshold;

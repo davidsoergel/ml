@@ -165,10 +165,10 @@
 			<version>3.2</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>libsvm</groupId>
-			<artifactId>libsvm</artifactId>
-			<version>2.88</version>
-		</dependency>
+		<!--	<dependency>
+			<groupId>biojava</groupId>
+			<artifactId>biojava</artifactId>
+			<version>1.6</version>
+		</dependency>-->
 	</dependencies>
 </project>

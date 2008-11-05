@@ -35,7 +35,7 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
-import com.davidsoergel.stats.DistanceMeasure;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.SimpleFunction;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -95,7 +95,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 	int time = 0;
 
-	private DistanceMeasure<T> measure;
+	private DissimilarityMeasure<T> measure;
 	private int dimensions;
 	private boolean edgesWrap;
 
@@ -135,8 +135,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 		}
 
 
-	public KohonenSOMnD(int[] cellsPerDimension, DistanceMeasure<T> dm, T prototype, SimpleFunction moveFactorFunction,
-	                    SimpleFunction radiusFunction, boolean decrementLosingNeighborhood, boolean edgesWrap)
+	public KohonenSOMnD(int[] cellsPerDimension, DissimilarityMeasure<T> dm, T prototype,
+	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction,
+	                    boolean decrementLosingNeighborhood, boolean edgesWrap)
 		{
 		this.cellsPerDimension = cellsPerDimension;
 		this.measure = dm;

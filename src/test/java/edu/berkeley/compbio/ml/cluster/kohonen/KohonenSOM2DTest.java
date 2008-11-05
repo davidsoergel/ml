@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import com.davidsoergel.stats.DistanceMeasure;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.SimpleFunction;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
@@ -80,7 +80,7 @@ public class KohonenSOM2DTest
 		}
 	};
 
-	DistanceMeasure<ClusterableDoubleArray> dm = new EuclideanDistance();
+	DissimilarityMeasure<ClusterableDoubleArray> dm = new EuclideanDistance();
 
 	@Test
 	public void initialTrainingSampleAltersAllCells() throws ClusterException, NoGoodClusterException

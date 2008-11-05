@@ -33,7 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
-import com.davidsoergel.stats.DistanceMeasure;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
@@ -56,7 +56,7 @@ import java.util.Set;
 public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T>
 	{
 
-	private DistanceMeasure<T> distanceMeasure;
+	private DissimilarityMeasure<T> dissimilarityMeasure;
 	//private SymmetricPairwiseDistanceMatrix theActiveNodeDistanceMatrix = new SymmetricPairwiseDistanceMatrix();
 	private Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix =
 			new Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double>();
@@ -64,9 +64,9 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	//	private SortedSet<ClusterPair<T>> theClusterPairs;
 
-	public UPGMA(DistanceMeasure<T> distanceMeasure)
+	public UPGMA(DissimilarityMeasure<T> dissimilarityMeasure)
 		{
-		this.distanceMeasure = distanceMeasure;
+		this.dissimilarityMeasure = dissimilarityMeasure;
 
 		//		theClusterPairs = new TreeMap<ClusterPair<T>, Double>();
 		}
@@ -122,7 +122,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			double distance = distanceMeasure.distanceFromTo(p, theCluster.getCentroid());
+			double distance = dissimilarityMeasure.distanceFromTo(p, theCluster.getCentroid());
 			if (distance < result.bestDistance)
 				{
 				result.bestCluster = theCluster;
@@ -238,7 +238,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		theClusters.add(node1);
 		theClusters.add(node2);
 
-		Double d = distanceMeasure
+		Double d = dissimilarityMeasure
 				.distanceFromTo(node1.getValue().getCentroid(), node2.getValue().getCentroid());
 		theActiveNodeDistanceMatrix.put(node1, node2, d);
 		}
@@ -264,7 +264,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		   */
 		for (HierarchicalCentroidCluster<T> theActiveNode : activeNodes)
 			{
-			Double d = distanceMeasure
+			Double d = dissimilarityMeasure
 					.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
 			theActiveNodeDistanceMatrix.put(node, theActiveNode, d);
 			}

@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster.kmeans;
 
-import com.davidsoergel.stats.DistanceMeasure;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 
@@ -44,7 +44,7 @@ import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 
 public class GrowableKmeansClustering<T extends AdditiveClusterable<T>> extends KmeansClustering<T>
 	{
-	public GrowableKmeansClustering(DistanceMeasure<T> dm)
+	public GrowableKmeansClustering(DissimilarityMeasure<T> dm)
 		{
 		super(dm);
 		}

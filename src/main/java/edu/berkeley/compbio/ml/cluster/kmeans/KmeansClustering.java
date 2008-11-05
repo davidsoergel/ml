@@ -35,7 +35,7 @@ package edu.berkeley.compbio.ml.cluster.kmeans;
 
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
-import com.davidsoergel.stats.DistanceMeasure;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AbstractCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
@@ -62,7 +62,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 
 	//private int k;
 
-	public KmeansClustering(DistanceMeasure<T> dm)//throws CloneNotSupportedException
+	public KmeansClustering(DissimilarityMeasure<T> dm)//throws CloneNotSupportedException
 		{
 		//super(dpp);
 		//this.k = k;

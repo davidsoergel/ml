@@ -69,6 +69,8 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 
 	Map<String, BatchCluster<T>> theClusterMap;
 
+	private Kernel<T> kernel;
+
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException
@@ -92,6 +94,10 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 			}
 		}
 
+	public MulticlassSVM(Kernel<T> kernel)
+		{
+		this.kernel = kernel;
+		}
 
 	/**
 	 * Return a ClusterMove object describing the best way to reassign the given point to a new cluster.
@@ -178,7 +184,7 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 				{
 				if (cluster2.getId() > cluster1.getId())// avoid redundant pairs
 					{
-					BinarySVM<T, BatchCluster<T>> svm = new BinarySVM<T, BatchCluster<T>>(cluster1, cluster2);
+					BinarySVM<T, BatchCluster<T>> svm = new BinarySVM<T, BatchCluster<T>>(cluster1, cluster2, kernel);
 					allVsAllClassifiers.put(cluster1, cluster2, svm);
 					svm.train(cluster1.getPoints(), cluster2.getPoints());
 					}
@@ -197,7 +203,7 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 			{
 			notCluster.removeAll(cluster1);
 
-			BinarySVM<T, BatchCluster<T>> svm = new BinarySVM<T, BatchCluster<T>>(cluster1, notCluster);
+			BinarySVM<T, BatchCluster<T>> svm = new BinarySVM<T, BatchCluster<T>>(cluster1, notCluster, kernel);
 			oneVsAllClassifiers.put(cluster1, svm);
 			svm.train(cluster1.getPoints(), notCluster.getPoints());
 

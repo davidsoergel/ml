@@ -34,12 +34,10 @@ package edu.berkeley.compbio.ml.cluster.svm;
 
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
-import libsvm.svm_model;
-import libsvm.svm_parameter;
-import libsvm.svm_problem;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Wraps libsvm
@@ -47,31 +45,51 @@ import java.util.Collection;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class BinarySVM<T extends Clusterable<T>, C extends Cluster<T>> implements Comparable
+public class BinarySVM<T extends Clusterable<T>, C extends Cluster<T>>
+		implements Comparable// extends RegressionSVM<T, C>
 	{
-	Cluster<T> cluster1;
-	Cluster<T> cluster2;
+	C cluster1;
+	C cluster2;
 
-	svm_model model;
+	RegressionSVM<T> rsvm;
+	private Kernel<T> kernel;
 
-	public BinarySVM(Cluster<T> cluster1, Cluster<T> cluster2)
+	public BinarySVM(C cluster1, C cluster2, Kernel<T> k)
 		{
 		this.cluster1 = cluster1;
 		this.cluster2 = cluster2;
+		this.kernel = k;
 		}
 
 	public C classify(T p)
 		{
-		throw new NotImplementedException();
+		double d = rsvm.classify(p);
+		if (d >= 0)
+			{
+			return cluster1;
+			}
+		else
+			{
+			return cluster2;
+			}
 		}
 
-	public void train(Collection<T> points1, Collection<T> points2)
+	public void train(Collection<T> posExamples, Collection<T> negExamples)
 		{
-		svm_problem problem;
-		svm_parameter parameters;
-		//model = svm.svm_train(problem, parameters);
-		throw new NotImplementedException();
+		Map<T, Double> examples = new HashMap<T, Double>();
+
+		// PERF
+		for (T example : posExamples)
+			{
+			examples.put(example, 1.);
+			}
+		for (T example : negExamples)
+			{
+			examples.put(example, 1.);
+			}
+		rsvm = new RegressionSVM<T>(examples, kernel);
 		}
+
 
 	public int compareTo(Object o)
 		{
@@ -114,3 +132,4 @@ public class BinarySVM<T extends Clusterable<T>, C extends Cluster<T>> implement
 		return result;
 		}
 	}
+

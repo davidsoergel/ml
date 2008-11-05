@@ -33,14 +33,14 @@
 
 package edu.berkeley.compbio.ml.distancemeasure;
 
-import com.davidsoergel.stats.DistanceMeasure;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;
 import org.apache.log4j.Logger;
 
 /**
  * @version 1.0
  */
-public class EuclideanDistance implements DistanceMeasure<ClusterableDoubleArray>
+public class EuclideanDistance implements DissimilarityMeasure<ClusterableDoubleArray>
 	{
 	// ------------------------------ FIELDS ------------------------------
 

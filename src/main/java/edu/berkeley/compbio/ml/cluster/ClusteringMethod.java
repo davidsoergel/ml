@@ -2,7 +2,7 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
-import com.davidsoergel.stats.DistanceMeasure;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import org.apache.log4j.Logger;
 
@@ -24,7 +24,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	{
 	private static final Logger logger = Logger.getLogger(ClusteringMethod.class);
 
-	protected DistanceMeasure<T> measure;
+	protected DissimilarityMeasure<T> measure;
 	protected Collection<C> theClusters = new ArrayList<C>();
 	protected Map<String, C> assignments = new HashMap<String, C>();// see whether anything changed
 	protected int n = 0;
@@ -122,7 +122,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
 	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels,
-	                        DistanceMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
+	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
 			DistributionException, ClusterException
 		{
 		// evaluate labeling correctness using the test samples
