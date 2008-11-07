@@ -5,7 +5,7 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
- * @version $Id$
+ * @version $Id: BatchCluster.java 312 2008-11-04 01:40:15Z soergel $
  */
 public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	{
@@ -89,5 +89,11 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 	public void forgetExamples()
 		{
 		thePoints = new HashSet<T>();
+		}
+
+
+	public String toString()
+		{
+		return "BatchCluster containing " + thePoints.size() + " points";
 		}
 	}

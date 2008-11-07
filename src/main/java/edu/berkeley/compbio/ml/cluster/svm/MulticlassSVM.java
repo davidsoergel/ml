@@ -36,9 +36,7 @@ import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
@@ -92,6 +90,7 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 				theClusterMap.put(label, cluster);
 				}
 			}
+		theClusters = theClusterMap.values();
 		}
 
 	public MulticlassSVM(Kernel<T> kernel)
@@ -167,13 +166,15 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 		// separate the training set into label-specific sets, caching all the while
 		// (too bad the svm training requires all examples in memory)
 
-		Multimap<String, T> examples = new HashMultimap<String, T>();
+		// Multimap<String, T> examples = new HashMultimap<String, T>();
 
 		while (trainingIterator.hasNext())
 			{
 			T sample = trainingIterator.next();
 			String label = sample.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
-			examples.put(label, sample);
+
+			theClusterMap.get(label).add(sample);
+			//examples.put(label, sample);
 			}
 
 		// create and train all vs all classifiers

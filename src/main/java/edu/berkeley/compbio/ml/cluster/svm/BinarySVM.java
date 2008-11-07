@@ -85,7 +85,7 @@ public class BinarySVM<T extends Clusterable<T>, C extends Cluster<T>>
 			}
 		for (T example : negExamples)
 			{
-			examples.put(example, 1.);
+			examples.put(example, -1.);
 			}
 		rsvm = new RegressionSVM<T>(examples, kernel);
 		}
