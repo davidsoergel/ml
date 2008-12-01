@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster.svm;
+package edu.berkeley.compbio.ml.cluster.biojavasvm;
 
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
@@ -51,7 +51,7 @@ public class BinarySVM<T extends Clusterable<T>, C extends Cluster<T>>
 	C cluster1;
 	C cluster2;
 
-	RegressionSVM<T> rsvm;
+	ClassificationSVM<T> rsvm;
 	private Kernel<T> kernel;
 
 	public BinarySVM(C cluster1, C cluster2, Kernel<T> k)
@@ -87,7 +87,7 @@ public class BinarySVM<T extends Clusterable<T>, C extends Cluster<T>>
 			{
 			examples.put(example, -1.);
 			}
-		rsvm = new RegressionSVM<T>(examples, kernel);
+		rsvm = new ClassificationSVM<T>(examples, kernel);
 		}
 
 

@@ -21,6 +21,11 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 		this.id = id;
 		}
 
+	public int compareTo(Cluster<T> o)
+		{
+		return id - o.getId();
+		}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -107,7 +112,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	 * Add all the samples in the given cluster to this cluster.  Does not automatically remove the samples from other
 	 * clusters of which they are already members.
 	 *
-	 * @param point the sample to add
+	 * @param otherCluster the cluster containing samples to add
 	 * @return true if the point was successfully added; false otherwise
 	 */
 	public boolean addAll(Cluster<T> otherCluster)
@@ -132,7 +137,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	/**
 	 * Remove all the samples in the given cluster from this cluster.
 	 *
-	 * @param point the sample to add
+	 * @param otherCluster the cluster containing samples to remove
 	 * @return true if the point was successfully added; false otherwise
 	 */
 	public boolean removeAll(Cluster<T> otherCluster)

@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster.svm;
+package edu.berkeley.compbio.ml.cluster.biojavasvm;
 
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
@@ -38,6 +38,10 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import edu.berkeley.compbio.jlibsvm.SvmParameter;
+import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
+import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
+import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
@@ -64,6 +68,8 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 	{
 	Symmetric2dBiMap<BatchCluster<T>, BinarySVM<T, BatchCluster<T>>> allVsAllClassifiers;
 	Map<BatchCluster<T>, BinarySVM<T, BatchCluster<T>>> oneVsAllClassifiers;
+
+	MultiClassificationSVM multiSvm;
 
 	Map<String, BatchCluster<T>> theClusterMap;
 
@@ -95,6 +101,9 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 
 	public MulticlassSVM(Kernel<T> kernel)
 		{
+		SvmParameter param = new SvmParameter();
+		BinaryClassificationSVM binarySvm = new C_SVC(kernel, param);
+		this.multiSvm = new MultiClassificationSVM(binarySvm, String.class);
 		this.kernel = kernel;
 		}
 

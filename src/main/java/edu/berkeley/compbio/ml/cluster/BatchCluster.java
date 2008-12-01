@@ -7,7 +7,7 @@ import java.util.Set;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id: BatchCluster.java 312 2008-11-04 01:40:15Z soergel $
  */
-public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T>
+public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> implements Comparable<BatchCluster<T>>
 	{
 	/**
 	 * The set of samples contained in this cluster.
@@ -20,6 +20,11 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 		return thePoints;
 		}
 
+
+	public int compareTo(BatchCluster<T> o)
+		{
+		return id - o.getId();
+		}
 
 	public BatchCluster(int id)
 		{

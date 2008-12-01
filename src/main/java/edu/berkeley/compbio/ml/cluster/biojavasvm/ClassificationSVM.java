@@ -1,4 +1,4 @@
-package edu.berkeley.compbio.ml.cluster.svm;
+package edu.berkeley.compbio.ml.cluster.biojavasvm;
 
 import com.davidsoergel.dsutils.math.MathUtils;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Adapted from BioJava 1.6  org.biojava.stats.svm.SMOTrainer
+ * Heavily modified from from BioJava 1.6  org.biojava.stats.svm.SMOTrainer which was mostly translated from the Platt
+ * 1998 pseudocode anyway
  * <p/>
  * Train a support vector machine using the Sequential Minimal Optimization algorithm.  See Kernel Methods book.
  *
@@ -21,7 +22,7 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class RegressionSVM<T extends Clusterable<T>>//, C extends Cluster<T>> //extends SupervisedOnlineClusteringMethod<T, BatchCluster<T>>
+public class ClassificationSVM<T extends Clusterable<T>>//, C extends Cluster<T>> //extends SupervisedOnlineClusteringMethod<T, BatchCluster<T>>
 	{
 	Kernel<T> kernel;
 	double threshold;
@@ -46,7 +47,7 @@ public class RegressionSVM<T extends Clusterable<T>>//, C extends Cluster<T>> //
 		}
 
 
-	public RegressionSVM(Map<T, Double> examples, Kernel<T> kernel)
+	public ClassificationSVM(Map<T, Double> examples, Kernel<T> kernel)
 		{
 		this.kernel = kernel;
 		SMOTrainer smot = new SMOTrainer();
@@ -366,7 +367,6 @@ public class RegressionSVM<T extends Clusterable<T>>//, C extends Cluster<T>> //
 			}
 		}
 
-	// BAD there was some normalization of alpha before, check original source
 	// BAD check weighting by example set size (libsvm?)
 
 	private class SVMExample
@@ -376,7 +376,7 @@ public class RegressionSVM<T extends Clusterable<T>>//, C extends Cluster<T>> //
 		double alpha;
 		private double error;
 
-		public SVMExample(T key, Double value)
+		SVMExample(T key, Double value)
 			{
 			example = key;
 			target = value;
@@ -384,17 +384,17 @@ public class RegressionSVM<T extends Clusterable<T>>//, C extends Cluster<T>> //
 			error = 0;
 			}
 
-		private void recomputeError()
+		void recomputeError()
 			{
 			error = classify(example) - target;
 			}
 
-		public void incrementError(double delta)
+		void incrementError(double delta)
 			{
 			error += delta;
 			}
 
-		public double getError()
+		double getError()
 			{
 			if (isBound(this))
 				{
