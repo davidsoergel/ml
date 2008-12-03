@@ -104,6 +104,11 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		ClusterMove<T, BatchCluster<T>> result = new ClusterMove<T, BatchCluster<T>>();
 		result.bestCluster = model.predictLabel(p);
 
+		if (result.bestCluster == null)
+			{
+			throw new NoGoodClusterException();
+			}
+
 		// no other fields of ClusterMove are populated :(
 		return result;
 		}
