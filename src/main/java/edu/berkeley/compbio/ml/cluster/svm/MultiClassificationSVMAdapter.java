@@ -3,6 +3,7 @@ package edu.berkeley.compbio.ml.cluster.svm;
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
+import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblem;
@@ -43,8 +44,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		{
 		Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
 
-		// cache the training set into an example map
-		// (too bad the svm training requires all examples in memory)
+		// cache the training set into an example map		// (too bad the svm training requires all examples in memory)
 
 		//Multimap<String, T> examples = new HashMultimap<String, T>();
 		Map<T, BatchCluster<T>> examples = new HashMap<T, BatchCluster<T>>();
@@ -60,7 +60,6 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 			examples.put(sample, cluster);
 			}
 
-
 		svm = new MultiClassificationSVM<BatchCluster<T>, T>(binarySvm, BatchCluster.class);
 		MultiClassProblem<BatchCluster<T>, T> problem =
 				new MultiClassProblemImpl(BatchCluster.class, new BatchClusterLabelInverter(), examples);
@@ -74,8 +73,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException
-		{
-		// do nothing with the iterator or any of that
+		{		// do nothing with the iterator or any of that
 		assert initSamples == 0;
 
 		// by analogy with BayesianClustering, take this opportunity to initialize the clusters
@@ -90,6 +88,11 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				{
 				cluster = new BatchCluster<T>(i++);
 				theClusterMap.put(label, cluster);
+
+				// ** consider how best to store the test labels
+				HashWeightedSet<String> derivedLabelProbabilities = new HashWeightedSet<String>();
+				derivedLabelProbabilities.add(label, 1);
+				cluster.setDerivedLabelProbabilities(derivedLabelProbabilities);
 				}
 			}
 		theClusters = theClusterMap.values();

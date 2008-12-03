@@ -72,9 +72,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	 * @return a randomly selected cluster.
 	 */
 	protected Cluster<T> chooseRandomCluster()
-		{
-		// PERF slow, but rarely used
-		// we have to iterate since we don't know the underlying Collection type.
+		{		// PERF slow, but rarely used		// we have to iterate since we don't know the underlying Collection type.
 
 		int index = MersenneTwisterFast.randomInt(theClusters.size());
 		Iterator<? extends Cluster<T>> iter = theClusters.iterator();
@@ -124,8 +122,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels,
 	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
 			DistributionException, ClusterException
-		{
-		// evaluate labeling correctness using the test samples
+		{		// evaluate labeling correctness using the test samples
 
 		//	List<Double> secondBestDistances = new ArrayList<Double>();
 		TestResults tr = new TestResults();
@@ -140,19 +137,16 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				{
 				ClusterMove<T, C> cm = bestClusterMove(frag);
 
-				//			secondBestDistances.add(cm.secondBestDistance);
-				//Cluster<T> best = getBestCluster(frag, secondBestDistances);
-				//double bestDistance = getBestDistance();
+				//			secondBestDistances.add(cm.secondBestDistance);				//Cluster<T> best = getBestCluster(frag, secondBestDistances);				//double bestDistance = getBestDistance();
 
-				// there are two ways to get classified "unknown":
-				// if no bin is within the max distance from the sample, then NoGoodClusterException is thrown
-				// if we got a bin, but no label is sufficiently certain in the bin, that's "unknown" too
+				// there are two ways to get classified "unknown":				// if no bin is within the max distance from the sample, then NoGoodClusterException is thrown				// if we got a bin, but no label is sufficiently certain in the bin, that's "unknown" too
 
 				// to be classified correct, the dominant label of the fragment must match the dominant label of the cluster
 
-				//Map.Entry<String, Double> dominant =
-				//		best.getDerivedLabelProbabilities().getDominantEntryInSet(mutuallyExclusiveLabels);
+				//Map.Entry<String, Double> dominant =				//		best.getDerivedLabelProbabilities().getDominantEntryInSet(mutuallyExclusiveLabels);
 
+
+				// ** consider how best to store the test labels
 				WeightedSet<String> clusterLabels = cm.bestCluster.getDerivedLabelProbabilities();
 
 				// the "dominant" label is the one assigned by this clustering process.
@@ -191,8 +185,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			i++;
 			}
 		tr.finish();
-		logger.info("Tested " + i + " samples.");
-		//	return i;
+		logger.info("Tested " + i + " samples.");		//	return i;
 		return tr;
 		}
 
@@ -203,27 +196,22 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	 * @version $Id$
 	 */
 	public class TestResults
-		{
-		//	public Histogram1D correctProbabilities = new FixedWidthHistogram1D(0., 1., .01);
-		//	public Histogram1D wrongProbabilities = new FixedWidthHistogram1D(0., 1., .01);
+		{		//	public Histogram1D correctProbabilities = new FixedWidthHistogram1D(0., 1., .01);		//	public Histogram1D wrongProbabilities = new FixedWidthHistogram1D(0., 1., .01);
 
-		//public List<Double> correctDistances = new ArrayList<Double>();
-		//public List<Double> wrongDistances = new ArrayList<Double>();
+		//public List<Double> correctDistances = new ArrayList<Double>();		//public List<Double> wrongDistances = new ArrayList<Double>();
 
 
 		public List<Double> computedDistances = new ArrayList<Double>();
 		public List<Double> clusterProbabilities = new ArrayList<Double>();
 		public List<Double> labelDistances = new ArrayList<Double>();
 
-		//public double correct = 0;
-		//public double wrong = 0;
+		//public double correct = 0;		//public double wrong = 0;
 		public int unknown = 0;
 		public int numClusters = 0;
 
 		/**
 		 * Normalize the proportions to 1.  Useful for instance if the proportion fields are initially set to raw counts.
-		 */
-		/*public void normalize()
+		 */		/*public void normalize()
 			{
 			double total = correct + wrong + unknown;
 			correct /= total;
@@ -231,15 +219,11 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			unknown /= total;
 			}*/
 
-		//	public double[] correctPercentages;
-		//	public double[] wrongPercentages;
+		//	public double[] correctPercentages;		//	public double[] wrongPercentages;
 
-		//	public double[] correctDistanceHistogram;
-		//	public double[] wrongDistanceHistogram;
-		//	public double[] distanceBinCenters;
+		//	public double[] correctDistanceHistogram;		//	public double[] wrongDistanceHistogram;		//	public double[] distanceBinCenters;
 		public void finish()
-			{
-			/*		int[] correctCounts = correctProbabilities.getCounts();
+			{			/*		int[] correctCounts = correctProbabilities.getCounts();
 			int[] wrongCounts = wrongProbabilities.getCounts();
 
 			int correctTotal = DSArrayUtils.sum(correctCounts);
