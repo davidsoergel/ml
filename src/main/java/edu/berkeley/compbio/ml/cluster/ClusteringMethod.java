@@ -165,6 +165,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				tr.computedDistances.add(cm.bestDistance);
 				tr.clusterProbabilities.add(clusterProb);
 				tr.labelDistances.add(wrongness);
+				logger.debug("Label distance wrongness = " + wrongness);
 
 				if (cm.bestDistance < Double.MAX_VALUE)
 					{
