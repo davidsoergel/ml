@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -132,34 +133,55 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		boolean computedDistancesInteresting = false;
 		boolean clusterProbabilitiesInteresting = false;
 
+		// Figure out which of the mutually exclusive labels actually had training bins (some got tossed to provide for unknown test samples)
+		Set<String> trainingLabels = new HashSet<String>();
+		for (C theCluster : theClusters)
+			{
+			trainingLabels.add(theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(mutuallyExclusiveLabels));
+			}
+
+
+		// classify the test samples
 		int i = 0;
 		while (theTestIterator.hasNext())
 			{
 			T frag = theTestIterator.next();
+			String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+
+
 			try
 				{
 				ClusterMove<T, C> cm = bestClusterMove(frag);
 
 				//			secondBestDistances.add(cm.secondBestDistance);				//Cluster<T> best = getBestCluster(frag, secondBestDistances);				//double bestDistance = getBestDistance();
 
-				// there are two ways to get classified "unknown":				// if no bin is within the max distance from the sample, then NoGoodClusterException is thrown				// if we got a bin, but no label is sufficiently certain in the bin, that's "unknown" too
+				// OBSOLETE COMMENTS
+				// there are two ways to get classified "unknown":
+				// // if no bin is within the max distance from the sample, then NoGoodClusterException is thrown
+				// // if we got a bin, but no label is sufficiently certain in the bin, that's "unknown" too
 
 				// to be classified correct, the dominant label of the fragment must match the dominant label of the cluster
 
-				//Map.Entry<String, Double> dominant =				//		best.getDerivedLabelProbabilities().getDominantEntryInSet(mutuallyExclusiveLabels);
+				//Map.Entry<String, Double> dominant =
+				//		best.getDerivedLabelProbabilities().getDominantEntryInSet(mutuallyExclusiveLabels);
 
 
 				// ** consider how best to store the test labels
-				WeightedSet<String> clusterLabels = cm.bestCluster.getDerivedLabelProbabilities();
+				WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
 
 				// the "dominant" label is the one assigned by this clustering process.
-				String dominantExclusiveLabel = clusterLabels.getDominantKeyInSet(mutuallyExclusiveLabels);
+				String dominantExclusiveLabel = labelsOnThisCluster.getDominantKeyInSet(mutuallyExclusiveLabels);
+
+				// the fragment's best label does not match any training label, it should be unknown
+				if (!trainingLabels.contains(fragDominantLabel))
+					{
+					tr.shouldHaveBeenUnknown++;
+					}
+
+				double clusterProb = labelsOnThisCluster.getNormalized(dominantExclusiveLabel);
 
 				// if the fragment's best label from the same exclusive set is the same one, that's a match.
-				String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
-
-				double clusterProb = clusterLabels.getNormalized(dominantExclusiveLabel);
-
+				// instead of binary classification, measure how bad the miss is (0 for perfect match)
 				double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, dominantExclusiveLabel);
 
 				tr.computedDistances.add(cm.bestDistance);
@@ -190,6 +212,12 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			catch (NoGoodClusterException e)
 				{
 				tr.unknown++;
+
+				// the fragment's best label does match a training label, it should not be unknown
+				if (trainingLabels.contains(fragDominantLabel))
+					{
+					tr.shouldNotHaveBeenUnknown++;
+					}
 				}
 			if (i % 100 == 0)
 				{
@@ -229,6 +257,8 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		//public double correct = 0;		//public double wrong = 0;
 		public int unknown = 0;
 		public int numClusters = 0;
+		public int shouldHaveBeenUnknown = 0;
+		public int shouldNotHaveBeenUnknown = 0;
 
 		/**
 		 * Normalize the proportions to 1.  Useful for instance if the proportion fields are initially set to raw counts.
