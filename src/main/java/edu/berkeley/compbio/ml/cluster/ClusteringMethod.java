@@ -129,6 +129,9 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 
 		tr.numClusters = theClusters.size();
 
+		boolean computedDistancesInteresting = false;
+		boolean clusterProbabilitiesInteresting = false;
+
 		int i = 0;
 		while (theTestIterator.hasNext())
 			{
@@ -163,6 +166,15 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				tr.clusterProbabilities.add(clusterProb);
 				tr.labelDistances.add(wrongness);
 
+				if (cm.bestDistance < Double.MAX_VALUE)
+					{
+					computedDistancesInteresting = true;
+					}
+				if (clusterProb != 1)
+					{
+					clusterProbabilitiesInteresting = true;
+					}
+
 				/*		if (fragDominantLabel.equals(dominantExclusiveLabel))
 				   {
 				   tr.correctProbabilities.add(clusterProb);
@@ -183,6 +195,14 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				logger.info("Tested " + i + " samples.");
 				}
 			i++;
+			}
+		if (!clusterProbabilitiesInteresting)
+			{
+			tr.clusterProbabilities = null;
+			}
+		if (!computedDistancesInteresting)
+			{
+			tr.computedDistances = null;
 			}
 		tr.finish();
 		logger.info("Tested " + i + " samples.");		//	return i;
