@@ -184,6 +184,15 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				// instead of binary classification, measure how bad the miss is (0 for perfect match)
 				double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, dominantExclusiveLabel);
 
+				if (Double.isNaN(wrongness))
+					{
+					logger.error("Wrongness NaN");
+					}
+				if (Double.isInfinite(wrongness))
+					{
+					logger.error("Infinite Wrongness");
+					}
+
 				tr.computedDistances.add(cm.bestDistance);
 				tr.clusterProbabilities.add(clusterProb);
 				tr.labelDistances.add(wrongness);
