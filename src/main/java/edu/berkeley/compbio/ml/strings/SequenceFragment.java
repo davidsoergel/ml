@@ -454,14 +454,15 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			if (baseSpectrum == null)
 				{
-				theReader.seek(parentMetadata, startPosition);
+				//theReader.seek(parentMetadata, startPosition); // ** shouldn't be necessary
 				//prefix = new byte[PREFIX_LENGTH];
 				theScanner.checkSequenceAvailable(this);// throws NotEnoughSequenceException
 
 				if (theReader.getTotalSequence() < desiredlength)
 					{
-					throw new NotEnoughSequenceException("Not enough sequence: " + desiredlength + " requested, "
-							+ theReader.getTotalSequence() + " available.");
+					throw new NotEnoughSequenceException(
+							"Not enough sequence: " + desiredlength + " requested, " + theReader.getTotalSequence()
+									+ " available.");
 					}
 				}
 			}
