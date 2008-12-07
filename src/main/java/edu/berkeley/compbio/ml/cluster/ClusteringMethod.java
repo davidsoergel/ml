@@ -242,6 +242,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			{
 			tr.computedDistances = null;
 			}
+		tr.testSamples = i;
 		tr.finish();
 		logger.info("Tested " + i + " samples.");		//	return i;
 		return tr;
@@ -268,6 +269,9 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		public int numClusters = 0;
 		public int shouldHaveBeenUnknown = 0;
 		public int shouldNotHaveBeenUnknown = 0;
+		public int testSamples;
+		public double trainingSeconds;
+		public double testingSeconds;
 
 		/**
 		 * Normalize the proportions to 1.  Useful for instance if the proportion fields are initially set to raw counts.
