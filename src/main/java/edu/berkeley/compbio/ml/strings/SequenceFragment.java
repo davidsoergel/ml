@@ -443,7 +443,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	// the only way to do this is to scan the sequence.  It sucks but we have no choice
 
-	public void checkAvailable() throws NotEnoughSequenceException
+	public void checkAvailable() throws NotEnoughSequenceException, IOException
 		{
 		if (desiredlength == UNKNOWN_LENGTH)
 			{
@@ -466,12 +466,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 					}
 				}
 			}
-		catch (IOException e)
-			{
-			logger.debug(e);
-			e.printStackTrace();
-			throw new SequenceSpectrumRuntimeException(e);
-			}
+		/*	catch (IOException e)
+		   {
+		   logger.debug(e);
+		   e.printStackTrace();
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }*/
 		catch (FilterException e)
 			{
 			logger.debug(e);
