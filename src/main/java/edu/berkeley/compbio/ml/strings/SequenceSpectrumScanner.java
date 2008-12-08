@@ -36,6 +36,7 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
+import edu.berkeley.compbio.sequtils.NucleotideFilter;
 
 import java.io.IOException;
 
@@ -97,8 +98,9 @@ public interface SequenceSpectrumScanner
 	 * @throws NotEnoughSequenceException
 	 */
 	SequenceSpectrum scanSequence(SequenceFragment fragment, //SequenceReader resetReader, int desiredLength,
-	                              byte[] prefix) throws IOException, FilterException, NotEnoughSequenceException,
-	                                                    DistributionProcessorException, GenericFactoryException;
+	                              byte[] prefix)
+			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
+			       GenericFactoryException;
 
 	/**
 	 * Returns an empty SequenceSpectrum of the appropriate type.  This spectrum is "empty" in the sense that it is not
@@ -107,4 +109,6 @@ public interface SequenceSpectrumScanner
 	 * @return an empty SequenceSpectrum of the appropriate type.
 	 */
 	SequenceSpectrum getEmpty();
+
+	NucleotideFilter getNucleotideFilter();
 	}
