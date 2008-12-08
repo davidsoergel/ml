@@ -310,9 +310,16 @@ public class RonPST extends RonPSTNode
 
 		updateLogProbsRecursive();
 
-		// diagnostics
-		int total = 0, leaves = 0, maxdepth = 0;
-		double avgdepth = 0;
+		diagnostics();
+		}
+
+	// diagnostics
+	private int total = 0, leaves = 0, maxdepth = 0;
+	private double avgdepth = 0;
+
+	private void diagnostics()
+		{
+
 		for (RonPSTNode node : getAllUpstreamNodes())
 			{
 			total++;
@@ -327,6 +334,8 @@ public class RonPST extends RonPSTNode
 		maxdepth += 1;
 		avgdepth /= leaves;
 		avgdepth += 1;
+		//	logger.info("Learned Ron PST using params " + branchAbsoluteMin + " " + branchConditionalMin + " " + pRatioMinMax
+		//			+ " " + l_max);
 		logger.info("Learned Ron PST with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
 				+ ", max depth " + maxdepth);
 		if (logger.isDebugEnabled())
@@ -450,13 +459,24 @@ public class RonPST extends RonPSTNode
 		throw new NotImplementedException();
 		}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
+	public int getNodes()
+		{
+		return total;
+		}
+
+	public int getLeaves()
+		{
+		return leaves;
+		}
+
 	public int getMaxDepth()
 		{
-		return super.getMaxDepth();
+		return maxdepth;
+		}
+
+	public double getAvgDepth()
+		{
+		return avgdepth;
 		}
 
 	/**
