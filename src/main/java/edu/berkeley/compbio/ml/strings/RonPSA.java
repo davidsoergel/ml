@@ -117,7 +117,10 @@ public class RonPSA extends RonPSANode
 		{
 		RonPST pst = new RonPST(branchAbsoluteMin, branchConditionalMin, pRatioMinMax, l_max, fromSpectrum);
 		convertFrom(pst);
-		completionProcessor.process(this);
+		if (completionProcessor != null)
+			{
+			completionProcessor.process(this);
+			}
 		diagnostics();
 		}
 

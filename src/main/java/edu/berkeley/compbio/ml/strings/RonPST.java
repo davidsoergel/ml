@@ -238,7 +238,11 @@ public class RonPST extends RonPSTNode
 					// too bad, the requested probability is not known
 					}
 				}
+
 			// C)
+
+			// note we consider any string with probability greater than branchAbsoluteMin, regardless of whether or not the most recent character is distributed differently
+			// from the backoff.  The reason for this is that we may discover an anomalous distribution at the 8th character in a case where 4-7 were uninformative.
 			if (s.length < l_max)
 				{
 				for (byte sigma2 : fromSpectrum.getAlphabet())
