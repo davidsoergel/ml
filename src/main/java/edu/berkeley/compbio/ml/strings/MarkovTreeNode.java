@@ -50,9 +50,11 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A node in a tree where each transition is labeled by a byte and has a local probability (that is, conditional on the
@@ -487,6 +489,26 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return logprob;
 		}
 
+	public int getNumNodes()
+		{
+		return total;
+		}
+
+	public int getNumLeaves()
+		{
+		return leaves;
+		}
+
+	public int getMaxDepth()
+		{
+		return maxdepth;
+		}
+
+	public double getAvgDepth()
+		{
+		return avgdepth;
+		}
+
 	/**
 	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
 	 * implicit assumption is that the sequences being modeled have some correlation length, and thus that statistical
@@ -496,7 +518,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 *
 	 * @return the maximum correlation length considered in the model.
 	 */
-	public int getMaxDepth()
+/*	public int getMaxDepth()
 		{
 		// inefficient; could be cached
 
@@ -513,7 +535,78 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				}
 			}
 		return result;
+		}*/
+
+
+	// diagnostics
+	private int total = 0, leaves = 0, maxdepth = 0;
+	private double avgdepth = 0;
+
+	protected void diagnostics()
+		{
+		for (MarkovTreeNode node : getAllDownstreamNodes())
+			{
+			total++;
+			if (node.isLeaf())
+				{
+				leaves++;
+				int depth = node.getIdBytes().length;//length();
+				avgdepth += depth;
+				maxdepth = Math.max(maxdepth, depth);
+				}
+			}
+		maxdepth += 1;
+		avgdepth /= leaves;
+		avgdepth += 1;
+		//	logger.info("Learned Ron PST using params " + branchAbsoluteMin + " " + branchConditionalMin + " " + pRatioMinMax
+		//			+ " " + l_max);
+		logger.info("Learned Ron PSA with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
+				+ ", max depth " + maxdepth);
+		if (logger.isDebugEnabled())
+			{
+			logger.debug("\n" + toLongString());
+			}
 		}
+
+
+	public String toLongString()
+		{
+		StringBuffer sb = new StringBuffer();
+		Formatter formatter = new Formatter(sb, Locale.US);
+		appendString(formatter, "");
+		return sb.toString();
+		}
+
+	/**
+	 * Gets a List<RonPSTNode> of all nodes in the subtree starting from this node, including this node.
+	 *
+	 * @return a List of all nodes in the subtree starting from this node, including this node.
+	 */
+	public List<MarkovTreeNode> getAllDownstreamNodes()
+		{
+		List<MarkovTreeNode> result = new ArrayList<MarkovTreeNode>();
+
+		collectDownstreamNodes(result);
+		return result;
+		}
+
+	/**
+	 * Recursively append this node and all its children (upstream nodes) to the provided List<RonPSTNode>
+	 *
+	 * @param nodeList a List to which to add this node and its children
+	 */
+	private void collectDownstreamNodes(List<MarkovTreeNode> nodeList)
+		{
+		nodeList.add(this);
+		for (MarkovTreeNode n : children)
+			{
+			if (n != null)
+				{
+				n.collectDownstreamNodes(nodeList);
+				}
+			}
+		}
+
 
 	/**
 	 * Returns the number of samples on which this spectrum is based.
@@ -642,9 +735,9 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			return addChild(prefix[0]);
 			}
 		else if (prefix.length >= 1)
-			{
-			return addChild(prefix[0]).add(DSArrayUtils.suffix(prefix, 1));
-			}
+				{
+				return addChild(prefix[0]).add(DSArrayUtils.suffix(prefix, 1));
+				}
 		throw new Error("Impossible");
 		}
 

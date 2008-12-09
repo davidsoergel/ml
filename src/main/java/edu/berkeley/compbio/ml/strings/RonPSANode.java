@@ -51,6 +51,7 @@ public class RonPSANode extends MarkovTreeNode
 	{
 
 	private RonPSANode backoffPrior;
+
 	// includes both the real children and the backlinks together
 	private RonPSANode[] nextNodes;
 

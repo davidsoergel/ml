@@ -54,7 +54,7 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 
 	//protected int numberOfSamples = UNKNOWN_NUMBER_OF_SAMPLES;
 
-	protected int originalSequenceLength;
+	protected int originalSequenceLength = 0; // = UNKNOWN_LENGTH;
 
 
 	// --------------------- GETTER / SETTER METHODS ---------------------

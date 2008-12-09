@@ -43,7 +43,7 @@ public class AggregateSequenceFragment extends SequenceFragment
  */
 	public void scanIfNeeded()
 		{
-		if (baseSpectrum != null)
+		if (baseSpectrum != null && baseSpectrum.getOriginalSequenceLength() != UNKNOWN_LENGTH)
 			{
 			return;
 			}

@@ -78,6 +78,7 @@ public class RonPSA extends RonPSANode
 		copyProbsFromSpectrumRecursively(pst);
 		buildPSARecursivelyFromPSTNode(pst, pst);
 		updateLogProbsRecursive();
+
 		// at this point we have a pure tree with a full set of probabilities at every node
 
 		setBacklinks();
@@ -117,6 +118,7 @@ public class RonPSA extends RonPSANode
 		RonPST pst = new RonPST(branchAbsoluteMin, branchConditionalMin, pRatioMinMax, l_max, fromSpectrum);
 		convertFrom(pst);
 		completionProcessor.process(this);
+		diagnostics();
 		}
 
 	private List<RonPSANode> setBacklinks()
@@ -186,8 +188,9 @@ public class RonPSA extends RonPSANode
 				int c = in.readTranslated();
 				double logConditionalProbability = currentNode.logConditionalProbabilityByAlphabetIndex(c);
 
-				logger.debug("Conditional at " + new String(currentNode.getIdBytes()) + " " + (char) getAlphabet()[c]
-						+ " = " + currentNode.conditionalProbabilityByAlphabetIndex(c));
+				logger.debug(
+						"Conditional at " + new String(currentNode.getIdBytes()) + " " + (char) getAlphabet()[c] + " = "
+								+ currentNode.conditionalProbabilityByAlphabetIndex(c));
 				logprob += logConditionalProbability;
 				samples++;
 				currentNode = currentNode.nextNodeByAlphabetIndex(c);

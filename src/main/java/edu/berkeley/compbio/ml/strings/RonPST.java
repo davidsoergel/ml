@@ -319,7 +319,6 @@ public class RonPST extends RonPSTNode
 
 	private void diagnostics()
 		{
-
 		for (RonPSTNode node : getAllUpstreamNodes())
 			{
 			total++;
@@ -400,7 +399,7 @@ public class RonPST extends RonPSTNode
 	 * @param sigma  a byte specifying the symbol whose probability is to be computed
 	 * @param prefix a byte array providing the conditioning prefix
 	 * @return the conditional probability, a double value between 0 and 1, inclusive
-	 * @see #fragmentLogProbability(SequenceFragment)
+	 * @see #fragmentLogProbability(SequenceFragment, boolean)
 	 */
 	public double conditionalProbability(byte sigma, byte[] prefix) throws SequenceSpectrumException
 		{
@@ -459,12 +458,12 @@ public class RonPST extends RonPSTNode
 		throw new NotImplementedException();
 		}
 
-	public int getNodes()
+	public int getNumNodes()
 		{
 		return total;
 		}
 
-	public int getLeaves()
+	public int getNumLeaves()
 		{
 		return leaves;
 		}
