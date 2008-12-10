@@ -102,7 +102,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				// the resulting clustering may suck, but it should still more or less span the space of the inputs,
 				// so it may work well enough for this purpose.
 
-				// doing proper k-means would be nicer, but then we'd have to store all the  training points, or re-iterate them somehow.
+				// doing proper k-means would be nicer, but then we'd have to store all the training points, or re-iterate them somehow.
 
 				ClusterMove<T, CentroidCluster<T>> cm = theIntraLabelClustering.bestClusterMove(point);
 
@@ -110,8 +110,9 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 				if (cm.bestDistance > unknownDistanceThreshold)
 					{
-					logger.info("Creating new subcluster (" + cm.bestDistance + " > " + unknownDistanceThreshold
-							+ ") for " + bestLabel);
+					logger.info(
+							"Creating new subcluster (" + cm.bestDistance + " > " + unknownDistanceThreshold + ") for "
+									+ bestLabel);
 					cluster = new AdditiveCentroidCluster<T>(i++, prototypeFactory.create());
 					//cluster.setId(i++);
 

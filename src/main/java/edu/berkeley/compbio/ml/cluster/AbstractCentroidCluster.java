@@ -100,6 +100,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 		{
 		super(id);
 		this.centroid = centroid;//.clone();
+		weightedLabels.addAll(centroid.getWeightedLabels());
 		//n++;
 		//add(centroid);
 		logger.debug("Created cluster with centroid: " + centroid);

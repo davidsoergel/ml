@@ -125,6 +125,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		{
 		Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
 
+		//** The reason this stuff is here, rather than in train(), is that train() expects that the clusters are already defined.
+		// but because of the way labelling works now, we have to consume the entire test iterator in order to know what the clusters should be.
+
+
 		try
 			{
 			// consume the entire iterator, ignoring initsamples
@@ -154,7 +158,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 					//** for now we make a uniform prior
 					priors.put(cluster, 1);
 					}
-				cluster.add(point);
+				cluster.add(point);  // note this updates the cluster labels as well
 				/*		if(cluster.getLabelCounts().uniqueSet().size() != 1)
 				{
 				throw new Error();
@@ -224,8 +228,8 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 				// ** careful: how to deal with priors depends on the distance measure.
 				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
 
-				if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * priors.get(cluster)) <= result
-						.bestDistance)
+				if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * priors.get(cluster))
+						<= result.bestDistance)
 					{
 					result.secondBestDistance = result.bestDistance;
 					result.bestDistance = temp;
