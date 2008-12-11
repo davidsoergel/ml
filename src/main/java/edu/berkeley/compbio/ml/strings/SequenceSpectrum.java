@@ -226,4 +226,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @return the probability, a double value between 0 and 1, inclusive
 	 */
 	double totalProbability(byte[] s) throws SequenceSpectrumException;// throws SequenceSpectrumException;
+
+
+//	public void releaseCachedResources();
 	}

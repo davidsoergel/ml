@@ -260,8 +260,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				// ** careful: how to deal with priors depends on the distance measure.
 				// if it's probability, multiply; if log probability, add the log; for other distance types, who knows?
 
-
 				double distance;
+
 				if (measure instanceof ProbabilisticDissimilarityMeasure)
 					{
 					distance = ((ProbabilisticDissimilarityMeasure) measure)
@@ -271,6 +271,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					{
 					distance = measure.distanceFromTo(p, cluster.getCentroid());
 					}
+
 
 				ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
 				cm.bestCluster = cluster;

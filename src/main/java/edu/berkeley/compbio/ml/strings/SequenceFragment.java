@@ -764,4 +764,15 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		{
 		return desiredlength == UNKNOWN_LENGTH;
 		}
+/*
+	public void releaseCachedResources()
+
+		{
+		theReader.releaseCachedResources();
+
+		for (SequenceSpectrum sequenceSpectrum : theSpectra.values())
+			{
+			sequenceSpectrum.releaseCachedResources();
+			}
+		}*/
 	}
