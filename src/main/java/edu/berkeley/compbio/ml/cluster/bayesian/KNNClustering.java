@@ -39,6 +39,7 @@ import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -73,18 +74,20 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	private static final Logger logger = Logger.getLogger(KNNClustering.class);
 
 	private final int maxNeighbors;
+	private double voteProportionThreshold;
 //	private double decompositionDistanceThreshold;
 
 	/**
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public KNNClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
-	                     int maxNeighbors) //, double decompositionDistanceThreshold)
+	public KNNClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, int maxNeighbors,
+	                     double voteProportionThreshold) //, double decompositionDistanceThreshold)
 		{
 		super(dm, unknownDistanceThreshold);
 		this.maxNeighbors = maxNeighbors;
 //		this.decompositionDistanceThreshold = decompositionDistanceThreshold;
+		this.voteProportionThreshold = voteProportionThreshold;
 		}
 
 	//** clean up code redundancy etc.
@@ -257,16 +260,25 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				// ** careful: how to deal with priors depends on the distance measure.
 				// if it's probability, multiply; if log probability, add the log; for other distance types, who knows?
 
-				double distance = measure.distanceFromTo(p, cluster.getCentroid());
 
-				double weightedDistance = distance * priors.get(cluster);
+				double distance;
+				if (measure instanceof ProbabilisticDissimilarityMeasure)
+					{
+					distance = ((ProbabilisticDissimilarityMeasure) measure)
+							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
+					}
+				else
+					{
+					distance = measure.distanceFromTo(p, cluster.getCentroid());
+					}
+
 				ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
 				cm.bestCluster = cluster;
-				cm.bestDistance = weightedDistance;
+				cm.bestDistance = distance;
 
 				// ignore the secondBestDistance, we don't need it here
 
-				result.put(weightedDistance, cm);
+				result.put(distance, cm);
 				}
 			catch (DistributionException e)
 				{
@@ -295,7 +307,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		result.secondBestDistance = Double.MAX_VALUE;
 		result.bestDistance = Double.MAX_VALUE;
 		//Cluster<T> best = null;
-		double temp = -1;
+		//double temp = -1;
 		//int j = -1;
 		for (CentroidCluster<T> cluster : theClusters)
 			{
@@ -305,18 +317,31 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				// ** careful: how to deal with priors depends on the distance measure.
 				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
 
-				if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * priors.get(cluster))
-						<= result.bestDistance)
+				double distance;
+				if (measure instanceof ProbabilisticDissimilarityMeasure)
+					{
+					distance = ((ProbabilisticDissimilarityMeasure) measure)
+							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
+					}
+				else
+					{
+					distance = measure.distanceFromTo(p, cluster.getCentroid());
+					}
+
+				if (distance <= result.bestDistance)
 					{
 					result.secondBestDistance = result.bestDistance;
-					result.bestDistance = temp;
+					result.bestDistance = distance;
 					result.bestCluster = cluster;
 					//j = i;
 					}
-				else if (temp <= result.secondBestDistance)
+
+				// don't bother with secondBestDistances
+				/*else if (temp <= result.secondBestDistance)
 					{
 					result.secondBestDistance = temp;
 					}
+					*/
 				}
 			catch (DistributionException e)
 				{
@@ -327,7 +352,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		if (result.bestCluster == null)
 			{
 			throw new ClusterRuntimeException(
-					"None of the " + theClusters.size() + " clusters matched: " + p + ", last distance = " + temp);
+					"None of the " + theClusters.size() + " clusters matched: " + p); // + ", last distance = " + temp);
 			}
 		if (result.bestDistance > unknownDistanceThreshold)
 			{
@@ -435,13 +460,21 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 				String dominantExclusiveLabel = labelVotes.getDominantKeyInSet(mutuallyExclusiveLabels);
 
+				double labelProb = labelVotes.getNormalized(dominantExclusiveLabel);
+
+				if (labelProb < voteProportionThreshold)
+					{
+					throw new NoGoodClusterException();
+					}
+
+				//** we could also check that there's not a (near) tie
+
 				// the fragment's best label does not match any training label, it should be unknown
 				if (!trainingLabels.contains(fragDominantLabel))
 					{
 					tr.shouldHaveBeenUnknown++;
 					}
 
-				double labelProb = labelVotes.getNormalized(dominantExclusiveLabel);
 
 				// if the fragment's best label from the same exclusive set is the same one, that's a match.
 				// instead of binary classification, measure how bad the miss is (0 for perfect match)
@@ -460,8 +493,9 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				double weightedComputedDistance = 0;
 				WeightedSet<ClusterMove<T, CentroidCluster<T>>> dominantLabelContributions =
 						labelContributions.get(dominantExclusiveLabel);
+
 				for (Map.Entry<ClusterMove<T, CentroidCluster<T>>, Double> entry : dominantLabelContributions
-						.entrySet())
+						.getNormalizedMap().entrySet())
 					{
 					ClusterMove<T, CentroidCluster<T>> contributingCm = entry.getKey();
 					Double contributionWeight = entry.getValue();

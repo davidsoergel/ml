@@ -39,6 +39,7 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
+import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -71,6 +72,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	//private T[] centroids;
 	//protected DistanceMeasure<T> measure;
 	//private double[] priors;
+
 
 	protected double unknownDistanceThreshold;
 
@@ -218,7 +220,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		result.secondBestDistance = Double.MAX_VALUE;
 		result.bestDistance = Double.MAX_VALUE;
 		//Cluster<T> best = null;
-		double temp = -1;
+		//double temp = -1;
 		//int j = -1;
 		for (CentroidCluster<T> cluster : theClusters)
 			{
@@ -228,17 +230,27 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 				// ** careful: how to deal with priors depends on the distance measure.
 				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
 
-				if ((temp = measure.distanceFromTo(p, cluster.getCentroid()) * priors.get(cluster))
-						<= result.bestDistance)
+				double distance;
+				if (measure instanceof ProbabilisticDissimilarityMeasure)
+					{
+					distance = ((ProbabilisticDissimilarityMeasure) measure)
+							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
+					}
+				else
+					{
+					distance = measure.distanceFromTo(p, cluster.getCentroid());
+					}
+
+				if (distance <= result.bestDistance)
 					{
 					result.secondBestDistance = result.bestDistance;
-					result.bestDistance = temp;
+					result.bestDistance = distance;
 					result.bestCluster = cluster;
 					//j = i;
 					}
-				else if (temp <= result.secondBestDistance)
+				else if (distance <= result.secondBestDistance)
 					{
-					result.secondBestDistance = temp;
+					result.secondBestDistance = distance;
 					}
 				}
 			catch (DistributionException e)
@@ -250,7 +262,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		if (result.bestCluster == null)
 			{
 			throw new ClusterRuntimeException(
-					"None of the " + theClusters.size() + " clusters matched: " + p + ", last distance = " + temp);
+					"None of the " + theClusters.size() + " clusters matched: " + p); // + ", last distance = " + temp);
 			}
 		if (result.bestDistance > unknownDistanceThreshold)
 			{
