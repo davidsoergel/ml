@@ -75,6 +75,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 	private final int maxNeighbors;
 	private double voteProportionThreshold;
+	private double distanceTieThresholdRatio;
+	private double voteTieThresholdRatio;
 //	private double decompositionDistanceThreshold;
 
 	/**
@@ -82,12 +84,15 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
 	public KNNClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, int maxNeighbors,
-	                     double voteProportionThreshold) //, double decompositionDistanceThreshold)
+	                     double voteProportionThreshold, double voteTieThresholdRatio,
+	                     double distanceTieThresholdRatio) //, double decompositionDistanceThreshold)
 		{
 		super(dm, unknownDistanceThreshold);
 		this.maxNeighbors = maxNeighbors;
 //		this.decompositionDistanceThreshold = decompositionDistanceThreshold;
 		this.voteProportionThreshold = voteProportionThreshold;
+		this.voteTieThresholdRatio = voteTieThresholdRatio;
+		this.distanceTieThresholdRatio = distanceTieThresholdRatio;
 		}
 
 	//** clean up code redundancy etc.
@@ -303,64 +308,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	@Override
 	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
-		ClusterMove<T, CentroidCluster<T>> result = new ClusterMove();
-		//int i;
-		result.secondBestDistance = Double.MAX_VALUE;
-		result.bestDistance = Double.MAX_VALUE;
-		//Cluster<T> best = null;
-		//double temp = -1;
-		//int j = -1;
-		for (CentroidCluster<T> cluster : theClusters)
-			{
-
-			try
-				{
-				// ** careful: how to deal with priors depends on the distance measure.
-				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
-
-				double distance;
-				if (measure instanceof ProbabilisticDissimilarityMeasure)
-					{
-					distance = ((ProbabilisticDissimilarityMeasure) measure)
-							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
-					}
-				else
-					{
-					distance = measure.distanceFromTo(p, cluster.getCentroid());
-					}
-
-				if (distance <= result.bestDistance)
-					{
-					result.secondBestDistance = result.bestDistance;
-					result.bestDistance = distance;
-					result.bestCluster = cluster;
-					//j = i;
-					}
-
-				// don't bother with secondBestDistances
-				/*else if (temp <= result.secondBestDistance)
-					{
-					result.secondBestDistance = temp;
-					}
-					*/
-				}
-			catch (DistributionException e)
-				{
-				throw new ClusterRuntimeException(e);
-				}
-			}
-
-		if (result.bestCluster == null)
-			{
-			throw new ClusterRuntimeException(
-					"None of the " + theClusters.size() + " clusters matched: " + p); // + ", last distance = " + temp);
-			}
-		if (result.bestDistance > unknownDistanceThreshold)
-			{
-			throw new NoGoodClusterException(
-					"Best distance " + result.bestDistance + " > threshold " + unknownDistanceThreshold);
-			}
-		return result;
+		throw new ClusterRuntimeException(
+				"It doesn't make sense to get the best clustermove with k-NN; look for the best label instead");
 		}
 
 
@@ -448,7 +397,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 							contributionSet = new HashWeightedSet<ClusterMove<T, CentroidCluster<T>>>();
 							labelContributions.put(label, contributionSet);
 							}
-						contributionSet.put(cm, labelProbability);
+						contributionSet.add(cm, labelProbability);
 						}
 
 					neighborsCounted++;
@@ -459,16 +408,56 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 				// now pick the best one
 
-				String dominantExclusiveLabel = labelVotes.getDominantKeyInSet(mutuallyExclusiveLabels);
 
-				double labelProb = labelVotes.getNormalized(dominantExclusiveLabel);
+				//** check that there's not a (near) tie
+
+				Iterator<String> vi = labelVotes.keysInDecreasingWeightOrder().iterator();
+
+				String bestLabel = vi.next();
+				String secondBestLabel = vi.next();
+
+				double bestVotes = labelVotes.get(bestLabel);
+				double secondBestVotes = labelVotes.get(secondBestLabel);
+				assert secondBestVotes <= bestVotes;
+
+				double bestWeightedDistance = computeWeightedDistance(labelContributions.get(bestLabel));
+				double secondBestWeightedDistance = computeWeightedDistance(labelContributions.get(secondBestLabel));
+
+
+				// if the top two votes are too similar, try to break the tie
+				if (secondBestVotes / bestVotes >= voteTieThresholdRatio)
+					{
+					double minRatio = distanceTieThresholdRatio;
+					double maxRatio = 1. / distanceTieThresholdRatio;
+
+					final double distanceRatio = secondBestWeightedDistance / bestWeightedDistance;
+					if (distanceRatio < minRatio || distanceRatio > maxRatio)
+						{
+						// indistinguishable tie, call it unknown
+						throw new NoGoodClusterException();
+						}
+
+
+					if (bestWeightedDistance > secondBestWeightedDistance)
+						{
+						// OK, leave the current bestLabel intact then
+						}
+					else
+						{
+						bestLabel = secondBestLabel;
+						bestWeightedDistance = secondBestWeightedDistance;
+						}
+					}
+
+				//	String dominantExclusiveLabel = labelVotes.getDominantKeyInSet(mutuallyExclusiveLabels);
+
+				double labelProb = labelVotes.getNormalized(bestLabel);
 
 				if (labelProb < voteProportionThreshold)
 					{
 					throw new NoGoodClusterException();
 					}
 
-				//** we could also check that there's not a (near) tie
 
 				// the fragment's best label does not match any training label, it should be unknown
 				if (!trainingLabels.contains(fragDominantLabel))
@@ -479,7 +468,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 				// if the fragment's best label from the same exclusive set is the same one, that's a match.
 				// instead of binary classification, measure how bad the miss is (0 for perfect match)
-				double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, dominantExclusiveLabel);
+				double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, bestLabel);
 
 				if (Double.isNaN(wrongness))
 					{
@@ -490,25 +479,13 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					logger.error("Infinite Wrongness");
 					}
 
-				// compute weighted average computed distance to clusters contributing to this label
-				double weightedComputedDistance = 0;
-				WeightedSet<ClusterMove<T, CentroidCluster<T>>> dominantLabelContributions =
-						labelContributions.get(dominantExclusiveLabel);
 
-				for (Map.Entry<ClusterMove<T, CentroidCluster<T>>, Double> entry : dominantLabelContributions
-						.getNormalizedMap().entrySet())
-					{
-					ClusterMove<T, CentroidCluster<T>> contributingCm = entry.getKey();
-					Double contributionWeight = entry.getValue();
-					weightedComputedDistance += contributionWeight * contributingCm.bestDistance;
-					}
-
-				tr.computedDistances.add(weightedComputedDistance);
+				tr.computedDistances.add(bestWeightedDistance);
 				tr.clusterProbabilities.add(labelProb);
 				tr.labelDistances.add(wrongness);
 				logger.debug("Label distance wrongness = " + wrongness);
 
-				if (weightedComputedDistance < Double.MAX_VALUE)
+				if (bestWeightedDistance < Double.MAX_VALUE)
 					{
 					computedDistancesInteresting = true;
 					}
@@ -556,5 +533,22 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		tr.finish();
 		logger.info("Tested " + i + " samples.");		//	return i;
 		return tr;
+		}
+
+	private double computeWeightedDistance(WeightedSet<ClusterMove<T, CentroidCluster<T>>> dominantLabelContributions)
+		{
+
+		// compute weighted average computed distance to clusters contributing to this label
+		double weightedComputedDistance = 0;
+
+
+		for (Map.Entry<ClusterMove<T, CentroidCluster<T>>, Double> entry : dominantLabelContributions.getNormalizedMap()
+				.entrySet())
+			{
+			ClusterMove<T, CentroidCluster<T>> contributingCm = entry.getKey();
+			Double contributionWeight = entry.getValue();
+			weightedComputedDistance += contributionWeight * contributingCm.bestDistance;
+			}
+		return weightedComputedDistance;
 		}
 	}

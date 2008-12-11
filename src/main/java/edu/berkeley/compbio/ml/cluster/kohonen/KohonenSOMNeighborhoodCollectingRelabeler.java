@@ -71,7 +71,7 @@ public class KohonenSOMNeighborhoodCollectingRelabeler implements KohonenSOMLabe
 			WeightedSet<String> counts = new HashWeightedSet<String>();
 			Iterator<Set<KohonenSOMCell>> shells = theMap.getNeighborhoodShellIterator(cell);
 
-			while (counts.size() < requiredLabels)
+			while (counts.getWeightSum() < requiredLabels)
 				{
 				for (KohonenSOMCell shellMember : shells.next())
 					{
