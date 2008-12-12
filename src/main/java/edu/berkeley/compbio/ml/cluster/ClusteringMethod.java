@@ -134,10 +134,13 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		boolean clusterProbabilitiesInteresting = false;
 
 		// Figure out which of the mutually exclusive labels actually had training bins (some got tossed to provide for unknown test samples)
+		// while we're at it, sum up the cluster masses
+
 		Set<String> trainingLabels = new HashSet<String>();
 		for (C theCluster : theClusters)
 			{
 			trainingLabels.add(theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(mutuallyExclusiveLabels));
+			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
 			}
 
 
@@ -272,6 +275,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		public int testSamples;
 		public double trainingSeconds;
 		public double testingSeconds;
+		public double totalTrainingMass = 0;
 
 		/**
 		 * Normalize the proportions to 1.  Useful for instance if the proportion fields are initially set to raw counts.

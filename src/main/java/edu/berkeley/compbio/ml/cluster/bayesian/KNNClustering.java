@@ -344,10 +344,13 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		boolean clusterProbabilitiesInteresting = false;
 
 		// Figure out which of the mutually exclusive labels actually had training bins (some got tossed to provide for unknown test samples)
+		// while we're at it, sum up the cluster masses
+
 		Set<String> trainingLabels = new HashSet<String>();
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
 			trainingLabels.add(theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(mutuallyExclusiveLabels));
+			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
 			}
 
 
