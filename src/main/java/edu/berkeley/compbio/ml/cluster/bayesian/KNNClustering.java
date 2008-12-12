@@ -77,7 +77,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	private double voteProportionThreshold;
 	private double distanceTieThresholdRatio;
 	private double voteTieThresholdRatio;
-//	private double decompositionDistanceThreshold;
+	//	private double decompositionDistanceThreshold;
 
 	/**
 	 * @param dm                       The distance measure to use
@@ -89,7 +89,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		{
 		super(dm, unknownDistanceThreshold);
 		this.maxNeighbors = maxNeighbors;
-//		this.decompositionDistanceThreshold = decompositionDistanceThreshold;
+		//		this.decompositionDistanceThreshold = decompositionDistanceThreshold;
 		this.voteProportionThreshold = voteProportionThreshold;
 		this.voteTieThresholdRatio = voteTieThresholdRatio;
 		this.distanceTieThresholdRatio = distanceTieThresholdRatio;
@@ -99,94 +99,94 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	/**
 	 * COPIED FROM LabelDecomposingBayesianClustering
 	 */
-/*	@Override
-	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                   GenericFactory<T> prototypeFactory) throws ClusterException
-		{
-		Map<String, GrowableKmeansClustering<T>> theSubclusteringMap =
-				new HashMap<String, GrowableKmeansClustering<T>>();
+	/*	@Override
+	 public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+										GenericFactory<T> prototypeFactory) throws ClusterException
+		 {
+		 Map<String, GrowableKmeansClustering<T>> theSubclusteringMap =
+				 new HashMap<String, GrowableKmeansClustering<T>>();
 
-		try
-			{
-			// consume the entire iterator, ignoring initsamples
-			int i = 0;
-			while (trainingIterator.hasNext())
-				{
-				T point = trainingIterator.next();
+		 try
+			 {
+			 // consume the entire iterator, ignoring initsamples
+			 int i = 0;
+			 while (trainingIterator.hasNext())
+				 {
+				 T point = trainingIterator.next();
 
-				String bestLabel = point.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
-				//Cluster<T> cluster = theClusterMap.get(bestLabel);
+				 String bestLabel = point.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+				 //Cluster<T> cluster = theClusterMap.get(bestLabel);
 
 
-				GrowableKmeansClustering<T> theIntraLabelClustering = theSubclusteringMap.get(bestLabel);
+				 GrowableKmeansClustering<T> theIntraLabelClustering = theSubclusteringMap.get(bestLabel);
 
-				if (theIntraLabelClustering == null)
-					{
-					theIntraLabelClustering = new GrowableKmeansClustering<T>(measure);
-					theSubclusteringMap.put(bestLabel, theIntraLabelClustering);
-					}
+				 if (theIntraLabelClustering == null)
+					 {
+					 theIntraLabelClustering = new GrowableKmeansClustering<T>(measure);
+					 theSubclusteringMap.put(bestLabel, theIntraLabelClustering);
+					 }
 
-				// naive online agglomerative clustering:
-				// add points to clusters in the order they arrive, one pass only, create new clusters as needed
+				 // naive online agglomerative clustering:
+				 // add points to clusters in the order they arrive, one pass only, create new clusters as needed
 
-				// the resulting clustering may suck, but it should still more or less span the space of the inputs,
-				// so it may work well enough for this purpose.
+				 // the resulting clustering may suck, but it should still more or less span the space of the inputs,
+				 // so it may work well enough for this purpose.
 
-				// doing proper k-means would be nicer, but then we'd have to store all the training points, or re-iterate them somehow.
+				 // doing proper k-means would be nicer, but then we'd have to store all the training points, or re-iterate them somehow.
 
-				ClusterMove<T, CentroidCluster<T>> cm = theIntraLabelClustering.bestClusterMove(point);
+				 ClusterMove<T, CentroidCluster<T>> cm = theIntraLabelClustering.bestClusterMove(point);
 
-				CentroidCluster<T> cluster = cm.bestCluster;
+				 CentroidCluster<T> cluster = cm.bestCluster;
 
-				if (cm.bestDistance > decompositionDistanceThreshold)
-					{
-					logger.info(
-							"Creating new subcluster (" + cm.bestDistance + " > " + decompositionDistanceThreshold + ") for "
-									+ bestLabel);
-					cluster = new AdditiveCentroidCluster<T>(i++, prototypeFactory.create());
-					//cluster.setId(i++);
+				 if (cm.bestDistance > decompositionDistanceThreshold)
+					 {
+					 logger.info(
+							 "Creating new subcluster (" + cm.bestDistance + " > " + decompositionDistanceThreshold + ") for "
+									 + bestLabel);
+					 cluster = new AdditiveCentroidCluster<T>(i++, prototypeFactory.create());
+					 //cluster.setId(i++);
 
-					// add the new cluster to the local per-label clustering...
-					theIntraLabelClustering.addCluster(cluster);
+					 // add the new cluster to the local per-label clustering...
+					 theIntraLabelClustering.addCluster(cluster);
 
-					// ... and also to the overall clustering
-					theClusters.add(cluster);
+					 // ... and also to the overall clustering
+					 theClusters.add(cluster);
 
-					// REVIEW for now we make a uniform prior
-					// REVIEW NO, weight the test prior according to the training distribution, see below
-					//priors.put(cluster, 1);
-					}
-				priors.increment(cluster, 1);
-				cluster.add(point);
-				//		if(cluster.getLabelCounts().uniqueSet().size() != 1)
-				//{
-				//throw new Error();
-				//}
-				}
-			priors.normalize();
-			//theClusters = theSubclusteringMap.values();
+					 // REVIEW for now we make a uniform prior
+					 // REVIEW NO, weight the test prior according to the training distribution, see below
+					 //priors.put(cluster, 1);
+					 }
+				 priors.increment(cluster, 1);
+				 cluster.add(point);
+				 //		if(cluster.getLabelCounts().uniqueSet().size() != 1)
+				 //{
+				 //throw new Error();
+				 //}
+				 }
+			 priors.normalize();
+			 //theClusters = theSubclusteringMap.values();
 
-			for (Map.Entry<String, GrowableKmeansClustering<T>> entry : theSubclusteringMap.entrySet())
-				{
-				String label = entry.getKey();
-				GrowableKmeansClustering<T> theIntraLabelClustering = entry.getValue();
-				if (logger.isInfoEnabled())
-					{
-					logger.info("Created " + theIntraLabelClustering.getClusters().size() + " clusters from "
-							+ theIntraLabelClustering.getN() + " points for " + label);
-					}
-				}
-			}
-		catch (DistributionException e)
-			{
-			throw new ClusterException(e);
-			}
-		catch (GenericFactoryException e)
-			{
-			throw new ClusterException(e);
-			}
-		}
-*/
+			 for (Map.Entry<String, GrowableKmeansClustering<T>> entry : theSubclusteringMap.entrySet())
+				 {
+				 String label = entry.getKey();
+				 GrowableKmeansClustering<T> theIntraLabelClustering = entry.getValue();
+				 if (logger.isInfoEnabled())
+					 {
+					 logger.info("Created " + theIntraLabelClustering.getClusters().size() + " clusters from "
+							 + theIntraLabelClustering.getN() + " points for " + label);
+					 }
+				 }
+			 }
+		 catch (DistributionException e)
+			 {
+			 throw new ClusterException(e);
+			 }
+		 catch (GenericFactoryException e)
+			 {
+			 throw new ClusterException(e);
+			 }
+		 }
+ */
 
 	/**
 	 * Unlike situations where we make a cluster per label, here we make a whole "cluster" per test sample
@@ -199,11 +199,11 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		theClusters = new HashSet<CentroidCluster<T>>();
 		//	Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
 
-/*		if(decompositionDistanceThreshold != 0)
-			{
-			throw new NotImplementedException("Sub-clustering of k-NN training samples is not supported yet, use decompositionDistanceThreshold = 0 ");
-			}
-*/
+		/*		if(decompositionDistanceThreshold != 0)
+			  {
+			  throw new NotImplementedException("Sub-clustering of k-NN training samples is not supported yet, use decompositionDistanceThreshold = 0 ");
+			  }
+  */
 		try
 			{
 			// consume the entire iterator, ignoring initsamples
@@ -409,46 +409,51 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				// now pick the best one
 
 
-				//** check that there's not a (near) tie
-
 				Iterator<String> vi = labelVotes.keysInDecreasingWeightOrder().iterator();
 
 				String bestLabel = vi.next();
-				String secondBestLabel = vi.next();
-
-				double bestVotes = labelVotes.get(bestLabel);
-				double secondBestVotes = labelVotes.get(secondBestLabel);
-				assert secondBestVotes <= bestVotes;
-
 				double bestWeightedDistance = computeWeightedDistance(labelContributions.get(bestLabel));
-				double secondBestWeightedDistance = computeWeightedDistance(labelContributions.get(secondBestLabel));
 
 
-				// if the top two votes are too similar, try to break the tie
-				if (secondBestVotes / bestVotes >= voteTieThresholdRatio)
+				// check that there's not a (near) tie
+				if (labelVotes.keySet().size() > 1)
 					{
-					double minRatio = distanceTieThresholdRatio;
-					double maxRatio = 1. / distanceTieThresholdRatio;
+					String secondBestLabel = vi.next();
 
-					final double distanceRatio = secondBestWeightedDistance / bestWeightedDistance;
-					if (distanceRatio < minRatio || distanceRatio > maxRatio)
+					double bestVotes = labelVotes.get(bestLabel);
+					double secondBestVotes = labelVotes.get(secondBestLabel);
+					assert secondBestVotes <= bestVotes;
+
+					double secondBestWeightedDistance = computeWeightedDistance(labelContributions.get(secondBestLabel))
+							;
+
+					// if the top two votes are too similar...
+					if (secondBestVotes / bestVotes >= voteTieThresholdRatio)
 						{
-						// indistinguishable tie, call it unknown
-						throw new NoGoodClusterException();
-						}
+						//... try to break the tie using the distances
+
+						double minRatio = distanceTieThresholdRatio;
+						double maxRatio = 1. / distanceTieThresholdRatio;
+
+						final double distanceRatio = secondBestWeightedDistance / bestWeightedDistance;
+						if (distanceRatio < minRatio || distanceRatio > maxRatio)
+							{
+							// indistinguishable tie, call it unknown
+							throw new NoGoodClusterException();
+							}
 
 
-					if (bestWeightedDistance > secondBestWeightedDistance)
-						{
-						// OK, leave the current bestLabel intact then
-						}
-					else
-						{
-						bestLabel = secondBestLabel;
-						bestWeightedDistance = secondBestWeightedDistance;
+						if (bestWeightedDistance > secondBestWeightedDistance)
+							{
+							// OK, leave the current bestLabel intact then
+							}
+						else
+							{
+							bestLabel = secondBestLabel;
+							bestWeightedDistance = secondBestWeightedDistance;
+							}
 						}
 					}
-
 				//	String dominantExclusiveLabel = labelVotes.getDominantKeyInSet(mutuallyExclusiveLabels);
 
 				double labelProb = labelVotes.getNormalized(bestLabel);
