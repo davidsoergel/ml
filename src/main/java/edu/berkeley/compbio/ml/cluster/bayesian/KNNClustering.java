@@ -49,6 +49,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -369,7 +370,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 				// keep track of clusters per label, for the sake of
 				// tracking computed distances to the clusters contributing to each label
-				Map<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>> labelContributions =
+				final Map<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>> labelContributions =
 						new HashMap<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>>();
 
 				// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
@@ -408,11 +409,36 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 				// now pick the best one
 
+				// primary sort the labels by votes, secondary by weighted distance
+				// even if there is a unique label with the most votes, the second place one may still matter depending on the unknown thresholds
 
-				Iterator<String> vi = labelVotes.keysInDecreasingWeightOrder().iterator();
+				Comparator weightedDistanceSort = new Comparator()
+				{
+				Map<String, Double> cache = new HashMap<String, Double>();
+
+				private Double getWeightedDistance(String label)
+					{
+					Double result = cache.get(label);
+					if (result == null)
+						{
+						result = computeWeightedDistance(labelContributions.get(label));
+						cache.put(label, result);
+						}
+					return result;
+					}
+
+				public int compare(Object o1, Object o2)
+					{
+					return Double.compare(getWeightedDistance((String) o1), getWeightedDistance((String) o2));
+					}
+				};
+
+				Iterator<String> vi = labelVotes.keysInDecreasingWeightOrder(weightedDistanceSort).iterator();
 
 				String bestLabel = vi.next();
 				double bestWeightedDistance = computeWeightedDistance(labelContributions.get(bestLabel));
+				// too bad we can't esily ccess the cache.  Needs more thorough refactoring.
+				// weightedDistanceSort.getWeightedDistance(bestLabel);
 
 
 				// check that there's not a (near) tie
@@ -539,6 +565,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		logger.info("Tested " + i + " samples.");		//	return i;
 		return tr;
 		}
+
 
 	private double computeWeightedDistance(WeightedSet<ClusterMove<T, CentroidCluster<T>>> dominantLabelContributions)
 		{

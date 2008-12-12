@@ -40,7 +40,7 @@ package edu.berkeley.compbio.ml.cluster;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>>
+public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> implements Comparable<ClusterMove<T, C>>
 	{
 	/**
 	 * The destination cluster
@@ -99,5 +99,10 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>>
 		{
 		return "bestDistance = " + bestDistance + ", bestCluster = " + bestCluster + ", oldCluster = " + oldCluster
 				+ ", oldDistance = " + oldDistance;
+		}
+
+	public int compareTo(ClusterMove<T, C> o)
+		{
+		return bestCluster.getId() - o.bestCluster.getId();
 		}
 	}

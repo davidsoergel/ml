@@ -6,7 +6,7 @@ import com.davidsoergel.dsutils.collections.WeightedSet;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface Cluster<T extends Clusterable<T>>// extends Comparable<Cluster<T>>
+public interface Cluster<T extends Clusterable<T>>// extends Comparable<? extends Cluster<T>>
 	{
 	/**
 	 * Returns the id

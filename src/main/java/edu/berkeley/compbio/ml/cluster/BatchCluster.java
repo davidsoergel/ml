@@ -20,7 +20,6 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 		return thePoints;
 		}
 
-
 	public int compareTo(BatchCluster<T> o)
 		{
 		return id - o.getId();
