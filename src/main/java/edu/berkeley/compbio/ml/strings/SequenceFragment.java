@@ -124,7 +124,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, int startPosition, SequenceReader in,
 	                        int desiredlength, @NotNull SequenceSpectrumScanner scanner)
 		{
-		this(parent, sequenceName, startPosition, 0);// length = 0 because nothing is scanned so far
+		this(parent, sequenceName, startPosition, UNKNOWN_LENGTH);// length = 0 because nothing is scanned so far
 		theReader = in;
 		theScanner = scanner;
 		this.desiredlength = desiredlength;
@@ -175,6 +175,9 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				}
 			//prefixValid = Math.min(PREFIX_LENGTH, s.getNumberOfSamples() + s.getK() - 1);
 			setBaseSpectrum(s);
+
+			// so far the weights were set per character
+			getWeightedLabels().multiplyBy(length);
 			}
 		catch (GenericFactoryException e)
 			{
