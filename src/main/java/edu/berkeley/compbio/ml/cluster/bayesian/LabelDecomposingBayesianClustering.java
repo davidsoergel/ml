@@ -37,6 +37,7 @@ import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -80,6 +81,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 			{
 			// consume the entire iterator, ignoring initsamples
 			int i = 0;
+			Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
 			while (trainingIterator.hasNext())
 				{
 				T point = trainingIterator.next();
@@ -123,7 +125,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 					theClusters.add(cluster);
 
 					// REVIEW for now we make a uniform prior
-					priors.put(cluster, 1);
+					priorsMult.put(cluster, 1);
 					}
 				cluster.add(point);
 				/*		if(cluster.getLabelCounts().uniqueSet().size() != 1)
@@ -131,7 +133,8 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				throw new Error();
 				}*/
 				}
-			priors.normalize();
+			priorsMult.normalize();
+			priors = priorsMult.getValueMap();
 			//theClusters = theSubclusteringMap.values();
 
 			for (Map.Entry<String, GrowableKmeansClustering<T>> entry : theSubclusteringMap.entrySet())

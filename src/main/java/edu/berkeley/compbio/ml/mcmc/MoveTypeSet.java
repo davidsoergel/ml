@@ -41,7 +41,7 @@ import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
-import java.util.List;
+import java.util.Collection;
 
 
 /**
@@ -205,7 +205,7 @@ public class MoveTypeSet//<T extends MonteCarloState>
 	   return numTypes;//types.size();
 	   }*/
 
-	public List<GenericFactory<Move>> getFactories()
+	public Collection<GenericFactory<Move>> getFactories()
 		{
 		return types.getElements();
 		}

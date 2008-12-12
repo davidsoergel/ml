@@ -39,6 +39,7 @@ import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.Multinomial;
 import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
@@ -205,6 +206,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			  throw new NotImplementedException("Sub-clustering of k-NN training samples is not supported yet, use decompositionDistanceThreshold = 0 ");
 			  }
   */
+		Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
 		try
 			{
 			// consume the entire iterator, ignoring initsamples
@@ -226,14 +228,15 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				CentroidCluster<T> cluster = new BasicCentroidCluster<T>(i++, point);//measure
 
 				//** for now we make a uniform prior
-				priors.put(cluster, 1);
+				priorsMult.put(cluster, 1);
 				theClusters.add(cluster);
 				}
 
 
 			logger.info("Done processing " + sampleCount + " training samples.");
 
-			priors.normalize();
+			priorsMult.normalize();
+			priors = priorsMult.getValueMap();
 			}
 		catch (DistributionException e)
 			{
@@ -261,36 +264,30 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		for (CentroidCluster<T> cluster : theClusters)
 			{
 
-			try
+
+			// ** careful: how to deal with priors depends on the distance measure.
+			// if it's probability, multiply; if log probability, add the log; for other distance types, who knows?
+
+			double distance;
+
+			if (measure instanceof ProbabilisticDissimilarityMeasure)
 				{
-				// ** careful: how to deal with priors depends on the distance measure.
-				// if it's probability, multiply; if log probability, add the log; for other distance types, who knows?
-
-				double distance;
-
-				if (measure instanceof ProbabilisticDissimilarityMeasure)
-					{
-					distance = ((ProbabilisticDissimilarityMeasure) measure)
-							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
-					}
-				else
-					{
-					distance = measure.distanceFromTo(p, cluster.getCentroid());
-					}
-
-
-				ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
-				cm.bestCluster = cluster;
-				cm.bestDistance = distance;
-
-				// ignore the secondBestDistance, we don't need it here
-
-				result.put(distance, cm);
+				distance = ((ProbabilisticDissimilarityMeasure) measure)
+						.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
 				}
-			catch (DistributionException e)
+			else
 				{
-				throw new ClusterRuntimeException(e);
+				distance = measure.distanceFromTo(p, cluster.getCentroid());
 				}
+
+
+			ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
+			cm.bestCluster = cluster;
+			cm.bestDistance = distance;
+
+			// ignore the secondBestDistance, we don't need it here
+
+			result.put(distance, cm);
 			}
 
 		result = result.headMap(unknownDistanceThreshold);

@@ -75,6 +75,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 
 	protected double unknownDistanceThreshold;
+	protected Map<CentroidCluster, Double> priors;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
@@ -115,7 +116,6 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		}
 
-	protected Multinomial<CentroidCluster> priors = new Multinomial<CentroidCluster>();
 
 	/**
 	 * {@inheritDoc}
@@ -131,6 +131,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		// but because of the way labelling works now, we have to consume the entire test iterator in order to know what the clusters should be.
 
 
+		Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
 		try
 			{
 			// consume the entire iterator, ignoring initsamples
@@ -158,7 +159,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 					theClusterMap.put(clusterLabel, cluster);
 
 					//** for now we make a uniform prior
-					priors.put(cluster, 1);
+					priorsMult.put(cluster, 1);
 					}
 				cluster.add(point);  // note this updates the cluster labels as well
 				/*		if(cluster.getLabelCounts().uniqueSet().size() != 1)
@@ -170,7 +171,8 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 			logger.info("Done processing " + sampleCount + " training samples.");
 
-			priors.normalize();
+			priorsMult.normalize();
+			priors = priorsMult.getValueMap();
 			}
 		catch (DistributionException e)
 			{
@@ -225,37 +227,31 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 		for (CentroidCluster<T> cluster : theClusters)
 			{
 
-			try
+
+			// ** careful: how to deal with priors depends on the distance measure.
+			// if it's probability, multiply; if log probability, add; for other distance types, who knows?
+
+			double distance;
+			if (measure instanceof ProbabilisticDissimilarityMeasure)
 				{
-				// ** careful: how to deal with priors depends on the distance measure.
-				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
-
-				double distance;
-				if (measure instanceof ProbabilisticDissimilarityMeasure)
-					{
-					distance = ((ProbabilisticDissimilarityMeasure) measure)
-							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
-					}
-				else
-					{
-					distance = measure.distanceFromTo(p, cluster.getCentroid());
-					}
-
-				if (distance <= result.bestDistance)
-					{
-					result.secondBestDistance = result.bestDistance;
-					result.bestDistance = distance;
-					result.bestCluster = cluster;
-					//j = i;
-					}
-				else if (distance <= result.secondBestDistance)
-					{
-					result.secondBestDistance = distance;
-					}
+				distance = ((ProbabilisticDissimilarityMeasure) measure)
+						.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
 				}
-			catch (DistributionException e)
+			else
 				{
-				throw new ClusterRuntimeException(e);
+				distance = measure.distanceFromTo(p, cluster.getCentroid());
+				}
+
+			if (distance <= result.bestDistance)
+				{
+				result.secondBestDistance = result.bestDistance;
+				result.bestDistance = distance;
+				result.bestCluster = cluster;
+				//j = i;
+				}
+			else if (distance <= result.secondBestDistance)
+				{
+				result.secondBestDistance = distance;
 				}
 			}
 

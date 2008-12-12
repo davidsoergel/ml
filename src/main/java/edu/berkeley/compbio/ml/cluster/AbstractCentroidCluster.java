@@ -208,10 +208,10 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 			boolean result = centroid.equals(((AbstractCentroidCluster<T>) other).getCentroid())
 					// && theDistanceMeasure.equals(other.getTheDistanceMeasure())
 					&& super.equals(other);
-			if (logger.isDebugEnabled())
-				{
-				logger.debug("" + this + " equals " + other + ": " + result);
-				}
+			/*	if (logger.isDebugEnabled())
+			   {
+			   logger.debug("" + this + " equals " + other + ": " + result);
+			   }*/
 			return result;
 			}
 		return false;
