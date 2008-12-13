@@ -112,8 +112,8 @@ public class MarkovTreeNodeTest extends ContractTestAware<MarkovTreeNode>
 		assert n.getChild((byte) 'd').getChild((byte) 'a') != null;
 		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a') != null;
 		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b') != null;
-		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b').getMaxDepth() == 0;
-		assert n.getChild((byte) 'd').getMaxDepth() == 3;
+		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b').getMaxDepth() == 1;
+		assert n.getChild((byte) 'd').getMaxDepth() == 4;
 		}
 
 	@Test
@@ -123,7 +123,7 @@ public class MarkovTreeNodeTest extends ContractTestAware<MarkovTreeNode>
 		assert n.getChild((byte) 'd') == null;
 		n.addChild((byte) 'd');
 		assert n.getChild((byte) 'd') != null;
-		assert n.getChild((byte) 'd').getMaxDepth() == 0;
+		assert n.getChild((byte) 'd').getMaxDepth() == 1;
 		}
 
 	@Test
@@ -194,7 +194,7 @@ public class MarkovTreeNodeTest extends ContractTestAware<MarkovTreeNode>
 		assert n.getChild((byte) 'd') == null;
 		n.addChild((byte) 'd');
 		assert n.getChild((byte) 'd') != null;
-		assert n.getChild((byte) 'd').getMaxDepth() == 0;
+		assert n.getChild((byte) 'd').getMaxDepth() == 1;
 		}
 
 	@Test
@@ -232,86 +232,70 @@ public class MarkovTreeNodeTest extends ContractTestAware<MarkovTreeNode>
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'a',
 				'a'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'a',
 				'b'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'a',
 				'c'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'a',
 				'd'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'b',
 				'a'
-		})))
-				.andReturn(.25).anyTimes();
+		}))).andReturn(.25).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'b',
 				'b'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'b',
 				'c'
-		})))
-				.andReturn(.25).anyTimes();
+		}))).andReturn(.25).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'b',
 				'd'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'c',
 				'a'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'c',
 				'b'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'c',
 				'c'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'c',
 				'd'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'd',
 				'a'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'd',
 				'b'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'd',
 				'c'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 		expect(ss.conditionalProbability(anyByte(), aryEq(new byte[]{
 				'd',
 				'd'
-		})))
-				.andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
+		}))).andThrow(new SequenceSpectrumException("Unknown probability")).anyTimes();
 
 
 		/*

@@ -387,7 +387,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 					labelVotes.addAll(labelsOnThisCluster);
 
-					for (Map.Entry<String, Double> entry : labelsOnThisCluster.getNormalizedMap().entrySet())
+					for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
 						{
 						final String label = entry.getKey();
 						final Double labelProbability = entry.getValue();
@@ -399,6 +399,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 							labelContributions.put(label, contributionSet);
 							}
 						contributionSet.add(cm, labelProbability);
+						contributionSet.incrementItems();
 						}
 
 					neighborsCounted++;
@@ -574,8 +575,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		double weightedComputedDistance = 0;
 
 
-		for (Map.Entry<ClusterMove<T, CentroidCluster<T>>, Double> entry : dominantLabelContributions.getNormalizedMap()
-				.entrySet())
+		for (Map.Entry<ClusterMove<T, CentroidCluster<T>>, Double> entry : dominantLabelContributions
+				.getItemNormalizedMap().entrySet())
 			{
 			ClusterMove<T, CentroidCluster<T>> contributingCm = entry.getKey();
 			Double contributionWeight = entry.getValue();

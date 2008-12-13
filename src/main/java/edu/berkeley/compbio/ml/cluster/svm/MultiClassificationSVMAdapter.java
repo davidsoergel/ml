@@ -91,7 +91,8 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 				// ** consider how best to store the test labels
 				HashWeightedSet<String> derivedLabelProbabilities = new HashWeightedSet<String>();
-				derivedLabelProbabilities.add(label, 1);
+				derivedLabelProbabilities.add(label, 1.);
+				derivedLabelProbabilities.incrementItems();
 				cluster.setDerivedLabelProbabilities(derivedLabelProbabilities);
 				}
 			}

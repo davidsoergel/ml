@@ -180,23 +180,20 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 				'b',
 				'a',
 				'b'
-		}) == pst
-				.conditionalProbability((byte) 'a', new byte[]{
-						'a',
-						'b'
-				});
+		}) == pst.conditionalProbability((byte) 'a', new byte[]{
+				'a',
+				'b'
+		});
 		assert pst.conditionalProbability((byte) 'a', new byte[]{
 				'a',
 				'b'
-		}) == pst
-				.conditionalProbability((byte) 'a', new byte[]{'b'});
+		}) == pst.conditionalProbability((byte) 'a', new byte[]{'b'});
 		assert pst.conditionalProbability((byte) 'a', new byte[]{'b'}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{});
 		assert pst.conditionalProbability((byte) 'a', new byte[]{
 				'a',
 				'b'
-		}) != pst
-				.conditionalProbability((byte) 'a', new byte[]{'a'});
+		}) != pst.conditionalProbability((byte) 'a', new byte[]{'a'});
 		}
 
 	@Test

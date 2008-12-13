@@ -430,7 +430,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			{
 			throw new SequenceSpectrumRuntimeException(e);
 			}
-		int requiredPrefixLength = getMaxDepth();
+		int requiredPrefixLength = getMaxDepth() - 1;
 		double logprob = 0;
 		CircularFifoBuffer prefix = new CircularFifoBuffer(requiredPrefixLength);
 
@@ -499,11 +499,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return leaves;
 		}
 
-	public int getMaxDepth()
-		{
-		return maxdepth;
-		}
-
 	public double getAvgDepth()
 		{
 		return avgdepth;
@@ -518,28 +513,29 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 *
 	 * @return the maximum correlation length considered in the model.
 	 */
-/*	public int getMaxDepth()
-		{
-		// inefficient; could be cached
+	/*	public int getMaxDepth()
+	   {
+	   // inefficient; could be cached
 
-		int result = 0;
-		if (probs.size() > 0)
-			{
-			result = 1;
-			}
-		for (MarkovTreeNode child : children)//.values())
-			{
-			if (child != null)
-				{
-				result = Math.max(result, child.getMaxDepth() + 1);
-				}
-			}
-		return result;
-		}*/
+	   int result = 0;
+	   if (probs.size() > 0)
+		   {
+		   result = 1;
+		   }
+	   for (MarkovTreeNode child : children)//.values())
+		   {
+		   if (child != null)
+			   {
+			   result = Math.max(result, child.getMaxDepth() + 1);
+			   }
+		   }
+	   return result;
+	   }*/
 
 
 	// diagnostics
 	private int total = 0, leaves = 0, maxdepth = 0;
+
 	private double avgdepth = 0;
 
 	protected void diagnostics()
@@ -555,6 +551,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				maxdepth = Math.max(maxdepth, depth);
 				}
 			}
+		maxdepth -= getIdBytes().length;  // the symbols upstream of this node don't count
 		maxdepth += 1;
 		avgdepth /= leaves;
 		avgdepth += 1;
@@ -568,7 +565,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		}
 
-
 	public String toLongString()
 		{
 		StringBuffer sb = new StringBuffer();
@@ -576,6 +572,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		appendString(formatter, "");
 		return sb.toString();
 		}
+
 
 	/**
 	 * Gets a List<RonPSTNode> of all nodes in the subtree starting from this node, including this node.
@@ -607,7 +604,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		}
 
-
 	/**
 	 * Returns the number of samples on which this spectrum is based.
 	 *
@@ -622,6 +618,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		{
 		throw new NotImplementedException();
 		}
+
 
 	/**
 	 * Chooses a random symbol according to the conditional probabilities of symbols following the given prefix.  Shortcut
@@ -704,18 +701,33 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		}
 
 	// note that the probabilities should exist even if there are no corresponding child nodes!
+
 	// There is no point in having a node with no associated probabilities, except temporarily
+
 	// during the learning process before the probabilities have been filled in.
 
 	// avoid holding a parent link; we don't need it so far
-
 
 	public void setImmutable()
 		{
 		// not relevant here
 		}
 
+
 	// -------------------------- OTHER METHODS --------------------------
+	/**
+	 * Careful-- this gets cached on the first call so will be invalid later if the tree is changed
+	 *
+	 * @return
+	 */
+	public int getMaxDepth()
+		{
+		if (maxdepth == 0)  // not computed yet;  node has a depth of at least 1
+			{
+			diagnostics();
+			}
+		return maxdepth;
+		}
 
 	/**
 	 * Gets the child node associated with the given sequence, creating it (and nodes along the way) as needed

@@ -331,16 +331,16 @@ public class RonPST extends RonPSTNode
 				leaves++;
 				int depth = node.getIdBytes().length;//length();
 				avgdepth += depth;
-				maxdepth = Math.max(maxdepth, depth);
+				//maxdepth = Math.max(maxdepth, depth);
 				}
 			}
-		maxdepth += 1;
+		//maxdepth += 1;
 		avgdepth /= leaves;
 		avgdepth += 1;
 		//	logger.info("Learned Ron PST using params " + branchAbsoluteMin + " " + branchConditionalMin + " " + pRatioMinMax
 		//			+ " " + l_max);
 		logger.info("Learned Ron PST with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
-				+ ", max depth " + maxdepth);
+				+ ", max depth " + getMaxDepth());
 		if (logger.isDebugEnabled())
 			{
 			logger.debug("\n" + toLongString());
@@ -471,11 +471,15 @@ public class RonPST extends RonPSTNode
 		{
 		return leaves;
 		}
-
-	public int getMaxDepth()
-		{
-		return maxdepth;
-		}
+	/*
+   public int getMaxDepth()
+	   {
+	   if(maxdepth == 0)
+		   {
+		   maxdepth = super.getMaxDepth();
+		   }
+	   return maxdepth;
+	   }*/
 
 	public double getAvgDepth()
 		{
