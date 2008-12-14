@@ -191,9 +191,10 @@ public class RonPSA extends RonPSANode
 				int c = in.readTranslated();
 				double logConditionalProbability = currentNode.logConditionalProbabilityByAlphabetIndex(c);
 
-				logger.debug(
-						"Conditional at " + new String(currentNode.getIdBytes()) + " " + (char) getAlphabet()[c] + " = "
-								+ currentNode.conditionalProbabilityByAlphabetIndex(c));
+				/*	logger.debug(
+					"Conditional at " + new String(currentNode.getIdBytes()) + " " + (char) getAlphabet()[c] + " = "
+							+ currentNode.conditionalProbabilityByAlphabetIndex(c));
+							*/
 				logprob += logConditionalProbability;
 				samples++;
 				currentNode = currentNode.nextNodeByAlphabetIndex(c);
