@@ -73,6 +73,32 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	private int desiredlength;
 	private boolean ignoreEdges;
 
+	/**
+	 * Returns the length of this sequence
+	 *
+	 * @return the length of this sequence
+	 */
+	public int getLength()
+		{
+		if (length == UNKNOWN_LENGTH)
+			{
+			try
+				{
+				checkAvailable();
+				}
+			catch (IOException e)
+				{
+				logger.debug(e);
+				e.printStackTrace();
+				}
+			catch (NotEnoughSequenceException e)
+				{
+				//logger.debug(e);
+				//e.printStackTrace();
+				}
+			}
+		return length;
+		}
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	//private List<byte[]> firstWords;//prefix;
