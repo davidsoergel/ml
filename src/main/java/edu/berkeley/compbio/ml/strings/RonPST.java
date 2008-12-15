@@ -154,17 +154,20 @@ public class RonPST extends RonPSTNode
 		{
 		this();
 		learn(branchAbsoluteMin, branchConditionalMin, pRatioMinMax, l_max, prob);
+		originalSequenceLength = prob.getOriginalSequenceLength();
 		}
 
-	/*	public RonPST(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
-	   //throws SequenceSpectrumException//DistributionException,
-	   {
-	   this();
-	   learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
-	   }*/
+	private int originalSequenceLength;
 
-	public void learn(double branchAbsoluteMin, double branchConditionalMin, double pRatioMinMax, int l_max,
-	                  SequenceSpectrum fromSpectrum)
+	/*	public RonPST(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
+		   //throws SequenceSpectrumException//DistributionException,
+		   {
+		   this();
+		   learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
+		   }*/
+
+	private void learn(double branchAbsoluteMin, double branchConditionalMin, double pRatioMinMax, int l_max,
+	                   SequenceSpectrum fromSpectrum)
 		{
 		setId(new byte[]{});
 		setAlphabet(fromSpectrum.getAlphabet());
@@ -459,7 +462,7 @@ public class RonPST extends RonPSTNode
 
 	public int getOriginalSequenceLength()
 		{
-		throw new NotImplementedException();
+		return originalSequenceLength;
 		}
 
 	public int getNumNodes()

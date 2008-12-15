@@ -616,9 +616,15 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 */
 	public int getOriginalSequenceLength()
 		{
-		throw new NotImplementedException();
+		return originalSequenceLength;
 		}
 
+	private int originalSequenceLength;
+
+	public void setOriginalSequenceLength(int originalSequenceLength)
+		{
+		this.originalSequenceLength = originalSequenceLength;
+		}
 
 	/**
 	 * Chooses a random symbol according to the conditional probabilities of symbols following the given prefix.  Shortcut
