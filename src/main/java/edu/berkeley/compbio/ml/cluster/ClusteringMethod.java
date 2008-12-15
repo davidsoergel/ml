@@ -30,6 +30,18 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	protected Map<String, C> assignments = new HashMap<String, C>();// see whether anything changed
 	protected int n = 0;
 
+	protected Set<String> mutuallyExclusiveLabels;
+
+	/**
+	 * Sets a list of labels to be used for classification.  For a supervised method, this must be called before training.
+	 *
+	 * @param mutuallyExclusiveLabels
+	 */
+	public void setLabels(Set<String> mutuallyExclusiveLabels)
+		{
+		this.mutuallyExclusiveLabels = mutuallyExclusiveLabels;
+		}
+
 	/**
 	 * Returns the cluster to which the sample identified by the given String is assigned.
 	 *

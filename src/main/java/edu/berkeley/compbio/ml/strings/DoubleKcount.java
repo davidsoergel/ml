@@ -58,7 +58,16 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 
 	protected double[] counts;
 
+	protected Double dataSum = null;
 
+	public double getArraySum()
+		{
+		if (dataSum == null)
+			{
+			dataSum = DSArrayUtils.sum(counts);
+			}
+		return dataSum;
+		}
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
@@ -155,5 +164,6 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	public void multiplyBy(double v)
 		{
 		DSArrayUtils.multiplyBy(counts, v);
+		dataSum = null;
 		}
 	}

@@ -53,6 +53,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 
 	protected String id;
 	protected double[] data;
+	protected Double dataSum;
 
 	private String label;
 
@@ -69,6 +70,14 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		this.label = label;
 		}
 
+	public double getArraySum()
+		{
+		if (dataSum == null)
+			{
+			dataSum = DSArrayUtils.sum(data);
+			}
+		return dataSum;
+		}
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	public ClusterableDoubleArray()
@@ -105,6 +114,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		{
 		//data = ArrayUtils.minus(data, object.data);
 		DSArrayUtils.decrementBy(data, object.data);
+		dataSum = null;
 		}
 
 	/**
@@ -114,6 +124,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		{
 		//data = ArrayUtils.plus(data, object.data);
 		DSArrayUtils.incrementBy(data, object.data);
+		dataSum = null;
 		}
 
 
@@ -124,6 +135,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		{
 		//data = ArrayUtils.minus(data, object.data);
 		DSArrayUtils.decrementByWeighted(data, object.data, weight);
+		dataSum = null;
 		}
 
 	/**
@@ -133,6 +145,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		{
 		//data = ArrayUtils.plus(data, object.data);
 		DSArrayUtils.incrementByWeighted(data, object.data, weight);
+		dataSum = null;
 		}
 
 	/**
@@ -142,6 +155,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		{
 		//data = ArrayUtils.times(data, scalar);
 		DSArrayUtils.multiplyBy(data, scalar);
+		dataSum = null;  // we could multiply it by that might be less numerically precise...??
 		}
 
 	/**

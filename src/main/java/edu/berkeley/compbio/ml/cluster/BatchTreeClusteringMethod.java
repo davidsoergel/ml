@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import java.util.Collection;
+import java.util.Iterator;
 
 
 /**
@@ -54,5 +54,5 @@ public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extend
 	 *
 	 * @param samples a Collection of Clusterable objects.
 	 */
-	public abstract void addAll(Collection<? extends Clusterable<T>> samples);
+	public abstract void addAll(Iterator<? extends Clusterable<T>> samples);
 	}

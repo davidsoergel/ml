@@ -45,7 +45,6 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 
 /**
@@ -124,10 +123,11 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>, C extends
 					Date endtime = new Date();
 					double realtime = (endtime.getTime() - starttime.getTime()) / (double) 1000;
 
-					logger.info(new Formatter().format("%d p/%d sec = %d p/sec; specificity = %.3f; %s", c,
-					                                   (int) realtime, (int) (c / realtime),
-					                                   (DSArrayUtils.sum(secondBestDistances) / (double) c),
-					                                   shortClusteringStats()));
+					logger.info(
+							new Formatter().format("%d p/%d sec = %d p/sec; specificity = %.3f; %s", c, (int) realtime,
+							                       (int) (c / realtime),
+							                       (DSArrayUtils.sum(secondBestDistances) / (double) c),
+							                       shortClusteringStats()));
 					//					logger.info("" + c + " p/" + (int) realtime + " sec = " + (int) (c / realtime)
 					//							+ " p/sec; specificity = " + (ArrayUtils.sum(secondBestDistances) / (double) c) + " " + shortClusteringStats());
 					}
@@ -194,18 +194,6 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>, C extends
 	public abstract void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                            GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException;
-
-	protected Set<String> mutuallyExclusiveLabels;
-
-	/**
-	 * Sets a list of labels to be used for classification.  For a supervised method, this must be called before training.
-	 *
-	 * @param mutuallyExclusiveLabels
-	 */
-	public void setLabels(Set<String> mutuallyExclusiveLabels)
-		{
-		this.mutuallyExclusiveLabels = mutuallyExclusiveLabels;
-		}
 
 	// -------------------------- INNER CLASSES --------------------------
 	}

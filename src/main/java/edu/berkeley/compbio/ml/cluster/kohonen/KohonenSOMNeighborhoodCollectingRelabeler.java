@@ -34,6 +34,7 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
+import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
@@ -50,14 +51,15 @@ import java.util.Set;
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOMNeighborhoodCollectingRelabeler implements KohonenSOMLabeler
+public class KohonenSOMNeighborhoodCollectingRelabeler<T extends AdditiveClusterable<T>> implements KohonenSOMLabeler<T>
 	{
 	private static final Logger logger = Logger.getLogger(KohonenSOMNeighborhoodCollectingRelabeler.class);
 	int requiredLabels;
 
-	public KohonenSOMNeighborhoodCollectingRelabeler(int requiredLabels)
+	public KohonenSOMNeighborhoodCollectingRelabeler(int requiredLabels) //, double labelRetainThreshold)
 		{
 		this.requiredLabels = requiredLabels;
+//		this.labelRetainThreshold = labelRetainThreshold;
 		}
 
 	/**
@@ -68,20 +70,20 @@ public class KohonenSOMNeighborhoodCollectingRelabeler implements KohonenSOMLabe
 		int i = 0;
 		for (KohonenSOMCell cell : (List<KohonenSOMCell>) theMap.getClusters())
 			{
-			WeightedSet<String> counts = new HashWeightedSet<String>();
+			WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 			Iterator<Set<KohonenSOMCell>> shells = theMap.getNeighborhoodShellIterator(cell);
 
-			while (counts.getWeightSum() < requiredLabels)
+			while (weightedLabels.getWeightSum() < requiredLabels)
 				{
 				for (KohonenSOMCell shellMember : shells.next())
 					{
-					counts.addAll(shellMember.getWeightedLabels());
+					weightedLabels.addAll(shellMember.getWeightedLabels());
 					}
 				}
 
 			//try
 			//	{
-			cell.setDerivedLabelProbabilities(counts);
+			cell.setDerivedLabelProbabilities(weightedLabels);
 			/*	}
 			catch (DistributionException e)
 				{

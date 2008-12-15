@@ -120,7 +120,7 @@ public class UPGMATest
 
 		UPGMA<ClusterableDoubleArray> oc = new UPGMA<ClusterableDoubleArray>(EuclideanDistance.getInstance());
 
-		oc.addAll(points);
+		oc.addAll(points.iterator());
 		oc.performClustering();
 
 		Collection<? extends CentroidCluster<ClusterableDoubleArray>> theClusters = oc.getClusters();

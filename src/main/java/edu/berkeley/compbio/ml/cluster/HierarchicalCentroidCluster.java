@@ -116,6 +116,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public boolean addAll(Cluster<T> point)
 		{
+		//	return getValue().addAll(point);
 		throw new NotImplementedException();
 		}
 
@@ -186,7 +187,8 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public WeightedSet<String> getDerivedLabelProbabilities()
 		{
-		throw new NotImplementedException();
+		return getValue().getDerivedLabelProbabilities();
+//		throw new NotImplementedException();
 		}
 
 	/**

@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
@@ -48,6 +49,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -121,6 +123,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	// how many point assignments have changed in this epoch
 	int changed = 0;
 
+	private KohonenSOMLabeler<T> labeler;
+
 	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
@@ -172,8 +176,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		}
 
 
-	public KohonenSOM2D(Integer[] cellsPerDimension, DissimilarityMeasure<T> dm, T prototype,
-	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction, SimpleFunction weightFunction,
+	public KohonenSOM2D(Integer[] cellsPerDimension, DissimilarityMeasure<T> dm, SimpleFunction moveFactorFunction,
+	                    SimpleFunction radiusFunction, SimpleFunction weightFunction,
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap, double minRadius,
 	                    KohonenSOM2DSearchStrategy<T> searchStrategy)
 		{
@@ -206,13 +210,12 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		int[] zeroCell = new int[dimensions];
 		Arrays.fill(zeroCell, 0);
 		//createClusters(zeroCell, -1, prototype);
-		createClusters(totalCells, prototype);
+		//createClusters(totalCells, prototype);
 		//List<Interval<Double>> axisRanges;
 		//	initializeClusters(axisRanges);
 
 		maxRadius = DSArrayUtils.norm(this.cellsPerDimension) / 2.;//Math.ceil();
 
-		searchStrategy.setSOM(this);
 		searchStrategy.setDistanceMeasure(measure);
 		}
 
@@ -265,8 +268,14 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			  }
 			  logger.debug("initialized " + k + " clusters");*/
 	//		}
-
-	// -------------------------- OTHER METHODS --------------------------
+	@Override
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
+			throws IOException, ClusterException
+		{
+		super.train(trainingCollectionIteratorFactory, iterations);
+		labeler.propagateLabels(this);
+		}
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * @param p
@@ -363,6 +372,12 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
+		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
+		T prototype = prototypeFactory.create();
+		createClusters(totalCells, prototype);
+
+		searchStrategy.setSOM(this);
+
 		for (int i = 0; i < initSamples; i++)
 			{
 			addToRandomCell(trainingIterator.next());
@@ -471,8 +486,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				CentroidCluster<T> here = clusterAt(x, y);
 
 				CentroidCluster<T> right = clusterAt(x + 1, y);
-				double d = measure.distanceFromTo(here.getCentroid(),
-				                                  right.getCentroid());//here.distanceToCentroid(right.getCentroid());
+				double d = measure.distanceFromTo(here.getCentroid(), right.getCentroid())
+						;//here.distanceToCentroid(right.getCentroid());
 
 				result[listIndexFor(x, y)] += d;
 				result[listIndexFor(x + 1, y)] += d;
@@ -535,6 +550,11 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		radius = Math.max(radius, minRadius);
 
 		return radius;
+		}
+
+	public void setLabeler(KohonenSOMLabeler<T> labeler)
+		{
+		this.labeler = labeler;
 		}
 
 
@@ -843,8 +863,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 				boolean foundCell = false;
 
-				int realX = -1, realY =
-						-1;// the loop below can't complete without setting these; if there's a bug we'll get ArrayIndexOutOfBoundsException
+				int realX = -1, realY = -1
+						;// the loop below can't complete without setting these; if there's a bug we'll get ArrayIndexOutOfBoundsException
 
 				// iterate rather than recurse to avoid huge stacks
 				while (!foundCell)

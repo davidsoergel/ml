@@ -61,13 +61,19 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 	public CoarseGridSearchStrategy()
 		{
 		super();
-		setGridSpacing(4);
 		}
 
 	public void setGridSpacing(int gridSpacing)
 		{
 		this.gridSpacing = gridSpacing;
 		sparseGrid = getSparseGridClusters();
+		}
+
+	@Override
+	public void setSOM(KohonenSOM2D<T> som)
+		{
+		super.setSOM(som);
+		setGridSpacing(4);
 		}
 
 	/**
