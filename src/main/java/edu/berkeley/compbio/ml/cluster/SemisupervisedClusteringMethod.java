@@ -1,5 +1,7 @@
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 
@@ -35,4 +37,18 @@ public interface SemisupervisedClusteringMethod<T extends Clusterable<T>>
 			throws DistributionException, ClusterException;
 
 	void addAllAndRemember(Iterator<T> testIterator);
+
+	/**
+	 * Create some initial clusters using the first few training samples.  This is not the same as the training itself!
+	 *
+	 * @param trainingIterator
+	 * @param initSamples
+	 * @param prototypeFactory
+	 * @throws com.davidsoergel.dsutils.GenericFactoryException
+	 *
+	 * @throws ClusterException
+	 */
+	public abstract void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+	                                            GenericFactory<T> prototypeFactory)
+			throws GenericFactoryException, ClusterException;
 	}

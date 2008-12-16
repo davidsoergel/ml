@@ -32,10 +32,13 @@
 
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
+import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.HierarchicalCentroidCluster;
@@ -84,6 +87,13 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	public LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree()
 		{
 		return theRoot;
+		}
+
+	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+	                                   GenericFactory<T> prototypeFactory)
+			throws GenericFactoryException, ClusterException
+		{
+		// do nothing
 		}
 
 	/**

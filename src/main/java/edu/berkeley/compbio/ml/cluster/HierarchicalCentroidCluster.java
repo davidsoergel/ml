@@ -37,6 +37,7 @@ import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Formatter;
+import java.util.Iterator;
 
 
 /**
@@ -229,4 +230,46 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		{
 		throw new NotImplementedException();
 		}*/
+	public void toNewick(StringBuffer sb, int minClusterSize, double minLabelProb)
+		{
+		// (children)name:length
+
+		if (!children.isEmpty())
+			{
+			sb.append("(");
+			Iterator<BasicPhylogenyNode<CentroidCluster<T>>> i = children.iterator();
+			while (i.hasNext())
+				{
+				final BasicPhylogenyNode<CentroidCluster<T>> child = i.next();
+				if (child.getValue().getN() >= minClusterSize)
+					{
+					child.toNewick(sb, minClusterSize, minLabelProb);
+					if (i.hasNext())
+						{
+						sb.append(",");
+						}
+					}
+				}
+			sb.append(")");
+			}
+
+		sb.append(getN());
+
+		WeightedSet<String> labels = getDerivedLabelProbabilities();
+
+		for (String label : labels.keysInDecreasingWeightOrder())
+			{
+			double labelProb = labels.getNormalized(label);
+			if (labelProb < minLabelProb)
+				{
+				break;
+				}
+			sb.append("_").append(label).append("=").append(String.format("%.2f", labelProb));
+			}
+
+		if (bootstrap != 0)
+			{
+			sb.append(":").append(bootstrap);
+			}
+		}
 	}
