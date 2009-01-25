@@ -355,7 +355,8 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		 */
 		public int getOriginalSequenceLength()
 			{
-			throw new NotImplementedException();
+			return 50;
+			//throw new NotImplementedException();
 			}
 
 		public void addPseudocounts()
