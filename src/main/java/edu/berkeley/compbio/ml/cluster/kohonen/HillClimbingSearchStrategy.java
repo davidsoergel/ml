@@ -97,9 +97,9 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 			return fallbackStrategy.bestClusterMove(p);
 			}
 
-		if (logger.isDebugEnabled())
+		if (logger.isTraceEnabled())
 			{
-			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
+			logger.trace("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
 		KohonenSOM2D<T>.WeightedMask mask = som.getWeightedMask((int) getSearchRadius());
 
@@ -137,9 +137,9 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 				}
 			}
 
-		if (logger.isDebugEnabled())
+		if (logger.isTraceEnabled())
 			{
-			logger.debug("Chose " + result.bestCluster);
+			logger.trace("Chose " + result.bestCluster);
 			}
 		if (result.bestCluster == null)
 			{

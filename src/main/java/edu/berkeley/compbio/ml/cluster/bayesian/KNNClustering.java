@@ -549,7 +549,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				}
 			if (i % 100 == 0)
 				{
-				logger.info("Tested " + i + " samples.");
+				logger.debug("Tested " + i + " samples.");
 				}
 			i++;
 			}

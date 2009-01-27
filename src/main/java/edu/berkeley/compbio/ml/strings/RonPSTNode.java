@@ -204,7 +204,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			}
 		catch (DistributionException e)
 			{
-			logger.debug(e);
+			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		}
@@ -373,7 +373,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 				}
 			catch (SequenceSpectrumException e)
 				{
-				//e.printStackTrace();
+				//logger.error(e);
 				// no worries, just let prob=0 then
 				}
 			try
@@ -404,8 +404,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		catch (DistributionException e)
 			{
 			// there should be no node with zero probability weight!
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 

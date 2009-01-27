@@ -58,8 +58,7 @@ public class RonPSTNodeTest
 			}
 		catch (SequenceSpectrumException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			}
 		}
 
@@ -145,8 +144,7 @@ public class RonPSTNodeTest
 			}
 		catch (Exception e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			assert false;
 			}
 		}

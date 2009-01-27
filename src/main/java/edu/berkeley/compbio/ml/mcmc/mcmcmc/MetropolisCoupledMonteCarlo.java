@@ -139,7 +139,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		setColdest(true);// we do want output from the coupling chain
 		setId("COUPLING");
 
-		logger.info("Initialized MCMCMC: " + DSStringUtils.join(heatFactors, ", "));
+		logger.debug("Initialized MCMCMC: " + DSStringUtils.join(heatFactors, ", "));
 		//ArrayUtils.toObject(heatFactors)
 
 		// burn in

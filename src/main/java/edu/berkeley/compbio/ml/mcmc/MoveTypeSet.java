@@ -147,8 +147,7 @@ public class MoveTypeSet//<T extends MonteCarloState>
 			}
 		catch (DistributionException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new Error(e);
 			}
 		}
@@ -168,8 +167,7 @@ public class MoveTypeSet//<T extends MonteCarloState>
 		   }
 	   catch (Exception e)
 		   {
-		   //e.printStackTrace();
-		   logger.debug(e);
+		   logger.error(e);
 		   throw new Error(e);
 		   }
 	   }*/
@@ -195,7 +193,7 @@ public class MoveTypeSet//<T extends MonteCarloState>
 			}
 		catch (Exception e)
 			{
-			logger.debug(e);
+			logger.error(e);
 			throw new Error(e);
 			}
 		}

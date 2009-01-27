@@ -90,9 +90,9 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 		String id = p.getId();
 		result.oldCluster = som.getAssignment(id);
 
-		if (logger.isDebugEnabled())
+		if (logger.isTraceEnabled())
 			{
-			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
+			logger.trace("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
 		for (KohonenSOMCell<T> c : sparseGrid)
 			{

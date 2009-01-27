@@ -112,7 +112,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 				if (cm.bestDistance > unknownDistanceThreshold)
 					{
-					logger.info(
+					logger.debug(
 							"Creating new subcluster (" + cm.bestDistance + " > " + unknownDistanceThreshold + ") for "
 									+ bestLabel);
 					cluster = new AdditiveCentroidCluster<T>(i++, prototypeFactory.create());

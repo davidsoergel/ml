@@ -82,8 +82,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 				}
 			catch (DistributionException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				throw new ClusterRuntimeException(e);
 				}
 			}*/

@@ -84,8 +84,8 @@ public class TextFileDataCollector implements DataCollector
 	public void init()
 		{
 		outputDirectory = new File(outputDirectoryName);// + File.separator + runId);
-		logger.info("Writing outputs to " + outputDirectoryName);
-		logger.info("Found directory: " + outputDirectory);
+		logger.debug("Writing outputs to " + outputDirectoryName);
+		logger.debug("Found directory: " + outputDirectory);
 
 		try
 			{
@@ -98,7 +98,6 @@ public class TextFileDataCollector implements DataCollector
 		catch (IOException e)
 			{
 			logger.error(e);
-			e.printStackTrace();//To change body of catch statement use File | Settings | File Templates.
 			}
 		}
 
@@ -135,7 +134,6 @@ public class TextFileDataCollector implements DataCollector
 		catch (IOException e)
 			{
 			logger.error(e);
-			e.printStackTrace();//To change body of catch statement use File | Settings | File Templates.
 			}
 		}
 
@@ -176,7 +174,6 @@ public class TextFileDataCollector implements DataCollector
 		catch (IOException e)
 			{
 			logger.error(e);
-			e.printStackTrace();//To change body of catch statement use File | Settings | File Templates.
 			}
 		}
 
@@ -212,7 +209,6 @@ public class TextFileDataCollector implements DataCollector
 		catch (IOException e)
 			{
 			logger.error(e);
-			e.printStackTrace();//To change body of catch statement use File | Settings | File Templates.
 			}
 		}
 	}

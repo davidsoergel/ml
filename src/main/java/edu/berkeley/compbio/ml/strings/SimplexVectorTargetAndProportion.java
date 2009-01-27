@@ -125,7 +125,6 @@ public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<R
 		catch (DistributionException e)
 			{
 			logger.error(e);
-			e.printStackTrace();
 			//	throw new Error(e);
 			}
 		}

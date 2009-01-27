@@ -88,13 +88,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				}
 			catch (IOException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				}
 			catch (NotEnoughSequenceException e)
 				{
-				//logger.debug(e);
-				//e.printStackTrace();
+				//logger.error(e);
 				}
 			}
 		return length;
@@ -207,32 +205,27 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (GenericFactoryException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (IOException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (FilterException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (NotEnoughSequenceException e)
 			{
-			//logger.debug(e);
-			//e.printStackTrace();
+			//logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (DistributionProcessorException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		}
@@ -328,8 +321,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (SequenceSpectrumException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new Error(e);
 			}
 		fireUpdated(baseSpectrum);
@@ -347,8 +339,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (SequenceSpectrumException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new Error(e);
 			}
 		fireUpdated(baseSpectrum);
@@ -370,8 +361,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (SequenceSpectrumException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new Error(e);
 			}
 		fireUpdated(baseSpectrum);
@@ -393,8 +383,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (SequenceSpectrumException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new Error(e);
 			}
 		fireUpdated(baseSpectrum);
@@ -497,14 +486,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		/*	catch (IOException e)
 		   {
-		   logger.debug(e);
-		   e.printStackTrace();
+		   logger.error(e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }*/
 		catch (FilterException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		}
@@ -537,32 +524,27 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		   }
 	   catch (IOException e)
 		   {
-		   logger.debug(e);
-		   e.printStackTrace();
+		   logger.error(e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }
 	   catch (FilterException e)
 		   {
-		   logger.debug(e);
-		   e.printStackTrace();
+		   logger.error(e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }
 	   catch (NotEnoughSequenceException e)
 		   {
-		   logger.debug(e);
-		   e.printStackTrace();
+		   logger.error(e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }
 	   catch (DistributionProcessorException e)
 		   {
-		   logger.debug(e);
-		   e.printStackTrace();
+		   logger.error(e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }
 	   catch (GenericFactoryException e)
 		   {
-		   logger.debug(e);
-		   e.printStackTrace();
+		   logger.error(e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }
 	   }*/
@@ -618,14 +600,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (IOException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (NullPointerException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new NotEnoughSequenceException("This sequence fragment is not based on a reader.");
 			}
 		}
@@ -671,38 +651,32 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				}
 			catch (GenericFactoryException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 				}
 			catch (NullPointerException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 				}
 			/*	catch (NoSuchMethodException e)
 			   {
-			   logger.debug(e);
-			   e.printStackTrace();
+			   logger.error(e);
 			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 			   }
 		   catch (IllegalAccessException e)
 			   {
-			   logger.debug(e);
-			   e.printStackTrace();
+			   logger.error(e);
 			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 			   }
 		   catch (InvocationTargetException e)
 			   {
-			   logger.debug(e);
-			   e.printStackTrace();
+			   logger.error(e);
 			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 			   }
 		   catch (InstantiationException e)
 			   {
-			   logger.debug(e);
-			   e.printStackTrace();
+			   logger.error(e);
 			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 			   }*/
 			}
@@ -739,8 +713,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				 }
 			 catch (SequenceSpectrumException e)
 				 {
-				 logger.debug(e);
-				 e.printStackTrace();
+				 logger.error(e);
 				 throw new DistributionProcessorException(e);
 				 }
 			 }

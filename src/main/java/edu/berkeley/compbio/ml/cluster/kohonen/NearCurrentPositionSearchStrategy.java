@@ -94,9 +94,9 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 			return fallbackStrategy.bestClusterMove(p);
 			}
 
-		if (logger.isDebugEnabled())
+		if (logger.isTraceEnabled())
 			{
-			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
+			logger.trace("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
 
 		for (Iterator<KohonenSOM2D<T>.WeightedCell> i =
@@ -117,9 +117,9 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 				}
 			}
 
-		if (logger.isDebugEnabled())
+		if (logger.isTraceEnabled())
 			{
-			logger.debug("Chose " + result.bestCluster);
+			logger.trace("Chose " + result.bestCluster);
 			}
 		if (result.bestCluster == null)
 			{

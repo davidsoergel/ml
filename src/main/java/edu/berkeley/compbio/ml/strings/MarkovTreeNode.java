@@ -200,8 +200,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		catch (CloneNotSupportedException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new Error("Impossible");
 			}
 		/*		try
@@ -467,14 +466,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				}
 			catch (IOException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				throw new SequenceSpectrumException(e);
 				}
 			catch (FilterException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				throw new SequenceSpectrumException(e);
 				}
 			}
@@ -557,11 +554,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		avgdepth += 1;
 		//	logger.info("Learned Ron PST using params " + branchAbsoluteMin + " " + branchConditionalMin + " " + pRatioMinMax
 		//			+ " " + l_max);
-		logger.info("Learned Ron PSA with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
+		logger.debug("Learned Ron PSA with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
 				+ ", max depth " + maxdepth);
-		if (logger.isDebugEnabled())
+		if (logger.isTraceEnabled())
 			{
-			logger.debug("\n" + toLongString());
+			logger.trace("\n" + toLongString());
 			}
 		}
 
@@ -644,14 +641,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			{
 			return sample(DSArrayUtils.suffix(prefix, 1));
 			/*
-						logger.debug(e);
-						e.printStackTrace();
+						logger.error(e);
 						throw new SequenceSpectrumRuntimeException(e);*/
 			}
 		catch (DistributionException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		}
@@ -842,7 +837,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				}
 			catch (SequenceSpectrumException e)
 				{
-				//e.printStackTrace();
+				//logger.error(e);
 				// no worries, just let prob=0 then
 				}
 			try
@@ -914,7 +909,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		catch (DistributionException e)
 			{
-			logger.debug(e);
+			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		}
@@ -927,7 +922,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		catch (DistributionException e)
 			{
-			logger.debug(e);
+			logger.error(e);
 			throw new SequenceSpectrumException(e);
 			}
 		}
@@ -991,7 +986,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		   }
 	   catch (NotEnoughSequenceException e)
 		   {
-		   logger.debug(e);
+		   logger.error(e);
 		   throw new SequenceSpectrumException(e);
 		   }*/
 
@@ -1040,7 +1035,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		catch (DistributionException e)
 			{
-			logger.debug(e);
+			logger.error(e);
 			throw new SequenceSpectrumException(e);
 			}
 		}
@@ -1134,8 +1129,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		catch (DistributionException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new Error(e);
 			}
 		}

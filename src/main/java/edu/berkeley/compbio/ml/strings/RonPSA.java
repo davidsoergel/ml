@@ -202,8 +202,7 @@ public class RonPSA extends RonPSANode
 				}
 			catch (NotEnoughSequenceException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				throw new SequenceSpectrumException(e);
 				}
 			catch (TranslationException e)
@@ -216,14 +215,12 @@ public class RonPSA extends RonPSANode
 				}
 			catch (IOException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				throw new SequenceSpectrumException(e);
 				}
 			catch (FilterException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				throw new SequenceSpectrumException(e);
 				}
 			count++;

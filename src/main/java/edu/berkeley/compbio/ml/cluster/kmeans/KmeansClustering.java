@@ -146,16 +146,16 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		String id = p.getId();
 		result.oldCluster = assignments.get(id);
 
-		if (logger.isDebugEnabled())
+		if (logger.isTraceEnabled())
 			{
-			logger.debug("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
+			logger.trace("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
 		for (CentroidCluster<T> c : theClusters)
 			{
 			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
-			if (logger.isDebugEnabled())
+			if (logger.isTraceEnabled())
 				{
-				logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);
+				logger.trace("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);
 				}
 			if (d < result.bestDistance)
 				{
@@ -168,9 +168,9 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 				result.secondBestDistance = d;
 				}
 			}
-		if (logger.isDebugEnabled())
+		if (logger.isTraceEnabled())
 			{
-			logger.debug("Chose " + result.bestCluster);
+			logger.trace("Chose " + result.bestCluster);
 			}
 		if (result.bestCluster == null)
 			{

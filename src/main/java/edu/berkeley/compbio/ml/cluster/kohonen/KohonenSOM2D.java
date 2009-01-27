@@ -306,7 +306,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		moveFactor = Math.max(moveFactor, 0);
 		double radius = getCurrentRadius();
 
-		logger.debug("Adding point with neighborhood radius " + radius + ", moveFactor " + moveFactor);
+		logger.trace("Adding point with neighborhood radius " + radius + ", moveFactor " + moveFactor);
 
 		// REVIEW decrementLosingNeighborhood has issues
 		// yeah a couple things:
@@ -383,7 +383,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 			addToRandomCell(trainingIterator.next());
 			if (i % 100 == 0)
 				{
-				logger.info("Initialized with " + i + " samples.");
+				logger.debug("Initialized with " + i + " samples.");
 				}
 			}
 		}
@@ -452,7 +452,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		double moveFactor = .5;
 		double radius = maxRadius;
 
-		logger.debug("Adding point with neighborhood radius " + radius + ", moveFactor " + moveFactor);
+		logger.trace("Adding point with neighborhood radius " + radius + ", moveFactor " + moveFactor);
 
 		// winner.addLabel(p);  // no, this is just for random initialization
 

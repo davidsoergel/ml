@@ -245,7 +245,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				}
 			if (i % 100 == 0)
 				{
-				logger.info("Tested " + i + " samples.");
+				logger.debug("Tested " + i + " samples.");
 				}
 			i++;
 			}
@@ -259,7 +259,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			}
 		tr.testSamples = i;
 		tr.finish();
-		logger.info("Tested " + i + " samples.");		//	return i;
+		logger.debug("Tested " + i + " samples.");		//	return i;
 		return tr;
 		}
 
@@ -339,8 +339,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				}
 			catch (StatsException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				throw new Error(e);
 				}
 

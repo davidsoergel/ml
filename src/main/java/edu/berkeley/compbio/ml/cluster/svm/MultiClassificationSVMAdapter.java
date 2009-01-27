@@ -15,6 +15,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.SupervisedOnlineClusteringMethod;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,6 +29,8 @@ import java.util.Map;
 public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		extends SupervisedOnlineClusteringMethod<T, BatchCluster<T>>
 	{
+	private static final Logger logger = Logger.getLogger(MultiClassificationSVMAdapter.class);
+	
 	private MultiClassificationSVM<BatchCluster<T>, T> svm;
 	private MultiClassModel<BatchCluster<T>, T> model;
 
@@ -49,6 +52,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		//Multimap<String, T> examples = new HashMultimap<String, T>();
 		Map<T, BatchCluster<T>> examples = new HashMap<T, BatchCluster<T>>();
 
+		int c = 0;
 		while (trainingIterator.hasNext())
 			{
 			T sample = trainingIterator.next();
@@ -58,12 +62,19 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 			cluster.add(sample);
 
 			examples.put(sample, cluster);
+			c++;
+
+			if(c % 1000 == 0)
+				{
+				logger.debug("Prepared " + c + " training samples");
+				}
 			}
 
 		svm = new MultiClassificationSVM<BatchCluster<T>, T>(binarySvm, BatchCluster.class);
 		MultiClassProblem<BatchCluster<T>, T> problem =
 				new MultiClassProblemImpl(BatchCluster.class, new BatchClusterLabelInverter(), examples);
 		svm.setupQMatrix(problem);
+		logger.debug("Performing multiclass training");
 		model = svm.train(problem);
 		}
 

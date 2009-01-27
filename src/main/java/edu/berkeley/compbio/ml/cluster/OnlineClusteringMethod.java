@@ -118,12 +118,12 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>, C extends
 					}
 
 				c++;
-				if (c % 1000 == 0)
+				if (logger.isDebugEnabled() && c % 1000 == 0)
 					{
 					Date endtime = new Date();
 					double realtime = (endtime.getTime() - starttime.getTime()) / (double) 1000;
 
-					logger.info(
+					logger.debug(
 							new Formatter().format("%d p/%d sec = %d p/sec; specificity = %.3f; %s", c, (int) realtime,
 							                       (int) (c / realtime),
 							                       (DSArrayUtils.sum(secondBestDistances) / (double) c),
@@ -136,12 +136,13 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>, C extends
 				   break;
 				   }*/
 				}
-			logger.info("Changed cluster assignment of " + changed + " points (" + (int) (100 * changed / c) + "%)\n");
+			logger.debug("Changed cluster assignment of " + changed + " points (" + (int) (100 * changed / c) + "%)\n");
 			// computeClusterStdDevs(theDataPointProvider);  // PERF cluster stddev is slow, should be optional.  Also, only works for sequential DPP
-			logger.info("\n" + clusteringStats());
+			if(logger.isDebugEnabled()) {logger.debug("\n" + clusteringStats());}
+
 			if (changed == 0)
 				{
-				logger.info("Steady state, done after " + (i + 1) + " iterations!");
+				logger.debug("Steady state, done after " + (i + 1) + " iterations!");
 				break;
 				}
 			}

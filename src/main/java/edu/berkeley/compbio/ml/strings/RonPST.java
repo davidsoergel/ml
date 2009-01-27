@@ -200,7 +200,7 @@ public class RonPST extends RonPSTNode
 			catch (SequenceSpectrumException e)
 				{
 				logger.warn("Unknown probability: " + new String(s));
-				logger.info(e);
+				logger.warn(e);
 				// too bad, the requested probability is not known
 				}
 			}
@@ -273,9 +273,9 @@ public class RonPST extends RonPSTNode
 		// Step 2: add missing nodes to the tree
 
 		//complete();
-		logger.debug("1");
+		//logger.trace("1");
 		copyProbsFrom(fromSpectrum);
-		logger.debug("2");
+		//logger.trace("2");
 
 
 		// now we have the right tree structure, with the empirical probabilities assigned.
@@ -309,8 +309,7 @@ public class RonPST extends RonPSTNode
 				}
 			catch (DistributionProcessorException e)
 				{
-				logger.debug(e);
-				e.printStackTrace();
+				logger.error(e);
 				throw new SequenceSpectrumRuntimeException(e);
 				}
 			}
@@ -342,11 +341,11 @@ public class RonPST extends RonPSTNode
 		avgdepth += 1;
 		//	logger.info("Learned Ron PST using params " + branchAbsoluteMin + " " + branchConditionalMin + " " + pRatioMinMax
 		//			+ " " + l_max);
-		logger.info("Learned Ron PST with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
+		logger.debug("Learned Ron PST with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
 				+ ", max depth " + getMaxDepth());
-		if (logger.isDebugEnabled())
+		if (logger.isTraceEnabled())
 			{
-			logger.debug("\n" + toLongString());
+			logger.trace("\n" + toLongString());
 			}
 		}
 
@@ -417,8 +416,7 @@ public class RonPST extends RonPSTNode
 			}
 		catch (DistributionException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new SequenceSpectrumException(e);
 			}
 		}
@@ -522,8 +520,7 @@ public class RonPST extends RonPSTNode
 			}
 		catch (DistributionException e)
 			{
-			logger.debug(e);
-			e.printStackTrace();
+			logger.error(e);
 			throw new SequenceSpectrumException(e);
 			}
 		}

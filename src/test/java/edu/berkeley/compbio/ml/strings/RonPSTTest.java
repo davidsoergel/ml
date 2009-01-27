@@ -536,7 +536,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 				}
 			catch (DistributionException e)
 				{
-				logger.debug(e);
+				logger.error(e);
 				throw new SequenceSpectrumException(e);
 				}
 			}

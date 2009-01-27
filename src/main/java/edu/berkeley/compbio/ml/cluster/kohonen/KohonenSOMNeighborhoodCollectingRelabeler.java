@@ -88,12 +88,11 @@ public class KohonenSOMNeighborhoodCollectingRelabeler<T extends AdditiveCluster
 			catch (DistributionException e)
 				{
 				logger.warn("Empty bag?", e);
-				e.printStackTrace();
 				cell.setDerivedLabelProbabilities(null);
 				}*/
 			if (i % 1000 == 0)
 				{
-				logger.info("Relabeled " + i + " nodes.");
+				logger.debug("Relabeled " + i + " nodes.");
 				}
 			i++;
 			}

@@ -199,14 +199,14 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			{
 			//System.out.print("\033c");
 
-			logger.info("Step " + step);
-			logger.info(
+			logger.debug("Step " + step);
+			logger.debug(
 					"[ " + id + " ] Accepted " + acceptedCount + " out of " + proposedCount + " proposed total moves.");
 
 			for (GenericFactory<Move> f : movetypes.getFactories())
 				{
 				Class c = f.getCreatesClass();
-				logger.info("[ " + id + " ] Accepted " + accepted.get(c) + " out of " + proposed.get(c) + " proposed "
+				logger.debug("[ " + id + " ] Accepted " + accepted.get(c) + " out of " + proposed.get(c) + " proposed "
 						+ c + " moves.");
 				}
 			//System.out.println("\n\n");
