@@ -245,7 +245,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *
 	 * @param spectrum the new base spectrum describing statistics of this sequence
 	 */
-	public void setBaseSpectrum(SequenceSpectrum spectrum)
+	public void setBaseSpectrum(@NotNull SequenceSpectrum spectrum)
 		{
 		if (baseSpectrum == spectrum && theSpectra.size() == 1)
 			{
@@ -766,15 +766,15 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		{
 		return desiredlength == UNKNOWN_LENGTH;
 		}
-/*
-	public void releaseCachedResources()
+	/*
+   public void releaseCachedResources()
 
-		{
-		theReader.releaseCachedResources();
+	   {
+	   theReader.releaseCachedResources();
 
-		for (SequenceSpectrum sequenceSpectrum : theSpectra.values())
-			{
-			sequenceSpectrum.releaseCachedResources();
-			}
-		}*/
+	   for (SequenceSpectrum sequenceSpectrum : theSpectra.values())
+		   {
+		   sequenceSpectrum.releaseCachedResources();
+		   }
+	   }*/
 	}
