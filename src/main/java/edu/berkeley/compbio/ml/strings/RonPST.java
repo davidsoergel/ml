@@ -495,20 +495,16 @@ public class RonPST extends RonPSTNode
 		 throw new NotImplementedException();
 		 }
 */
-	/**
-	 * {@inheritDoc}
-	 */
+	/*
 	public void runBeginTrainingProcessor() throws DistributionProcessorException
 		{
 		}
 
-	/**
-	 * {@inheritDoc}
-	 */
+
 	public void runFinishTrainingProcessor() throws DistributionProcessorException
 		{
 		}
-
+*/
 	/**
 	 * {@inheritDoc}
 	 */

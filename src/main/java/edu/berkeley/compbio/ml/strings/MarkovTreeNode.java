@@ -39,7 +39,6 @@ import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
 import com.davidsoergel.stats.MutableDistribution;
 import edu.berkeley.compbio.sequtils.FilterException;
@@ -686,16 +685,17 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new NotImplementedException();
 		}
 
-	public void runBeginTrainingProcessor() throws DistributionProcessorException
-		{
-		// do nothing
-		}
+	/*
+	 public void runBeginTrainingProcessor() throws DistributionProcessorException
+		 {
+		 // do nothing
+		 }
 
-	public void runFinishTrainingProcessor() throws DistributionProcessorException
-		{
-		// do nothing
-		}
-
+	 public void runFinishTrainingProcessor() throws DistributionProcessorException
+		 {
+		 // do nothing
+		 }
+ */
 	public void setIgnoreEdges(boolean ignoreEdges)
 		{
 		// not relevant here...

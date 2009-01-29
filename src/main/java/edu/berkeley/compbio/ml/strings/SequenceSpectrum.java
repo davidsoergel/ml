@@ -157,7 +157,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 *
 	 * @throws DistributionProcessorException when the processor fails for any reason
 	 */
-	void runBeginTrainingProcessor() throws DistributionProcessorException;
+//	void runBeginTrainingProcessor() throws DistributionProcessorException;
 
 	/**
 	 * A SequenceSpectrum object that is being learned from data may have a DistributionProcessor associated with it that
@@ -166,7 +166,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 *
 	 * @throws DistributionProcessorException when the processor fails for any reason
 	 */
-	void runFinishTrainingProcessor() throws DistributionProcessorException;
+//	void runFinishTrainingProcessor() throws DistributionProcessorException;
 
 	/**
 	 * Chooses a random symbol according to the conditional probabilities of symbols following the given prefix.  Shortcut

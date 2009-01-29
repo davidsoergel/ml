@@ -41,7 +41,6 @@ import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.DistributionProcessorException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
@@ -577,22 +576,17 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			throw new SequenceSpectrumException("depth oops");
 			}
 
-		/**
-		 * {@inheritDoc}
-		 */
+		/*
 		public void runBeginTrainingProcessor() throws DistributionProcessorException
 			{
 			// do nothing
 			}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		public void runFinishTrainingProcessor() throws DistributionProcessorException
 			{
 			// do nothing
 			}
-
+*/
 
 		public List<byte[]> getFirstWords(int k)
 			{

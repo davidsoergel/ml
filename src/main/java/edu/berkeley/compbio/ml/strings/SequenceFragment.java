@@ -45,9 +45,10 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Manages information about a sequence fragment, including its metadata and any statistics that have been calculated
@@ -64,9 +65,9 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	private static final Logger logger = Logger.getLogger(SequenceFragment.class);
 
-	protected Map<Class, SequenceSpectrum> theSpectra = new HashMap<Class, SequenceSpectrum>();
+	protected Map<Class, SequenceSpectrum> theSpectra = new WeakHashMap<Class, SequenceSpectrum>();
 
-	protected SequenceSpectrum baseSpectrum;
+	protected WeakReference<SequenceSpectrum> _baseSpectrum;
 	private FirstWordProvider firstWordProvider;
 	private SequenceReader theReader;
 	protected SequenceSpectrumScanner theScanner;
@@ -84,12 +85,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			try
 				{
-				checkAvailable();
+				rescan();
 				}
-			catch (IOException e)
-				{
-				logger.error(e);
-				}
+			/*	catch (IOException e)
+			   {
+			   logger.error(e);
+			   }*/
 			catch (NotEnoughSequenceException e)
 				{
 				//logger.error(e);
@@ -174,16 +175,30 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 */
 	public SequenceSpectrum getBaseSpectrum()
 		{
-		scanIfNeeded();
+		SequenceSpectrum baseSpectrum = _baseSpectrum.get();
+		if (baseSpectrum == null)
+			{
+			try
+				{
+				rescan();
+				}
+			catch (NotEnoughSequenceException e)
+				{
+				throw new SequenceSpectrumRuntimeException(e);
+				}
+			baseSpectrum = _baseSpectrum.get();
+			baseSpectrum.setIgnoreEdges(ignoreEdges);
+			}
 		return baseSpectrum;
 		}
 
-	public void scanIfNeeded()
+	protected void rescan() throws NotEnoughSequenceException
 		{
-		if (baseSpectrum != null)
-			{
-			return;
-			}
+		/*	if (_baseSpectrum.get() != null)
+			 {
+			 return;
+			 }
+	 */
 		try
 			{
 			SequenceSpectrum s;
@@ -218,11 +233,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
-		catch (NotEnoughSequenceException e)
+		/*catch (NotEnoughSequenceException e)
 			{
 			//logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
-			}
+			}*/
 		catch (DistributionProcessorException e)
 			{
 			logger.error(e);
@@ -247,6 +262,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 */
 	public void setBaseSpectrum(@NotNull SequenceSpectrum spectrum)
 		{
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		if (baseSpectrum == spectrum && theSpectra.size() == 1)
 			{
 			// nothing has changed
@@ -266,6 +282,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				firstWordProvider = (FirstWordProvider) spectrum;
 				}
 			}
+		_baseSpectrum = new WeakReference<SequenceSpectrum>(baseSpectrum);
 		theSpectra.put(baseSpectrum.getClass(), baseSpectrum);
 		}
 
@@ -275,7 +292,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			throw new SequenceSpectrumException("We're ignoring edges");
 			}
-		scanIfNeeded();
+		getBaseSpectrum(); //scanIfNeeded();
 		return firstWordProvider;
 		}
 
@@ -298,7 +315,6 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	@Override
 	public SequenceFragment clone()
 		{
-		scanIfNeeded();
 		SequenceFragment result = new SequenceFragment(parentMetadata, sequenceName, startPosition, length);
 		result.setBaseSpectrum(getBaseSpectrum().clone());
 		return result;
@@ -313,7 +329,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	public void decrementBy(SequenceFragment object)
 		{
-		scanIfNeeded();
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		try
 			{
 			length -= object.getLength();
@@ -330,7 +346,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	public void decrementByWeighted(SequenceFragment object, double weight)
 		{
-		scanIfNeeded();
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		try
 			{
 			length -= object.getLength();
@@ -347,7 +363,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	public void incrementBy(SequenceFragment object)
 		{
-		scanIfNeeded();
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 
 		if (sequenceName == null)
 			{
@@ -370,7 +386,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	public void incrementByWeighted(SequenceFragment object, double weight)
 		{
-		scanIfNeeded();
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		if (sequenceName == null)
 			{
 			this.sequenceName += object.getSequenceName();
@@ -405,8 +421,9 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	public void multiplyBy(double v)
 		{
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		baseSpectrum.multiplyBy(v);
-		setBaseSpectrum(baseSpectrum);// ensure that any derived spectra are cleared
+		fireUpdated(baseSpectrum);// ensure that any derived spectra are cleared
 		}
 
 	public SequenceFragment times(double v)
@@ -428,7 +445,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 */
 	public boolean equalValue(SequenceFragment other)
 		{
-		scanIfNeeded();
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		try
 			{
 			return baseSpectrum.spectrumEquals(other.getSpectrum(baseSpectrum.getClass(), baseSpectrum.getFactory()));
@@ -468,10 +485,17 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			return;
 			}
 
-		try
+
+		// if we're reading the file anyway, we may as well remember the spectrum while we're at it.
+		rescan();
+
+/*		try
 			{
-			if (baseSpectrum == null)
+			if (_baseSpectrum.get() == null)
 				{
+
+
+
 				//theReader.seek(parentMetadata, startPosition); // ** shouldn't be necessary
 				//prefix = new byte[PREFIX_LENGTH];
 				theScanner.checkSequenceAvailable(this);// throws NotEnoughSequenceException
@@ -484,16 +508,16 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 					}
 				}
 			}
-		/*	catch (IOException e)
-		   {
-		   logger.error(e);
-		   throw new SequenceSpectrumRuntimeException(e);
-		   }*/
+		//	catch (IOException e)
+		//   {
+		//   logger.error(e);
+		 //  throw new SequenceSpectrumRuntimeException(e);
+		 //  }
 		catch (FilterException e)
 			{
 			logger.error(e);
 			throw new SequenceSpectrumRuntimeException(e);
-			}
+			}*/
 		}
 
 	/**
@@ -626,7 +650,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	public <X extends SequenceSpectrum> SequenceSpectrum getSpectrum(Class<X> c, GenericFactory<X> factory)
 			throws SequenceSpectrumException
 		{
-		scanIfNeeded();
+		getBaseSpectrum();  // scan if needed
 		SequenceSpectrum s = theSpectra.get(c);
 		if (s == null)
 			{
@@ -689,12 +713,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		   baseSpectrum.addPseudocounts();
 		   }*/
 
-	public void runBeginTrainingProcessor() throws DistributionProcessorException
+/*	public void runBeginTrainingProcessor() throws DistributionProcessorException
 		{
-		scanIfNeeded();
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		baseSpectrum.runBeginTrainingProcessor();
 		}
-
+*/
 	// REVIEW compute a base spectrum early to manage memory?
 
 	/*	@Property(helpmessage = "A type of spectrum to compute early to manage memory",
@@ -722,16 +746,16 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		 }
  */
 
-	public void runFinishTrainingProcessor() throws DistributionProcessorException
-		{
-		scanIfNeeded();
-		baseSpectrum.runFinishTrainingProcessor();
-		}
-
+	/*	public void runFinishTrainingProcessor() throws DistributionProcessorException
+		 {
+		 SequenceSpectrum baseSpectrum = getBaseSpectrum();
+		 baseSpectrum.runFinishTrainingProcessor();
+		 }
+ */
 	public void setIgnoreEdges(boolean b)
 		{
 		ignoreEdges = b;
-		scanIfNeeded();
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		baseSpectrum.setIgnoreEdges(b);
 		if (ignoreEdges)
 			{

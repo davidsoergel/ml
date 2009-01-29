@@ -65,8 +65,8 @@ public interface SequenceSpectrumScanner
 	 *                                    throws an exception
 	 * @throws NotEnoughSequenceException when the reader cannot supply the desired amound of sequence
 	 */
-	void checkSequenceAvailable(SequenceFragment fragment)//SequenceReader theReader, int desiredlength)
-			throws IOException, FilterException, NotEnoughSequenceException;
+//	void checkSequenceAvailable(SequenceFragment fragment)//SequenceReader theReader, int desiredlength)
+//			throws IOException, FilterException, NotEnoughSequenceException;
 
 	/**
 	 * Scans a sequence to count pattern frequencies.

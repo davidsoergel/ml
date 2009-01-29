@@ -41,8 +41,9 @@ public class AggregateSequenceFragment extends SequenceFragment
 		 theSFs.add(sf);
 		 }
  */
-	public void scanIfNeeded()
+	protected void rescan()
 		{
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		if (baseSpectrum != null && baseSpectrum.getOriginalSequenceLength() != UNKNOWN_LENGTH)
 			{
 			return;
