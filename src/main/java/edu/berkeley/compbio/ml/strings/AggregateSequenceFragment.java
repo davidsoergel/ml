@@ -60,7 +60,7 @@ public class AggregateSequenceFragment extends SequenceFragment
 				}
 			catch (SequenceSpectrumException e)
 				{
-				logger.error(e);
+				logger.error("Error", e);
 				throw new Error(e);
 				}
 			}

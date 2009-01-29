@@ -106,8 +106,7 @@ public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<R
 					   }
 				   else
 					   {*/
-					targetVal = (1 / mixingProportion) * toDist.get(b) + (1 - (1 / mixingProportion)) * fromDist
-							.get(b);
+					targetVal = (1 / mixingProportion) * toDist.get(b) + (1 - (1 / mixingProportion)) * fromDist.get(b);
 					//	}
 					// avoid infinitesimal negative values due to numerical imprecision
 					if (MathUtils.equalWithinFPError(targetVal, 0))
@@ -124,7 +123,7 @@ public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<R
 			}
 		catch (DistributionException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			//	throw new Error(e);
 			}
 		}

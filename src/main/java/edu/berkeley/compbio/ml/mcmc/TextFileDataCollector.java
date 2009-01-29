@@ -97,7 +97,7 @@ public class TextFileDataCollector implements DataCollector
 			}
 		catch (IOException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			}
 		}
 
@@ -133,7 +133,7 @@ public class TextFileDataCollector implements DataCollector
 			}
 		catch (IOException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			}
 		}
 
@@ -173,7 +173,7 @@ public class TextFileDataCollector implements DataCollector
 			}
 		catch (IOException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			}
 		}
 
@@ -208,7 +208,7 @@ public class TextFileDataCollector implements DataCollector
 			}
 		catch (IOException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			}
 		}
 	}

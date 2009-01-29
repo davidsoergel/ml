@@ -200,7 +200,7 @@ public class RonPST extends RonPSTNode
 			catch (SequenceSpectrumException e)
 				{
 				logger.warn("Unknown probability: " + new String(s));
-				logger.warn(e);
+				logger.warn("warn", e);
 				// too bad, the requested probability is not known
 				}
 			}
@@ -309,7 +309,7 @@ public class RonPST extends RonPSTNode
 				}
 			catch (DistributionProcessorException e)
 				{
-				logger.error(e);
+				logger.error("Error", e);
 				throw new SequenceSpectrumRuntimeException(e);
 				}
 			}
@@ -416,7 +416,7 @@ public class RonPST extends RonPSTNode
 			}
 		catch (DistributionException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new SequenceSpectrumException(e);
 			}
 		}
@@ -516,7 +516,7 @@ public class RonPST extends RonPSTNode
 			}
 		catch (DistributionException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new SequenceSpectrumException(e);
 			}
 		}

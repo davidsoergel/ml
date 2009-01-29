@@ -204,7 +204,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			}
 		catch (DistributionException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		}
@@ -228,10 +228,10 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			return addUpstreamNode(suffix[0]);
 			}
 		else if (suffix.length >= 1)
-			{
-			return addUpstreamNode(suffix[suffix.length - 1])
-					.addUpstreamNode(DSArrayUtils.prefix(suffix, suffix.length - 1));
-			}
+				{
+				return addUpstreamNode(suffix[suffix.length - 1])
+						.addUpstreamNode(DSArrayUtils.prefix(suffix, suffix.length - 1));
+				}
 		throw new Error("Impossible");
 		}
 
@@ -404,7 +404,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		catch (DistributionException e)
 			{
 			// there should be no node with zero probability weight!
-			logger.error(e);
+			logger.error("Error", e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 

@@ -93,7 +93,7 @@ public class RonPSTSmoother implements DistributionProcessor<RonPST>
 			}
 		catch (DistributionException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new Error(e);
 			}
 		}

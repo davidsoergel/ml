@@ -113,7 +113,7 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 			}
 		catch (DistributionException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new Error(e);
 			}
 		}

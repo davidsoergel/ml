@@ -175,7 +175,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 */
 	public SequenceSpectrum getBaseSpectrum()
 		{
-		SequenceSpectrum baseSpectrum = _baseSpectrum.get();
+		SequenceSpectrum baseSpectrum = _baseSpectrum == null ? null : _baseSpectrum.get();
 		if (baseSpectrum == null)
 			{
 			try
@@ -220,17 +220,17 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (GenericFactoryException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (IOException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (FilterException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		/*catch (NotEnoughSequenceException e)
@@ -240,7 +240,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}*/
 		catch (DistributionProcessorException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		}
@@ -262,7 +262,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 */
 	public void setBaseSpectrum(@NotNull SequenceSpectrum spectrum)
 		{
-		SequenceSpectrum baseSpectrum = getBaseSpectrum();
+		SequenceSpectrum baseSpectrum = _baseSpectrum == null ? null : _baseSpectrum.get();
 		if (baseSpectrum == spectrum && theSpectra.size() == 1)
 			{
 			// nothing has changed
@@ -283,7 +283,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				}
 			}
 		_baseSpectrum = new WeakReference<SequenceSpectrum>(baseSpectrum);
-		theSpectra.put(baseSpectrum.getClass(), baseSpectrum);
+		//theSpectra.put(baseSpectrum.getClass(), baseSpectrum);
 		}
 
 	public FirstWordProvider getFirstWordProvider() throws SequenceSpectrumException
@@ -337,7 +337,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (SequenceSpectrumException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new Error(e);
 			}
 		fireUpdated(baseSpectrum);
@@ -355,7 +355,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (SequenceSpectrumException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new Error(e);
 			}
 		fireUpdated(baseSpectrum);
@@ -377,7 +377,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (SequenceSpectrumException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new Error(e);
 			}
 		fireUpdated(baseSpectrum);
@@ -399,7 +399,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (SequenceSpectrumException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new Error(e);
 			}
 		fireUpdated(baseSpectrum);
@@ -489,35 +489,35 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		// if we're reading the file anyway, we may as well remember the spectrum while we're at it.
 		rescan();
 
-/*		try
-			{
-			if (_baseSpectrum.get() == null)
-				{
+		/*		try
+		   {
+		   if (_baseSpectrum.get() == null)
+			   {
 
 
 
-				//theReader.seek(parentMetadata, startPosition); // ** shouldn't be necessary
-				//prefix = new byte[PREFIX_LENGTH];
-				theScanner.checkSequenceAvailable(this);// throws NotEnoughSequenceException
+			   //theReader.seek(parentMetadata, startPosition); // ** shouldn't be necessary
+			   //prefix = new byte[PREFIX_LENGTH];
+			   theScanner.checkSequenceAvailable(this);// throws NotEnoughSequenceException
 
-				if (theReader.getTotalSequence() < desiredlength)
-					{
-					throw new NotEnoughSequenceException(
-							"Not enough sequence: " + desiredlength + " requested, " + theReader.getTotalSequence()
-									+ " available.");
-					}
-				}
-			}
-		//	catch (IOException e)
-		//   {
-		//   logger.error(e);
-		 //  throw new SequenceSpectrumRuntimeException(e);
-		 //  }
-		catch (FilterException e)
-			{
-			logger.error(e);
-			throw new SequenceSpectrumRuntimeException(e);
-			}*/
+			   if (theReader.getTotalSequence() < desiredlength)
+				   {
+				   throw new NotEnoughSequenceException(
+						   "Not enough sequence: " + desiredlength + " requested, " + theReader.getTotalSequence()
+								   + " available.");
+				   }
+			   }
+		   }
+	   //	catch (IOException e)
+	   //   {
+	   //   logger.error(e);
+		//  throw new SequenceSpectrumRuntimeException(e);
+		//  }
+	   catch (FilterException e)
+		   {
+		   logger.error(e);
+		   throw new SequenceSpectrumRuntimeException(e);
+		   }*/
 		}
 
 	/**
@@ -624,12 +624,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		catch (IOException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
 		catch (NullPointerException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new NotEnoughSequenceException("This sequence fragment is not based on a reader.");
 			}
 		}
@@ -650,10 +650,15 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	public <X extends SequenceSpectrum> SequenceSpectrum getSpectrum(Class<X> c, GenericFactory<X> factory)
 			throws SequenceSpectrumException
 		{
-		getBaseSpectrum();  // scan if needed
+		SequenceSpectrum baseSpectrum = getBaseSpectrum();  // scan if needed
 		SequenceSpectrum s = theSpectra.get(c);
 		if (s == null)
 			{
+			if (c.isAssignableFrom(baseSpectrum.getClass()))
+				{
+				return baseSpectrum;
+				}
+
 			for (Class sc : theSpectra.keySet())
 				{
 				if (c.isAssignableFrom(sc))
@@ -675,12 +680,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				}
 			catch (GenericFactoryException e)
 				{
-				logger.error(e);
+				logger.error("Error", e);
 				throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 				}
 			catch (NullPointerException e)
 				{
-				logger.error(e);
+				logger.error("Error", e);
 				throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 				}
 			/*	catch (NoSuchMethodException e)
@@ -713,12 +718,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		   baseSpectrum.addPseudocounts();
 		   }*/
 
-/*	public void runBeginTrainingProcessor() throws DistributionProcessorException
-		{
-		SequenceSpectrum baseSpectrum = getBaseSpectrum();
-		baseSpectrum.runBeginTrainingProcessor();
-		}
-*/
+	/*	public void runBeginTrainingProcessor() throws DistributionProcessorException
+		 {
+		 SequenceSpectrum baseSpectrum = getBaseSpectrum();
+		 baseSpectrum.runBeginTrainingProcessor();
+		 }
+ */
 	// REVIEW compute a base spectrum early to manage memory?
 
 	/*	@Property(helpmessage = "A type of spectrum to compute early to manage memory",
@@ -752,6 +757,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		 baseSpectrum.runFinishTrainingProcessor();
 		 }
  */
+
 	public void setIgnoreEdges(boolean b)
 		{
 		ignoreEdges = b;
