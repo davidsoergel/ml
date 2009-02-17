@@ -77,7 +77,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		svm = new MultiClassificationSVM<BatchCluster<T>, T>(binarySvm, true);
 		MultiClassProblem<BatchCluster<T>, T> problem =
 				new MultiClassProblemImpl(BatchCluster.class, new BatchClusterLabelInverter(), examples, exampleIds);
-		svm.setupQMatrix(problem);
+		//svm.setupQMatrix(problem);
 		logger.debug("Performing multiclass training");
 		model = svm.train(problem);
 		}
