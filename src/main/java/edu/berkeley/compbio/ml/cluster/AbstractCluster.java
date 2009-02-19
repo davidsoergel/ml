@@ -72,6 +72,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	 */
 	public void updateDerivedWeightedLabelsFromLocal()//throws DistributionException
 		{
+		assert !weightedLabels.isEmpty();
 		derivedLabelProbabilities = new HashWeightedSet<String>();
 		derivedLabelProbabilities.addAll(weightedLabels);
 		/*for (Multiset.Entry<String> o : exclusiveLabelCounts.entrySet())// too bad Bag isn't generic

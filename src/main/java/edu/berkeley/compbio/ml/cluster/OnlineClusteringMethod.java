@@ -37,6 +37,7 @@ import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -59,6 +60,11 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>, C extends
 	// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(OnlineClusteringMethod.class);
+
+	public OnlineClusteringMethod(DissimilarityMeasure<T> dm)
+		{
+		super(dm);
+		}
 	//private Iterator<T> theDataPointProvider;
 
 
@@ -136,9 +142,13 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>, C extends
 				   break;
 				   }*/
 				}
-			logger.debug("Changed cluster assignment of " + changed + " points (" + (int) (100 * changed / c) + "%)\n");
+			int changedProportion = changed == 0 ? 0 : (int) (100.0 * changed / c);
+			logger.debug("Changed cluster assignment of " + changed + " points (" + changedProportion + "%)\n");
 			// computeClusterStdDevs(theDataPointProvider);  // PERF cluster stddev is slow, should be optional.  Also, only works for sequential DPP
-			if(logger.isDebugEnabled()) {logger.debug("\n" + clusteringStats());}
+			if (logger.isDebugEnabled())
+				{
+				logger.debug("\n" + clusteringStats());
+				}
 
 			if (changed == 0)
 				{

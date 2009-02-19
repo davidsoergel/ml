@@ -181,8 +181,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap, double minRadius,
 	                    KohonenSOM2DSearchStrategy<T> searchStrategy)
 		{
+		super(dm);
 		this.cellsPerDimension = DSArrayUtils.toPrimitive(cellsPerDimension);
-		this.measure = dm;
+
 		this.dimensions = cellsPerDimension.length;
 		this.moveFactorFunction = moveFactorFunction;
 		this.radiusFunction = radiusFunction;
@@ -486,8 +487,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 				CentroidCluster<T> here = clusterAt(x, y);
 
 				CentroidCluster<T> right = clusterAt(x + 1, y);
-				double d = measure.distanceFromTo(here.getCentroid(), right.getCentroid())
-						;//here.distanceToCentroid(right.getCentroid());
+				double d = measure.distanceFromTo(here.getCentroid(),
+				                                  right.getCentroid());//here.distanceToCentroid(right.getCentroid());
 
 				result[listIndexFor(x, y)] += d;
 				result[listIndexFor(x + 1, y)] += d;
@@ -863,8 +864,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 				boolean foundCell = false;
 
-				int realX = -1, realY = -1
-						;// the loop below can't complete without setting these; if there's a bug we'll get ArrayIndexOutOfBoundsException
+				int realX = -1, realY =
+						-1;// the loop below can't complete without setting these; if there's a bug we'll get ArrayIndexOutOfBoundsException
 
 				// iterate rather than recurse to avoid huge stacks
 				while (!foundCell)

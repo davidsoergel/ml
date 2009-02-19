@@ -33,31 +33,21 @@
 
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
-import com.davidsoergel.dsutils.GenericFactory;
-import com.davidsoergel.dsutils.GenericFactoryException;
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.Multinomial;
-import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
+import com.google.common.collect.TreeMultimap;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
-import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 /**
  * k-Nearest Neighbor classifier.  This makes sense only when multiple clusters have the same label.  In that case we
@@ -69,7 +59,7 @@ import java.util.TreeMap;
  * @version $Id$
  */
 public class KNNClustering<T extends AdditiveClusterable<T>>
-		extends BayesianClustering<T> //OnlineClusteringMethod<T, CentroidCluster<T>>
+		extends MultiNeighborClustering<T> //OnlineClusteringMethod<T, CentroidCluster<T>>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -190,126 +180,6 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		 }
  */
 
-	/**
-	 * Unlike situations where we make a cluster per label, here we make a whole "cluster" per test sample
-	 */
-	@Override
-	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                   GenericFactory<T> prototypeFactory)
-			throws GenericFactoryException, ClusterException
-		{
-		theClusters = new HashSet<CentroidCluster<T>>();
-		//	Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
-
-		/*		if(decompositionDistanceThreshold != 0)
-			  {
-			  throw new NotImplementedException("Sub-clustering of k-NN training samples is not supported yet, use decompositionDistanceThreshold = 0 ");
-			  }
-  */
-		Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
-		try
-			{
-			// consume the entire iterator, ignoring initsamples
-			int i = 0;
-			int sampleCount = 0;
-			while (trainingIterator.hasNext())
-				{
-				if (sampleCount % 1000 == 0)
-					{
-					logger.info("Processed " + sampleCount + " training samples.");
-					}
-				sampleCount++;
-
-				T point = trainingIterator.next();
-
-				// generate one cluster per exclusive label.
-
-
-				CentroidCluster<T> cluster = new BasicCentroidCluster<T>(i++, point);//measure
-
-				//** for now we make a uniform prior
-				priorsMult.put(cluster, 1);
-				theClusters.add(cluster);
-				}
-
-
-			logger.info("Done processing " + sampleCount + " training samples.");
-
-			priorsMult.normalize();
-			priors = priorsMult.getValueMap();
-			}
-		catch (DistributionException e)
-			{
-			throw new Error(e);
-			}
-		//	theClusters = theClusterMap.values();
-		}
-
-
-	/**
-	 * Returns a map from distance to cluster, sorted by distance; includes only those clusters with distances better than
-	 * the unknown threshold.
-	 *
-	 * @param p
-	 * @return
-	 */
-	public SortedMap<Double, ClusterMove<T, CentroidCluster<T>>> scoredClusterMoves(T p) throws NoGoodClusterException
-		{
-
-		SortedMap<Double, ClusterMove<T, CentroidCluster<T>>> result =
-				new TreeMap<Double, ClusterMove<T, CentroidCluster<T>>>();
-
-		// collect moves for all clusters, sorted by distance
-
-		for (CentroidCluster<T> cluster : theClusters)
-			{
-
-
-			// ** careful: how to deal with priors depends on the distance measure.
-			// if it's probability, multiply; if log probability, add the log; for other distance types, who knows?
-
-			double distance;
-
-			if (measure instanceof ProbabilisticDissimilarityMeasure)
-				{
-				distance = ((ProbabilisticDissimilarityMeasure) measure)
-						.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
-				}
-			else
-				{
-				distance = measure.distanceFromTo(p, cluster.getCentroid());
-				}
-
-
-			ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
-			cm.bestCluster = cluster;
-			cm.bestDistance = distance;
-
-			// ignore the secondBestDistance, we don't need it here
-
-			result.put(distance, cm);
-			}
-
-		result = result.headMap(unknownDistanceThreshold);
-
-		if (result.isEmpty())
-			{
-			throw new NoGoodClusterException("No clusters passed the unknown threshold");
-			}
-
-		return result;
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
-		{
-		throw new ClusterRuntimeException(
-				"It doesn't make sense to get the best clustermove with k-NN; look for the best label instead");
-		}
-
 
 	/**
 	 * Evaluates the classification accuracy of this clustering using an iterator of test samples.  These samples should
@@ -325,10 +195,10 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 * @return a TestResults object encapsulating the proportions of test samples classified correctly, incorrectly, or not
 	 *         at all.
 	 * @throws edu.berkeley.compbio.ml.cluster.NoGoodClusterException
-	 *          when a test sample cannot be assigned to any cluster
+	 *                          when a test sample cannot be assigned to any cluster
 	 * @throws com.davidsoergel.stats.DistributionException
-	 *          when something goes wrong in computing the label probabilities
-	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
+	 *                          when something goes wrong in computing the label probabilities
+	 * @throws ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
 	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels,
 	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
@@ -363,96 +233,27 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 			try
 				{
-				SortedMap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
-
-				WeightedSet<String> labelVotes = new HashWeightedSet<String>()
-						;  // use WeightedSet instead of MultiSet so we can aggregate label probabilities
-
-				// keep track of clusters per label, for the sake of
-				// tracking computed distances to the clusters contributing to each label
-				final Map<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>> labelContributions =
-						new HashMap<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>>();
+				TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
 
 				// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
-				int neighborsCounted = 0;
-				for (ClusterMove<T, CentroidCluster<T>> cm : moves
-						.values()) // these should be in order of increasing distance
-					{
-					if (neighborsCounted >= maxNeighbors)
-						{
-						break;
-						}
-
-					WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
-
-					labelVotes.addAll(labelsOnThisCluster);
-
-					for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
-						{
-						final String label = entry.getKey();
-						final Double labelProbability = entry.getValue();
-
-						WeightedSet<ClusterMove<T, CentroidCluster<T>>> contributionSet = labelContributions.get(label);
-						if (contributionSet == null)
-							{
-							contributionSet = new HashWeightedSet<ClusterMove<T, CentroidCluster<T>>>();
-							labelContributions.put(label, contributionSet);
-							}
-						contributionSet.add(cm, labelProbability);
-						contributionSet.incrementItems();
-						}
-
-					neighborsCounted++;
-					}
-
+				final VotingResults v = addUpNeighborVotes(moves);
 
 				// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
 
 				// now pick the best one
-
-				// primary sort the labels by votes, secondary by weighted distance
-				// even if there is a unique label with the most votes, the second place one may still matter depending on the unknown thresholds
-
-				Comparator weightedDistanceSort = new Comparator()
-				{
-				Map<String, Double> cache = new HashMap<String, Double>();
-
-				private Double getWeightedDistance(String label)
-					{
-					Double result = cache.get(label);
-					if (result == null)
-						{
-						result = computeWeightedDistance(labelContributions.get(label));
-						cache.put(label, result);
-						}
-					return result;
-					}
-
-				public int compare(Object o1, Object o2)
-					{
-					return Double.compare(getWeightedDistance((String) o1), getWeightedDistance((String) o2));
-					}
-				};
-
-				Iterator<String> vi = labelVotes.keysInDecreasingWeightOrder(weightedDistanceSort).iterator();
-
-				String bestLabel = vi.next();
-				double bestWeightedDistance = computeWeightedDistance(labelContributions.get(bestLabel));
-				// too bad we can't esily ccess the cache.  Needs more thorough refactoring.
-				// weightedDistanceSort.getWeightedDistance(bestLabel);
-
+				String bestLabel = v.getBestLabel();
+				double bestWeightedDistance = v.computeWeightedDistance(bestLabel);
 
 				// check that there's not a (near) tie
-				if (labelVotes.keySet().size() > 1)
+				if (v.hasSecondBestLabel())
 					{
-					String secondBestLabel = vi.next();
+					String secondBestLabel = v.getSecondBestLabel();
 
-					double bestVotes = labelVotes.get(bestLabel);
-					double secondBestVotes = labelVotes.get(secondBestLabel);
+					double bestVotes = v.getVotes(bestLabel);
+					double secondBestVotes = v.getVotes(secondBestLabel);
 					assert secondBestVotes <= bestVotes;
 
-					double secondBestWeightedDistance = computeWeightedDistance(labelContributions.get(secondBestLabel))
-							;
+					double secondBestWeightedDistance = v.computeWeightedDistance(secondBestLabel);
 
 					// if the top two votes are too similar...
 					if (secondBestVotes / bestVotes >= voteTieThresholdRatio)
@@ -469,7 +270,6 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 							throw new NoGoodClusterException();
 							}
 
-
 						if (bestWeightedDistance > secondBestWeightedDistance)
 							{
 							// OK, leave the current bestLabel intact then
@@ -483,7 +283,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					}
 				//	String dominantExclusiveLabel = labelVotes.getDominantKeyInSet(mutuallyExclusiveLabels);
 
-				double labelProb = labelVotes.getNormalized(bestLabel);
+				double labelProb = v.getProb(bestLabel);
 
 				if (labelProb < voteProportionThreshold)
 					{
@@ -567,21 +367,33 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		return tr;
 		}
 
-
-	private double computeWeightedDistance(WeightedSet<ClusterMove<T, CentroidCluster<T>>> dominantLabelContributions)
+	private VotingResults addUpNeighborVotes(TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves)
 		{
+		VotingResults result = new VotingResults();
 
-		// compute weighted average computed distance to clusters contributing to this label
-		double weightedComputedDistance = 0;
-
-
-		for (Map.Entry<ClusterMove<T, CentroidCluster<T>>, Double> entry : dominantLabelContributions
-				.getItemNormalizedMap().entrySet())
+		int neighborsCounted = 0;
+		for (ClusterMove<T, CentroidCluster<T>> cm : moves.values()) // these should be in order of increasing distance
 			{
-			ClusterMove<T, CentroidCluster<T>> contributingCm = entry.getKey();
-			Double contributionWeight = entry.getValue();
-			weightedComputedDistance += contributionWeight * contributingCm.bestDistance;
+			if (neighborsCounted >= maxNeighbors)
+				{
+				break;
+				}
+
+			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
+
+			result.addVotes(labelsOnThisCluster);
+
+			for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
+				{
+				final String label = entry.getKey();
+				final Double labelProbability = entry.getValue();
+
+				result.addContribution(cm, label, labelProbability);
+				}
+
+			neighborsCounted++;
 			}
-		return weightedComputedDistance;
+		result.finish();
+		return result;
 		}
 	}

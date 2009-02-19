@@ -62,7 +62,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		implements SemisupervisedClusteringMethod<T>
 	{
 
-	private DissimilarityMeasure<T> dissimilarityMeasure;
+	//private DissimilarityMeasure<T> dissimilarityMeasure;
 	//private SymmetricPairwiseDistanceMatrix theActiveNodeDistanceMatrix = new SymmetricPairwiseDistanceMatrix();
 	private Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix =
 			new Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double>();
@@ -75,7 +75,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	public UPGMA(DissimilarityMeasure<T> dissimilarityMeasure)
 		{
-		this.dissimilarityMeasure = dissimilarityMeasure;
+		super(dissimilarityMeasure);
 
 		//		theClusterPairs = new TreeMap<ClusterPair<T>, Double>();
 		}
@@ -147,7 +147,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			double distance = dissimilarityMeasure.distanceFromTo(p, theCluster.getCentroid());
+			double distance = measure.distanceFromTo(p, theCluster.getCentroid());
 			if (distance < result.bestDistance)
 				{
 				result.bestCluster = theCluster;
@@ -296,7 +296,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		theClusters.add(node1);
 		theClusters.add(node2);
 
-		Double d = dissimilarityMeasure.distanceFromTo(node1.getValue().getCentroid(), node2.getValue().getCentroid());
+		Double d = measure.distanceFromTo(node1.getValue().getCentroid(), node2.getValue().getCentroid());
 		theActiveNodeDistanceMatrix.put(node1, node2, d);
 		}
 
@@ -309,8 +309,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	void addAndComputeDistances(HierarchicalCentroidCluster<T> node)
 		{
 		theClusters.add(node);
-		Set<HierarchicalCentroidCluster<T>> activeNodes = new HashSet(theActiveNodeDistanceMatrix.getActiveKeys())
-				;// avoid ConcurrentModificationException
+		Set<HierarchicalCentroidCluster<T>> activeNodes =
+				new HashSet(theActiveNodeDistanceMatrix.getActiveKeys());// avoid ConcurrentModificationException
 
 		/*	Double d = distanceMeasure.distanceFromTo(node.getValue().getCentroid(),
 																 node.getValue().getCentroid());// probably 0, but you never know
@@ -321,8 +321,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		   */
 		for (HierarchicalCentroidCluster<T> theActiveNode : activeNodes)
 			{
-			Double d = dissimilarityMeasure
-					.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
+			Double d = measure.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
 			theActiveNodeDistanceMatrix.put(node, theActiveNode, d);
 			}
 		}

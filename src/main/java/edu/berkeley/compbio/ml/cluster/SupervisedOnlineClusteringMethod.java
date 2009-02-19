@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
@@ -13,6 +14,12 @@ import java.util.List;
 public abstract class SupervisedOnlineClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
 		extends OnlineClusteringMethod<T, C>
 	{
+
+	protected SupervisedOnlineClusteringMethod(DissimilarityMeasure<T> dm)
+		{
+		super(dm);
+		}
+
 	/**
 	 * Adds a point to the best cluster.  Generally it's not a good idea to store the point itself in the cluster for
 	 * memory reasons; so this method is primarily useful for updating the position of the centroid.

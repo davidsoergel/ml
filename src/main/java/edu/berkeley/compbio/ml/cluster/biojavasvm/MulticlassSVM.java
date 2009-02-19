@@ -101,6 +101,7 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 
 	public MulticlassSVM(Kernel<T> kernel)
 		{
+		super(null);
 		SvmParameter param = new SvmParameter();
 		BinaryClassificationSVM binarySvm = new C_SVC(kernel, param);
 		this.multiSvm = new MultiClassificationSVM(binarySvm, true);

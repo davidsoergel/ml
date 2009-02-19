@@ -66,7 +66,8 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 		{
 		//super(dpp);
 		//this.k = k;
-		this.measure = dm;
+
+		super(dm);
 		}
 
 	/**
@@ -115,8 +116,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 			catch (NullPointerException e)
 				{// probably just the first round
 				}
-			cm.bestCluster
-					.add(p);//, cm.bestDistance);  // this will automatically recalculate the centroid, etc.
+			cm.bestCluster.add(p);//, cm.bestDistance);  // this will automatically recalculate the centroid, etc.
 			assignments.put(id, cm.bestCluster);
 			return true;
 			}

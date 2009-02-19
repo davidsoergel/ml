@@ -32,6 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.stats.DissimilarityMeasure;
+
 import java.util.Iterator;
 
 
@@ -43,6 +45,10 @@ import java.util.Iterator;
  */
 public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extends HierarchicalClusteringMethod<T>
 	{
+	protected BatchTreeClusteringMethod(DissimilarityMeasure<T> dm)
+		{
+		super(dm);
+		}
 
 	/**
 	 * Recompute a set of clusters from the stored samples.

@@ -32,6 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.stats.DissimilarityMeasure;
+
 import java.util.Collection;
 
 
@@ -43,6 +45,10 @@ import java.util.Collection;
  */
 public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
+	protected BatchClusteringMethod(DissimilarityMeasure<T> dm)
+		{
+		super(dm);
+		}
 	// different implementations may prefer different data structures
 	//Collection<Clusterable<T>> samples;
 

@@ -34,6 +34,7 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.math.MathUtils;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -55,6 +56,10 @@ import java.util.List;
  */
 public abstract class CentroidClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T, CentroidCluster<T>>
 	{
+	protected CentroidClusteringMethod(DissimilarityMeasure<T> dm)
+		{
+		super(dm);
+		}
 
 	private static final Logger logger = Logger.getLogger(CentroidClusteringMethod.class);
 

@@ -139,8 +139,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction,
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap)
 		{
+		super(dm);
 		this.cellsPerDimension = cellsPerDimension;
-		this.measure = dm;
+
 		this.dimensions = cellsPerDimension.length;
 		this.moveFactorFunction = moveFactorFunction;
 		this.radiusFunction = radiusFunction;

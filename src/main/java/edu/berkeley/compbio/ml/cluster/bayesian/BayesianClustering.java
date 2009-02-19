@@ -48,12 +48,10 @@ import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
-import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,7 +61,7 @@ import java.util.Map;
  * @author David Soergel
  * @version $Id$
  */
-public class BayesianClustering<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T, CentroidCluster<T>>
+public class BayesianClustering<T extends AdditiveClusterable<T>> extends NeighborClustering<T>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -72,10 +70,6 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	//private T[] centroids;
 	//protected DistanceMeasure<T> measure;
 	//private double[] priors;
-
-
-	protected double unknownDistanceThreshold;
-	protected Map<CentroidCluster, Double> priors;
 
 
 	// --------------------------- CONSTRUCTORS ---------------------------
@@ -112,8 +106,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 	 */
 	public BayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold)
 		{
-		measure = dm;
-		this.unknownDistanceThreshold = unknownDistanceThreshold;
+		super(dm, unknownDistanceThreshold);
 		}
 
 
@@ -199,17 +192,6 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Online
 
 	// -------------------------- OTHER METHODS --------------------------
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
-		{
-		ClusterMove best = bestClusterMove(p);
-		secondBestDistances.add(best.secondBestDistance);
-		best.bestCluster.add(p);
-		return true;
-		}
 
 	/**
 	 * {@inheritDoc}

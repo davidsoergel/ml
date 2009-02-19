@@ -32,6 +32,11 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 
 	protected Set<String> mutuallyExclusiveLabels;
 
+	public ClusteringMethod(DissimilarityMeasure<T> dm)
+		{
+		measure = dm;
+		}
+
 	/**
 	 * Sets a list of labels to be used for classification.  For a supervised method, this must be called before training.
 	 *

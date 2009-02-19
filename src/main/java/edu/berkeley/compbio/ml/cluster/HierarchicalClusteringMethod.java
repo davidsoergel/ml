@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
 /**
@@ -49,6 +50,11 @@ import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
  */
 public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
+	protected HierarchicalClusteringMethod(DissimilarityMeasure<T> dm)
+		{
+		super(dm);
+		}
+
 	/**
 	 * Returns a LengthWeightHierarchyNode representing the root of the computed clustering tree.  Only valid after
 	 * performClustering() has been run.

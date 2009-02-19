@@ -37,6 +37,11 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	private BinaryClassificationSVM<BatchCluster<T>, T> binarySvm;
 
+	public MultiClassificationSVMAdapter()
+		{
+		super(null);
+		}
+
 	public void setBinarySvm(BinaryClassificationSVM<BatchCluster<T>, T> binarySvm)
 		{
 		this.binarySvm = binarySvm;
