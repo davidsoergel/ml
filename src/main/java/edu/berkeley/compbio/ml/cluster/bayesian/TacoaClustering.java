@@ -3,6 +3,9 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.Multinomial;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultimap;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -11,7 +14,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -66,19 +69,32 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 		tr.numClusters = theClusters.size();
 
-		boolean computedDistancesInteresting = false;
-		boolean clusterProbabilitiesInteresting = false;
+//		boolean computedDistancesInteresting = false;
+//		boolean clusterProbabilitiesInteresting = false;
 
 		// Figure out which of the mutually exclusive labels actually had training bins (some got tossed to provide for unknown test samples)
 		// while we're at it, sum up the cluster masses
 
-		Set<String> trainingLabels = new HashSet<String>();
+
+		Multiset<String> trainingLabels = new HashMultiset<String>();
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			trainingLabels.add(theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(mutuallyExclusiveLabels));
+			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(mutuallyExclusiveLabels);
+			trainingLabels.add(label);
 			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
 			}
 
+		// we're going to hack the prior probabilities using the number of clusters per label
+		// TacoaDistanceMeasure takes the prior to be per label, not per cluster
+
+		priors = new HashMap<CentroidCluster, Double>();
+		Multinomial<String> labelPriors = new Multinomial<String>(trainingLabels);
+		for (CentroidCluster<T> theCluster : theClusters)
+			{
+			final String label = theCluster.getDerivedLabelProbabilities()
+					.getDominantKeyInSet(mutuallyExclusiveLabels); // PERF redundant
+			priors.put(theCluster, labelPriors.get(label));
+			}
 
 		// classify the test samples
 		int i = 0;
@@ -180,19 +196,16 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		{
 		VotingResults result = new VotingResults();
 
-		for (ClusterMove<T, CentroidCluster<T>> cm : moves.values()) // these should be in order of increasing distance
+		for (ClusterMove<T, CentroidCluster<T>> cm : moves.values())
 			{
-
 			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
 
 			// in the usual case, labelsOnThisCluster contains a single label with weight 1.
 
 			// we actually want the vote to count in proportion to the computed distance:
-			labelsOnThisCluster.multiplyBy(cm.bestDistance);
+			result.addVotes(labelsOnThisCluster, cm.bestDistance);
 
-			result.addVotes(labelsOnThisCluster);
-
-			//** dunno if this makes any sense here
+			//** dunno if this makes any sense here... OK, it llows computing weighted distances per label later
 			for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
 				{
 				final String label = entry.getKey();

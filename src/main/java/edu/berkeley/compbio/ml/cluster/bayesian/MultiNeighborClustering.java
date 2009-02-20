@@ -215,6 +215,11 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 			labelVotes.addAll(labelsOnThisCluster);
 			}
 
+		public void addVotes(WeightedSet<String> labelsOnThisCluster, double multiplier)
+			{
+			labelVotes.addAll(labelsOnThisCluster, multiplier);
+			}
+
 		public void addContribution(ClusterMove<T, CentroidCluster<T>> cm, String label, Double labelProbability)
 			{
 			WeightedSet<ClusterMove<T, CentroidCluster<T>>> contributionSet = labelContributions.get(label);
