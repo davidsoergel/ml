@@ -36,11 +36,19 @@ public class AggregateSequenceFragment extends SequenceFragment
 		//	theAggregateReader = new AggregateReader();
 		}
 
-	/*	public void add(SequenceFragment sf)
-		 {
-		 theSFs.add(sf);
-		 }
- */
+	public AggregateSequenceFragment(SequenceFragmentMetadata parent, String sequenceName, SequenceFragment initialSF)
+		{
+		super(parent, sequenceName, 0, UNKNOWN_LENGTH);
+		theSFs.add(initialSF);
+		theScanner = initialSF.getScanner();
+		//	theAggregateReader = new AggregateReader();
+		}
+
+	public void add(SequenceFragment sf)
+		{
+		theSFs.add(sf);
+		}
+
 	protected void rescan()
 		{
 		SequenceSpectrum baseSpectrum = getBaseSpectrum();
