@@ -68,6 +68,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		TestResults tr = new TestResults();
 
 		tr.numClusters = theClusters.size();
+		tr.numLabels = mutuallyExclusiveLabels.size();
 
 //		boolean computedDistancesInteresting = false;
 //		boolean clusterProbabilitiesInteresting = false;
@@ -205,7 +206,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			// we actually want the vote to count in proportion to the computed distance:
 			result.addVotes(labelsOnThisCluster, cm.bestDistance);
 
-			//** dunno if this makes any sense here... OK, it llows computing weighted distances per label later
+			//** dunno if this makes any sense here... OK, it allows computing weighted distances per label later
 			for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
 				{
 				final String label = entry.getKey();

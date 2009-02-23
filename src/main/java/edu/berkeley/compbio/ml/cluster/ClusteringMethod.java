@@ -173,7 +173,9 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				{
 				ClusterMove<T, C> cm = bestClusterMove(frag);
 
-				//			secondBestDistances.add(cm.secondBestDistance);				//Cluster<T> best = getBestCluster(frag, secondBestDistances);				//double bestDistance = getBestDistance();
+				//			secondBestDistances.add(cm.secondBestDistance);
+				//Cluster<T> best = getBestCluster(frag, secondBestDistances);
+				//double bestDistance = getBestDistance();
 
 				// OBSOLETE COMMENTS
 				// there are two ways to get classified "unknown":
@@ -293,6 +295,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		public double trainingSeconds;
 		public double testingSeconds;
 		public double totalTrainingMass = 0;
+		public int numLabels = 0;
 
 		/**
 		 * Normalize the proportions to 1.  Useful for instance if the proportion fields are initially set to raw counts.
