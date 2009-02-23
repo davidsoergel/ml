@@ -6,6 +6,7 @@ import edu.berkeley.compbio.sequtils.SequenceFragmentMetadata;
 import edu.berkeley.compbio.sequtils.SequenceReader;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -51,14 +52,15 @@ public class AggregateSequenceFragment extends SequenceFragment
 
 	protected void rescan()
 		{
-		SequenceSpectrum baseSpectrum = getBaseSpectrum();
+/*		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		if (baseSpectrum != null && baseSpectrum.getOriginalSequenceLength() != UNKNOWN_LENGTH)
 			{
 			return;
-			}
-		baseSpectrum = theScanner.getEmpty();
+			}*/
+		SequenceSpectrum baseSpectrum = theScanner.getEmpty();
 		length = 0;
 
+		// PERF sort the fragments?
 		for (SequenceFragment sf : theSFs)
 			{
 			try
@@ -97,5 +99,10 @@ public class AggregateSequenceFragment extends SequenceFragment
 	public Collection<SequenceFragment> getSequenceFragments()
 		{
 		return theSFs;
+		}
+
+	public void setScanner(@NotNull SequenceSpectrumScanner scanner)
+		{
+		theScanner = scanner;
 		}
 	}

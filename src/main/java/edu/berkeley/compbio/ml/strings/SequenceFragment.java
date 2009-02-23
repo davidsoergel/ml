@@ -39,6 +39,7 @@ import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
+import edu.berkeley.compbio.sequtils.SequenceException;
 import edu.berkeley.compbio.sequtils.SequenceFragmentMetadata;
 import edu.berkeley.compbio.sequtils.SequenceReader;
 import org.apache.log4j.Logger;
@@ -46,8 +47,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
@@ -807,4 +813,51 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		   sequenceSpectrum.releaseCachedResources();
 		   }
 	   }*/
+
+	public Set<SequenceFragment> removeOverlaps(Collection<SequenceFragment> remove) throws SequenceException
+		{
+		Set<SequenceFragment> result = new HashSet<SequenceFragment>();
+
+		List<SequenceFragment> conflicts = new ArrayList<SequenceFragment>();
+
+		SequenceFragmentMetadata root =
+				getRootMetadata(); // do all arithmetic with respect to the root to avoid confusion
+
+		for (SequenceFragment sf : remove)
+			{
+			if (overlaps(sf))  //sf.getRootMetadata().equalValue(root)) //
+				{
+				conflicts.add(sf);
+				}
+			}
+		Collections.sort(conflicts);
+
+		int trav = getStartPositionFromRoot();
+		for (SequenceFragment conflict : conflicts)
+			{
+			int trav2 = conflict.getStartPositionFromRoot();
+			int len = trav2 - trav;
+			if (len > 0)
+				{
+				assert theReader != null;
+				assert theScanner != null;
+				SequenceFragment sf = new SequenceFragment(root, null, trav, theReader, len, theScanner);
+				result.add(sf);
+				}
+			trav = trav2 + conflict.length;
+			}
+
+		// add the last fragment after the last conflict
+
+		int len = getStartPositionFromRoot() + length - trav;
+		if (len > 0)
+			{
+			assert theReader != null;
+			assert theScanner != null;
+			SequenceFragment sf = new SequenceFragment(root, null, trav, theReader, len, theScanner);
+			result.add(sf);
+			}
+
+		return result;
+		}
 	}
