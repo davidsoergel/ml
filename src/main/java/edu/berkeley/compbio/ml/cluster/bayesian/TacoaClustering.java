@@ -68,7 +68,6 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		TestResults tr = new TestResults();
 
 		tr.numClusters = theClusters.size();
-		tr.numLabels = mutuallyExclusiveLabels.size();
 
 //		boolean computedDistancesInteresting = false;
 //		boolean clusterProbabilitiesInteresting = false;
