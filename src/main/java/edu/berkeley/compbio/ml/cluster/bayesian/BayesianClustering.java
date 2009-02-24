@@ -147,7 +147,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 
 				if (cluster == null)
 					{
-					cluster = new AdditiveCentroidCluster<T>(i++, prototypeFactory.create());//measure
+					final T centroid = prototypeFactory
+							.create(point.getSourceId());  // include the source id to facilitate leave-one-out testing later
+					cluster = new AdditiveCentroidCluster<T>(i++, centroid);//measure
 					//cluster.setId(i++);
 					theClusterMap.put(clusterLabel, cluster);
 

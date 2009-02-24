@@ -37,6 +37,7 @@ import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DoubleArrayContainer;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 
@@ -200,6 +201,10 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		return null;
 		}
 
+	public String getSourceId()
+		{
+		throw new NotImplementedException();
+		}
 	// --------------------- Interface DoubleArrayContainer ---------------------
 
 

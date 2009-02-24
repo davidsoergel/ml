@@ -382,6 +382,10 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		//throw new NotImplementedException();
 		}
 
+	public String getSourceId()
+		{
+		throw new NotImplementedException();
+		}
 	// --------------------- Interface SequenceSpectrum ---------------------
 
 

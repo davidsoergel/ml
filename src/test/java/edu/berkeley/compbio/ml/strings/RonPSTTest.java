@@ -429,6 +429,11 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			return "Test Spectrum";
 			}
 
+		public String getSourceId()
+			{
+			throw new NotImplementedException();
+			}
+
 		/**
 		 * {@inheritDoc}
 		 */

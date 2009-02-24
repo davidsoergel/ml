@@ -37,6 +37,7 @@ import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -341,6 +342,11 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	public String getId()
 		{
 		return new String(id);
+		}
+
+	public String getSourceId()
+		{
+		throw new NotImplementedException();
 		}
 
 	/**
