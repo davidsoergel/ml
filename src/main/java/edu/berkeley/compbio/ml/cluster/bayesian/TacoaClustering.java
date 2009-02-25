@@ -139,7 +139,17 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 				// if the fragment's best label from the same exclusive set is the same one, that's a match.
 				// instead of binary classification, measure how bad the miss is (0 for perfect match)
-				double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, bestLabel);
+				//double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, bestLabel);
+
+				// for a classification to an internal node, we want to consider the branch length to the test leaf regardless of the label resolution
+				// ** getting the taxon id via getSourceId is maybe a horrible hack!??
+				double wrongness = intraLabelDistances.distanceFromTo(frag.getSourceId(), bestLabel);
+
+				if (fragDominantLabel.equals(bestLabel))
+					{
+					tr.perfect++;
+					}
+
 
 				if (Double.isNaN(wrongness))
 					{

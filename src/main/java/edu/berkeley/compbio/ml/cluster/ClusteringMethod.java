@@ -210,11 +210,17 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				// ** getting the taxon id via getSourceId is maybe a horrible hack!??
 				double wrongness = intraLabelDistances.distanceFromTo(frag.getSourceId(), dominantExclusiveLabel);
 
+				if (fragDominantLabel.equals(dominantExclusiveLabel))
+					{
+					tr.perfect++;
+					}
+
 
 				if (Double.isNaN(wrongness))
 					{
 					logger.error("Wrongness NaN");
 					}
+
 				if (Double.isInfinite(wrongness))
 					{
 					logger.error("Infinite Wrongness");
@@ -300,6 +306,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		public double trainingSeconds;
 		public double testingSeconds;
 		public double totalTrainingMass = 0;
+		public int perfect = 0;
 
 		/**
 		 * Normalize the proportions to 1.  Useful for instance if the proportion fields are initially set to raw counts.
@@ -363,6 +370,11 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			wHist.setTotalcounts(total);
 			wrongDistanceHistogram = wHist.getCumulativeFractions();
 			*/
+			}
+
+		public double getAccuracy()
+			{
+			return (double) perfect / (double) labelDistances.size();
 			}
 		}
 
