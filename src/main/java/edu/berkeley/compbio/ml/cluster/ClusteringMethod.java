@@ -204,7 +204,12 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 
 				// if the fragment's best label from the same exclusive set is the same one, that's a match.
 				// instead of binary classification, measure how bad the miss is (0 for perfect match)
-				double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, dominantExclusiveLabel);
+				//double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, dominantExclusiveLabel);
+
+				// for a classification to an internal node, we want to consider the branch length to the test leaf regardless of the label resolution
+				// ** getting the taxon id via getSourceId is maybe a horrible hack!??
+				double wrongness = intraLabelDistances.distanceFromTo(frag.getSourceId(), dominantExclusiveLabel);
+
 
 				if (Double.isNaN(wrongness))
 					{
