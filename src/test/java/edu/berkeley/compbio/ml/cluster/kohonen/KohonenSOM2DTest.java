@@ -282,6 +282,7 @@ public class KohonenSOM2DTest
 				1,
 				1,
 				1,
+				1,
 				1
 		}));
 
