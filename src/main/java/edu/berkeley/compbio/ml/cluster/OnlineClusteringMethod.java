@@ -198,7 +198,6 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>, C extends
 	 *
 	 * @param trainingIterator
 	 * @param initSamples
-	 * @param prototypeFactory
 	 * @throws GenericFactoryException
 	 * @throws ClusterException
 	 */
@@ -207,4 +206,6 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>, C extends
 			throws GenericFactoryException, ClusterException;
 
 	// -------------------------- INNER CLASSES --------------------------
+
+	//public abstract void createClusters(T sequenceFragment);
 	}

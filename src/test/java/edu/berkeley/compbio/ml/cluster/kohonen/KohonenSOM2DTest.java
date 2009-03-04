@@ -32,6 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import com.davidsoergel.dsutils.GenericFactory;
+import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.SimpleFunction;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -83,7 +85,8 @@ public class KohonenSOM2DTest
 	DissimilarityMeasure<ClusterableDoubleArray> dm = new EuclideanDistance();
 
 	@Test
-	public void initialTrainingSampleAltersAllCells() throws ClusterException, NoGoodClusterException
+	public void initialTrainingSampleAltersAllCells()
+			throws ClusterException, NoGoodClusterException, GenericFactoryException
 		{
 		ClusterableDoubleArray prototype = new ClusterableDoubleArray("test1", new double[]{
 				0,
@@ -97,6 +100,7 @@ public class KohonenSOM2DTest
 				10
 		}, dm, moveFactorFunction, radiusFunction, weightFunction, false, true, 1, bruteForceStrategy);
 
+		som.initializeWithRealData(null, 0, prototypeFactory);
 		som.add(new ClusterableDoubleArray("test1", new double[]{
 				1,
 				2,
@@ -113,20 +117,16 @@ public class KohonenSOM2DTest
 		}
 
 	@Test
-	public void secondTrainingSampleMatchesAppropriateCell() throws ClusterException, NoGoodClusterException
+	public void secondTrainingSampleMatchesAppropriateCell()
+			throws ClusterException, NoGoodClusterException, GenericFactoryException
 		{
-		ClusterableDoubleArray prototype = new ClusterableDoubleArray("test1", new double[]{
-				0,
-				0,
-				0,
-				0,
-				0
-		});
+
 		KohonenSOM2D<ClusterableDoubleArray> som = new KohonenSOM2D<ClusterableDoubleArray>(new Integer[]{
 				10,
 				10
 		}, dm, moveFactorFunction, radiusFunction, weightFunction, false, true, 1, bruteForceStrategy);
 
+		som.initializeWithRealData(null, 0, prototypeFactory);
 		som.add(new ClusterableDoubleArray("test1", new double[]{
 				1,
 				2,
@@ -234,28 +234,49 @@ public class KohonenSOM2DTest
 			}
 		}
 
+	GenericFactory<ClusterableDoubleArray> prototypeFactory = new GenericFactory<ClusterableDoubleArray>()
+	{
+	public ClusterableDoubleArray create(Object... constructorArguments) throws GenericFactoryException
+		{
+		return new ClusterableDoubleArray("test1", new double[]{
+				0,
+				0,
+				0,
+				0,
+				0
+		});
+		}
+
+	public Class getCreatesClass()
+		{
+		return ClusterableDoubleArray.class;
+		}
+	};
+
 	@Test
-	public void averageDistanceToNeighboringCellsIsComputedCorrectly()
+	public void averageDistanceToNeighboringCellsIsComputedCorrectly() throws GenericFactoryException
 		{
 		KohonenSOM2D som = new KohonenSOM2D(new Integer[]{
 				5,
 				5
 		}, dm, null, null, null, false, false, 0, bruteForceStrategy);
 
-		ClusterableDoubleArray zeroArray = new ClusterableDoubleArray("test1", new double[]{
-				0,
-				0,
-				0,
-				0
-		});
 
-		for (int x = 0; x < 5; x++)
-			{
-			for (int y = 0; y < 5; y++)
-				{
-				som.clusterAt(x, y).setCentroid(zeroArray);
-				}
-			}
+		/*ClusterableDoubleArray zeroArray = new ClusterableDoubleArray("test1", new double[]{
+						0,
+						0,
+						0,
+						0
+				});
+
+				for (int x = 0; x < 5; x++)
+				   {
+				   for (int y = 0; y < 5; y++)
+					   {
+					   som.clusterAt(x, y).setCentroid(zeroArray);
+					   }
+				   }*/
+		som.initializeWithRealData(null, 0, prototypeFactory);
 
 		som.clusterAt(2, 2).setCentroid(new ClusterableDoubleArray("test1", new double[]{
 				1,

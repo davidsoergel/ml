@@ -226,11 +226,17 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 
 		 }
  */
-	private void createClusters(int totalCells, T prototype)
+	private void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
+		{
+		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
+		createClusters(totalCells, prototypeFactory);
+		}
+
+	private void createClusters(int totalCells, GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
 		for (int i = 0; i < totalCells; i++)
 			{
-			KohonenSOMCell<T> c = new KohonenSOMCell<T>(i, prototype == null ? null : prototype.clone());
+			KohonenSOMCell<T> c = new KohonenSOMCell<T>(i, prototypeFactory == null ? null : prototypeFactory.create());
 			c.setId(i);
 			theClusters.add(c);
 			}
@@ -373,10 +379,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
-		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
-		T prototype = prototypeFactory.create();
-		createClusters(totalCells, prototype);
-
+		createClusters(prototypeFactory);
 		searchStrategy.setSOM(this);
 
 		for (int i = 0; i < initSamples; i++)
