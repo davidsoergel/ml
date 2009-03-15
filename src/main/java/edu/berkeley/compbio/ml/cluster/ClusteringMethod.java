@@ -137,7 +137,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	 *          when something goes wrong in computing the label probabilities
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels,
+	public TestResults test(Iterator<T> theTestIterator, //Set<String> mutuallyExclusiveLabels,
 	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
 			DistributionException, ClusterException
 		{		// evaluate labeling correctness using the test samples
