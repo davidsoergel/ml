@@ -231,40 +231,51 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			T frag = theTestIterator.next();
 			String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
 
+
+			double voteProportion = 0;
+			double secondToBestVoteRatio;
+			double secondToBestDistanceRatio;
+			double wrongness;
+			double bestWeightedDistance;
 			try
 				{
 				TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
 
 				// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
-				final VotingResults v = addUpNeighborVotes(moves);
+				final VotingResults votingResults = addUpNeighborVotes(moves);
 
 				// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
 
 				// now pick the best one
-				String bestLabel = v.getBestLabel();
-				double bestWeightedDistance = v.computeWeightedDistance(bestLabel);
+				String bestLabel = votingResults.getBestLabel();
+				bestWeightedDistance = votingResults.computeWeightedDistance(bestLabel);
+
+				voteProportion = votingResults.getProb(bestLabel);
 
 				// check that there's not a (near) tie
-				if (v.hasSecondBestLabel())
+				if (votingResults.hasSecondBestLabel())
 					{
-					String secondBestLabel = v.getSecondBestLabel();
+					String secondBestLabel = votingResults.getSecondBestLabel();
 
-					double bestVotes = v.getVotes(bestLabel);
-					double secondBestVotes = v.getVotes(secondBestLabel);
+					double bestVotes = votingResults.getVotes(bestLabel);
+					double secondBestVotes = votingResults.getVotes(secondBestLabel);
 					assert secondBestVotes <= bestVotes;
 
-					double secondBestWeightedDistance = v.computeWeightedDistance(secondBestLabel);
+					double secondBestWeightedDistance = votingResults.computeWeightedDistance(secondBestLabel);
 
 					// if the top two votes are too similar...
-					if (secondBestVotes / bestVotes >= voteTieThresholdRatio)
+					secondToBestVoteRatio = secondBestVotes / bestVotes;
+					secondToBestDistanceRatio = secondBestWeightedDistance / bestWeightedDistance;
+
+					if (secondToBestVoteRatio >= voteTieThresholdRatio)
 						{
 						//... try to break the tie using the distances
 
+						// ** is this right?  Why consider the inverse ratio too?
 						double minRatio = distanceTieThresholdRatio;
 						double maxRatio = 1. / distanceTieThresholdRatio;
 
-						final double distanceRatio = secondBestWeightedDistance / bestWeightedDistance;
-						if (distanceRatio < minRatio || distanceRatio > maxRatio)
+						if (secondToBestDistanceRatio < minRatio || secondToBestDistanceRatio > maxRatio)
 							{
 							// indistinguishable tie, call it unknown
 							throw new NoGoodClusterException();
@@ -281,64 +292,73 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 							}
 						}
 					}
+				else
+					{
+					secondToBestVoteRatio = Double.MAX_VALUE;  // infinity really, but that causes problems
+					secondToBestDistanceRatio = Double.MAX_VALUE;  // infinity really, but that causes problems
+					}
 				//	String dominantExclusiveLabel = labelVotes.getDominantKeyInSet(mutuallyExclusiveLabels);
 
-				double labelProb = v.getProb(bestLabel);
 
-				if (labelProb < voteProportionThreshold)
+				//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy
+				if (voteProportion < voteProportionThreshold)
 					{
 					throw new NoGoodClusterException();
 					}
-
-
-				// the fragment's best label does not match any training label, it should be unknown
-				if (!trainingLabels.contains(fragDominantLabel))
+				else
 					{
-					tr.shouldHaveBeenUnknown++;
+
+					// the fragment's best label does not match any training label, it should be unknown
+					if (!trainingLabels.contains(fragDominantLabel))
+						{
+						tr.shouldHaveBeenUnknown++;
+						}
+
+
+					// if the fragment's best label from the same exclusive set is the same one, that's a match.
+					// instead of binary classification, measure how bad the miss is (0 for perfect match)
+					wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, bestLabel);
+
+					if (Double.isNaN(wrongness))
+						{
+						logger.error("Wrongness NaN");
+						}
+					if (Double.isInfinite(wrongness))
+						{
+						logger.error("Infinite Wrongness");
+						}
+
+
+					logger.debug("Label distance wrongness = " + wrongness);
+
+					if (bestWeightedDistance < Double.MAX_VALUE)
+						{
+						computedDistancesInteresting = true;
+						}
+					if (voteProportion != 1)
+						{
+						clusterProbabilitiesInteresting = true;
+						}
+
+					/*		if (fragDominantLabel.equals(dominantExclusiveLabel))
+									   {
+									   tr.correctProbabilities.add(clusterProb);
+									   tr.correctDistances.add(cm.bestDistance);
+									   }
+								   else
+									   {
+									   tr.wrongProbabilities.add(clusterProb);
+									   tr.wrongDistances.add(cm.bestDistance);
+									   }*/
 					}
-
-
-				// if the fragment's best label from the same exclusive set is the same one, that's a match.
-				// instead of binary classification, measure how bad the miss is (0 for perfect match)
-				double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, bestLabel);
-
-				if (Double.isNaN(wrongness))
-					{
-					logger.error("Wrongness NaN");
-					}
-				if (Double.isInfinite(wrongness))
-					{
-					logger.error("Infinite Wrongness");
-					}
-
-
-				tr.computedDistances.add(bestWeightedDistance);
-				tr.clusterProbabilities.add(labelProb);
-				tr.labelDistances.add(wrongness);
-				logger.debug("Label distance wrongness = " + wrongness);
-
-				if (bestWeightedDistance < Double.MAX_VALUE)
-					{
-					computedDistancesInteresting = true;
-					}
-				if (labelProb != 1)
-					{
-					clusterProbabilitiesInteresting = true;
-					}
-
-				/*		if (fragDominantLabel.equals(dominantExclusiveLabel))
-				   {
-				   tr.correctProbabilities.add(clusterProb);
-				   tr.correctDistances.add(cm.bestDistance);
-				   }
-			   else
-				   {
-				   tr.wrongProbabilities.add(clusterProb);
-				   tr.wrongDistances.add(cm.bestDistance);
-				   }*/
 				}
 			catch (NoGoodClusterException e)
 				{
+				wrongness = UNKNOWN_DISTANCE;
+				bestWeightedDistance = UNKNOWN_DISTANCE;
+				secondToBestDistanceRatio = UNKNOWN_DISTANCE;
+				secondToBestVoteRatio = UNKNOWN_DISTANCE;
+
 				tr.unknown++;
 
 				// the fragment's best label does match a training label, it should not be unknown
@@ -347,6 +367,13 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					tr.shouldNotHaveBeenUnknown++;
 					}
 				}
+
+			tr.labelDistances.add(wrongness);
+			tr.computedDistances.add(bestWeightedDistance);
+			tr.secondToBestDistanceRatios.add(secondToBestDistanceRatio);
+			tr.secondToBestVoteRatios.add(secondToBestVoteRatio);
+			tr.labelWithinClusterProbabilities.add(voteProportion);
+
 			if (i % 100 == 0)
 				{
 				logger.debug("Tested " + i + " samples.");
@@ -355,7 +382,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			}
 		if (!clusterProbabilitiesInteresting)
 			{
-			tr.clusterProbabilities = null;
+			tr.labelWithinClusterProbabilities = null;
 			}
 		if (!computedDistancesInteresting)
 			{

@@ -179,10 +179,12 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 			return computeWeightedDistance(labelContributions.get(label));
 			}
 
+		/**
+		 * compute weighted average computed distance to clusters contributing to this label
+		 */
 		private double computeWeightedDistance(
 				WeightedSet<ClusterMove<T, CentroidCluster<T>>> dominantLabelContributions)
 			{
-			// compute weighted average computed distance to clusters contributing to this label
 			double weightedComputedDistance = 0;
 
 			for (Map.Entry<ClusterMove<T, CentroidCluster<T>>, Double> entry : dominantLabelContributions
@@ -276,6 +278,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 
 			// ignore the secondBestDistance, we don't need it here
 
+			//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy
 			if (distance < unknownDistanceThreshold)
 				{
 				result.put(distance, cm);

@@ -103,32 +103,43 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			T frag = theTestIterator.next();
 			String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
 
+			double bestVotes;
+			double secondToBestVoteRatio;
+			double wrongness;
+
 			try
 				{
 				TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
 
 				// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
-				final VotingResults v = addUpNeighborVotes(moves);
+				final VotingResults votingResults = addUpNeighborVotes(moves);
 
 				// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
 
 				// now pick the best one
-				String bestLabel = v.getBestLabel();
-				double bestVotes = v.getVotes(bestLabel);
+				String bestLabel = votingResults.getBestLabel();
+				bestVotes = votingResults.getVotes(bestLabel);
+
+				// In TACOA, distance == votes, so we don't record them separately
 
 				// check that there's not a (near) tie
-				if (v.hasSecondBestLabel())
+				if (votingResults.hasSecondBestLabel())
 					{
-					String secondBestLabel = v.getSecondBestLabel();
+					String secondBestLabel = votingResults.getSecondBestLabel();
 
-					double secondBestVotes = v.getVotes(secondBestLabel);
+					double secondBestVotes = votingResults.getVotes(secondBestLabel);
 					assert secondBestVotes <= bestVotes;
 
 					// if the top two scores are too similar...
-					if (bestVotes / secondBestVotes < bestScoreRatioThreshold)
+					secondToBestVoteRatio = secondBestVotes / bestVotes;
+					if (secondToBestVoteRatio > bestScoreRatioThreshold)
 						{
 						throw new NoGoodClusterException();
 						}
+					}
+				else
+					{
+					secondToBestVoteRatio = Double.MAX_VALUE;  // infinity really, but that causes problems
 					}
 
 				// the fragment's best label does not match any training label, it should be unknown
@@ -143,7 +154,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 				// for a classification to an internal node, we want to consider the branch length to the test leaf regardless of the label resolution
 				// ** getting the taxon id via getSourceId is maybe a horrible hack!??
-				double wrongness = intraLabelDistances.distanceFromTo(frag.getSourceId(), bestLabel);
+				wrongness = intraLabelDistances.distanceFromTo(frag.getSourceId(), bestLabel);
 
 				if (fragDominantLabel.equals(bestLabel))
 					{
@@ -161,24 +172,23 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 					}
 
 
-				tr.computedDistances.add(bestVotes);
-				tr.labelDistances.add(wrongness);
-				logger.debug("Label distance wrongness = " + wrongness);
-
-
 				/*		if (fragDominantLabel.equals(dominantExclusiveLabel))
-								   {
-								   tr.correctProbabilities.add(clusterProb);
-								   tr.correctDistances.add(cm.bestDistance);
-								   }
-							   else
-								   {
-								   tr.wrongProbabilities.add(clusterProb);
-								   tr.wrongDistances.add(cm.bestDistance);
-								   }*/
+												   {
+												   tr.correctProbabilities.add(clusterProb);
+												   tr.correctDistances.add(cm.bestDistance);
+												   }
+											   else
+												   {
+												   tr.wrongProbabilities.add(clusterProb);
+												   tr.wrongDistances.add(cm.bestDistance);
+												   }*/
 				}
 			catch (NoGoodClusterException e)
 				{
+				wrongness = UNKNOWN_DISTANCE;
+				bestVotes = UNKNOWN_DISTANCE;
+				secondToBestVoteRatio = UNKNOWN_DISTANCE;
+
 				tr.unknown++;
 
 				// the fragment's best label does match a training label, it should not be unknown
@@ -187,13 +197,22 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 					tr.shouldNotHaveBeenUnknown++;
 					}
 				}
+
+			tr.labelDistances.add(wrongness);
+			tr.computedDistances.add(bestVotes);
+			// In TACOA, distance == votes, so we don't record them separately
+			// tr.secondToBestDistanceRatios.add(distanceRatio);
+			tr.secondToBestVoteRatios.add(secondToBestVoteRatio);
+
+			logger.debug("Label distance wrongness = " + wrongness);
+
 			if (i % 100 == 0)
 				{
 				logger.debug("Tested " + i + " samples.");
 				}
 			i++;
 			}
-		tr.clusterProbabilities = null;
+		tr.labelWithinClusterProbabilities = null;
 
 		tr.testSamples = i;
 		tr.finish();
