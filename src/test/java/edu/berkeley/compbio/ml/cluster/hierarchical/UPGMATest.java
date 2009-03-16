@@ -138,7 +138,7 @@ public class UPGMATest
 		assert oc.getTree().getValue().getN() == 6;
 		logger.debug("\n" + TreePrinter.prettyPrint(oc.getTree()));
 
-		Double largestLengthSpan = oc.getTree().getLargestLengthSpan();
+		double largestLengthSpan = oc.getTree().getLargestLengthSpan();
 		assert MathUtils.equalWithinFPError(largestLengthSpan, 108.5638307100105);
 		}
 	}

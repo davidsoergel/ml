@@ -47,10 +47,11 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	 *
 	 * @param theTestIterator         an Iterator of test samples.
 	 * @param mutuallyExclusiveLabels a Set of labels that we're trying to classify
-	 * @param intraLabelDistances     a measure of how different the labels are from each other.  For simply determining
+	 * @param intraLabelDistancesA    a measure of how different the labels are from each other.  For simply determining
 	 *                                whether the classification is correct or wrong, use a delta function (i.e. equals).
 	 *                                Sometimes, however, one label may be more wrong than another; this allows us to track
 	 *                                that.
+	 * @param intraLabelDistancesB    another measure of label distance
 	 * @return a TestResults object encapsulating the proportions of test samples classified correctly, incorrectly, or not
 	 *         at all.
 	 * @throws edu.berkeley.compbio.ml.cluster.NoGoodClusterException
@@ -60,7 +61,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	 * @throws ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
 	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels,
-	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
+	                        DissimilarityMeasure<String> intraLabelDistancesA,
+	                        DissimilarityMeasure<String> intraLabelDistancesB) throws // NoGoodClusterException,
 			DistributionException, ClusterException
 		{		// evaluate labeling correctness using the test samples
 
@@ -105,7 +107,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 			double bestVotes;
 			double secondToBestVoteRatio;
-			double wrongness;
+			double wrongnessA;
+			double wrongnessB;
 
 			try
 				{
@@ -154,7 +157,28 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 				// for a classification to an internal node, we want to consider the branch length to the test leaf regardless of the label resolution
 				// ** getting the taxon id via getSourceId is maybe a horrible hack!??
-				wrongness = intraLabelDistances.distanceFromTo(frag.getSourceId(), bestLabel);
+				wrongnessA = intraLabelDistancesA.distanceFromTo(frag.getSourceId(), bestLabel);
+				if (Double.isNaN(wrongnessA))
+					{
+					logger.error("Wrongness NaN");
+					}
+
+				if (Double.isInfinite(wrongnessA))
+					{
+					logger.error("Infinite Wrongness");
+					}
+
+
+				wrongnessB = intraLabelDistancesB.distanceFromTo(frag.getSourceId(), bestLabel);
+				if (Double.isNaN(wrongnessB))
+					{
+					logger.error("Wrongness NaN");
+					}
+
+				if (Double.isInfinite(wrongnessB))
+					{
+					logger.error("Infinite Wrongness");
+					}
 
 				if (fragDominantLabel.equals(bestLabel))
 					{
@@ -162,15 +186,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 					}
 
 
-				if (Double.isNaN(wrongness))
-					{
-					logger.error("Wrongness NaN");
-					}
-				if (Double.isInfinite(wrongness))
-					{
-					logger.error("Infinite Wrongness");
-					}
-
+				logger.debug("Label distance wrongness = " + wrongnessA + ", " + wrongnessB);
 
 				/*		if (fragDominantLabel.equals(dominantExclusiveLabel))
 												   {
@@ -185,7 +201,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				}
 			catch (NoGoodClusterException e)
 				{
-				wrongness = UNKNOWN_DISTANCE;
+				wrongnessA = UNKNOWN_DISTANCE;
+				wrongnessB = UNKNOWN_DISTANCE;
 				bestVotes = UNKNOWN_DISTANCE;
 				secondToBestVoteRatio = UNKNOWN_DISTANCE;
 
@@ -198,13 +215,14 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 					}
 				}
 
-			tr.labelDistances.add(wrongness);
+			tr.labelDistancesA.add(wrongnessA);
+			tr.labelDistancesB.add(wrongnessB);
 			tr.computedDistances.add(bestVotes);
 			// In TACOA, distance == votes, so we don't record them separately
 			// tr.secondToBestDistanceRatios.add(distanceRatio);
 			tr.secondToBestVoteRatios.add(secondToBestVoteRatio);
 
-			logger.debug("Label distance wrongness = " + wrongness);
+			logger.debug("Label distance wrongness = " + wrongnessA + ", " + wrongnessB);
 
 			if (i % 100 == 0)
 				{
