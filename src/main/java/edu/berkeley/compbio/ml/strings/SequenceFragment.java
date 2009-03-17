@@ -474,11 +474,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		return getSequenceName();
 		}
 
-	@NotNull
+/*	@NotNull
 	public String getSourceId()
 		{
 		return getRootSequenceName();
-		}
+		}*/
 // -------------------------- OTHER METHODS --------------------------
 
 	/*	public void runCompletionProcessor() throws DistributionProcessorException

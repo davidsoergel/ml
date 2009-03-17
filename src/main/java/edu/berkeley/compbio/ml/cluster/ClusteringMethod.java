@@ -125,13 +125,12 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	 * not have been used in learning the cluster positions.  Determines what proportions of the test samples are
 	 * classified correctly, incorrectly, or not at all.
 	 *
-	 * @param theTestIterator      an Iterator of test samples. // @param mutuallyExclusiveLabels a Set of labels that
-	 *                             we're trying to classify
-	 * @param intraLabelDistancesA a measure of how different the labels are from each other.  For simply determining
-	 *                             whether the classification is correct or wrong, use a delta function (i.e. equals).
-	 *                             Sometimes, however, one label may be more wrong than another; this allows us to track
-	 *                             that.
-	 * @param intraLabelDistancesB another measure of label distance
+	 * @param theTestIterator     an Iterator of test samples. // @param mutuallyExclusiveLabels a Set of labels that we're
+	 *                            trying to classify
+	 * @param intraLabelDistances a measure of how different the labels are from each other.  For simply determining
+	 *                            whether the classification is correct or wrong, use a delta function (i.e. equals).
+	 *                            Sometimes, however, one label may be more wrong than another; this allows us to track
+	 *                            that.
 	 * @return a TestResults object encapsulating the proportions of test samples classified correctly, incorrectly, or not
 	 *         at all.
 	 * @throws edu.berkeley.compbio.ml.cluster.NoGoodClusterException
@@ -141,8 +140,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
 	public TestResults test(Iterator<T> theTestIterator, //Set<String> mutuallyExclusiveLabels,
-	                        DissimilarityMeasure<String> intraLabelDistancesA,
-	                        DissimilarityMeasure<String> intraLabelDistancesB) throws // NoGoodClusterException,
+	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
 			DistributionException, ClusterException
 		{		// evaluate labeling correctness using the test samples
 
@@ -176,7 +174,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			//double bestToSecondProbRatio;
 			double secondToBestDistanceRatio;
 			//Map<String, Double> wrongnessMap;
-			double wrongnessA;
+			double wrongness;
 			double wrongnessB;
 			double bestDistance;
 
@@ -223,7 +221,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				//double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, dominantExclusiveLabel);
 
 				// for a classification to an internal node, we want to consider the branch length to the test leaf regardless of the label resolution
-				// ** getting the taxon id via getSourceId is maybe a horrible hack!??
+
 
 				/*wrongnessMap = new HashMap<String, Double>();
 				for (DissimilarityMeasure<String> labelD : intraLabelDistances)
@@ -241,25 +239,15 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 					wrongnessMap.put(labelD.toString(), wrongness);
 					}*/
 
-				wrongnessA = intraLabelDistancesA.distanceFromTo(frag.getSourceId(), dominantExclusiveLabel);
-				if (Double.isNaN(wrongnessA))
+				wrongness = intraLabelDistances
+						.distanceFromTo(frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels),
+						                dominantExclusiveLabel);
+				if (Double.isNaN(wrongness))
 					{
 					logger.error("Wrongness NaN");
 					}
 
-				if (Double.isInfinite(wrongnessA))
-					{
-					logger.error("Infinite Wrongness");
-					}
-
-
-				wrongnessB = intraLabelDistancesB.distanceFromTo(frag.getSourceId(), dominantExclusiveLabel);
-				if (Double.isNaN(wrongnessB))
-					{
-					logger.error("Wrongness NaN");
-					}
-
-				if (Double.isInfinite(wrongnessB))
+				if (Double.isInfinite(wrongness))
 					{
 					logger.error("Infinite Wrongness");
 					}
@@ -270,7 +258,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 					}
 
 
-				logger.debug("Label distance wrongness = " + wrongnessA + ", " + wrongnessB);
+				logger.debug("Label distance wrongness = " + wrongness);
 
 				if (cm.bestDistance < Double.MAX_VALUE)
 					{
@@ -294,7 +282,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				}
 			catch (NoGoodClusterException e)
 				{
-				wrongnessA = UNKNOWN_DISTANCE;
+				wrongness = UNKNOWN_DISTANCE;
 				wrongnessB = UNKNOWN_DISTANCE;
 				bestDistance = UNKNOWN_DISTANCE;
 				secondToBestDistanceRatio = 1.0;
@@ -310,8 +298,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 					}
 				}
 
-			tr.labelDistancesA.add(wrongnessA);
-			tr.labelDistancesB.add(wrongnessB);
+			tr.labelDistances.add(wrongness);
 			tr.computedDistances.add(bestDistance);
 			tr.secondToBestDistanceRatios.add(secondToBestDistanceRatio);
 			//	tr.voteRatios.add(bestToSecondVoteRatio);
@@ -349,15 +336,10 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		//public List<Double> correctDistances = new ArrayList<Double>();		//public List<Double> wrongDistances = new ArrayList<Double>();
 
 		/**
-		 * The real distance between the predicted label and the real label ("wrongness") according to one distance measure
-		 */
-		public List<Double> labelDistancesA = new ArrayList<Double>();
-
-		/**
-		 * The real distance between the predicted label and the real label ("wrongness") according to another distance
+		 * The real distance between the predicted label and the real label ("wrongness") according to a label distance
 		 * measure
 		 */
-		public List<Double> labelDistancesB = new ArrayList<Double>();
+		public List<Double> labelDistances = new ArrayList<Double>();
 
 		/**
 		 * The computed distance between the sample and the predicted bin
@@ -458,7 +440,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 
 		public double getAccuracy()
 			{
-			return (double) perfect / (double) labelDistancesA.size();
+			return (double) perfect / (double) labelDistances.size();
 			}
 		}
 

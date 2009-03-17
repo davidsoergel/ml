@@ -45,9 +45,9 @@ import java.util.Iterator;
  */
 public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extends HierarchicalClusteringMethod<T>
 	{
-	protected BatchTreeClusteringMethod(DissimilarityMeasure<T> dm)
+	protected BatchTreeClusteringMethod(DissimilarityMeasure<T> dm, boolean leaveOneOut)
 		{
-		super(dm);
+		super(dm, leaveOneOut);
 		}
 
 	/**

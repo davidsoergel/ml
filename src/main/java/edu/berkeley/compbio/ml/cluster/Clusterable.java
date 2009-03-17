@@ -84,8 +84,8 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 *
 	 * @return a unique identifier for this object
 	 */
-	@NotNull
-	String getSourceId();
+//	@NotNull
+//	String getSourceId();
 
 	/**
 	 * Get a set of classification labels, if available, with associated weights between 0 and 1. (optional operation)

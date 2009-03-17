@@ -73,9 +73,9 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	//	private SortedSet<ClusterPair<T>> theClusterPairs;
 
-	public UPGMA(DissimilarityMeasure<T> dissimilarityMeasure)
+	public UPGMA(DissimilarityMeasure<T> dissimilarityMeasure, boolean leaveOneOut)
 		{
-		super(dissimilarityMeasure);
+		super(dissimilarityMeasure, leaveOneOut);
 
 		//		theClusterPairs = new TreeMap<ClusterPair<T>, Double>();
 		}
@@ -145,13 +145,23 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			return result;
 			}
 
+		String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			double distance = measure.distanceFromTo(p, theCluster.getCentroid());
-			if (distance < result.bestDistance)
+			if (leaveOneOut && disallowedLabel
+					.equals(theCluster.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels)))
 				{
-				result.bestCluster = theCluster;
-				result.bestDistance = distance;
+				// ignore this cluster
+				}
+			else
+				{
+				double distance = measure.distanceFromTo(p, theCluster.getCentroid());
+				if (distance < result.bestDistance)
+					{
+					result.bestCluster = theCluster;
+					result.bestDistance = distance;
+					}
 				}
 			}
 		if (result.bestCluster == null)

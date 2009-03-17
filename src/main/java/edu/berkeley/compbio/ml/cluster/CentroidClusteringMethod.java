@@ -56,9 +56,12 @@ import java.util.List;
  */
 public abstract class CentroidClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T, CentroidCluster<T>>
 	{
-	protected CentroidClusteringMethod(DissimilarityMeasure<T> dm)
+	protected boolean leaveOneOut;
+
+	protected CentroidClusteringMethod(DissimilarityMeasure<T> dm, boolean leaveOneOut)
 		{
 		super(dm);
+		this.leaveOneOut = leaveOneOut;
 		}
 
 	private static final Logger logger = Logger.getLogger(CentroidClusteringMethod.class);

@@ -76,10 +76,10 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
 	public KNNClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, int maxNeighbors,
-	                     double voteProportionThreshold, double voteTieThresholdRatio,
-	                     double distanceTieThresholdRatio) //, double decompositionDistanceThreshold)
+	                     double voteProportionThreshold, double voteTieThresholdRatio, double distanceTieThresholdRatio,
+	                     boolean leaveOneOut) //, double decompositionDistanceThreshold)
 		{
-		super(dm, unknownDistanceThreshold);
+		super(dm, unknownDistanceThreshold, leaveOneOut);
 		this.maxNeighbors = maxNeighbors;
 		//		this.decompositionDistanceThreshold = decompositionDistanceThreshold;
 		this.voteProportionThreshold = voteProportionThreshold;
@@ -186,13 +186,12 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 * not have been used in learning the cluster positions.  Determines what proportions of the test samples are
 	 * classified correctly, incorrectly, or not at all.
 	 *
-	 * @param theTestIterator         an Iterator of test samples.
-	 * @param mutuallyExclusiveLabels a Set of labels that we're trying to classify
-	 * @param intraLabelDistancesA    a measure of how different the labels are from each other.  For simply determining
-	 *                                whether the classification is correct or wrong, use a delta function (i.e. equals).
-	 *                                Sometimes, however, one label may be more wrong than another; this allows us to track
-	 *                                that.
-	 * @param intraLabelDistancesB    another measure of label distance
+	 * @param theTestIterator     an Iterator of test samples. //@param mutuallyExclusiveLabels a Set of labels that we're
+	 *                            trying to classify
+	 * @param intraLabelDistances a measure of how different the labels are from each other.  For simply determining
+	 *                            whether the classification is correct or wrong, use a delta function (i.e. equals).
+	 *                            Sometimes, however, one label may be more wrong than another; this allows us to track
+	 *                            that.
 	 * @return a TestResults object encapsulating the proportions of test samples classified correctly, incorrectly, or not
 	 *         at all.
 	 * @throws edu.berkeley.compbio.ml.cluster.NoGoodClusterException
@@ -201,9 +200,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 *                          when something goes wrong in computing the label probabilities
 	 * @throws ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels,
-	                        DissimilarityMeasure<String> intraLabelDistancesA,
-	                        DissimilarityMeasure<String> intraLabelDistancesB) throws // NoGoodClusterException,
+	public TestResults test(Iterator<T> theTestIterator,// Set<String> mutuallyExclusiveLabels,
+	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
 			DistributionException, ClusterException
 		{		// evaluate labeling correctness using the test samples
 
@@ -237,8 +235,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			double voteProportion = 0;
 			double secondToBestVoteRatio;
 			double secondToBestDistanceRatio;
-			double wrongnessA;
-			double wrongnessB;
+			double wrongness;
 			double bestWeightedDistance;
 			try
 				{
@@ -321,31 +318,21 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					// if the fragment's best label from the same exclusive set is the same one, that's a match.
 					// instead of binary classification, measure how bad the miss is (0 for perfect match)
 
-					wrongnessA = intraLabelDistancesA.distanceFromTo(frag.getSourceId(), bestLabel);
-					if (Double.isNaN(wrongnessA))
+					wrongness = intraLabelDistances
+							.distanceFromTo(frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels),
+							                bestLabel);
+					if (Double.isNaN(wrongness))
 						{
 						logger.error("Wrongness NaN");
 						}
 
-					if (Double.isInfinite(wrongnessA))
+					if (Double.isInfinite(wrongness))
 						{
 						logger.error("Infinite Wrongness");
 						}
 
 
-					wrongnessB = intraLabelDistancesB.distanceFromTo(frag.getSourceId(), bestLabel);
-					if (Double.isNaN(wrongnessB))
-						{
-						logger.error("Wrongness NaN");
-						}
-
-					if (Double.isInfinite(wrongnessB))
-						{
-						logger.error("Infinite Wrongness");
-						}
-
-
-					logger.debug("Label distance wrongness = " + wrongnessA + ", " + wrongnessB);
+					logger.debug("Label distance wrongness = " + wrongness);
 
 					if (bestWeightedDistance < Double.MAX_VALUE)
 						{
@@ -370,8 +357,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				}
 			catch (NoGoodClusterException e)
 				{
-				wrongnessA = UNKNOWN_DISTANCE;
-				wrongnessB = UNKNOWN_DISTANCE;
+				wrongness = UNKNOWN_DISTANCE;
 				bestWeightedDistance = UNKNOWN_DISTANCE;
 				secondToBestDistanceRatio = UNKNOWN_DISTANCE;
 				secondToBestVoteRatio = UNKNOWN_DISTANCE;
@@ -385,8 +371,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					}
 				}
 
-			tr.labelDistancesA.add(wrongnessA);
-			tr.labelDistancesB.add(wrongnessB);
+			tr.labelDistances.add(wrongness);
 			tr.computedDistances.add(bestWeightedDistance);
 			tr.secondToBestDistanceRatios.add(secondToBestDistanceRatio);
 			tr.secondToBestVoteRatios.add(secondToBestVoteRatio);

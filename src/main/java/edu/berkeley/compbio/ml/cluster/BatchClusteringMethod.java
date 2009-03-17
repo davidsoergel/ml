@@ -45,9 +45,9 @@ import java.util.Collection;
  */
 public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
-	protected BatchClusteringMethod(DissimilarityMeasure<T> dm)
+	protected BatchClusteringMethod(DissimilarityMeasure<T> dm, boolean leaveOneOut)
 		{
-		super(dm);
+		super(dm, leaveOneOut);
 		}
 	// different implementations may prefer different data structures
 	//Collection<Clusterable<T>> samples;

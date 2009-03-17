@@ -35,9 +35,9 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	{
 	private static final Logger logger = Logger.getLogger(MultiNeighborClustering.class);
 
-	public MultiNeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold)
+	public MultiNeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, boolean leaveOneOut)
 		{
-		super(dm, unknownDistanceThreshold);
+		super(dm, unknownDistanceThreshold, leaveOneOut);
 		}
 
 	/**
@@ -251,37 +251,44 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 				new TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>>();
 
 		// collect moves for all clusters, sorted by distance
+		String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
 
 		for (CentroidCluster<T> cluster : theClusters)
 			{
-
-
-			// ** careful: how to deal with priors depends on the distance measure.
-			// if it's probability, multiply; if log probability, add the log; for other distance types, who knows?
-
-			double distance;
-
-			if (measure instanceof ProbabilisticDissimilarityMeasure)
+			if (leaveOneOut && disallowedLabel
+					.equals(cluster.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels)))
 				{
-				distance = ((ProbabilisticDissimilarityMeasure) measure)
-						.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
+				// ignore this cluster
 				}
 			else
 				{
-				distance = measure.distanceFromTo(p, cluster.getCentroid());
-				}
+				// ** careful: how to deal with priors depends on the distance measure.
+				// if it's probability, multiply; if log probability, add the log; for other distance types, who knows?
+
+				double distance;
+
+				if (measure instanceof ProbabilisticDissimilarityMeasure)
+					{
+					distance = ((ProbabilisticDissimilarityMeasure) measure)
+							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
+					}
+				else
+					{
+					distance = measure.distanceFromTo(p, cluster.getCentroid());
+					}
 
 
-			ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
-			cm.bestCluster = cluster;
-			cm.bestDistance = distance;
+				ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
+				cm.bestCluster = cluster;
+				cm.bestDistance = distance;
 
-			// ignore the secondBestDistance, we don't need it here
+				// ignore the secondBestDistance, we don't need it here
 
-			//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy
-			if (distance < unknownDistanceThreshold)
-				{
-				result.put(distance, cm);
+				//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy
+				if (distance < unknownDistanceThreshold)
+					{
+					result.put(distance, cm);
+					}
 				}
 			}
 

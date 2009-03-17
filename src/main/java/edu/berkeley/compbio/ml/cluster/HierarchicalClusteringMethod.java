@@ -50,9 +50,9 @@ import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
  */
 public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
-	protected HierarchicalClusteringMethod(DissimilarityMeasure<T> dm)
+	protected HierarchicalClusteringMethod(DissimilarityMeasure<T> dm, boolean leaveOneOut)
 		{
-		super(dm);
+		super(dm, leaveOneOut);
 		}
 
 	/**

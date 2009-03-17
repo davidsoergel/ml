@@ -61,9 +61,10 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	{
 	private static final Logger logger = Logger.getLogger(LabelDecomposingBayesianClustering.class);
 
-	public LabelDecomposingBayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold)
+	public LabelDecomposingBayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
+	                                          boolean leaveOneOut)
 		{
-		super(dm, unknownDistanceThreshold);
+		super(dm, unknownDistanceThreshold, leaveOneOut);
 		}
 
 

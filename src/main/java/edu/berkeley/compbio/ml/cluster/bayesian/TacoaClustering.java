@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -32,10 +31,10 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	/**
 	 * @param dm The distance measure to use
 	 */
-	public TacoaClustering(DissimilarityMeasure<T> dm, double bestScoreRatioThreshold)
+	public TacoaClustering(DissimilarityMeasure<T> dm, double bestScoreRatioThreshold, boolean leaveOneOut)
 		{
 		// ** should make common superclass
-		super(dm, Double.MAX_VALUE);
+		super(dm, Double.MAX_VALUE, leaveOneOut);
 		this.bestScoreRatioThreshold = bestScoreRatioThreshold;
 		}
 
@@ -45,13 +44,12 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	 * not have been used in learning the cluster positions.  Determines what proportions of the test samples are
 	 * classified correctly, incorrectly, or not at all.
 	 *
-	 * @param theTestIterator         an Iterator of test samples.
-	 * @param mutuallyExclusiveLabels a Set of labels that we're trying to classify
-	 * @param intraLabelDistancesA    a measure of how different the labels are from each other.  For simply determining
-	 *                                whether the classification is correct or wrong, use a delta function (i.e. equals).
-	 *                                Sometimes, however, one label may be more wrong than another; this allows us to track
-	 *                                that.
-	 * @param intraLabelDistancesB    another measure of label distance
+	 * @param theTestIterator      an Iterator of test samples. //@param mutuallyExclusiveLabels a Set of labels that we're
+	 *                             trying to classify
+	 * @param intraLabelDistancesA a measure of how different the labels are from each other.  For simply determining
+	 *                             whether the classification is correct or wrong, use a delta function (i.e. equals).
+	 *                             Sometimes, however, one label may be more wrong than another; this allows us to track
+	 *                             that.
 	 * @return a TestResults object encapsulating the proportions of test samples classified correctly, incorrectly, or not
 	 *         at all.
 	 * @throws edu.berkeley.compbio.ml.cluster.NoGoodClusterException
@@ -60,9 +58,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	 *                          when something goes wrong in computing the label probabilities
 	 * @throws ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public TestResults test(Iterator<T> theTestIterator, Set<String> mutuallyExclusiveLabels,
-	                        DissimilarityMeasure<String> intraLabelDistancesA,
-	                        DissimilarityMeasure<String> intraLabelDistancesB) throws // NoGoodClusterException,
+	public TestResults test(Iterator<T> theTestIterator, // Set<String> mutuallyExclusiveLabels,
+	                        DissimilarityMeasure<String> intraLabelDistancesA) throws // NoGoodClusterException,
 			DistributionException, ClusterException
 		{		// evaluate labeling correctness using the test samples
 
@@ -107,8 +104,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 			double bestVotes;
 			double secondToBestVoteRatio;
-			double wrongnessA;
-			double wrongnessB;
+			double wrongness;
 
 			try
 				{
@@ -156,29 +152,20 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				//double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, bestLabel);
 
 				// for a classification to an internal node, we want to consider the branch length to the test leaf regardless of the label resolution
-				// ** getting the taxon id via getSourceId is maybe a horrible hack!??
-				wrongnessA = intraLabelDistancesA.distanceFromTo(frag.getSourceId(), bestLabel);
-				if (Double.isNaN(wrongnessA))
+
+				wrongness = intraLabelDistancesA
+						.distanceFromTo(frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels),
+						                bestLabel);
+				if (Double.isNaN(wrongness))
 					{
 					logger.error("Wrongness NaN");
 					}
 
-				if (Double.isInfinite(wrongnessA))
+				if (Double.isInfinite(wrongness))
 					{
 					logger.error("Infinite Wrongness");
 					}
 
-
-				wrongnessB = intraLabelDistancesB.distanceFromTo(frag.getSourceId(), bestLabel);
-				if (Double.isNaN(wrongnessB))
-					{
-					logger.error("Wrongness NaN");
-					}
-
-				if (Double.isInfinite(wrongnessB))
-					{
-					logger.error("Infinite Wrongness");
-					}
 
 				if (fragDominantLabel.equals(bestLabel))
 					{
@@ -186,7 +173,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 					}
 
 
-				logger.debug("Label distance wrongness = " + wrongnessA + ", " + wrongnessB);
+				logger.debug("Label distance wrongness = " + wrongness);
 
 				/*		if (fragDominantLabel.equals(dominantExclusiveLabel))
 												   {
@@ -201,8 +188,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				}
 			catch (NoGoodClusterException e)
 				{
-				wrongnessA = UNKNOWN_DISTANCE;
-				wrongnessB = UNKNOWN_DISTANCE;
+				wrongness = UNKNOWN_DISTANCE;
 				bestVotes = UNKNOWN_DISTANCE;
 				secondToBestVoteRatio = UNKNOWN_DISTANCE;
 
@@ -215,14 +201,13 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 					}
 				}
 
-			tr.labelDistancesA.add(wrongnessA);
-			tr.labelDistancesB.add(wrongnessB);
+			tr.labelDistances.add(wrongness);
 			tr.computedDistances.add(bestVotes);
 			// In TACOA, distance == votes, so we don't record them separately
 			// tr.secondToBestDistanceRatios.add(distanceRatio);
 			tr.secondToBestVoteRatios.add(secondToBestVoteRatio);
 
-			logger.debug("Label distance wrongness = " + wrongnessA + ", " + wrongnessB);
+			logger.debug("Label distance wrongness = " + wrongness);
 
 			if (i % 100 == 0)
 				{

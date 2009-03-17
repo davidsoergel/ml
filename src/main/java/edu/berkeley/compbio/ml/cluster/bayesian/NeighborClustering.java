@@ -22,11 +22,13 @@ public abstract class NeighborClustering<T extends AdditiveClusterable<T>>
 	protected double unknownDistanceThreshold;
 
 	protected Map<CentroidCluster, Double> priors;
+	protected boolean leaveOneOut;
 
-	public NeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold)
+	public NeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, boolean leaveOneOut)
 		{
 		super(dm);
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
+		this.leaveOneOut = leaveOneOut;
 		}
 
 	/**

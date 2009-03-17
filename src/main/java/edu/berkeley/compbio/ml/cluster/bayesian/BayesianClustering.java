@@ -104,9 +104,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public BayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold)
+	public BayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, boolean leaveOneOut)
 		{
-		super(dm, unknownDistanceThreshold);
+		super(dm, unknownDistanceThreshold, leaveOneOut);
 		}
 
 
@@ -147,8 +147,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 
 				if (cluster == null)
 					{
-					final T centroid = prototypeFactory
-							.create(point.getSourceId());  // include the source id to facilitate leave-one-out testing later
+					final T centroid = prototypeFactory.create(point.getId());
+					//	.create(point.getSourceId());  //** include the source id to facilitate leave-one-out testing later
+					//** no, that makes no sense, a cluster may arise from multiple sources
+
 					cluster = new AdditiveCentroidCluster<T>(i++, centroid);//measure
 					//cluster.setId(i++);
 					theClusterMap.put(clusterLabel, cluster);
@@ -208,34 +210,42 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 		//Cluster<T> best = null;
 		//double temp = -1;
 		//int j = -1;
+
+		String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+
 		for (CentroidCluster<T> cluster : theClusters)
 			{
-
-
-			// ** careful: how to deal with priors depends on the distance measure.
-			// if it's probability, multiply; if log probability, add; for other distance types, who knows?
-
 			double distance;
-			if (measure instanceof ProbabilisticDissimilarityMeasure)
+			if (leaveOneOut && disallowedLabel
+					.equals(cluster.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels)))
 				{
-				distance = ((ProbabilisticDissimilarityMeasure) measure)
-						.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
+				// ignore this cluster
 				}
 			else
 				{
-				distance = measure.distanceFromTo(p, cluster.getCentroid());
-				}
+				// ** careful: how to deal with priors depends on the distance measure.
+				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
+				if (measure instanceof ProbabilisticDissimilarityMeasure)
+					{
+					distance = ((ProbabilisticDissimilarityMeasure) measure)
+							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
+					}
+				else
+					{
+					distance = measure.distanceFromTo(p, cluster.getCentroid());
+					}
 
-			if (distance <= result.bestDistance)
-				{
-				result.secondBestDistance = result.bestDistance;
-				result.bestDistance = distance;
-				result.bestCluster = cluster;
-				//j = i;
-				}
-			else if (distance <= result.secondBestDistance)
-				{
-				result.secondBestDistance = distance;
+				if (distance <= result.bestDistance)
+					{
+					result.secondBestDistance = result.bestDistance;
+					result.bestDistance = distance;
+					result.bestCluster = cluster;
+					//j = i;
+					}
+				else if (distance <= result.secondBestDistance)
+					{
+					result.secondBestDistance = distance;
+					}
 				}
 			}
 
