@@ -175,7 +175,6 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			double secondToBestDistanceRatio;
 			//Map<String, Double> wrongnessMap;
 			double wrongness;
-			double wrongnessB;
 			double bestDistance;
 
 			try
@@ -283,7 +282,6 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			catch (NoGoodClusterException e)
 				{
 				wrongness = UNKNOWN_DISTANCE;
-				wrongnessB = UNKNOWN_DISTANCE;
 				bestDistance = UNKNOWN_DISTANCE;
 				secondToBestDistanceRatio = 1.0;
 				//secondToBestRatio = 1.0;

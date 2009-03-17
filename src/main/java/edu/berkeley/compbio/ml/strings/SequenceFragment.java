@@ -46,7 +46,6 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -73,7 +72,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	protected Map<Class, SequenceSpectrum> theSpectra = new WeakHashMap<Class, SequenceSpectrum>();
 
-	protected WeakReference<SequenceSpectrum> _baseSpectrum;
+	// ** weak references cause problems for additive clusters that can't be rescanned
+	//protected WeakReference<SequenceSpectrum> _baseSpectrum;
+
+	protected SequenceSpectrum baseSpectrum;
+
 	private FirstWordProvider firstWordProvider;
 	private SequenceReader theReader;
 	protected SequenceSpectrumScanner theScanner;
@@ -181,7 +184,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 */
 	public SequenceSpectrum getBaseSpectrum()
 		{
-		SequenceSpectrum baseSpectrum = _baseSpectrum == null ? null : _baseSpectrum.get();
+		// ** weak references cause problems for additive clusters that can't be rescanned
+		//	SequenceSpectrum baseSpectrum = _baseSpectrum == null ? null : _baseSpectrum.get();
 		if (baseSpectrum == null)
 			{
 			try
@@ -192,7 +196,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				{
 				throw new SequenceSpectrumRuntimeException(e);
 				}
-			baseSpectrum = _baseSpectrum.get();
+			//baseSpectrum = _baseSpectrum.get();
 			baseSpectrum.setIgnoreEdges(ignoreEdges);
 			}
 		return baseSpectrum;
@@ -268,7 +272,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 */
 	public void setBaseSpectrum(@NotNull SequenceSpectrum spectrum)
 		{
-		SequenceSpectrum baseSpectrum = _baseSpectrum == null ? null : _baseSpectrum.get();
+		//	SequenceSpectrum baseSpectrum = _baseSpectrum == null ? null : _baseSpectrum.get();
 		if (baseSpectrum == spectrum && theSpectra.size() == 1)
 			{
 			// nothing has changed
@@ -288,7 +292,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				firstWordProvider = (FirstWordProvider) spectrum;
 				}
 			}
-		_baseSpectrum = new WeakReference<SequenceSpectrum>(baseSpectrum);
+		//_baseSpectrum = new WeakReference<SequenceSpectrum>(baseSpectrum);
 		//theSpectra.put(baseSpectrum.getClass(), baseSpectrum);
 		}
 

@@ -148,6 +148,8 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 				if (cluster == null)
 					{
 					final T centroid = prototypeFactory.create(point.getId());
+
+
 					//	.create(point.getSourceId());  //** include the source id to facilitate leave-one-out testing later
 					//** no, that makes no sense, a cluster may arise from multiple sources
 
@@ -175,6 +177,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 			{
 			throw new Error(e);
 			}
+
+		//cache here ?
+
 		theClusters = theClusterMap.values();
 		}
 
