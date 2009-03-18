@@ -118,6 +118,12 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	                                   GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException
 		{
+		//	String cacheIdString = buildIdString(trainingIterator, initSamples, prototypeFactory);
+		//	theClusters = loadCache(cacheIdString);
+		//	if (theClusters == null)
+		//		{
+
+
 		Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
 
 		//** The reason this stuff is here, rather than in train(), is that train() expects that the clusters are already defined.
@@ -148,8 +154,6 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 				if (cluster == null)
 					{
 					final T centroid = prototypeFactory.create(point.getId());
-
-
 					//	.create(point.getSourceId());  //** include the source id to facilitate leave-one-out testing later
 					//** no, that makes no sense, a cluster may arise from multiple sources
 
@@ -162,9 +166,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 					}
 				cluster.add(point);  // note this updates the cluster labels as well
 				/*		if(cluster.getLabelCounts().uniqueSet().size() != 1)
-				{
-				throw new Error();
-				}*/
+								 {
+								 throw new Error();
+								 }*/
 				}
 
 
@@ -178,9 +182,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 			throw new Error(e);
 			}
 
-		//cache here ?
-
 		theClusters = theClusterMap.values();
+
+		//	saveCache(cacheIdString, theClusters);
+		//	}
 		}
 
 
