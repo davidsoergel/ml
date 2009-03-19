@@ -36,14 +36,17 @@ public interface Cluster<T extends Clusterable<T>>// extends Comparable<? extend
 	 */
 	//	void updateExclusiveLabelProbabilitiesFromCounts();
 
-
+	/**
+	 * Gets the probabilities of String labels.  The labels need not be mutually exclusive, so the weights need not sum to
+	 * one.
+	 */
 	WeightedSet<String> getDerivedLabelProbabilities();
 
 	/**
-	 * Sets the probabilities of String labels.  The labels need not be mututally exclusive, so the weights need not sum to
+	 * Sets the probabilities of String labels.  The labels need not be mutually exclusive, so the weights need not sum to
 	 * one.
 	 *
-	 * @param derivedLabelProbabilities a WeightedSet giving the probabilities of mutually exclusive String labels.
+	 * @param derivedLabelProbabilities a WeightedSet giving the probabilities of String labels.
 	 */
 	void setDerivedLabelProbabilities(WeightedSet<String> derivedLabelProbabilities);
 

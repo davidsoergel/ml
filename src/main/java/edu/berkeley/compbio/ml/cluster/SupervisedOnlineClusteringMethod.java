@@ -51,7 +51,7 @@ public abstract class SupervisedOnlineClusteringMethod<T extends Clusterable<T>,
 					"Multiple-iteration training probably doesn't make sense for supervised clustering");
 			}
 
-		if (mutuallyExclusiveLabels == null)
+		if (trainingLabels == null)
 			{
 			throw new ClusterException("Must assign a set of labels before training supervised clustering");
 			}

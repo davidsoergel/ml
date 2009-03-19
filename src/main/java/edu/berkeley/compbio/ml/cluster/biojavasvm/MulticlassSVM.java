@@ -58,7 +58,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -84,9 +83,9 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 
 		// by analogy with BayesianClustering, take this opportunity to initialize the clusters
 
-		theClusterMap = new HashMap<String, BatchCluster<T>>(mutuallyExclusiveLabels.size());
+		theClusterMap = new HashMap<String, BatchCluster<T>>(trainingLabels.size());
 		int i = 0;
-		for (String label : mutuallyExclusiveLabels)
+		for (String label : trainingLabels)
 			{
 			BatchCluster<T> cluster = theClusterMap.get(label);
 
@@ -168,8 +167,7 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 		// throw out any existing classifiers
 
 		allVsAllClassifiers = new Symmetric2dBiMap<BatchCluster<T>, BinarySVM<T, BatchCluster<T>>>();
-		oneVsAllClassifiers =
-				new HashMap<BatchCluster<T>, BinarySVM<T, BatchCluster<T>>>(mutuallyExclusiveLabels.size());
+		oneVsAllClassifiers = new HashMap<BatchCluster<T>, BinarySVM<T, BatchCluster<T>>>(trainingLabels.size());
 
 		Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
 
@@ -181,7 +179,7 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 		while (trainingIterator.hasNext())
 			{
 			T sample = trainingIterator.next();
-			String label = sample.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+			String label = sample.getWeightedLabels().getDominantKeyInSet(trainingLabels);
 
 			theClusterMap.get(label).add(sample);
 			//examples.put(label, sample);
@@ -226,16 +224,5 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 			{
 			cluster1.forgetExamples();
 			}
-		}
-
-
-	/**
-	 * Sets a list of labels to be used for classification.  For a supervised method, this must be called before training.
-	 *
-	 * @param mutuallyExclusiveLabels
-	 */
-	public void setLabels(Set<String> mutuallyExclusiveLabels)
-		{
-		super.setLabels(mutuallyExclusiveLabels);
 		}
 	}

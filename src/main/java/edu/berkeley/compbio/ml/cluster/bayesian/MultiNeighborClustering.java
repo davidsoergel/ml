@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -35,9 +36,10 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	{
 	private static final Logger logger = Logger.getLogger(MultiNeighborClustering.class);
 
-	public MultiNeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, boolean leaveOneOut)
+	public MultiNeighborClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
+	                               double unknownDistanceThreshold, Set<String> leaveOneOutLabels)
 		{
-		super(dm, unknownDistanceThreshold, leaveOneOut);
+		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels);
 		}
 
 	/**
@@ -250,13 +252,17 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 		TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> result =
 				new TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>>();
 
-		// collect moves for all clusters, sorted by distance
-		String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+
+		String disallowedLabel = null;
+		if (leaveOneOutLabels != null)
+			{
+			disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+			}
 
 		for (CentroidCluster<T> cluster : theClusters)
 			{
-			if (leaveOneOut && disallowedLabel
-					.equals(cluster.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels)))
+			if (disallowedLabel != null && disallowedLabel
+					.equals(cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)))
 				{
 				// ignore this cluster
 				}

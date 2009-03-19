@@ -49,6 +49,7 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Performs cluster classification with a naive bayesian classifier
@@ -61,10 +62,15 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	{
 	private static final Logger logger = Logger.getLogger(LabelDecomposingBayesianClustering.class);
 
-	public LabelDecomposingBayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
-	                                          boolean leaveOneOut)
+
+	/**
+	 * @param dm                       The distance measure to use
+	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
+	 */
+	public LabelDecomposingBayesianClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
+	                                          double unknownDistanceThreshold, Set<String> leaveOneOutLabels)
 		{
-		super(dm, unknownDistanceThreshold, leaveOneOut);
+		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels);
 		}
 
 
@@ -87,7 +93,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				{
 				T point = trainingIterator.next();
 
-				String bestLabel = point.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+				String bestLabel = point.getWeightedLabels().getDominantKeyInSet(trainingLabels);
 				//Cluster<T> cluster = theClusterMap.get(bestLabel);
 
 

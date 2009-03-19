@@ -63,6 +63,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
+	// BAD reconcile with new labelling scheme, see BayesianClustering
+
 	private static final Logger logger = Logger.getLogger(KNNClustering.class);
 
 	private final int maxNeighbors;
@@ -75,11 +77,12 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public KNNClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, int maxNeighbors,
-	                     double voteProportionThreshold, double voteTieThresholdRatio, double distanceTieThresholdRatio,
-	                     boolean leaveOneOut) //, double decompositionDistanceThreshold)
+	public KNNClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
+	                     Set<String> leaveOneOutLabels, int maxNeighbors, double voteProportionThreshold,
+	                     double voteTieThresholdRatio,
+	                     double distanceTieThresholdRatio) //, double decompositionDistanceThreshold)
 		{
-		super(dm, unknownDistanceThreshold, leaveOneOut);
+		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels);
 		this.maxNeighbors = maxNeighbors;
 		//		this.decompositionDistanceThreshold = decompositionDistanceThreshold;
 		this.voteProportionThreshold = voteProportionThreshold;
@@ -219,7 +222,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		Set<String> trainingLabels = new HashSet<String>();
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			trainingLabels.add(theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(mutuallyExclusiveLabels));
+			trainingLabels.add(theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.trainingLabels));
 			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
 			}
 
@@ -229,7 +232,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		while (theTestIterator.hasNext())
 			{
 			T frag = theTestIterator.next();
-			String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+			String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(this.trainingLabels);
 
 
 			double voteProportion = 0;
@@ -309,17 +312,17 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					{
 
 					// the fragment's best label does not match any training label, it should be unknown
-					if (!trainingLabels.contains(fragDominantLabel))
-						{
-						tr.shouldHaveBeenUnknown++;
-						}
-
+					/*		if (!trainingLabels.contains(fragDominantLabel))
+							 {
+							 tr.shouldHaveBeenUnknown++;
+							 }
+	 */
 
 					// if the fragment's best label from the same exclusive set is the same one, that's a match.
 					// instead of binary classification, measure how bad the miss is (0 for perfect match)
 
 					wrongness = intraLabelDistances
-							.distanceFromTo(frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels),
+							.distanceFromTo(frag.getWeightedLabels().getDominantKeyInSet(this.trainingLabels),
 							                bestLabel);
 					if (Double.isNaN(wrongness))
 						{
@@ -365,10 +368,11 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				tr.unknown++;
 
 				// the fragment's best label does match a training label, it should not be unknown
-				if (trainingLabels.contains(fragDominantLabel))
-					{
-					tr.shouldNotHaveBeenUnknown++;
-					}
+				/*	if (trainingLabels.contains(fragDominantLabel))
+					 {
+					 tr.shouldNotHaveBeenUnknown++;
+					 }
+			 */
 				}
 
 			tr.labelDistances.add(wrongness);

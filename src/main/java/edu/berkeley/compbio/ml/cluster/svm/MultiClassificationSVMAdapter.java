@@ -63,7 +63,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		while (trainingIterator.hasNext())
 			{
 			T sample = trainingIterator.next();
-			String label = sample.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+			String label = sample.getWeightedLabels().getDominantKeyInSet(trainingLabels);
 
 			BatchCluster<T> cluster = theClusterMap.get(label);
 			cluster.add(sample);
@@ -98,9 +98,9 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 		// by analogy with BayesianClustering, take this opportunity to initialize the clusters
 
-		theClusterMap = new HashMap<String, BatchCluster<T>>(mutuallyExclusiveLabels.size());
+		theClusterMap = new HashMap<String, BatchCluster<T>>(trainingLabels.size());
 		int i = 0;
-		for (String label : mutuallyExclusiveLabels)
+		for (String label : trainingLabels)
 			{
 			BatchCluster<T> cluster = theClusterMap.get(label);
 

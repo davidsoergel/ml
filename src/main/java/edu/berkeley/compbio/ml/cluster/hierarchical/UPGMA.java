@@ -145,12 +145,12 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			return result;
 			}
 
-		String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+		String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(trainingLabels);
 
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
 			if (leaveOneOut && disallowedLabel
-					.equals(theCluster.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels)))
+					.equals(theCluster.getWeightedLabels().getDominantKeyInSet(trainingLabels)))
 				{
 				// ignore this cluster
 				}

@@ -53,6 +53,7 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Performs cluster classification with a naive bayesian classifier
@@ -104,9 +105,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public BayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, boolean leaveOneOut)
+	public BayesianClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
+	                          double unknownDistanceThreshold, Set<String> leaveOneOutLabels)
 		{
-		super(dm, unknownDistanceThreshold, leaveOneOut);
+		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels);
 		}
 
 
@@ -128,6 +130,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 
 		//** The reason this stuff is here, rather than in train(), is that train() expects that the clusters are already defined.
 		// but because of the way labelling works now, we have to consume the entire test iterator in order to know what the clusters should be.
+		// we are provided with the list of potential training bins, but some of thos may not actually have training samples.
 
 
 		Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
@@ -146,29 +149,27 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 
 				T point = trainingIterator.next();
 
-				// generate one cluster per exclusive label.
+				// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
+				// the training samples must already be labelled with a bin ID.
 
-				String clusterLabel = point.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
-				CentroidCluster<T> cluster = theClusterMap.get(clusterLabel);
+				String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+				CentroidCluster<T> cluster = theClusterMap.get(clusterBinId);
 
 				if (cluster == null)
 					{
 					final T centroid = prototypeFactory.create(point.getId());
-					//	.create(point.getSourceId());  //** include the source id to facilitate leave-one-out testing later
-					//** no, that makes no sense, a cluster may arise from multiple sources
 
-					cluster = new AdditiveCentroidCluster<T>(i++, centroid);//measure
-					//cluster.setId(i++);
-					theClusterMap.put(clusterLabel, cluster);
+					cluster = new AdditiveCentroidCluster<T>(i++, centroid);
+
+					theClusterMap.put(clusterBinId, cluster);
 
 					//** for now we make a uniform prior
 					priorsMult.put(cluster, 1);
 					}
-				cluster.add(point);  // note this updates the cluster labels as well
-				/*		if(cluster.getLabelCounts().uniqueSet().size() != 1)
-								 {
-								 throw new Error();
-								 }*/
+
+				// note this updates the cluster labels as well.
+				// In particular, the point should already be labelled with a Training Label (not just a bin ID), so that the cluster will know what label it predicts.
+				cluster.add(point);
 				}
 
 
@@ -221,13 +222,17 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 		//double temp = -1;
 		//int j = -1;
 
-		String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+		String disallowedLabel = null;
+		if (leaveOneOutLabels != null)
+			{
+			disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+			}
 
 		for (CentroidCluster<T> cluster : theClusters)
 			{
 			double distance;
-			if (leaveOneOut && disallowedLabel
-					.equals(cluster.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels)))
+			if (disallowedLabel != null && disallowedLabel
+					.equals(cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)))
 				{
 				// ignore this cluster
 				}

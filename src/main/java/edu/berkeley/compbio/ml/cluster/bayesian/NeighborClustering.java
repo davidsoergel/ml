@@ -10,6 +10,7 @@ import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -22,13 +23,16 @@ public abstract class NeighborClustering<T extends AdditiveClusterable<T>>
 	protected double unknownDistanceThreshold;
 
 	protected Map<CentroidCluster, Double> priors;
-	protected boolean leaveOneOut;
+	protected Set<String> leaveOneOutLabels;
+	protected Set<String> potentialTrainingBins;
 
-	public NeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, boolean leaveOneOut)
+	public NeighborClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
+	                          double unknownDistanceThreshold, Set<String> leaveOneOutLabels)
 		{
 		super(dm);
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
-		this.leaveOneOut = leaveOneOut;
+		this.leaveOneOutLabels = leaveOneOutLabels;
+		this.potentialTrainingBins = potentialTrainingBins;
 		}
 
 	/**

@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -28,13 +29,16 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 	private double bestScoreRatioThreshold;
 
+	// BAD reconcile with new labelling scheme, see BayesianClustering
+
 	/**
 	 * @param dm The distance measure to use
 	 */
-	public TacoaClustering(DissimilarityMeasure<T> dm, double bestScoreRatioThreshold, boolean leaveOneOut)
+	public TacoaClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
+	                       double bestScoreRatioThreshold, Set<String> leaveOneOutLabels)
 		{
 		// ** should make common superclass
-		super(dm, Double.MAX_VALUE, leaveOneOut);
+		super(potentialTrainingBins, dm, Double.MAX_VALUE, leaveOneOutLabels);
 		this.bestScoreRatioThreshold = bestScoreRatioThreshold;
 		}
 
@@ -78,7 +82,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		Multiset<String> trainingLabels = new HashMultiset<String>();
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(mutuallyExclusiveLabels);
+			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.trainingLabels);
 			trainingLabels.add(label);
 			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
 			}
@@ -91,7 +95,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
 			final String label = theCluster.getDerivedLabelProbabilities()
-					.getDominantKeyInSet(mutuallyExclusiveLabels); // PERF redundant
+					.getDominantKeyInSet(this.trainingLabels); // PERF redundant
 			priors.put(theCluster, labelPriors.get(label));
 			}
 
@@ -100,7 +104,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		while (theTestIterator.hasNext())
 			{
 			T frag = theTestIterator.next();
-			String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels);
+			String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(this.trainingLabels);
 
 			double bestVotes;
 			double secondToBestVoteRatio;
@@ -142,11 +146,11 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 					}
 
 				// the fragment's best label does not match any training label, it should be unknown
-				if (!trainingLabels.contains(fragDominantLabel))
-					{
-					tr.shouldHaveBeenUnknown++;
-					}
-
+				/*	if (!trainingLabels.contains(fragDominantLabel))
+						{
+						tr.shouldHaveBeenUnknown++;
+						}
+	*/
 				// if the fragment's best label from the same exclusive set is the same one, that's a match.
 				// instead of binary classification, measure how bad the miss is (0 for perfect match)
 				//double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, bestLabel);
@@ -154,8 +158,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				// for a classification to an internal node, we want to consider the branch length to the test leaf regardless of the label resolution
 
 				wrongness = intraLabelDistancesA
-						.distanceFromTo(frag.getWeightedLabels().getDominantKeyInSet(mutuallyExclusiveLabels),
-						                bestLabel);
+						.distanceFromTo(frag.getWeightedLabels().getDominantKeyInSet(this.trainingLabels), bestLabel);
 				if (Double.isNaN(wrongness))
 					{
 					logger.error("Wrongness NaN");
@@ -195,10 +198,11 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				tr.unknown++;
 
 				// the fragment's best label does match a training label, it should not be unknown
-				if (trainingLabels.contains(fragDominantLabel))
-					{
-					tr.shouldNotHaveBeenUnknown++;
-					}
+				/*		if (trainingLabels.contains(fragDominantLabel))
+						{
+						tr.shouldNotHaveBeenUnknown++;
+						}
+	*/
 				}
 
 			tr.labelDistances.add(wrongness);
