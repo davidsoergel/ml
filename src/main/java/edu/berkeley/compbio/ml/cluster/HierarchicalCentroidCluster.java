@@ -230,12 +230,18 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		{
 		throw new NotImplementedException();
 		}*/
-	public void toNewick(StringBuffer sb, int minClusterSize, double minLabelProb)
+	public void toNewick(StringBuffer sb, String prefix, String tab, int minClusterSize, double minLabelProb)
 		{
 		// (children)name:length
 
+		if (prefix != null)
+			{
+			sb.append(prefix);
+			}
+
 		if (!children.isEmpty())
 			{
+			prefix = prefix == null ? null : prefix + tab;
 			sb.append("(");
 			Iterator<BasicPhylogenyNode<CentroidCluster<T>>> i = children.iterator();
 			while (i.hasNext())
@@ -243,7 +249,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 				final BasicPhylogenyNode<CentroidCluster<T>> child = i.next();
 				if (child.getValue().getN() >= minClusterSize)
 					{
-					child.toNewick(sb, minClusterSize, minLabelProb);
+					child.toNewick(sb, prefix, tab, minClusterSize, minLabelProb);
 					if (i.hasNext())
 						{
 						sb.append(",");
