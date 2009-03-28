@@ -19,7 +19,6 @@ import java.util.Set;
 public abstract class NeighborClustering<T extends AdditiveClusterable<T>>
 		extends OnlineClusteringMethod<T, CentroidCluster<T>>
 	{
-
 	protected double unknownDistanceThreshold;
 
 	protected Map<CentroidCluster, Double> priors;

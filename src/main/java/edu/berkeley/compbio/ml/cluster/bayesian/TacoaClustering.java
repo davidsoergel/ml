@@ -29,7 +29,6 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 	private double bestScoreRatioThreshold;
 
-	// BAD reconcile with new labelling scheme, see BayesianClustering
 
 	/**
 	 * @param dm The distance measure to use
@@ -48,12 +47,12 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	 * not have been used in learning the cluster positions.  Determines what proportions of the test samples are
 	 * classified correctly, incorrectly, or not at all.
 	 *
-	 * @param theTestIterator      an Iterator of test samples. //@param mutuallyExclusiveLabels a Set of labels that we're
-	 *                             trying to classify
-	 * @param intraLabelDistancesA a measure of how different the labels are from each other.  For simply determining
-	 *                             whether the classification is correct or wrong, use a delta function (i.e. equals).
-	 *                             Sometimes, however, one label may be more wrong than another; this allows us to track
-	 *                             that.
+	 * @param theTestIterator     an Iterator of test samples. //@param mutuallyExclusiveLabels a Set of labels that we're
+	 *                            trying to classify
+	 * @param intraLabelDistances a measure of how different the labels are from each other.  For simply determining
+	 *                            whether the classification is correct or wrong, use a delta function (i.e. equals).
+	 *                            Sometimes, however, one label may be more wrong than another; this allows us to track
+	 *                            that.
 	 * @return a TestResults object encapsulating the proportions of test samples classified correctly, incorrectly, or not
 	 *         at all.
 	 * @throws edu.berkeley.compbio.ml.cluster.NoGoodClusterException
@@ -63,10 +62,9 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	 * @throws ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
 	public TestResults test(Iterator<T> theTestIterator, // Set<String> mutuallyExclusiveLabels,
-	                        DissimilarityMeasure<String> intraLabelDistancesA) throws // NoGoodClusterException,
+	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
 			DistributionException, ClusterException
-		{		// evaluate labeling correctness using the test samples
-
+		{
 		//	List<Double> secondBestDistances = new ArrayList<Double>();
 		TestResults tr = new TestResults();
 
@@ -153,11 +151,10 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	*/
 				// if the fragment's best label from the same exclusive set is the same one, that's a match.
 				// instead of binary classification, measure how bad the miss is (0 for perfect match)
-				//double wrongness = intraLabelDistances.distanceFromTo(fragDominantLabel, bestLabel);
 
 				// for a classification to an internal node, we want to consider the branch length to the test leaf regardless of the label resolution
 
-				wrongness = intraLabelDistancesA
+				wrongness = intraLabelDistances
 						.distanceFromTo(frag.getWeightedLabels().getDominantKeyInSet(this.trainingLabels), bestLabel);
 				if (Double.isNaN(wrongness))
 					{

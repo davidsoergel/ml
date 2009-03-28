@@ -68,38 +68,6 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 
 	private static final Logger logger = Logger.getLogger(BayesianClustering.class);
 
-	//private T[] centroids;
-	//protected DistanceMeasure<T> measure;
-	//private double[] priors;
-
-
-	// --------------------------- CONSTRUCTORS ---------------------------
-
-	/**
-	 * Creates a new BayesianClustering with the following parameters
-	 *
-	 * @param theCentroids     Centroids of the clusters.  Note these will be used as is and modified; clone them first if
-	 *                         you need to
-	 * @param thePriors        Prior expectations for the clusters
-	 * @param dm               The distance measure to use
-	 * @param unknownThreshold the minimum probability to accept when adding a point to a cluster
-	 */
-	/*	public BayesianClustering(T[] theCentroids, double[] thePriors, DistanceMeasure<T> dm, double unknownThreshold)
-	   {
-	   centroids = theCentroids;
-	   measure = dm;
-	   priors = thePriors;
-	   this.unknownThreshold = unknownThreshold;
-
-	   for (int i = 0; i < centroids.length; i++)
-		   {
-		   Cluster<T> c = new AdditiveCluster<T>(dm, theCentroids[i]);
-		   c.setId(i);
-
-		   theClusters.add(c);
-		   }
-	   logger.debug("initialized " + centroids.length + " clusters");
-	   }*/
 
 	/**
 	 * @param dm                       The distance measure to use
@@ -120,18 +88,11 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	                                   GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException
 		{
-		//	String cacheIdString = buildIdString(trainingIterator, initSamples, prototypeFactory);
-		//	theClusters = loadCache(cacheIdString);
-		//	if (theClusters == null)
-		//		{
-
-
 		Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
 
-		//** The reason this stuff is here, rather than in train(), is that train() expects that the clusters are already defined.
+		// The reason this stuff is here, rather than in train(), is that train() expects that the clusters are already defined.
 		// but because of the way labelling works now, we have to consume the entire test iterator in order to know what the clusters should be.
-		// we are provided with the list of potential training bins, but some of thos may not actually have training samples.
-
+		// we are provided with the list of potential training bins, but some of those may not actually have training samples.
 
 		Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
 		try
@@ -168,10 +129,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 					}
 
 				// note this updates the cluster labels as well.
-				// In particular, the point should already be labelled with a Training Label (not just a bin ID), so that the cluster will know what label it predicts.
+				// In particular, the point should already be labelled with a Training Label (not just a bin ID),
+				// so that the cluster will know what label it predicts.
 				cluster.add(point);
 				}
-
 
 			logger.info("Done processing " + sampleCount + " training samples.");
 
@@ -184,9 +145,6 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 			}
 
 		theClusters = theClusterMap.values();
-
-		//	saveCache(cacheIdString, theClusters);
-		//	}
 		}
 
 
@@ -215,12 +173,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
 		{
 		ClusterMove result = new ClusterMove();
-		//int i;
+
 		result.secondBestDistance = Double.MAX_VALUE;
 		result.bestDistance = Double.MAX_VALUE;
-		//Cluster<T> best = null;
-		//double temp = -1;
-		//int j = -1;
 
 		String disallowedLabel = null;
 		if (leaveOneOutLabels != null)
@@ -238,8 +193,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 				}
 			else
 				{
-				// ** careful: how to deal with priors depends on the distance measure.
+				// Note that different distance measures may need to deal with the priors differently:
 				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
+				// so, just pass the priors in and let the distance measure decide what to do with them
 				if (measure instanceof ProbabilisticDissimilarityMeasure)
 					{
 					distance = ((ProbabilisticDissimilarityMeasure) measure)
@@ -255,7 +211,6 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 					result.secondBestDistance = result.bestDistance;
 					result.bestDistance = distance;
 					result.bestCluster = cluster;
-					//j = i;
 					}
 				else if (distance <= result.secondBestDistance)
 					{

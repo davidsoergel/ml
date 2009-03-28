@@ -49,7 +49,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
 		throw new ClusterRuntimeException(
-				"It doesn't make sense to get the best clustermove with k-NN; look for the best label instead");
+				"It doesn't make sense to get the best clustermove with a multi-neighbor clustering; look for the best label instead using scoredClusterMoves");
 		}
 
 	/**
@@ -61,13 +61,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 			throws GenericFactoryException, ClusterException
 		{
 		theClusters = new HashSet<CentroidCluster<T>>();
-		//	Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
 
-		/*		if(decompositionDistanceThreshold != 0)
-			  {
-			  throw new NotImplementedException("Sub-clustering of k-NN training samples is not supported yet, use decompositionDistanceThreshold = 0 ");
-			  }
-  */
 		Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
 		try
 			{
@@ -84,16 +78,13 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 
 				T point = trainingIterator.next();
 
-				// generate one cluster per exclusive label.
-
-
+				// generate one "cluster" per test sample.
 				CentroidCluster<T> cluster = new BasicCentroidCluster<T>(i++, point);//measure
 
 				//** for now we make a uniform prior
 				priorsMult.put(cluster, 1);
 				theClusters.add(cluster);
 				}
-
 
 			logger.info("Done processing " + sampleCount + " training samples.");
 
@@ -104,7 +95,6 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 			{
 			throw new Error(e);
 			}
-		//	theClusters = theClusterMap.values();
 		}
 
 
@@ -113,13 +103,12 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 		private WeightedSet<String> labelVotes = new HashWeightedSet<String>();
 		// use WeightedSet instead of MultiSet so we can aggregate label probabilities
 
-		// keep track of clusters per label, for the sake of
-		// tracking computed distances to the clusters contributing to each label
+		// keep track of clusters per label, for the sake of tracking computed distances to the clusters contributing to each label
 		private final Map<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>> labelContributions =
 				new HashMap<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>>();
 
-		String bestLabel;
-		String secondBestLabel;
+		private String bestLabel;
+		private String secondBestLabel;
 
 		public String getBestLabel()
 			{
@@ -133,7 +122,6 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 
 		public void finish()
 			{
-
 			// primary sort the labels by votes, secondary by weighted distance
 			// even if there is a unique label with the most votes, the second place one may still matter depending on the unknown thresholds
 
@@ -248,10 +236,8 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	protected TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> scoredClusterMoves(T p)
 			throws NoGoodClusterException
 		{
-
 		TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> result =
 				new TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>>();
-
 
 		String disallowedLabel = null;
 		if (leaveOneOutLabels != null)
@@ -268,8 +254,9 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 				}
 			else
 				{
-				// ** careful: how to deal with priors depends on the distance measure.
-				// if it's probability, multiply; if log probability, add the log; for other distance types, who knows?
+				// Note that different distance measures may need to deal with the priors differently:
+				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
+				// so, just pass the priors in and let the distance measure decide what to do with them
 
 				double distance;
 

@@ -63,8 +63,6 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
-	// BAD reconcile with new labelling scheme, see BayesianClustering
-
 	private static final Logger logger = Logger.getLogger(KNNClustering.class);
 
 	private final int maxNeighbors;
@@ -206,8 +204,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	public TestResults test(Iterator<T> theTestIterator,// Set<String> mutuallyExclusiveLabels,
 	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
 			DistributionException, ClusterException
-		{		// evaluate labeling correctness using the test samples
-
+		{
 		//	List<Double> secondBestDistances = new ArrayList<Double>();
 		TestResults tr = new TestResults();
 
@@ -222,7 +219,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		Set<String> trainingLabels = new HashSet<String>();
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			trainingLabels.add(theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.trainingLabels));
+			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.trainingLabels);
+			trainingLabels.add(label);
 			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
 			}
 
@@ -232,7 +230,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		while (theTestIterator.hasNext())
 			{
 			T frag = theTestIterator.next();
-			String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(this.trainingLabels);
+			//String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(this.trainingLabels);
 
 
 			double voteProportion = 0;
