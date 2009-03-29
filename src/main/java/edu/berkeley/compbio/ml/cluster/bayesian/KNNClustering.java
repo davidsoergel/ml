@@ -425,7 +425,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 			neighborsCounted++;
 			}
-		result.finish();
+		result.finish(trainingLabels);
 		return result;
 		}
 	}

@@ -823,6 +823,14 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		   }
 	   }*/
 
+	/**
+	 * Careful: this does not propagate labels to the subsidiary fragments, because they may or may not apply.  These
+	 * fragments should be labelled after being split, not before.
+	 *
+	 * @param remove
+	 * @return
+	 * @throws SequenceException
+	 */
 	public Set<SequenceFragment> removeOverlaps(Collection<SequenceFragment> remove) throws SequenceException
 		{
 		Set<SequenceFragment> result = new HashSet<SequenceFragment>();

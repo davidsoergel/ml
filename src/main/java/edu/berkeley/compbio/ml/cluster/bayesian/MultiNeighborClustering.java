@@ -36,6 +36,8 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	{
 	private static final Logger logger = Logger.getLogger(MultiNeighborClustering.class);
 
+	private WeightedSet<String> labelVotes = new HashWeightedSet<String>();
+
 	public MultiNeighborClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
 	                               double unknownDistanceThreshold, Set<String> leaveOneOutLabels)
 		{
@@ -51,6 +53,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 		throw new ClusterRuntimeException(
 				"It doesn't make sense to get the best clustermove with a multi-neighbor clustering; look for the best label instead using scoredClusterMoves");
 		}
+
 
 	/**
 	 * Unlike situations where we make a cluster per label, here we make a whole "cluster" per test sample
@@ -97,10 +100,8 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 			}
 		}
 
-
 	protected class VotingResults
 		{
-		private WeightedSet<String> labelVotes = new HashWeightedSet<String>();
 		// use WeightedSet instead of MultiSet so we can aggregate label probabilities
 
 		// keep track of clusters per label, for the sake of tracking computed distances to the clusters contributing to each label
@@ -120,7 +121,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 			return secondBestLabel;
 			}
 
-		public void finish()
+		public void finish(Set<String> predictionLabels)
 			{
 			// primary sort the labels by votes, secondary by weighted distance
 			// even if there is a unique label with the most votes, the second place one may still matter depending on the unknown thresholds
@@ -146,6 +147,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 				}
 			};
 
+			labelVotes.retainKeys(predictionLabels);
 			Iterator<String> vi = labelVotes.keysInDecreasingWeightOrder(weightedDistanceSort).iterator();
 
 			bestLabel = vi.next();

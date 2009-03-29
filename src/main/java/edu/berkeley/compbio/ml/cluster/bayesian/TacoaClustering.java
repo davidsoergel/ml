@@ -234,8 +234,9 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
 
 			// in the usual case, labelsOnThisCluster contains a single label with weight 1.
+			// but it might have weights for all the ancestors too
 
-			// we actually want the vote to count in proportion to the computed distance:
+			// we actually want the vote to count in proportion to the computed "distance", which is really a score (bigger better):
 			result.addVotes(labelsOnThisCluster, cm.bestDistance);
 
 			//** dunno if this makes any sense here... OK, it allows computing weighted distances per label later
@@ -247,7 +248,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				result.addContribution(cm, label, labelProbability);
 				}
 			}
-		result.finish();
+		result.finish(trainingLabels);
 		return result;
 		}
 	}
