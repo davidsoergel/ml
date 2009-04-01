@@ -174,8 +174,8 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 		{
 		ClusterMove result = new ClusterMove();
 
-		result.secondBestDistance = Double.MAX_VALUE;
-		result.bestDistance = Double.MAX_VALUE;
+		result.secondBestDistance = Double.POSITIVE_INFINITY;
+		result.bestDistance = Double.POSITIVE_INFINITY;
 
 		String disallowedLabel = null;
 		if (leaveOneOutLabels != null)

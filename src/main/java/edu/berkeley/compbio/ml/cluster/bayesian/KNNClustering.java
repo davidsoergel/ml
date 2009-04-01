@@ -295,8 +295,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					}
 				else
 					{
-					secondToBestVoteRatio = Double.MAX_VALUE;  // infinity really, but that causes problems
-					secondToBestDistanceRatio = Double.MAX_VALUE;  // infinity really, but that causes problems
+					secondToBestVoteRatio = Double.POSITIVE_INFINITY;  // infinity really, but that causes problems
+					secondToBestDistanceRatio = Double.POSITIVE_INFINITY;  // infinity really, but that causes problems
 					}
 				//	String dominantExclusiveLabel = labelVotes.getDominantKeyInSet(mutuallyExclusiveLabels);
 
@@ -335,7 +335,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 					logger.debug("Label distance wrongness = " + wrongness);
 
-					if (bestWeightedDistance < Double.MAX_VALUE)
+					if (bestWeightedDistance < UNKNOWN_DISTANCE)
 						{
 						computedDistancesInteresting = true;
 						}

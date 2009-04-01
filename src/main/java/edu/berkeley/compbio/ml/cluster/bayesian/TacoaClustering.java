@@ -37,7 +37,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	                       double bestScoreRatioThreshold, Set<String> leaveOneOutLabels)
 		{
 		// ** should make common superclass
-		super(potentialTrainingBins, dm, Double.MAX_VALUE, leaveOneOutLabels);
+		super(potentialTrainingBins, dm, Double.POSITIVE_INFINITY, leaveOneOutLabels);
 		this.bestScoreRatioThreshold = bestScoreRatioThreshold;
 		}
 

@@ -134,7 +134,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
 		{
 		ClusterMove result = new ClusterMove();
-		result.bestDistance = Double.MAX_VALUE;
+		result.bestDistance = Double.POSITIVE_INFINITY;
 
 		final HierarchicalCentroidCluster<T> c = sampleToLeafClusterMap.get(p);
 		if (c != null)

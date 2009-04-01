@@ -50,7 +50,7 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> impleme
 	/**
 	 * The distance of the point under consideration to the destination cluster centroid
 	 */
-	public double bestDistance = Double.MAX_VALUE;
+	public double bestDistance = Double.POSITIVE_INFINITY;
 
 	/**
 	 * The source cluster
