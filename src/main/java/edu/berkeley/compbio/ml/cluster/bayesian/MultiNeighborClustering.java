@@ -36,7 +36,6 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	{
 	private static final Logger logger = Logger.getLogger(MultiNeighborClustering.class);
 
-	private WeightedSet<String> labelVotes = new HashWeightedSet<String>();
 
 	public MultiNeighborClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
 	                               double unknownDistanceThreshold, Set<String> leaveOneOutLabels)
@@ -110,6 +109,8 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 
 		private String bestLabel;
 		private String secondBestLabel;
+
+		private WeightedSet<String> labelVotes = new HashWeightedSet<String>();
 
 		public String getBestLabel()
 			{

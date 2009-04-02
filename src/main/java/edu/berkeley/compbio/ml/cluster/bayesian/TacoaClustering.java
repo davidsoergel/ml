@@ -203,7 +203,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				}
 
 			tr.labelDistances.add(wrongness);
-			tr.computedDistances.add(bestVotes);
+			tr.computedDistances.add(1.0
+					/ bestVotes);  // ** hack: monotonic positive inversion to a distance-like metric (smaller better)
 			// In TACOA, distance == votes, so we don't record them separately
 			// tr.secondToBestDistanceRatios.add(distanceRatio);
 			tr.secondToBestVoteRatios.add(secondToBestVoteRatio);
@@ -217,6 +218,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			i++;
 			}
 		tr.labelWithinClusterProbabilities = null;
+		tr.secondToBestDistanceRatios = null;
 
 		tr.testSamples = i;
 		tr.finish();
