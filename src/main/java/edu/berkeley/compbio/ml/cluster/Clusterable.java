@@ -94,6 +94,7 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 */
 	@NotNull
 	WeightedSet<String> getWeightedLabels();
+	//throws PhyloUtilsException;
 
 	/**
 	 * Get the primary classification label, if available (optional operation)
