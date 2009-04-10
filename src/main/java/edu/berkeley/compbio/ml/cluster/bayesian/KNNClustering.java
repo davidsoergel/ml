@@ -270,19 +270,22 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 					if (secondToBestVoteRatio >= voteTieThresholdRatio)
 						{
-						//... try to break the tie using the distances
+						//... try to break the tie using the distances.
+						// we don't know whether the "second-best" or the "best" distance is actually better,
+						// so we first check for a tie using both the threshold and its inverse.
 
-						// ** is this right?  Why consider the inverse ratio too?
 						double minRatio = distanceTieThresholdRatio;
 						double maxRatio = 1. / distanceTieThresholdRatio;
 
-						if (secondToBestDistanceRatio < minRatio || secondToBestDistanceRatio > maxRatio)
+						if (!(secondToBestDistanceRatio < minRatio || secondToBestDistanceRatio > maxRatio))
 							{
 							// indistinguishable tie, call it unknown
 							throw new NoGoodClusterException();
 							}
 
-						if (bestWeightedDistance > secondBestWeightedDistance)
+						// OK, it's not a distance tie, so pick the closer one
+
+						if (bestWeightedDistance < secondBestWeightedDistance)
 							{
 							// OK, leave the current bestLabel intact then
 							}
@@ -295,8 +298,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					}
 				else
 					{
-					secondToBestVoteRatio = Double.POSITIVE_INFINITY;  // infinity really, but that causes problems
-					secondToBestDistanceRatio = Double.POSITIVE_INFINITY;  // infinity really, but that causes problems
+					secondToBestVoteRatio = 0;
+					secondToBestDistanceRatio = Double.MAX_VALUE;  // infinity really, but that causes jdbc problems
 					}
 				//	String dominantExclusiveLabel = labelVotes.getDominantKeyInSet(mutuallyExclusiveLabels);
 
@@ -372,6 +375,12 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					 }
 			 */
 				}
+
+			assert !(Double.isNaN(wrongness) || Double.isInfinite(wrongness));
+			assert !(Double.isNaN(bestWeightedDistance) || Double.isInfinite(bestWeightedDistance));
+			assert !(Double.isNaN(secondToBestDistanceRatio) || Double.isInfinite(secondToBestDistanceRatio));
+			assert !(Double.isNaN(secondToBestVoteRatio) || Double.isInfinite(secondToBestVoteRatio));
+			assert !(Double.isNaN(voteProportion) || Double.isInfinite(voteProportion));
 
 			tr.labelDistances.add(wrongness);
 			tr.computedDistances.add(bestWeightedDistance);

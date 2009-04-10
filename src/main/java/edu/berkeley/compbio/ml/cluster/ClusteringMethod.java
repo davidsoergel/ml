@@ -25,7 +25,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	{
 	private static final Logger logger = Logger.getLogger(ClusteringMethod.class);
 
-	protected static final Double UNKNOWN_DISTANCE = Double.POSITIVE_INFINITY;
+	protected static final Double UNKNOWN_DISTANCE = Double.MAX_VALUE;
 
 	protected DissimilarityMeasure<T> measure;
 	protected Collection<C> theClusters = new ArrayList<C>();
