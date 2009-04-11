@@ -423,70 +423,74 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		// the RonPSA implementation uses backlinks and so is vastly more efficient.
 		// We can't use backlinks here because they might point to nodes outside of this subtree
 
-		SequenceReader in;
-		try
-			{
-			in = sequenceFragment.getResetReader();
-			}
-		catch (NotEnoughSequenceException e)
-			{
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		int requiredPrefixLength = getMaxDepth() - 1;
-		double logprob = 0;
-		CircularFifoBuffer prefix = new CircularFifoBuffer(requiredPrefixLength);
 
-		int samples = 0;
-		while (true)
+		synchronized (sequenceFragment.getReaderForSynchronizing())  // because of resetting the reader
 			{
+			SequenceReader in;
 			try
 				{
-				byte c = in.read();
-
-				try
-					{
-					// PERF converting array prefix from circularFifoBuffer to byte[] is terribly inefficient
-					byte[] prefixAsBytes = DSArrayUtils.toPrimitive((Byte[]) prefix.toArray(new Byte[]{}));
-
-					// these log probabilities could be cached, e.g. logConditionalProbability(c, prefix)
-					logprob += MathUtils.approximateLog(conditionalProbability(c, prefixAsBytes));
-
-					samples++;
-
-					prefix.add(c);
-					}
-				catch (SequenceSpectrumException e)
-					{
-					// probably just an invalid character
-					logger.debug("Invalid character " + (char) c);
-					// ignore this character as far as the probability is concerned
-					prefix.clear();
-					}
+				in = sequenceFragment.getResetReader();
 				}
 			catch (NotEnoughSequenceException e)
 				{
-				break;
+				throw new SequenceSpectrumRuntimeException(e);
 				}
-			catch (IOException e)
-				{
-				logger.error("Error", e);
-				throw new SequenceSpectrumException(e);
-				}
-			catch (FilterException e)
-				{
-				logger.error("Error", e);
-				throw new SequenceSpectrumException(e);
-				}
-			}
+			int requiredPrefixLength = getMaxDepth() - 1;
+			double logprob = 0;
+			CircularFifoBuffer prefix = new CircularFifoBuffer(requiredPrefixLength);
 
-		if (perSample)
-			{
-			// we have ln(product(p) == sum(ln(p)).
-			// The geometric mean is exp(sum(ln(p))/n), so to get ln(geometric mean) we need only divide by n.
-			logprob /= samples;
-			}
+			int samples = 0;
+			while (true)
+				{
+				try
+					{
+					byte c = in.read();
 
-		return logprob;
+					try
+						{
+						// PERF converting array prefix from circularFifoBuffer to byte[] is terribly inefficient
+						byte[] prefixAsBytes = DSArrayUtils.toPrimitive((Byte[]) prefix.toArray(new Byte[]{}));
+
+						// these log probabilities could be cached, e.g. logConditionalProbability(c, prefix)
+						logprob += MathUtils.approximateLog(conditionalProbability(c, prefixAsBytes));
+
+						samples++;
+
+						prefix.add(c);
+						}
+					catch (SequenceSpectrumException e)
+						{
+						// probably just an invalid character
+						logger.debug("Invalid character " + (char) c);
+						// ignore this character as far as the probability is concerned
+						prefix.clear();
+						}
+					}
+				catch (NotEnoughSequenceException e)
+					{
+					break;
+					}
+				catch (IOException e)
+					{
+					logger.error("Error", e);
+					throw new SequenceSpectrumException(e);
+					}
+				catch (FilterException e)
+					{
+					logger.error("Error", e);
+					throw new SequenceSpectrumException(e);
+					}
+				}
+
+			if (perSample)
+				{
+				// we have ln(product(p) == sum(ln(p)).
+				// The geometric mean is exp(sum(ln(p))/n), so to get ln(geometric mean) we need only divide by n.
+				logprob /= samples;
+				}
+
+			return logprob;
+			}
 		}
 
 	public int getNumNodes()

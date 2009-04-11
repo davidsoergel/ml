@@ -36,6 +36,7 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
+import com.davidsoergel.dsutils.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
@@ -85,56 +86,71 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	 */
 	@Override
 	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                   GenericFactory<T> prototypeFactory)
+	                                   final GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException
 		{
-		Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
+		final Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
 
 		// The reason this stuff is here, rather than in train(), is that train() expects that the clusters are already defined.
 		// but because of the way labelling works now, we have to consume the entire test iterator in order to know what the clusters should be.
 		// we are provided with the list of potential training bins, but some of those may not actually have training samples.
 
-		Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
+		final Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
 		try
 			{
 			// consume the entire iterator, ignoring initsamples
 			int i = 0;
-			int sampleCount = 0;
+
+			ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+
 			while (trainingIterator.hasNext())
 				{
-				if (sampleCount % 1000 == 0)
+				final T point = trainingIterator.next();
+				final int clusterId = i++;
+				execService.submit(new Runnable()
+				{
+				public void run()
 					{
-					logger.info("Processed " + sampleCount + " training samples.");
+					try
+						{
+						// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
+						// the training samples must already be labelled with a bin ID.
+
+						String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+						CentroidCluster<T> cluster = theClusterMap.get(clusterBinId);
+
+						if (cluster == null)
+							{
+							final T centroid = prototypeFactory.create(point.getId());
+
+							cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
+
+							theClusterMap.put(clusterBinId, cluster);
+
+							//** for now we make a uniform prior
+							priorsMult.put(cluster, 1);
+							}
+
+						// note this updates the cluster labels as well.
+						// In particular, the point should already be labelled with a Training Label (not just a bin ID),
+						// so that the cluster will know what label it predicts.
+						cluster.add(point);
+						}
+					catch (DistributionException e)
+						{
+						logger.error("Error", e);
+						throw new ClusterRuntimeException(e);
+						}
+					catch (GenericFactoryException e)
+						{
+						logger.error("Error", e);
+						throw new ClusterRuntimeException(e);
+						}
 					}
-				sampleCount++;
-
-				T point = trainingIterator.next();
-
-				// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
-				// the training samples must already be labelled with a bin ID.
-
-				String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
-				CentroidCluster<T> cluster = theClusterMap.get(clusterBinId);
-
-				if (cluster == null)
-					{
-					final T centroid = prototypeFactory.create(point.getId());
-
-					cluster = new AdditiveCentroidCluster<T>(i++, centroid);
-
-					theClusterMap.put(clusterBinId, cluster);
-
-					//** for now we make a uniform prior
-					priorsMult.put(cluster, 1);
-					}
-
-				// note this updates the cluster labels as well.
-				// In particular, the point should already be labelled with a Training Label (not just a bin ID),
-				// so that the cluster will know what label it predicts.
-				cluster.add(point);
+				});
 				}
 
-			logger.info("Done processing " + sampleCount + " training samples.");
+			execService.finish("Processed %d training samples", 30);
 
 			priorsMult.normalize();
 			priors = priorsMult.getValueMap();
@@ -156,11 +172,22 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 		{
 		// do nothing
 
+
 		// after that, normalize the label probabilities
-		for (Cluster c : theClusters)
+
+
+		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+		for (final Cluster c : theClusters)
 			{
-			c.updateDerivedWeightedLabelsFromLocal();
+			execService.submit(new Runnable()
+			{
+			public void run()
+				{
+				c.updateDerivedWeightedLabelsFromLocal();
+				}
+			});
 			}
+		execService.finish("Normalized %d training probabilities", 30);
 		}
 
 	// -------------------------- OTHER METHODS --------------------------

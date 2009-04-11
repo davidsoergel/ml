@@ -3,6 +3,7 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
+import com.davidsoergel.dsutils.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DissimilarityMeasure;
@@ -67,31 +68,46 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 		{
 		theClusters = new HashSet<CentroidCluster<T>>();
 
-		Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
+		final Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
 		try
 			{
 			// consume the entire iterator, ignoring initsamples
 			int i = 0;
-			int sampleCount = 0;
+
+
+			ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+
+
 			while (trainingIterator.hasNext())
 				{
-				if (sampleCount % 1000 == 0)
+
+				final T point = trainingIterator.next();
+				final int clusterId = i++;
+				execService.submit(new Runnable()
+				{
+				public void run()
 					{
-					logger.info("Processed " + sampleCount + " training samples.");
+					try
+						{
+
+						// generate one "cluster" per test sample.
+						CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
+
+						//** for now we make a uniform prior
+						priorsMult.put(cluster, 1);
+						theClusters.add(cluster);
+						}
+					catch (DistributionException e)
+						{
+						logger.error("Error", e);
+						throw new ClusterRuntimeException(e);
+						}
 					}
-				sampleCount++;
-
-				T point = trainingIterator.next();
-
-				// generate one "cluster" per test sample.
-				CentroidCluster<T> cluster = new BasicCentroidCluster<T>(i++, point);//measure
-
-				//** for now we make a uniform prior
-				priorsMult.put(cluster, 1);
-				theClusters.add(cluster);
+				});
 				}
 
-			logger.info("Done processing " + sampleCount + " training samples.");
+			execService.finish("Processed %d training samples", 30);
+
 
 			priorsMult.normalize();
 			priors = priorsMult.getValueMap();
@@ -239,10 +255,10 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	 * @param p
 	 * @return
 	 */
-	protected TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> scoredClusterMoves(T p)
+	protected TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> scoredClusterMoves(final T p)
 			throws NoGoodClusterException
 		{
-		TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> result =
+		final TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> result =
 				new TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>>();
 
 		String disallowedLabel = null;
@@ -251,7 +267,9 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 			disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
 			}
 
-		for (CentroidCluster<T> cluster : theClusters)
+		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+
+		for (final CentroidCluster<T> cluster : theClusters)
 			{
 			if (disallowedLabel != null && disallowedLabel
 					.equals(cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)))
@@ -260,33 +278,44 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 				}
 			else
 				{
-				// Note that different distance measures may need to deal with the priors differently:
-				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
-				// so, just pass the priors in and let the distance measure decide what to do with them
-
-				double distance;
-
-				if (measure instanceof ProbabilisticDissimilarityMeasure)
+				execService.submit(new Runnable()
+				{
+				public void run()
 					{
-					distance = ((ProbabilisticDissimilarityMeasure) measure)
-							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
-					}
-				else
-					{
-					distance = measure.distanceFromTo(p, cluster.getCentroid());
-					}
+					// Note that different distance measures may need to deal with the priors differently:
+					// if it's probability, multiply; if log probability, add; for other distance types, who knows?
+					// so, just pass the priors in and let the distance measure decide what to do with them
 
-				ClusterMove<T, CentroidCluster<T>> cm = makeClusterMove(cluster, distance);
+					double distance;
 
-				// ignore the secondBestDistance, we don't need it here
+					if (measure instanceof ProbabilisticDissimilarityMeasure)
+						{
+						distance = ((ProbabilisticDissimilarityMeasure) measure)
+								.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
+						}
+					else
+						{
+						distance = measure.distanceFromTo(p, cluster.getCentroid());
+						}
 
-				//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy
-				if (distance < unknownDistanceThreshold)
-					{
-					result.put(distance, cm);
+					ClusterMove<T, CentroidCluster<T>> cm = makeClusterMove(cluster, distance);
+
+					// ignore the secondBestDistance, we don't need it here
+
+					//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy
+					if (cm.bestDistance < unknownDistanceThreshold)
+						{
+						synchronized (result)
+							{
+							result.put(cm.bestDistance, cm);
+							}
+						}
 					}
+				});
 				}
 			}
+
+		execService.finish("Tested sample against %d clusters", 30);
 
 		//result = result.headMap(unknownDistanceThreshold);
 
@@ -334,12 +363,17 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 		VotingResults result = new VotingResults();
 
 		int neighborsCounted = 0;
-		for (ClusterMove<T, CentroidCluster<T>> cm : moves.values()) // these should be in order of increasing distance
+		double lastDistance = 0.0;
+		for (ClusterMove<T, CentroidCluster<T>> cm : moves.values())
 			{
 			if (neighborsCounted >= maxNeighbors)
 				{
 				break;
 				}
+
+			// the moves must be sorted in order of increasing distance
+			assert cm.bestDistance >= lastDistance;
+			lastDistance = cm.bestDistance;
 
 			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
 

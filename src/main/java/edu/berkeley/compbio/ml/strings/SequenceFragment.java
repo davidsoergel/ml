@@ -88,7 +88,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *
 	 * @return the length of this sequence
 	 */
-	public int getLength()
+	public synchronized int getLength()
 		{
 		if (length == UNKNOWN_LENGTH)
 			{
@@ -182,7 +182,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *
 	 * @return the base spectrum of this sequence
 	 */
-	public SequenceSpectrum getBaseSpectrum()
+	public synchronized SequenceSpectrum getBaseSpectrum()
 		{
 		// ** weak references cause problems for additive clusters that can't be rescanned
 		//	SequenceSpectrum baseSpectrum = _baseSpectrum == null ? null : _baseSpectrum.get();
@@ -202,7 +202,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		return baseSpectrum;
 		}
 
-	protected void rescan() throws NotEnoughSequenceException
+	protected synchronized void rescan() throws NotEnoughSequenceException
 		{
 		/*	if (_baseSpectrum.get() != null)
 			 {
@@ -270,7 +270,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *
 	 * @param spectrum the new base spectrum describing statistics of this sequence
 	 */
-	public void setBaseSpectrum(@NotNull SequenceSpectrum spectrum)
+	public synchronized void setBaseSpectrum(@NotNull SequenceSpectrum spectrum)
 		{
 		//	SequenceSpectrum baseSpectrum = _baseSpectrum == null ? null : _baseSpectrum.get();
 		if (baseSpectrum == spectrum && theSpectra.size() == 1)
@@ -296,7 +296,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		//theSpectra.put(baseSpectrum.getClass(), baseSpectrum);
 		}
 
-	public FirstWordProvider getFirstWordProvider() throws SequenceSpectrumException
+	public synchronized FirstWordProvider getFirstWordProvider() throws SequenceSpectrumException
 		{
 		if (ignoreEdges)
 			{
@@ -323,7 +323,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 * @see java.lang.Cloneable
 	 */
 	@Override
-	public SequenceFragment clone()
+	public synchronized SequenceFragment clone()
 		{
 		SequenceFragment result = new SequenceFragment(parentMetadata, sequenceName, startPosition, length);
 		result.setBaseSpectrum(getBaseSpectrum().clone());
@@ -337,7 +337,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	/* these methods are here so that a SequenceFragment object can represent the centroid of a cluster.  Obviously its metadata will be meaningless, though. */
 
-	public void decrementBy(SequenceFragment object)
+	public synchronized void decrementBy(SequenceFragment object)
 		{
 		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		try
@@ -354,7 +354,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		}
 
 
-	public void decrementByWeighted(SequenceFragment object, double weight)
+	public synchronized void decrementByWeighted(SequenceFragment object, double weight)
 		{
 		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		try
@@ -371,7 +371,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		fireUpdated(baseSpectrum);
 		}
 
-	public void incrementBy(SequenceFragment object)
+	public synchronized void incrementBy(SequenceFragment object)
 		{
 		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 
@@ -394,7 +394,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		}
 
 
-	public void incrementByWeighted(SequenceFragment object, double weight)
+	public synchronized void incrementByWeighted(SequenceFragment object, double weight)
 		{
 		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		if (sequenceName == null)
@@ -415,28 +415,28 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		fireUpdated(baseSpectrum);
 		}
 
-	public SequenceFragment minus(SequenceFragment k2)
+	public synchronized SequenceFragment minus(SequenceFragment k2)
 		{
 		SequenceFragment result = clone();
 		result.decrementBy(k2);
 		return result;
 		}
 
-	public SequenceFragment plus(SequenceFragment k2)
+	public synchronized SequenceFragment plus(SequenceFragment k2)
 		{
 		SequenceFragment result = clone();
 		result.incrementBy(k2);
 		return result;
 		}
 
-	public void multiplyBy(double v)
+	public synchronized void multiplyBy(double v)
 		{
 		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		baseSpectrum.multiplyBy(v);
 		fireUpdated(baseSpectrum);// ensure that any derived spectra are cleared
 		}
 
-	public SequenceFragment times(double v)
+	public synchronized SequenceFragment times(double v)
 		{
 		SequenceFragment result = clone();
 		result.multiplyBy(v);
@@ -453,7 +453,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 * @param other The clusterable object to compare against
 	 * @return True if they are equivalent, false otherwise
 	 */
-	public boolean equalValue(SequenceFragment other)
+	public synchronized boolean equalValue(SequenceFragment other)
 		{
 		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		try
@@ -493,7 +493,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	// the only way to do this is to scan the sequence.  It sucks but we have no choice
 
-	public void checkAvailable() throws NotEnoughSequenceException, IOException
+	public synchronized void checkAvailable() throws NotEnoughSequenceException, IOException
 		{
 		if (desiredlength == UNKNOWN_LENGTH)
 			{
@@ -615,9 +615,14 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	   return result;
 	   }*/
 
-	public List<byte[]> getFirstWords(int k) throws SequenceSpectrumException
+	public synchronized List<byte[]> getFirstWords(int k) throws SequenceSpectrumException
 		{
 		return getFirstWordProvider().getFirstWords(k);
+		}
+
+	public SequenceReader getReaderForSynchronizing()
+		{
+		return theReader;
 		}
 
 	/**
@@ -630,7 +635,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		 return getBaseSpectrum().getNumberOfSamples();//theKcount.getNumberOfSamples();
 		 }
  */
-	public SequenceReader getResetReader() throws NotEnoughSequenceException
+	public synchronized SequenceReader getResetReader() throws NotEnoughSequenceException
 		{
 		try
 			{
@@ -662,7 +667,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 * @return the SequenceSpectrum of the requested type describing statistics of this sequence
 	 * @throws SequenceSpectrumException when a spectrum of the requested type cannot be found or generated
 	 */
-	public <X extends SequenceSpectrum> SequenceSpectrum getSpectrum(Class<X> c, GenericFactory<X> factory)
+	public synchronized <X extends SequenceSpectrum> SequenceSpectrum getSpectrum(Class<X> c, GenericFactory<X> factory)
 			throws SequenceSpectrumException
 		{
 		SequenceSpectrum baseSpectrum = getBaseSpectrum();  // scan if needed
@@ -773,7 +778,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		 }
  */
 
-	public void setIgnoreEdges(boolean b)
+	public synchronized void setIgnoreEdges(boolean b)
 		{
 		ignoreEdges = b;
 		SequenceSpectrum baseSpectrum = getBaseSpectrum();
@@ -794,7 +799,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 * @return True if the spectra are equivalent, false otherwise
 	 * @see SequenceSpectrum#spectrumEquals(SequenceSpectrum)
 	 */
-	public boolean spectrumEquals(SequenceSpectrum spectrum)
+	public synchronized boolean spectrumEquals(SequenceSpectrum spectrum)
 		{
 		try
 			{
@@ -831,7 +836,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 * @return
 	 * @throws SequenceException
 	 */
-	public Set<SequenceFragment> removeOverlaps(Collection<SequenceFragment> remove) throws SequenceException
+	public synchronized Set<SequenceFragment> removeOverlaps(Collection<SequenceFragment> remove)
+			throws SequenceException
 		{
 		Set<SequenceFragment> result = new HashSet<SequenceFragment>();
 

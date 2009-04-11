@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DissimilarityMeasure;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -153,33 +155,45 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	 *          when something goes wrong in computing the label probabilities
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public ClusteringTestResults test(Iterator<T> theTestIterator, DissimilarityMeasure<String> intraLabelDistances)
+	public ClusteringTestResults test(Iterator<T> theTestIterator,
+	                                  final DissimilarityMeasure<String> intraLabelDistances)
 			throws DistributionException, ClusterException
 		{
-		ClusteringTestResults tr = new ClusteringTestResults();
+		final ClusteringTestResults tr = new ClusteringTestResults();
 
-		tr.numClusters = theClusters.size();
+		tr.setNumClusters(theClusters.size());
 
 		// these are used for checking whether a sample should have been unknown or not
-		Set<String> populatedTrainingLabels = findPopulatedTrainingLabels(tr);
+		final Set<String> populatedTrainingLabels = findPopulatedTrainingLabels(tr);
+
+		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
 
 		// classify the test samples
 		int i = 0;
 		while (theTestIterator.hasNext())
 			{
-			T frag = theTestIterator.next();
-			testOneSample(intraLabelDistances, tr, populatedTrainingLabels, frag);
+			final T frag = theTestIterator.next();
 
-			if (i % 100 == 0)
+			Future fut = execService.submit(new Runnable()
+			{
+			public void run()
 				{
-				logger.debug("Tested " + i + " samples.");
+				testOneSample(intraLabelDistances, tr, populatedTrainingLabels, frag);
 				}
+			});
+
+			/*	if (i % 100 == 0)
+			   {
+			   logger.debug("Enqueued " + i + " samples.");
+			   }*/
 			i++;
 			}
+		logger.debug("Enqueued " + i + " samples.");
+		tr.setTestSamples(i);
 
-		tr.testSamples = i;
+		execService.finish("Tested %d samples.", 30);
+
 		tr.finish();
-		logger.debug("Tested " + i + " samples.");
 		return tr;
 		}
 
@@ -194,7 +208,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			{
 			String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(trainingLabels);
 			populatedTrainingLabels.add(label);
-			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
+			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getWeightSum());
 			}
 		return populatedTrainingLabels;
 		}
@@ -231,7 +245,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
 			if (!populatedTrainingLabels.contains(broadActualLabel))
 				{
-				tr.shouldHaveBeenUnknown++;
+				tr.incrementShouldHaveBeenUnknown();
 				}
 
 			// compute a measure of how badly the prediction missed the truth, at the broad level
@@ -243,7 +257,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				logger.error("Broad Wrongness = " + broadWrongness);
 				}
 
-			// compute a measure of how badly the prediction missed the truth, at the broad level
+			// compute a measure of how badly the prediction missed the truth, at the detailed level
 			detailedWrongness = intraLabelDistances.distanceFromTo(detailedActualLabel, predictedLabel);
 			logger.debug("Label distance detailed wrongness = " + detailedWrongness);
 
@@ -261,12 +275,12 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			//secondToBestVoteRatio = 1.0;
 			clusterProb = 0;
 
-			tr.unknown++;
+			tr.incrementUnknown();
 
 			// the fragment's best label does match a training label, it should not be unknown
 			if (populatedTrainingLabels.contains(broadActualLabel))
 				{
-				tr.shouldNotHaveBeenUnknown++;
+				tr.incrementShouldNotHaveBeenUnknown();
 				}
 			}
 

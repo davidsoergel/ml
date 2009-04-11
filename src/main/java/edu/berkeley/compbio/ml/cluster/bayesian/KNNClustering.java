@@ -266,7 +266,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
 				if (!populatedTrainingLabels.contains(broadActualLabel))
 					{
-					tr.shouldHaveBeenUnknown++;
+					tr.incrementShouldHaveBeenUnknown();
 					}
 
 				// compute a measure of how badly the prediction missed the truth, at the broad level
@@ -307,12 +307,12 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			secondToBestDistanceRatio = 1.0;
 			secondToBestVoteRatio = 1.0;
 
-			tr.unknown++;
+			tr.incrementUnknown();
 
 			// the fragment's best label does match a training label, it should not be unknown
 			if (populatedTrainingLabels.contains(broadActualLabel))
 				{
-				tr.shouldNotHaveBeenUnknown++;
+				tr.incrementShouldNotHaveBeenUnknown();
 				}
 			}
 

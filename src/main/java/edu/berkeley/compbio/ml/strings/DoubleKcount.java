@@ -60,7 +60,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 
 	protected Double dataSum = null;
 
-	public double getArraySum()
+	public synchronized double getArraySum()
 		{
 		if (dataSum == null)
 			{
@@ -106,7 +106,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	 * @param other The Kcount to compare against
 	 * @return True if they are equivalent, false otherwise
 	 */
-	public boolean equalValue(T other)
+	public synchronized boolean equalValue(T other)
 		{
 		return Arrays.equals(counts, other.counts);
 		}
@@ -130,7 +130,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 
 	// -------------------------- OTHER METHODS --------------------------
 
-	public double[] getLevelOneArray()
+	public synchronized double[] getLevelOneArray()
 		{
 		DoubleKcount<T> a = this;
 		DoubleKcount<T> b = a.getParent();
@@ -155,13 +155,13 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	 *
 	 * @return The array of counts
 	 */
-	public double[] getArray()
+	public synchronized double[] getArray()
 		{
 		return counts;
 		}
 
 
-	public void multiplyBy(double v)
+	public synchronized void multiplyBy(double v)
 		{
 		DSArrayUtils.multiplyBy(counts, v);
 		dataSum = null;

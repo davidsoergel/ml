@@ -169,72 +169,75 @@ public class RonPSA extends RonPSANode
 	public double fragmentLogProbability(SequenceFragment sequenceFragment, boolean perSample)
 			throws SequenceSpectrumException
 		{
-		// simply follow the MarkovTreeNode as a state machine, using backlinks
-		SequenceReader in;
-		try
+		synchronized (sequenceFragment.getReaderForSynchronizing())
 			{
-			in = sequenceFragment.getResetReader();
-			}
-		catch (NotEnoughSequenceException e)
-			{
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		in.setTranslationAlphabet(getAlphabet());
-		double logprob = 0;
-		RonPSANode currentNode = this;
-		int count = 0;
-		int samples = 0;
-		int desiredLength = sequenceFragment.getDesiredLength();
-		while (count < desiredLength)
-			{
+			// simply follow the MarkovTreeNode as a state machine, using backlinks
+			SequenceReader in;
 			try
 				{
-				int c = in.readTranslated();
-				double logConditionalProbability = currentNode.logConditionalProbabilityByAlphabetIndex(c);
-
-				/*	logger.debug(
-					"Conditional at " + new String(currentNode.getIdBytes()) + " " + (char) getAlphabet()[c] + " = "
-							+ currentNode.conditionalProbabilityByAlphabetIndex(c));
-							*/
-				logprob += logConditionalProbability;
-				samples++;
-				currentNode = currentNode.nextNodeByAlphabetIndex(c);
+				in = sequenceFragment.getResetReader();
 				}
 			catch (NotEnoughSequenceException e)
 				{
-				logger.error("Error", e);
-				throw new SequenceSpectrumException(e);
+				throw new SequenceSpectrumRuntimeException(e);
 				}
-			catch (TranslationException e)
+			in.setTranslationAlphabet(getAlphabet());
+			double logprob = 0;
+			RonPSANode currentNode = this;
+			int count = 0;
+			int samples = 0;
+			int desiredLength = sequenceFragment.getDesiredLength();
+			while (count < desiredLength)
 				{
-				// probably a bad input character
-				logger.debug(" at " + in, e);
+				try
+					{
+					int c = in.readTranslated();
+					double logConditionalProbability = currentNode.logConditionalProbabilityByAlphabetIndex(c);
 
-				// ignore it, but reset the state machine
-				currentNode = this;
+					/*	logger.debug(
+				  "Conditional at " + new String(currentNode.getIdBytes()) + " " + (char) getAlphabet()[c] + " = "
+						  + currentNode.conditionalProbabilityByAlphabetIndex(c));
+						  */
+					logprob += logConditionalProbability;
+					samples++;
+					currentNode = currentNode.nextNodeByAlphabetIndex(c);
+					}
+				catch (NotEnoughSequenceException e)
+					{
+					logger.error("Error", e);
+					throw new SequenceSpectrumException(e);
+					}
+				catch (TranslationException e)
+					{
+					// probably a bad input character
+					logger.debug(" at " + in, e);
+
+					// ignore it, but reset the state machine
+					currentNode = this;
+					}
+				catch (IOException e)
+					{
+					logger.error("Error", e);
+					throw new SequenceSpectrumException(e);
+					}
+				catch (FilterException e)
+					{
+					logger.error("Error", e);
+					throw new SequenceSpectrumException(e);
+					}
+				count++;
 				}
-			catch (IOException e)
+
+
+			if (perSample)
 				{
-				logger.error("Error", e);
-				throw new SequenceSpectrumException(e);
+				// we have ln(product(p) == sum(ln(p)).
+				// The geometric mean is exp(sum(ln(p))/n), so to get ln(geometric mean) we need only divide by n.
+				logprob /= samples;
 				}
-			catch (FilterException e)
-				{
-				logger.error("Error", e);
-				throw new SequenceSpectrumException(e);
-				}
-			count++;
+
+
+			return logprob;
 			}
-
-
-		if (perSample)
-			{
-			// we have ln(product(p) == sum(ln(p)).
-			// The geometric mean is exp(sum(ln(p))/n), so to get ln(geometric mean) we need only divide by n.
-			logprob /= samples;
-			}
-
-
-		return logprob;
 		}
 	}

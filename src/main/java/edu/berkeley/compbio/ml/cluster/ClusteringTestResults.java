@@ -82,14 +82,14 @@ public class ClusteringTestResults
 
 	//public double correct = 0;
 	//public double wrong = 0;
-	public int unknown = 0;
-	public int numClusters = 0;
-	public int shouldHaveBeenUnknown = 0;
-	public int shouldNotHaveBeenUnknown = 0;
-	public int testSamples;
-	public double trainingSeconds;
-	public double testingSeconds;
-	public double totalTrainingMass = 0;
+	private int unknown = 0;
+	private int numClusters = 0;
+	private int shouldHaveBeenUnknown = 0;
+	private int shouldNotHaveBeenUnknown = 0;
+	private int testSamples;
+	private double trainingSeconds;
+	private double testingSeconds;
+	private double totalTrainingMass = 0;
 	//public int perfect = 0;
 
 	/**
@@ -184,8 +184,9 @@ public class ClusteringTestResults
 				/ (double) predictionDistances.size();
 		}
 
-	public void addResult(double broadWrongness, double detailedWrongness, double bestDistance,
-	                      double secondToBestDistanceRatio, double clusterProb, double secondToBestVoteRatio)
+	public synchronized void addResult(double broadWrongness, double detailedWrongness, double bestDistance,
+	                                   double secondToBestDistanceRatio, double clusterProb,
+	                                   double secondToBestVoteRatio)
 		{
 		assert !(Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness));
 		assert !(Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness));
@@ -200,5 +201,85 @@ public class ClusteringTestResults
 		secondToBestDistanceRatios.add(secondToBestDistanceRatio);
 		secondToBestVoteRatios.add(secondToBestVoteRatio);
 		labelWithinClusterProbabilities.add(clusterProb);
+		}
+
+	public synchronized void setNumClusters(int numClusters)
+		{
+		this.numClusters = numClusters;
+		}
+
+	public synchronized void setTestSamples(int i)
+		{
+		testSamples = i;
+		}
+
+	public synchronized void incrementTotalTrainingMass(double weightSum)
+		{
+		totalTrainingMass += weightSum;
+		}
+
+	public synchronized void incrementShouldHaveBeenUnknown()
+		{
+		shouldHaveBeenUnknown++;
+		}
+
+	public synchronized void incrementShouldNotHaveBeenUnknown()
+		{
+		shouldNotHaveBeenUnknown++;
+		}
+
+	public synchronized void incrementUnknown()
+		{
+		unknown++;
+		}
+
+	public void setTrainingSeconds(double trainingSeconds)
+		{
+		this.trainingSeconds = trainingSeconds;
+		}
+
+	public void setTestingSeconds(double testingSeconds)
+		{
+		this.testingSeconds = testingSeconds;
+		}
+
+	public int getNumClusters()
+		{
+		return numClusters;
+		}
+
+	public int getUnknown()
+		{
+		return unknown;
+		}
+
+	public int getShouldHaveBeenUnknown()
+		{
+		return shouldHaveBeenUnknown;
+		}
+
+	public int getShouldNotHaveBeenUnknown()
+		{
+		return shouldNotHaveBeenUnknown;
+		}
+
+	public int getTestSamples()
+		{
+		return testSamples;
+		}
+
+	public double getTrainingSeconds()
+		{
+		return trainingSeconds;
+		}
+
+	public double getTestingSeconds()
+		{
+		return testingSeconds;
+		}
+
+	public double getTotalTrainingMass()
+		{
+		return totalTrainingMass;
 		}
 	}

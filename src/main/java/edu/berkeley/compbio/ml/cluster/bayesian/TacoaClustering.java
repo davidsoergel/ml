@@ -44,7 +44,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			{
 			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.trainingLabels);
 			populatedTrainingLabels.add(label);
-			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
+			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getWeightSum());
 			}
 
 		// we're going to hack the prior probabilities using the number of clusters per label
@@ -119,7 +119,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
 			if (!populatedTrainingLabels.contains(broadActualLabel))
 				{
-				tr.shouldHaveBeenUnknown++;
+				tr.incrementShouldHaveBeenUnknown();
 				}
 
 			// compute a measure of how badly the prediction missed the truth, at the broad level
@@ -158,12 +158,12 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			bestVotes = UNKNOWN_DISTANCE;
 			secondToBestVoteRatio = UNKNOWN_DISTANCE;
 
-			tr.unknown++;
+			tr.incrementUnknown();
 
 			// the fragment's best label does match a training label, it should not be unknown
 			if (populatedTrainingLabels.contains(broadActualLabel))
 				{
-				tr.shouldNotHaveBeenUnknown++;
+				tr.incrementShouldNotHaveBeenUnknown();
 				}
 			}
 
