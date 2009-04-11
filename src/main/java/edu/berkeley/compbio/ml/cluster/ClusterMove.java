@@ -68,6 +68,12 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> impleme
 	 */
 	public double secondBestDistance = 0;
 
+	/**
+	 * For voting-based classifiers, different moves may count for diffenet numbers of votes, perhaps as a function of
+	 * distance. Defaults to 1.0.
+	 */
+	public double voteWeight = 1.0;
+
 
 	/**
 	 * Tells whether this move has any effect.

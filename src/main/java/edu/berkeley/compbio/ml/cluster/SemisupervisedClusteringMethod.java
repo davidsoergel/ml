@@ -31,8 +31,8 @@ public interface SemisupervisedClusteringMethod<T extends Clusterable<T>>
 	 */
 	void addAll(Iterator<? extends Clusterable<T>> samples);
 
-	ClusteringMethod.TestResults test(Iterator<T> testIterator, //Set<String> mutuallyExclusiveLabels,
-	                                  DissimilarityMeasure<String> intraLabelDistances)
+	ClusteringTestResults test(Iterator<T> testIterator, //Set<String> mutuallyExclusiveLabels,
+	                           DissimilarityMeasure<String> intraLabelDistances)
 			throws DistributionException, ClusterException;
 
 	void addAllAndRemember(Iterator<T> testIterator);

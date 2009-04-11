@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -154,118 +153,22 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	 *          when something goes wrong in computing the label probabilities
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public TestResults test(Iterator<T> theTestIterator, //Set<String> mutuallyExclusiveLabels,
-	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
-			DistributionException, ClusterException
-		{		// evaluate labeling correctness using the test samples
-
-		//	List<Double> secondBestDistances = new ArrayList<Double>();
-		TestResults tr = new TestResults();
+	public ClusteringTestResults test(Iterator<T> theTestIterator, DissimilarityMeasure<String> intraLabelDistances)
+			throws DistributionException, ClusterException
+		{
+		ClusteringTestResults tr = new ClusteringTestResults();
 
 		tr.numClusters = theClusters.size();
 
-		boolean computedDistancesInteresting = false;
-		boolean clusterProbabilitiesInteresting = false;
-
-		// Figure out which of the potential training labels were actually populated (some got tossed to provide for unknown test samples)
-		// while we're at it, sum up the cluster masses
-
-		Set<String> populatedTrainingLabels = new HashSet<String>();
-		for (C theCluster : theClusters)
-			{
-			populatedTrainingLabels.add(theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(trainingLabels));
-			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
-			}
+		// these are used for checking whether a sample should have been unknown or not
+		Set<String> populatedTrainingLabels = findPopulatedTrainingLabels(tr);
 
 		// classify the test samples
 		int i = 0;
 		while (theTestIterator.hasNext())
 			{
 			T frag = theTestIterator.next();
-
-			double clusterProb = 0;
-			double secondToBestDistanceRatio;
-			double wrongness;
-			double bestDistance;
-
-			String actualLabel = frag.getWeightedLabels().getDominantKeyInSet(testLabels);
-
-			try
-				{
-				// make the prediction
-				ClusterMove<T, C> cm = bestClusterMove(frag);   // throws NoGoodClusterException
-				bestDistance = cm.bestDistance;
-				secondToBestDistanceRatio = cm.secondBestDistance / cm.bestDistance;
-
-				// keep track of whether any good predictions are ever made
-				if (cm.bestDistance < UNKNOWN_DISTANCE)
-					{
-					computedDistancesInteresting = true;
-					}
-
-				// get the predicted label and its cluster-conditional probability
-				WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
-				String predictedLabel = labelsOnThisCluster.getDominantKeyInSet(trainingLabels);
-				clusterProb = labelsOnThisCluster.getNormalized(predictedLabel);
-
-				// keep track of whether any good predictions are ever made
-				if (clusterProb != 1)
-					{
-					clusterProbabilitiesInteresting = true;
-					}
-
-				// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
-				if (!populatedTrainingLabels.contains(actualLabel))
-					{
-					tr.shouldHaveBeenUnknown++;
-					}
-
-				// compute a measure of how badly the prediction missed the truth
-				wrongness = intraLabelDistances.distanceFromTo(actualLabel, predictedLabel);
-				logger.debug("Label distance wrongness = " + wrongness);
-
-				if (Double.isNaN(wrongness))
-					{
-					logger.error("Wrongness NaN");
-					}
-
-				if (Double.isInfinite(wrongness))
-					{
-					logger.error("Infinite Wrongness");
-					}
-
-				// don't bother with this: the predictions and real labels may be entirely disjoint; we're just interested in the distances
-/*
-				if (predictedLabel.equals(actualLabel))
-					{
-					tr.perfect++;
-					}
-*/
-
-
-				}
-			catch (NoGoodClusterException e)
-				{
-				wrongness = UNKNOWN_DISTANCE;
-				bestDistance = UNKNOWN_DISTANCE;
-				secondToBestDistanceRatio = 1.0;
-				//secondToBestVoteRatio = 1.0;
-				clusterProb = 0;
-
-				tr.unknown++;
-
-				// the fragment's best label does match a training label, it should not be unknown
-				if (populatedTrainingLabels.contains(actualLabel))
-					{
-					tr.shouldNotHaveBeenUnknown++;
-					}
-				}
-
-			tr.labelDistances.add(wrongness);
-			tr.computedDistances.add(bestDistance);
-			tr.secondToBestDistanceRatios.add(secondToBestDistanceRatio);
-			//	tr.voteRatios.add(bestToSecondVoteRatio);
-			tr.labelWithinClusterProbabilities.add(clusterProb);
+			testOneSample(intraLabelDistances, tr, populatedTrainingLabels, frag);
 
 			if (i % 100 == 0)
 				{
@@ -273,138 +176,101 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				}
 			i++;
 			}
-		if (!clusterProbabilitiesInteresting)
-			{
-			tr.labelWithinClusterProbabilities = null;
-			}
-		if (!computedDistancesInteresting)
-			{
-			tr.computedDistances = null;
-			}
+
 		tr.testSamples = i;
 		tr.finish();
-		logger.debug("Tested " + i + " samples.");		//	return i;
+		logger.debug("Tested " + i + " samples.");
 		return tr;
 		}
 
 	/**
-	 * Encapsulates the probability histograms of test samples classified correctly, incorrectly, or not at all.
-	 *
-	 * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
-	 * @version $Id$
+	 * Figure out which of the potential training labels were actually populated (some got tossed to provide for unknown
+	 * test samples) while we're at it, sum up the cluster masses
 	 */
-	public class TestResults
-		{		//	public Histogram1D correctProbabilities = new FixedWidthHistogram1D(0., 1., .01);		//	public Histogram1D wrongProbabilities = new FixedWidthHistogram1D(0., 1., .01);
-
-		//public List<Double> correctDistances = new ArrayList<Double>();		//public List<Double> wrongDistances = new ArrayList<Double>();
-
-		/**
-		 * The real distance between the predicted label and the real label ("wrongness") according to a label distance
-		 * measure
-		 */
-		public List<Double> labelDistances = new ArrayList<Double>();
-
-		/**
-		 * The computed distance between the sample and the predicted bin
-		 */
-		public List<Double> computedDistances = new ArrayList<Double>();
-
-		/**
-		 * The second-best distance as a proportion of the best distance; 1.0 = tie
-		 */
-		public List<Double> secondToBestDistanceRatios = new ArrayList<Double>();
-
-		/**
-		 * For voting-based classifiers, the second-best number of votes as a proportion of the best votes; 1.0 = tie
-		 */
-		public List<Double> secondToBestVoteRatios = new ArrayList<Double>();
-
-		/**
-		 * Probability of the best label, given the best cluster.  Used for unsupervised clustering where each cluster may
-		 * contain samples with multiple labels.
-		 */
-		public List<Double> labelWithinClusterProbabilities = new ArrayList<Double>();
-
-		//public double correct = 0;
-		//public double wrong = 0;
-		public int unknown = 0;
-		public int numClusters = 0;
-		public int shouldHaveBeenUnknown = 0;
-		public int shouldNotHaveBeenUnknown = 0;
-		public int testSamples;
-		public double trainingSeconds;
-		public double testingSeconds;
-		public double totalTrainingMass = 0;
-		public int perfect = 0;
-
-		/**
-		 * Normalize the proportions to 1.  Useful for instance if the proportion fields are initially set to raw counts.
-		 */		/*public void normalize()
+	protected Set<String> findPopulatedTrainingLabels(ClusteringTestResults tr) throws DistributionException
+		{
+		Set<String> populatedTrainingLabels = new HashSet<String>();
+		for (C theCluster : theClusters)
 			{
-			double total = correct + wrong + unknown;
-			correct /= total;
-			wrong /= total;
-			unknown /= total;
-			}*/
+			String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(trainingLabels);
+			populatedTrainingLabels.add(label);
+			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
+			}
+		return populatedTrainingLabels;
+		}
 
-		//	public double[] correctPercentages;		//	public double[] wrongPercentages;
+	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
+	                             Set<String> populatedTrainingLabels, T frag)
+		{
+		double clusterProb = 0;
+		double secondToBestDistanceRatio;
+		double broadWrongness;
+		double detailedWrongness;
+		double bestDistance;
 
-		//	public double[] correctDistanceHistogram;		//	public double[] wrongDistanceHistogram;		//	public double[] distanceBinCenters;
-		public void finish()
-			{			/*		int[] correctCounts = correctProbabilities.getCounts();
-			int[] wrongCounts = wrongProbabilities.getCounts();
+		// note the labels on the test set may be different from the training labels, as long as we can calculate wrongness.
+		// This supports a hierarchical classification scenario, where the "detailed" label is a leaf, and the "broad" label is a higher aggregate node.
+		// we want to measure wrongness _both_ at the broad level, matching where the prediction is made (so a perfect match is possible),
+		// _and_ at the detailed level, where even a perfect broad prediction incurs a cost due to lack of precision.
 
-			int correctTotal = DSArrayUtils.sum(correctCounts);
-			int wrongTotal = DSArrayUtils.sum(wrongCounts);
+		String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(trainingLabels);
+		String detailedActualLabel = frag.getWeightedLabels().getDominantKeyInSet(testLabels);
 
-			int total = correctTotal + wrongTotal;
+		try
+			{
+			// make the prediction
+			ClusterMove<T, C> cm = bestClusterMove(frag);   // throws NoGoodClusterException
+			bestDistance = cm.bestDistance;
+			secondToBestDistanceRatio = cm.secondBestDistance / cm.bestDistance;
 
-			correctPercentages = DSArrayUtils.castToDouble(correctCounts);
-			wrongPercentages = DSArrayUtils.castToDouble(wrongCounts);
+			// get the predicted label and its cluster-conditional probability
+			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
+			String predictedLabel = labelsOnThisCluster.getDominantKeyInSet(trainingLabels);
+			clusterProb = labelsOnThisCluster.getNormalized(predictedLabel);
 
-			DSArrayUtils.multiplyBy(correctPercentages, 1. / total);
-			DSArrayUtils.multiplyBy(wrongPercentages, 1. / total);
-
-			double[] correctDistancesPrimitive =
-					DSArrayUtils.toPrimitive((Double[]) correctDistances.toArray(new Double[0]));
-			double[] wrongDistancesPrimitive =
-					DSArrayUtils.toPrimitive((Double[]) wrongDistances.toArray(new Double[0]));
-
-			double minDistance =
-					Math.min(DSArrayUtils.min(correctDistancesPrimitive), DSArrayUtils.min(wrongDistancesPrimitive));
-			double maxDistance =
-					Math.max(DSArrayUtils.max(correctDistancesPrimitive), DSArrayUtils.max(wrongDistancesPrimitive));
-
-
-			double binwidth = (maxDistance - minDistance) / 1000.;
-
-			Histogram1D cHist =
-					new FixedWidthHistogram1D(minDistance, maxDistance, binwidth, correctDistancesPrimitive);
-			cHist.setTotalcounts(total);
-			try
+			// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
+			if (!populatedTrainingLabels.contains(broadActualLabel))
 				{
-				distanceBinCenters = cHist.getBinCenters();
-				}
-			catch (StatsException e)
-				{
-				logger.error(e);
-				throw new Error(e);
+				tr.shouldHaveBeenUnknown++;
 				}
 
-			correctDistanceHistogram = cHist.getCumulativeFractions();
+			// compute a measure of how badly the prediction missed the truth, at the broad level
+			broadWrongness = intraLabelDistances.distanceFromTo(broadActualLabel, predictedLabel);
+			logger.debug("Label distance broad wrongness = " + broadWrongness);
 
+			if (Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness))
+				{
+				logger.error("Broad Wrongness = " + broadWrongness);
+				}
 
-			FixedWidthHistogram1D wHist =
-					new FixedWidthHistogram1D(minDistance, maxDistance, binwidth, wrongDistancesPrimitive);
-			wHist.setTotalcounts(total);
-			wrongDistanceHistogram = wHist.getCumulativeFractions();
-			*/
+			// compute a measure of how badly the prediction missed the truth, at the broad level
+			detailedWrongness = intraLabelDistances.distanceFromTo(detailedActualLabel, predictedLabel);
+			logger.debug("Label distance detailed wrongness = " + detailedWrongness);
+
+			if (Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness))
+				{
+				logger.error("Detailed Wrongness = " + detailedWrongness);
+				}
 			}
-
-		public double getAccuracy()
+		catch (NoGoodClusterException e)
 			{
-			return (double) perfect / (double) labelDistances.size();
+			broadWrongness = UNKNOWN_DISTANCE;
+			detailedWrongness = UNKNOWN_DISTANCE;
+			bestDistance = UNKNOWN_DISTANCE;
+			secondToBestDistanceRatio = 1.0;
+			//secondToBestVoteRatio = 1.0;
+			clusterProb = 0;
+
+			tr.unknown++;
+
+			// the fragment's best label does match a training label, it should not be unknown
+			if (populatedTrainingLabels.contains(broadActualLabel))
+				{
+				tr.shouldNotHaveBeenUnknown++;
+				}
 			}
+
+		tr.addResult(broadWrongness, detailedWrongness, bestDistance, secondToBestDistanceRatio, clusterProb, 0.0);
 		}
 
 	/**

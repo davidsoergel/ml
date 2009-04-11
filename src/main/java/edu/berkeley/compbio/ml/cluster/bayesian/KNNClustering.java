@@ -33,27 +33,20 @@
 
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
-import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DissimilarityMeasure;
-import com.davidsoergel.stats.DistributionException;
 import com.google.common.collect.TreeMultimap;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
-import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
+import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * k-Nearest Neighbor classifier.  This makes sense only when multiple clusters have the same label.  In that case we
- * can look at the nearest k clusters, and vote among the labels (or even report the whole distribution).  Since this
- * corner of the code doesn't know about labels, we'll just return the top k clusters and let the label-voting happen
- * elsewhere.
+ * can look at the nearest k clusters, and vote among the labels (or even report the whole distribution).
  *
  * @author David Soergel
  * @version $Id$
@@ -65,7 +58,6 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 	private static final Logger logger = Logger.getLogger(KNNClustering.class);
 
-	private final int maxNeighbors;
 	private double voteProportionThreshold;
 	private double distanceTieThresholdRatio;
 	private double voteTieThresholdRatio;
@@ -80,8 +72,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	                     double voteTieThresholdRatio,
 	                     double distanceTieThresholdRatio) //, double decompositionDistanceThreshold)
 		{
-		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels);
-		this.maxNeighbors = maxNeighbors;
+		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels, maxNeighbors);
 		//		this.decompositionDistanceThreshold = decompositionDistanceThreshold;
 		this.voteProportionThreshold = voteProportionThreshold;
 		this.voteTieThresholdRatio = voteTieThresholdRatio;
@@ -180,261 +171,152 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			 }
 		 }
  */
-
-
-	/**
-	 * Evaluates the classification accuracy of this clustering using an iterator of test samples.  These samples should
-	 * not have been used in learning the cluster positions.  Determines what proportions of the test samples are
-	 * classified correctly, incorrectly, or not at all.
-	 *
-	 * @param theTestIterator     an Iterator of test samples. //@param mutuallyExclusiveLabels a Set of labels that we're
-	 *                            trying to classify
-	 * @param intraLabelDistances a measure of how different the labels are from each other.  For simply determining
-	 *                            whether the classification is correct or wrong, use a delta function (i.e. equals).
-	 *                            Sometimes, however, one label may be more wrong than another; this allows us to track
-	 *                            that.
-	 * @return a TestResults object encapsulating the proportions of test samples classified correctly, incorrectly, or not
-	 *         at all.
-	 * @throws edu.berkeley.compbio.ml.cluster.NoGoodClusterException
-	 *                          when a test sample cannot be assigned to any cluster
-	 * @throws com.davidsoergel.stats.DistributionException
-	 *                          when something goes wrong in computing the label probabilities
-	 * @throws ClusterException when something goes wrong in the bowels of the clustering implementation
-	 */
-	public TestResults test(Iterator<T> theTestIterator,// Set<String> mutuallyExclusiveLabels,
-	                        DissimilarityMeasure<String> intraLabelDistances) throws // NoGoodClusterException,
-			DistributionException, ClusterException
+	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
+	                             Set<String> populatedTrainingLabels, T frag)
 		{
-		//	List<Double> secondBestDistances = new ArrayList<Double>();
-		TestResults tr = new TestResults();
+		double voteProportion = 0;
+		double secondToBestVoteRatio;
+		double secondToBestDistanceRatio;
+		double broadWrongness;
+		double detailedWrongness;
+		double bestWeightedDistance;
 
-		tr.numClusters = theClusters.size();
+		// note the labels on the test set may be different from the training labels, as long as we can calculate wrongness.
+		// This supports a hierarchical classification scenario, where the "detailed" label is a leaf, and the "broad" label is a higher aggregate node.
+		// we want to measure wrongness _both_ at the broad level, matching where the prediction is made (so a perfect match is possible),
+		// _and_ at the detailed level, where even a perfect broad prediction incurs a cost due to lack of precision.
 
-		boolean computedDistancesInteresting = false;
-		boolean clusterProbabilitiesInteresting = false;
+		String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(trainingLabels);
+		String detailedActualLabel = frag.getWeightedLabels().getDominantKeyInSet(testLabels);
 
-		// Figure out which of the mutually exclusive labels actually had training bins (some got tossed to provide for unknown test samples)
-		// while we're at it, sum up the cluster masses
 
-		Set<String> trainingLabels = new HashSet<String>();
-		for (CentroidCluster<T> theCluster : theClusters)
+		try
 			{
-			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.trainingLabels);
-			trainingLabels.add(label);
-			tr.totalTrainingMass += theCluster.getWeightedLabels().getWeightSum();
-			}
+			TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
 
+			// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
+			final VotingResults votingResults = addUpNeighborVotes(moves, populatedTrainingLabels);
 
-		// classify the test samples
-		int i = 0;
-		while (theTestIterator.hasNext())
-			{
-			T frag = theTestIterator.next();
-			//String fragDominantLabel = frag.getWeightedLabels().getDominantKeyInSet(this.trainingLabels);
+			// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
 
+			// now pick the best one
+			String predictedLabel = votingResults.getBestLabel();
+			bestWeightedDistance = votingResults.computeWeightedDistance(predictedLabel);
 
-			double voteProportion = 0;
-			double secondToBestVoteRatio;
-			double secondToBestDistanceRatio;
-			double wrongness;
-			double bestWeightedDistance;
-			try
+			voteProportion = votingResults.getProb(predictedLabel);
+
+			// check that there's not a (near) tie
+			if (votingResults.hasSecondBestLabel())
 				{
-				TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
+				String secondBestLabel = votingResults.getSecondBestLabel();
 
-				// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
-				final VotingResults votingResults = addUpNeighborVotes(moves);
+				double bestVotes = votingResults.getVotes(predictedLabel);
+				double secondBestVotes = votingResults.getVotes(secondBestLabel);
+				assert secondBestVotes <= bestVotes;
 
-				// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
+				double secondBestWeightedDistance = votingResults.computeWeightedDistance(secondBestLabel);
 
-				// now pick the best one
-				String bestLabel = votingResults.getBestLabel();
-				bestWeightedDistance = votingResults.computeWeightedDistance(bestLabel);
+				// if the top two votes are too similar...
+				secondToBestVoteRatio = secondBestVotes / bestVotes;
+				secondToBestDistanceRatio = secondBestWeightedDistance / bestWeightedDistance;
 
-				voteProportion = votingResults.getProb(bestLabel);
-
-				// check that there's not a (near) tie
-				if (votingResults.hasSecondBestLabel())
+				if (secondToBestVoteRatio >= voteTieThresholdRatio)
 					{
-					String secondBestLabel = votingResults.getSecondBestLabel();
+					//... try to break the tie using the distances.
+					// we don't know whether the "second-best" or the "best" distance is actually better,
+					// so we first check for a tie using both the threshold and its inverse.
 
-					double bestVotes = votingResults.getVotes(bestLabel);
-					double secondBestVotes = votingResults.getVotes(secondBestLabel);
-					assert secondBestVotes <= bestVotes;
+					double minRatio = distanceTieThresholdRatio;
+					double maxRatio = 1. / distanceTieThresholdRatio;
 
-					double secondBestWeightedDistance = votingResults.computeWeightedDistance(secondBestLabel);
-
-					// if the top two votes are too similar...
-					secondToBestVoteRatio = secondBestVotes / bestVotes;
-					secondToBestDistanceRatio = secondBestWeightedDistance / bestWeightedDistance;
-
-					if (secondToBestVoteRatio >= voteTieThresholdRatio)
+					if (!(secondToBestDistanceRatio < minRatio || secondToBestDistanceRatio > maxRatio))
 						{
-						//... try to break the tie using the distances.
-						// we don't know whether the "second-best" or the "best" distance is actually better,
-						// so we first check for a tie using both the threshold and its inverse.
+						// indistinguishable tie, call it unknown
+						throw new NoGoodClusterException();
+						}
 
-						double minRatio = distanceTieThresholdRatio;
-						double maxRatio = 1. / distanceTieThresholdRatio;
+					// OK, it's not a distance tie, so pick the closer one
 
-						if (!(secondToBestDistanceRatio < minRatio || secondToBestDistanceRatio > maxRatio))
-							{
-							// indistinguishable tie, call it unknown
-							throw new NoGoodClusterException();
-							}
-
-						// OK, it's not a distance tie, so pick the closer one
-
-						if (bestWeightedDistance < secondBestWeightedDistance)
-							{
-							// OK, leave the current bestLabel intact then
-							}
-						else
-							{
-							bestLabel = secondBestLabel;
-							bestWeightedDistance = secondBestWeightedDistance;
-							}
+					if (bestWeightedDistance < secondBestWeightedDistance)
+						{
+						// OK, leave the current bestLabel intact then
+						}
+					else
+						{
+						predictedLabel = secondBestLabel;
+						bestWeightedDistance = secondBestWeightedDistance;
 						}
 					}
-				else
+				}
+			else
+				{
+				secondToBestVoteRatio = 0;
+				secondToBestDistanceRatio = Double.MAX_VALUE;  // infinity really, but that causes jdbc problems
+				}
+
+
+			//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy; set voteProportionThreshold high
+			if (voteProportion < voteProportionThreshold)
+				{
+				throw new NoGoodClusterException();
+				}
+			else
+				{
+
+				// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
+				if (!populatedTrainingLabels.contains(broadActualLabel))
 					{
-					secondToBestVoteRatio = 0;
-					secondToBestDistanceRatio = Double.MAX_VALUE;  // infinity really, but that causes jdbc problems
+					tr.shouldHaveBeenUnknown++;
 					}
-				//	String dominantExclusiveLabel = labelVotes.getDominantKeyInSet(mutuallyExclusiveLabels);
 
+				// compute a measure of how badly the prediction missed the truth, at the broad level
+				broadWrongness = intraLabelDistances.distanceFromTo(broadActualLabel, predictedLabel);
+				logger.debug("Label distance broad wrongness = " + broadWrongness);
 
-				//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy
-				if (voteProportion < voteProportionThreshold)
+				if (Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness))
 					{
-					throw new NoGoodClusterException();
+					logger.error("Broad Wrongness = " + broadWrongness);
 					}
-				else
+
+				// compute a measure of how badly the prediction missed the truth, at the broad level
+				detailedWrongness = intraLabelDistances.distanceFromTo(detailedActualLabel, predictedLabel);
+				logger.debug("Label distance detailed wrongness = " + detailedWrongness);
+
+				if (Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness))
 					{
-
-					// the fragment's best label does not match any training label, it should be unknown
-					/*		if (!trainingLabels.contains(fragDominantLabel))
-							 {
-							 tr.shouldHaveBeenUnknown++;
-							 }
-	 */
-
-					// if the fragment's best label from the same exclusive set is the same one, that's a match.
-					// instead of binary classification, measure how bad the miss is (0 for perfect match)
-
-					wrongness = intraLabelDistances
-							.distanceFromTo(frag.getWeightedLabels().getDominantKeyInSet(this.trainingLabels),
-							                bestLabel);
-					if (Double.isNaN(wrongness))
-						{
-						logger.error("Wrongness NaN");
-						}
-
-					if (Double.isInfinite(wrongness))
-						{
-						logger.error("Infinite Wrongness");
-						}
-
-
-					logger.debug("Label distance wrongness = " + wrongness);
-
-					if (bestWeightedDistance < UNKNOWN_DISTANCE)
-						{
-						computedDistancesInteresting = true;
-						}
-					if (voteProportion != 1)
-						{
-						clusterProbabilitiesInteresting = true;
-						}
-
-					/*		if (fragDominantLabel.equals(dominantExclusiveLabel))
-									   {
-									   tr.correctProbabilities.add(clusterProb);
-									   tr.correctDistances.add(cm.bestDistance);
-									   }
-								   else
-									   {
-									   tr.wrongProbabilities.add(clusterProb);
-									   tr.wrongDistances.add(cm.bestDistance);
-									   }*/
+					logger.error("Detailed Wrongness = " + detailedWrongness);
 					}
+
+				/*		if (fragDominantLabel.equals(dominantExclusiveLabel))
+								   {
+								   tr.correctProbabilities.add(clusterProb);
+								   tr.correctDistances.add(cm.bestDistance);
+								   }
+							   else
+								   {
+								   tr.wrongProbabilities.add(clusterProb);
+								   tr.wrongDistances.add(cm.bestDistance);
+								   }*/
 				}
-			catch (NoGoodClusterException e)
-				{
-				wrongness = UNKNOWN_DISTANCE;
-				bestWeightedDistance = UNKNOWN_DISTANCE;
-				secondToBestDistanceRatio = UNKNOWN_DISTANCE;
-				secondToBestVoteRatio = UNKNOWN_DISTANCE;
-
-				tr.unknown++;
-
-				// the fragment's best label does match a training label, it should not be unknown
-				/*	if (trainingLabels.contains(fragDominantLabel))
-					 {
-					 tr.shouldNotHaveBeenUnknown++;
-					 }
-			 */
-				}
-
-			assert !(Double.isNaN(wrongness) || Double.isInfinite(wrongness));
-			assert !(Double.isNaN(bestWeightedDistance) || Double.isInfinite(bestWeightedDistance));
-			assert !(Double.isNaN(secondToBestDistanceRatio) || Double.isInfinite(secondToBestDistanceRatio));
-			assert !(Double.isNaN(secondToBestVoteRatio) || Double.isInfinite(secondToBestVoteRatio));
-			assert !(Double.isNaN(voteProportion) || Double.isInfinite(voteProportion));
-
-			tr.labelDistances.add(wrongness);
-			tr.computedDistances.add(bestWeightedDistance);
-			tr.secondToBestDistanceRatios.add(secondToBestDistanceRatio);
-			tr.secondToBestVoteRatios.add(secondToBestVoteRatio);
-			tr.labelWithinClusterProbabilities.add(voteProportion);
-
-			if (i % 100 == 0)
-				{
-				logger.debug("Tested " + i + " samples.");
-				}
-			i++;
 			}
-		if (!clusterProbabilitiesInteresting)
+		catch (NoGoodClusterException e)
 			{
-			tr.labelWithinClusterProbabilities = null;
-			}
-		if (!computedDistancesInteresting)
-			{
-			tr.computedDistances = null;
-			}
-		tr.testSamples = i;
-		tr.finish();
-		logger.info("Tested " + i + " samples.");		//	return i;
-		return tr;
-		}
+			broadWrongness = UNKNOWN_DISTANCE;
+			detailedWrongness = UNKNOWN_DISTANCE;
+			bestWeightedDistance = UNKNOWN_DISTANCE;
+			secondToBestDistanceRatio = 1.0;
+			secondToBestVoteRatio = 1.0;
 
-	private VotingResults addUpNeighborVotes(TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves)
-		{
-		VotingResults result = new VotingResults();
+			tr.unknown++;
 
-		int neighborsCounted = 0;
-		for (ClusterMove<T, CentroidCluster<T>> cm : moves.values()) // these should be in order of increasing distance
-			{
-			if (neighborsCounted >= maxNeighbors)
+			// the fragment's best label does match a training label, it should not be unknown
+			if (populatedTrainingLabels.contains(broadActualLabel))
 				{
-				break;
+				tr.shouldNotHaveBeenUnknown++;
 				}
-
-			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
-
-			result.addVotes(labelsOnThisCluster);
-
-			for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
-				{
-				final String label = entry.getKey();
-				final Double labelProbability = entry.getValue();
-
-				result.addContribution(cm, label, labelProbability);
-				}
-
-			neighborsCounted++;
 			}
-		result.finish(trainingLabels);
-		return result;
+
+		tr.addResult(broadWrongness, detailedWrongness, bestWeightedDistance, secondToBestDistanceRatio, voteProportion,
+		             secondToBestVoteRatio);
 		}
 	}

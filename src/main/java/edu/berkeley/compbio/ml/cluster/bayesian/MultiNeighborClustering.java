@@ -34,13 +34,16 @@ import java.util.Set;
  */
 public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> extends NeighborClustering<T>
 	{
+	protected final int maxNeighbors;
+
 	private static final Logger logger = Logger.getLogger(MultiNeighborClustering.class);
 
 
 	public MultiNeighborClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
-	                               double unknownDistanceThreshold, Set<String> leaveOneOutLabels)
+	                               double unknownDistanceThreshold, Set<String> leaveOneOutLabels, int maxNeighbors)
 		{
 		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels);
+		this.maxNeighbors = maxNeighbors;
 		}
 
 	/**
@@ -273,10 +276,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 					distance = measure.distanceFromTo(p, cluster.getCentroid());
 					}
 
-
-				ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
-				cm.bestCluster = cluster;
-				cm.bestDistance = distance;
+				ClusterMove<T, CentroidCluster<T>> cm = makeClusterMove(cluster, distance);
 
 				// ignore the secondBestDistance, we don't need it here
 
@@ -299,6 +299,21 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 		}
 
 	/**
+	 * allow an overriding clustering method to tweak the distances, set vote weights, etc.
+	 *
+	 * @param cluster
+	 * @param distance
+	 * @return
+	 */
+	protected ClusterMove<T, CentroidCluster<T>> makeClusterMove(CentroidCluster<T> cluster, double distance)
+		{
+		ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
+		cm.bestCluster = cluster;
+		cm.bestDistance = distance;
+		return cm;
+		}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -311,5 +326,36 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 			{
 			c.updateDerivedWeightedLabelsFromLocal();
 			}
+		}
+
+	protected VotingResults addUpNeighborVotes(TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves,
+	                                           Set<String> populatedTrainingLabels)
+		{
+		VotingResults result = new VotingResults();
+
+		int neighborsCounted = 0;
+		for (ClusterMove<T, CentroidCluster<T>> cm : moves.values()) // these should be in order of increasing distance
+			{
+			if (neighborsCounted >= maxNeighbors)
+				{
+				break;
+				}
+
+			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
+
+			result.addVotes(labelsOnThisCluster, cm.voteWeight);
+
+			for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
+				{
+				final String label = entry.getKey();
+				final Double labelProbability = entry.getValue();
+
+				result.addContribution(cm, label, labelProbability);
+				}
+
+			neighborsCounted++;
+			}
+		result.finish(populatedTrainingLabels);
+		return result;
 		}
 	}
