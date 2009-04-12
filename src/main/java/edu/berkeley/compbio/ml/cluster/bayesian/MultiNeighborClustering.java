@@ -75,7 +75,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 			int i = 0;
 
 
-			ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+			//	ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
 
 
 			while (trainingIterator.hasNext())
@@ -83,30 +83,30 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 
 				final T point = trainingIterator.next();
 				final int clusterId = i++;
-				execService.submit(new Runnable()
-				{
-				public void run()
+				//		execService.submit(new Runnable()
+				//		{
+				//		public void run()
+				//			{
+				try
 					{
-					try
-						{
 
-						// generate one "cluster" per test sample.
-						CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
+					// generate one "cluster" per test sample.
+					CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
 
-						//** for now we make a uniform prior
-						priorsMult.put(cluster, 1);
-						theClusters.add(cluster);
-						}
-					catch (DistributionException e)
-						{
-						logger.error("Error", e);
-						throw new ClusterRuntimeException(e);
-						}
+					//** for now we make a uniform prior
+					priorsMult.put(cluster, 1);
+					theClusters.add(cluster);
 					}
-				});
+				catch (DistributionException e)
+					{
+					logger.error("Error", e);
+					throw new ClusterRuntimeException(e);
+					}
 				}
+			//	});
+			//	}
 
-			execService.finish("Processed %d training samples", 30);
+			//execService.finish("Processed %d training samples", 30);
 
 
 			priorsMult.normalize();
@@ -351,10 +351,19 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 		// do nothing
 
 		// after that, normalize the label probabilities
-		for (Cluster c : theClusters)
+
+		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+		for (final Cluster c : theClusters)
 			{
-			c.updateDerivedWeightedLabelsFromLocal();
+			execService.submit(new Runnable()
+			{
+			public void run()
+				{
+				c.updateDerivedWeightedLabelsFromLocal();
+				}
+			});
 			}
+		execService.finish("Normalized %d training probabilities", 30);
 		}
 
 	protected VotingResults addUpNeighborVotes(TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves,

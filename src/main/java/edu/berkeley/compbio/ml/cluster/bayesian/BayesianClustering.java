@@ -101,56 +101,58 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 			// consume the entire iterator, ignoring initsamples
 			int i = 0;
 
-			ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+			//		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+
+			// the execService approach caches all the points.  In that the reason for the memory problem?
 
 			while (trainingIterator.hasNext())
 				{
 				final T point = trainingIterator.next();
 				final int clusterId = i++;
-				execService.submit(new Runnable()
-				{
-				public void run()
+				//		execService.submit(new Runnable()
+				//		{
+				//		public void run()
+				//			{
+				try
 					{
-					try
+					// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
+					// the training samples must already be labelled with a bin ID.
+
+					String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+					CentroidCluster<T> cluster = theClusterMap.get(clusterBinId);
+
+					if (cluster == null)
 						{
-						// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
-						// the training samples must already be labelled with a bin ID.
+						final T centroid = prototypeFactory.create(point.getId());
 
-						String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
-						CentroidCluster<T> cluster = theClusterMap.get(clusterBinId);
+						cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
 
-						if (cluster == null)
-							{
-							final T centroid = prototypeFactory.create(point.getId());
+						theClusterMap.put(clusterBinId, cluster);
 
-							cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
-
-							theClusterMap.put(clusterBinId, cluster);
-
-							//** for now we make a uniform prior
-							priorsMult.put(cluster, 1);
-							}
-
-						// note this updates the cluster labels as well.
-						// In particular, the point should already be labelled with a Training Label (not just a bin ID),
-						// so that the cluster will know what label it predicts.
-						cluster.add(point);
+						//** for now we make a uniform prior
+						priorsMult.put(cluster, 1);
 						}
-					catch (DistributionException e)
-						{
-						logger.error("Error", e);
-						throw new ClusterRuntimeException(e);
-						}
-					catch (GenericFactoryException e)
-						{
-						logger.error("Error", e);
-						throw new ClusterRuntimeException(e);
-						}
+
+					// note this updates the cluster labels as well.
+					// In particular, the point should already be labelled with a Training Label (not just a bin ID),
+					// so that the cluster will know what label it predicts.
+					cluster.add(point);
 					}
-				});
+				catch (DistributionException e)
+					{
+					logger.error("Error", e);
+					throw new ClusterRuntimeException(e);
+					}
+				catch (GenericFactoryException e)
+					{
+					logger.error("Error", e);
+					throw new ClusterRuntimeException(e);
+					}
 				}
+			//	});
+			//	}
 
-			execService.finish("Processed %d training samples", 30);
+			//execService.finish("Processed %d training samples", 30);
 
 			priorsMult.normalize();
 			priors = priorsMult.getValueMap();
@@ -174,7 +176,6 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 
 
 		// after that, normalize the label probabilities
-
 
 		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
 		for (final Cluster c : theClusters)
