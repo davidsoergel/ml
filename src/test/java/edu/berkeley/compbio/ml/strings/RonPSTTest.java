@@ -37,6 +37,7 @@ import com.davidsoergel.dsutils.ContractTest;
 import com.davidsoergel.dsutils.ContractTestAware;
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.TestInstanceFactory;
+import com.davidsoergel.dsutils.collections.DSCollectionUtils;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MathUtils;
@@ -371,7 +372,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			aCounts.put((byte) 'c', 3.);
 			aCounts.put((byte) 'd', 4.);
 			counts2.put((byte) 'a', aCounts);
-			counts.put((byte) 'a', DSArrayUtils.sum(aCounts.values()));
+			counts.put((byte) 'a', DSCollectionUtils.sum(aCounts.values()));
 
 			Map<Byte, Double> bCounts = new HashMap<Byte, Double>();
 			bCounts.put((byte) 'a', 3.);
@@ -379,7 +380,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			bCounts.put((byte) 'c', 3.);
 			bCounts.put((byte) 'd', 1.);
 			counts2.put((byte) 'b', bCounts);
-			counts.put((byte) 'b', DSArrayUtils.sum(bCounts.values()));
+			counts.put((byte) 'b', DSCollectionUtils.sum(bCounts.values()));
 
 			Map<Byte, Double> cCounts = new HashMap<Byte, Double>();
 			cCounts.put((byte) 'a', 2.);
@@ -387,7 +388,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			cCounts.put((byte) 'c', 6.);
 			cCounts.put((byte) 'd', 8.);
 			counts2.put((byte) 'c', cCounts);
-			counts.put((byte) 'c', DSArrayUtils.sum(cCounts.values()));
+			counts.put((byte) 'c', DSCollectionUtils.sum(cCounts.values()));
 
 			Map<Byte, Double> dCounts = new HashMap<Byte, Double>();
 			dCounts.put((byte) 'a', 4.);
@@ -395,7 +396,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			dCounts.put((byte) 'c', 2.);
 			dCounts.put((byte) 'd', 1.);
 			counts2.put((byte) 'd', dCounts);
-			counts.put((byte) 'd', DSArrayUtils.sum(dCounts.values()));
+			counts.put((byte) 'd', DSCollectionUtils.sum(dCounts.values()));
 			}
 
 		/**

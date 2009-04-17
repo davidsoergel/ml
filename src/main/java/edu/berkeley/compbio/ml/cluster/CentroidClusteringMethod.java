@@ -32,7 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.DSArrayUtils;
+import com.davidsoergel.dsutils.collections.DSCollectionUtils;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.log4j.Logger;
@@ -142,7 +142,7 @@ public abstract class CentroidClusteringMethod<T extends Clusterable<T>> extends
 					}
 				}
 			}
-		double avg = DSArrayUtils.sum(distances) / (double) distances.size();
+		double avg = DSCollectionUtils.sum(distances) / (double) distances.size();
 		double sd = 0;
 		for (double d : distances)
 			{
