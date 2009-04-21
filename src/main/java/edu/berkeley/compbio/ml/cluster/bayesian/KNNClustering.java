@@ -34,6 +34,7 @@
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
+import com.davidsoergel.stats.SimpleFunction;
 import com.google.common.collect.TreeMultimap;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -61,6 +62,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	private double voteProportionThreshold;
 	private double distanceTieThresholdRatio;
 	private double voteTieThresholdRatio;
+	private SimpleFunction function = null;
 	//	private double decompositionDistanceThreshold;
 
 	/**
@@ -69,14 +71,15 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 */
 	public KNNClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
 	                     Set<String> leaveOneOutLabels, int maxNeighbors, double voteProportionThreshold,
-	                     double voteTieThresholdRatio,
-	                     double distanceTieThresholdRatio) //, double decompositionDistanceThreshold)
+	                     double voteTieThresholdRatio, double distanceTieThresholdRatio,
+	                     SimpleFunction function) //, double decompositionDistanceThreshold)
 		{
 		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels, maxNeighbors);
 		//		this.decompositionDistanceThreshold = decompositionDistanceThreshold;
 		this.voteProportionThreshold = voteProportionThreshold;
 		this.voteTieThresholdRatio = voteTieThresholdRatio;
 		this.distanceTieThresholdRatio = distanceTieThresholdRatio;
+		this.function = function;
 		}
 
 	//** clean up code redundancy etc.
@@ -318,5 +321,24 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 		tr.addResult(broadWrongness, detailedWrongness, bestWeightedDistance, secondToBestDistanceRatio, voteProportion,
 		             secondToBestVoteRatio);
+		}
+
+	/**
+	 * allow an overriding clustering method to tweak the distances, set vote weights, etc.
+	 *
+	 * @param cluster
+	 * @param distance
+	 * @return
+	 */
+	protected ClusterMove<T, CentroidCluster<T>> makeClusterMove(CentroidCluster<T> cluster, double distance)
+		{
+		ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
+		cm.bestCluster = cluster;
+		cm.bestDistance = distance;
+		if (function != null)
+			{
+			cm.voteWeight = function.f(distance);
+			}
+		return cm;
 		}
 	}
