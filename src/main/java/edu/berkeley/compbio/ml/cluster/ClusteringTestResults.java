@@ -108,23 +108,23 @@ public class ClusteringTestResults
 	public void finish()
 		{
 		// keep track of whether any good predictions are ever made
-		if (!DSCollectionUtils.allElementsEqual(computedDistances, ClusteringMethod.UNKNOWN_DISTANCE))
+		if (DSCollectionUtils.allElementsEqual(computedDistances, ClusteringMethod.UNKNOWN_DISTANCE))
 			{
 			computedDistances = null;
 			}
-		if (!DSCollectionUtils.allElementsEqual(computedDistances, 1.0))
+		if (DSCollectionUtils.allElementsEqual(computedDistances, 1.0))
 			{
 			labelWithinClusterProbabilities = null;
 			}
-		if (!DSCollectionUtils.allElementsEqual(secondToBestDistanceRatios, 0.0))
+		if (DSCollectionUtils.allElementsEqual(secondToBestDistanceRatios, 0.0))
 			{
 			secondToBestDistanceRatios = null;
 			}
-		if (!DSCollectionUtils.allElementsEqual(secondToBestVoteRatios, 0.0))
+		if (DSCollectionUtils.allElementsEqual(secondToBestVoteRatios, 0.0))
 			{
 			secondToBestVoteRatios = null;
 			}
-		if (!DSCollectionUtils.allElementsEqual(labelWithinClusterProbabilities, 1.0))
+		if (DSCollectionUtils.allElementsEqual(labelWithinClusterProbabilities, 1.0))
 			{
 			labelWithinClusterProbabilities = null;
 			}
