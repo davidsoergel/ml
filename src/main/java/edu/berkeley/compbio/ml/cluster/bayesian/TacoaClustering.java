@@ -172,7 +172,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		double bestDistance = 1.0 / bestVotes;
 		double secondToBestDistanceRatio = 1.0 / secondToBestVoteRatio;
 
-		tr.addResult(broadWrongness, detailedWrongness, bestDistance, secondToBestDistanceRatio, voteProportion,
+		tr.addResult(broadWrongness, detailedWrongness, bestDistance, secondToBestDistanceRatio, 0, voteProportion,
 		             secondToBestVoteRatio);
 		}
 

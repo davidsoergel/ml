@@ -57,6 +57,16 @@ public class ClusteringTestResults
 		}
 
 	/**
+	 * For voting-based classifiers, the proportion of votes that the best label got
+	 */
+	private List<Double> bestVoteProportions = new ArrayList<Double>();
+
+	public Double[] getBestVoteProportionsArray()
+		{
+		return bestVoteProportions == null ? null : bestVoteProportions.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
+		}
+
+	/**
 	 * For voting-based classifiers, the second-best number of votes as a proportion of the best votes; 1.0 = tie
 	 */
 	private List<Double> secondToBestVoteRatios = new ArrayList<Double>();
@@ -180,12 +190,19 @@ public class ClusteringTestResults
 
 	public double getAccuracy()
 		{
-		return (double) DSCollectionUtils.countMatches(predictionDistances, new EqualPredicate(0.0))
-				/ (double) predictionDistances.size();
+		if (predictionDistances != null && predictionDistances.size() != 0)
+			{
+			return (double) DSCollectionUtils.countMatches(predictionDistances, new EqualPredicate(0.0))
+					/ (double) predictionDistances.size();
+			}
+		else
+			{
+			return 0;
+			}
 		}
 
 	public synchronized void addResult(double broadWrongness, double detailedWrongness, double bestDistance,
-	                                   double secondToBestDistanceRatio, double clusterProb,
+	                                   double secondToBestDistanceRatio, double clusterProb, double bestVoteProportion,
 	                                   double secondToBestVoteRatio)
 		{
 		assert !(Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness));
@@ -199,6 +216,7 @@ public class ClusteringTestResults
 		predictionDistancesWithPrecisionCost.add(detailedWrongness);
 		computedDistances.add(bestDistance);
 		secondToBestDistanceRatios.add(secondToBestDistanceRatio);
+		bestVoteProportions.add(bestVoteProportion);
 		secondToBestVoteRatios.add(secondToBestVoteRatio);
 		labelWithinClusterProbabilities.add(clusterProb);
 		}

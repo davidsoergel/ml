@@ -221,6 +221,8 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		double broadWrongness;
 		double detailedWrongness;
 		double bestDistance;
+		double bestVoteProportion;
+		double secondToBestVoteRatio;
 
 		// note the labels on the test set may be different from the training labels, as long as we can calculate wrongness.
 		// This supports a hierarchical classification scenario, where the "detailed" label is a leaf, and the "broad" label is a higher aggregate node.
@@ -236,6 +238,8 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			ClusterMove<T, C> cm = bestClusterMove(frag);   // throws NoGoodClusterException
 			bestDistance = cm.bestDistance;
 			secondToBestDistanceRatio = cm.secondBestDistance / cm.bestDistance;
+			bestVoteProportion = cm.voteProportion;
+			secondToBestVoteRatio = cm.secondBestVoteProportion / cm.voteProportion;
 
 			// get the predicted label and its cluster-conditional probability
 			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
@@ -272,7 +276,8 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 			detailedWrongness = UNKNOWN_DISTANCE;
 			bestDistance = UNKNOWN_DISTANCE;
 			secondToBestDistanceRatio = 1.0;
-			//secondToBestVoteRatio = 1.0;
+			bestVoteProportion = 0;
+			secondToBestVoteRatio = 1.0;
 			clusterProb = 0;
 
 			tr.incrementUnknown();
@@ -284,7 +289,8 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 				}
 			}
 
-		tr.addResult(broadWrongness, detailedWrongness, bestDistance, secondToBestDistanceRatio, clusterProb, 0.0);
+		tr.addResult(broadWrongness, detailedWrongness, bestDistance, secondToBestDistanceRatio, clusterProb,
+		             bestVoteProportion, secondToBestVoteRatio);
 		}
 
 	/**

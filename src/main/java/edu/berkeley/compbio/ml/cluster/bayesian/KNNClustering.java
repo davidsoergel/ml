@@ -319,8 +319,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				}
 			}
 
-		tr.addResult(broadWrongness, detailedWrongness, bestWeightedDistance, secondToBestDistanceRatio, voteProportion,
-		             secondToBestVoteRatio);
+		tr.addResult(broadWrongness, detailedWrongness, bestWeightedDistance, secondToBestDistanceRatio, 0,
+		             voteProportion, secondToBestVoteRatio);
 		}
 
 	/**

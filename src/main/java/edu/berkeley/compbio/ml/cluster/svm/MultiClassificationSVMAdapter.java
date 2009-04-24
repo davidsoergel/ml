@@ -9,6 +9,7 @@ import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblem;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblemImpl;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
+import edu.berkeley.compbio.jlibsvm.multi.VotingResult;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
@@ -122,8 +123,26 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public ClusterMove<T, BatchCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
+		VotingResult<BatchCluster<T>> r = model.predictLabelWithQuality(p);
 		ClusterMove<T, BatchCluster<T>> result = new ClusterMove<T, BatchCluster<T>>();
-		result.bestCluster = model.predictLabel(p);
+		result.bestCluster = r.getBestLabel();
+
+		result.voteProportion = r.getBestVoteProportion();
+		result.secondBestVoteProportion = r.getSecondBestVoteProportion();
+
+		result.bestDistance = r.getBestProbability();
+		result.secondBestDistance = r.getSecondBestProbability();
+
+
+		//**  just drop these for now
+		/*
+		r.getBestOneVsAllProbability();
+		r.getSecondBestOneVsAllProbability();
+
+		r.getBestOneClassProbability();
+		r.getSecondBestOneClassProbability();
+		*/
+
 
 		if (result.bestCluster == null)
 			{

@@ -74,6 +74,14 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> impleme
 	 */
 	public double voteWeight = 1.0;
 
+	/**
+	 * for an SVM, this move may have been arrived at by a voting procedure
+	 */
+	public double voteProportion;
+	/**
+	 * for an SVM, this move may have been arrived at by a voting procedure
+	 */
+	public double secondBestVoteProportion;
 
 	/**
 	 * Tells whether this move has any effect.
