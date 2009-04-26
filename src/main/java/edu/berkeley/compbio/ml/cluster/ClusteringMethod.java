@@ -26,7 +26,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	{
 	private static final Logger logger = Logger.getLogger(ClusteringMethod.class);
 
-	protected static final Double UNKNOWN_DISTANCE = Double.MAX_VALUE;
+	protected static final Double UNKNOWN_DISTANCE = 1e308; // Double.MAX_VALUE; triggers MySQL bug # 21497
 
 	protected DissimilarityMeasure<T> measure;
 	protected Collection<C> theClusters = new ArrayList<C>();

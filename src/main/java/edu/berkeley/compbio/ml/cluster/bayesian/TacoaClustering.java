@@ -112,7 +112,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				}
 			else
 				{
-				secondToBestVoteRatio = Double.MAX_VALUE;  // infinity really, but that causes problems
+				secondToBestVoteRatio =
+						1e308; // Double.MAX_VALUE; triggers MySQL bug # 21497  // infinity really, but that causes jdbc problems
 				}
 
 

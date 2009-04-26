@@ -70,7 +70,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	private static final Logger logger = Logger.getLogger(SequenceFragment.class);
 
-	protected Map<Class, SequenceSpectrum> theSpectra = new WeakHashMap<Class, SequenceSpectrum>();
+	protected Map<Class, SequenceSpectrum> theDerivedSpectra = new WeakHashMap<Class, SequenceSpectrum>();
 
 	// ** weak references cause problems for additive clusters that can't be rescanned
 	//protected WeakReference<SequenceSpectrum> _baseSpectrum;
@@ -273,12 +273,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	public synchronized void setBaseSpectrum(@NotNull SequenceSpectrum spectrum)
 		{
 		//	SequenceSpectrum baseSpectrum = _baseSpectrum == null ? null : _baseSpectrum.get();
-		if (baseSpectrum == spectrum && theSpectra.size() == 1)
-			{
-			// nothing has changed
-			return;
-			}
-		theSpectra.clear();
+		/*	if (baseSpectrum == spectrum && theSpectra.size() == 1)
+		   {
+		   // nothing has changed
+		   return;
+		   }*/
+		theDerivedSpectra.clear();
 		baseSpectrum = spectrum;
 		length = baseSpectrum.getOriginalSequenceLength();// how much sequence was actually read
 		if (!ignoreEdges)
@@ -671,7 +671,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			throws SequenceSpectrumException
 		{
 		SequenceSpectrum baseSpectrum = getBaseSpectrum();  // scan if needed
-		SequenceSpectrum s = theSpectra.get(c);
+		SequenceSpectrum s = theDerivedSpectra.get(c);
 		if (s == null)
 			{
 			if (c.isAssignableFrom(baseSpectrum.getClass()))
@@ -679,12 +679,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				return baseSpectrum;
 				}
 
-			for (Class sc : theSpectra.keySet())
+			for (Class sc : theDerivedSpectra.keySet())
 				{
 				if (c.isAssignableFrom(sc))
 					{
 					//logger.debug(c + " is assignable from " + sc + ".");
-					return theSpectra.get(sc);
+					return theDerivedSpectra.get(sc);
 					}
 				}
 
@@ -696,7 +696,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 					}
 				s = factory.create(this);
 				//s = c.getConstructor(SequenceFragment.class).newInstance(this);
-				theSpectra.put(c, s);
+				theDerivedSpectra.put(c, s);
 				}
 			catch (GenericFactoryException e)
 				{

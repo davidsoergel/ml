@@ -254,7 +254,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			else
 				{
 				secondToBestVoteRatio = 0;
-				secondToBestDistanceRatio = Double.MAX_VALUE;  // infinity really, but that causes jdbc problems
+				secondToBestDistanceRatio =
+						1e308; // Double.MAX_VALUE; triggers MySQL bug # 21497  // infinity really, but that causes jdbc problems
 				}
 
 
