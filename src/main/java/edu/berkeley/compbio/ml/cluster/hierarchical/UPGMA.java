@@ -198,7 +198,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 			// create a composite node
 
-			composite = new HierarchicalCentroidCluster<T>(idCount++, null);
+			composite = new HierarchicalCentroidCluster<T>(idCount++,
+			                                               null);  // don't bother storing explicit centroids for composite nodes
 			a.setParent(composite);
 			b.setParent(composite);
 

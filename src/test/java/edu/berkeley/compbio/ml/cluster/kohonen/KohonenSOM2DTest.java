@@ -298,19 +298,19 @@ public class KohonenSOM2DTest
 				//
 				0,
 				0,
-				.5,
+				Math.sqrt(5) / 4.,
 				0,
 				0,
 				//
 				0,
-				.5,
-				2,
-				.5,
+				Math.sqrt(5) / 4.,
+				Math.sqrt(5),
+				Math.sqrt(5) / 4.,
 				0,
 				//
 				0,
 				0,
-				.5,
+				Math.sqrt(5) / 4.,
 				0,
 				0,
 				//

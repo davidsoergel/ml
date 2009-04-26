@@ -117,8 +117,8 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public boolean addAll(Cluster<T> point)
 		{
-		//	return getValue().addAll(point);
-		throw new NotImplementedException();
+		return getValue().addAll(point);
+		//throw new NotImplementedException();
 		}
 
 	/**
@@ -208,7 +208,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public void updateDerivedWeightedLabelsFromLocal()
 		{
-		throw new NotImplementedException();
+		getValue().updateDerivedWeightedLabelsFromLocal();
 		}
 
 	/**
@@ -218,7 +218,8 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public WeightedSet<String> getWeightedLabels()
 		{
-		throw new NotImplementedException();
+		return getValue().getWeightedLabels();
+		//	throw new NotImplementedException();
 		}
 
 	/**

@@ -135,8 +135,8 @@ public class UPGMATest
 		oc.writeAssignmentsAsTextToStream(System.err);
 
 		assert oc.getN() == 6;
-		assert oc.getTree().getValue().getN() == 6;
-		logger.debug("\n" + TreePrinter.prettyPrint(oc.getTree()));
+		//assert oc.getTree().getValue().getN() == 6;
+		logger.info("\n" + TreePrinter.prettyPrint(oc.getTree()));
 
 		double largestLengthSpan = oc.getTree().getLargestLengthSpan();
 		assert MathUtils.equalWithinFPError(largestLengthSpan, 108.5638307100105);
