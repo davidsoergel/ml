@@ -60,7 +60,7 @@ public interface ClusterableIterator<T extends Clusterable<T>>
 	 *
 	 * @throws IOException when something goes wrong
 	 */
-	void reset() throws IOException;
+	void reset(); //throws IOException;
 
 
 	/**
