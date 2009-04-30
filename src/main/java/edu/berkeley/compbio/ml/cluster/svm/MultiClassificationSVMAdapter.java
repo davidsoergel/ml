@@ -10,6 +10,7 @@ import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblem;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblemImpl;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.multi.VotingResult;
+import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
@@ -80,9 +81,10 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 			}
 		logger.debug("Prepared " + c + " training samples");
 
-		svm = new MultiClassificationSVM<BatchCluster<T>, T>(binarySvm, true);
+		svm = new MultiClassificationSVM<BatchCluster<T>, T>(binarySvm);
 		MultiClassProblem<BatchCluster<T>, T> problem =
-				new MultiClassProblemImpl(BatchCluster.class, new BatchClusterLabelInverter(), examples, exampleIds);
+				new MultiClassProblemImpl<BatchCluster<T>, T>(BatchCluster.class, new BatchClusterLabelInverter<T>(),
+				                                              examples, exampleIds, new NoopScalingModel<T>());
 		//svm.setupQMatrix(problem);
 		logger.debug("Performing multiclass training");
 		model = svm.train(problem);
