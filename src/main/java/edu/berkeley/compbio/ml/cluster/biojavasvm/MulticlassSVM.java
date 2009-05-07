@@ -38,11 +38,9 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
-import edu.berkeley.compbio.jlibsvm.SvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.binary.C_SVC;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
-import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModelLearner;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
@@ -102,9 +100,10 @@ public class MulticlassSVM<T extends Clusterable<T>> extends SupervisedOnlineClu
 	public MulticlassSVM(Kernel<T> kernel)
 		{
 		super(null);
-		SvmParameter<BatchCluster<T>> param = new SvmParameter<BatchCluster<T>>();
-		BinaryClassificationSVM<BatchCluster<T>, T> binarySvm =
-				new C_SVC<BatchCluster<T>, T>(kernel, new NoopScalingModelLearner<T>(), param);
+		//ImmutableSvmParameterPoint.Builder<T, BatchCluster<T>> builder = new ImmutableSvmParameterPoint.Builder<T, BatchCluster<T>>();
+		//BinaryClassificationSVM<BatchCluster<T>, T> binarySvm =
+		//		new C_SVC<BatchCluster<T>, T>(kernel, new NoopScalingModelLearner<T>(), builder.build());
+		BinaryClassificationSVM<BatchCluster<T>, T> binarySvm = new C_SVC<BatchCluster<T>, T>();
 		this.multiSvm = new MultiClassificationSVM<BatchCluster<T>, T>(binarySvm);
 		this.kernel = kernel;
 		}

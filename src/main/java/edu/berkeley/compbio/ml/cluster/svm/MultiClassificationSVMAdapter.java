@@ -4,6 +4,7 @@ import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblem;
@@ -18,6 +19,7 @@ import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.SupervisedOnlineClusteringMethod;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,15 +41,20 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	private BinaryClassificationSVM<BatchCluster<T>, T> binarySvm;
 
-	public MultiClassificationSVMAdapter()
+	public MultiClassificationSVMAdapter(@NotNull ImmutableSvmParameter<BatchCluster<T>, T> param)
 		{
 		super(null);
+		this.param = param;
 		}
 
 	public void setBinarySvm(BinaryClassificationSVM<BatchCluster<T>, T> binarySvm)
 		{
 		this.binarySvm = binarySvm;
 		}
+
+
+	ImmutableSvmParameter<BatchCluster<T>, T> param;
+
 
 	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
 			throws IOException, ClusterException
@@ -87,7 +94,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				                                              examples, exampleIds, new NoopScalingModel<T>());
 		//svm.setupQMatrix(problem);
 		logger.debug("Performing multiclass training");
-		model = svm.train(problem);
+		model = svm.train(problem, param);
 		}
 
 
