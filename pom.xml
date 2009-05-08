@@ -175,5 +175,6 @@
             <artifactId>jlibsvm</artifactId>
             <version>0.9-SNAPSHOT</version>
         </dependency>
+
     </dependencies>
 </project>

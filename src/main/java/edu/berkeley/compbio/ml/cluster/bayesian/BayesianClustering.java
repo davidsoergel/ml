@@ -54,6 +54,7 @@ import org.apache.log4j.Logger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -209,7 +210,14 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 		String disallowedLabel = null;
 		if (leaveOneOutLabels != null)
 			{
-			disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+			try
+				{
+				disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+				}
+			catch (NoSuchElementException e)
+				{
+				// OK, leave disallowedLabel==null then
+				}
 			}
 
 		for (CentroidCluster<T> cluster : theClusters)
