@@ -23,8 +23,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -141,7 +143,31 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public ClusterMove<T, BatchCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
-		VotingResult<BatchCluster<T>> r = model.predictLabelWithQuality(p);
+
+		String disallowedLabel = null;
+		if (leaveOneOutLabels != null)
+			{
+			try
+				{
+				disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+				}
+			catch (NoSuchElementException e)
+				{
+				// OK, leave disallowedLabel==null then
+				}
+			}
+
+		Set<BatchCluster<T>> disallowedClusters = new HashSet<BatchCluster<T>>();
+
+		for (BatchCluster<T> cluster : model.getLabels())
+			{
+			if (cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels).equals(disallowedLabel))
+				{
+				disallowedClusters.add(cluster);
+				}
+			}
+
+		VotingResult<BatchCluster<T>> r = model.predictLabelWithQuality(p, disallowedClusters);
 		ClusterMove<T, BatchCluster<T>> result = new ClusterMove<T, BatchCluster<T>>();
 		result.bestCluster = r.getBestLabel();
 
