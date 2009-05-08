@@ -74,10 +74,11 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public BayesianClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
-	                          double unknownDistanceThreshold, Set<String> leaveOneOutLabels)
+	public BayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
+	                          Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                          Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
-		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels);
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
 

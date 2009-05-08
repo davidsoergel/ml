@@ -6,6 +6,7 @@ import org.apache.commons.lang.NotImplementedException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -14,10 +15,11 @@ import java.util.List;
 public abstract class SupervisedOnlineClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
 		extends OnlineClusteringMethod<T, C>
 	{
-
-	protected SupervisedOnlineClusteringMethod(DissimilarityMeasure<T> dm)
+	protected SupervisedOnlineClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                                           Set<String> predictLabels, Set<String> leaveOneOutLabels,
+	                                           Set<String> testLabels)
 		{
-		super(dm);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
 	/**
@@ -51,7 +53,7 @@ public abstract class SupervisedOnlineClusteringMethod<T extends Clusterable<T>,
 					"Multiple-iteration training probably doesn't make sense for supervised clustering");
 			}
 
-		if (trainingLabels == null)
+		if (predictLabels == null)
 			{
 			throw new ClusterException("Must assign a set of labels before training supervised clustering");
 			}

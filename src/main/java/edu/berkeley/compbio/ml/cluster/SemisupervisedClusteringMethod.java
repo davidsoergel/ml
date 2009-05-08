@@ -6,7 +6,6 @@ import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -58,7 +57,7 @@ public interface SemisupervisedClusteringMethod<T extends Clusterable<T>>
 	 * @param trainingLabels a set of mutually-exclusive labels that we want to predict.  Note multiple bins may predict
 	 *                       the same label; defining the clusters is a separate issue.
 	 */
-	public void setTrainingLabels(Set<String> trainingLabels);
+//	public void setTrainingLabels(Set<String> trainingLabels);
 
 	/**
 	 * Sets a list of labels that the test samples will have, to which to compare our predictions.  Typically these will be
@@ -68,5 +67,5 @@ public interface SemisupervisedClusteringMethod<T extends Clusterable<T>>
 	 * @param testLabels a set of mutually-exclusive labels that we want to predict.  Note multiple bins may predict the
 	 *                   same label; defining the clusters is a separate issue.
 	 */
-	public void setTestLabels(Set<String> testLabels);
+//	public void setTestLabels(Set<String> testLabels);
 	}

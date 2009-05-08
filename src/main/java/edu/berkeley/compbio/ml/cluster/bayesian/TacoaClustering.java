@@ -30,10 +30,14 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	/**
 	 * @param dm The distance measure to use
 	 */
-	public TacoaClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
-	                       double bestScoreRatioThreshold, Set<String> leaveOneOutLabels, int maxNeighbors)
+
+
+	public TacoaClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                       Set<String> leaveOneOutLabels, Set<String> testLabels, int maxNeighbors,
+	                       double bestScoreRatioThreshold)
 		{
-		super(potentialTrainingBins, dm, Double.POSITIVE_INFINITY, leaveOneOutLabels, maxNeighbors);
+		super(dm, Double.POSITIVE_INFINITY, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels,
+		      maxNeighbors);
 		this.bestScoreRatioThreshold = bestScoreRatioThreshold;
 		}
 
@@ -42,7 +46,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		Multiset<String> populatedTrainingLabels = new HashMultiset<String>();
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.trainingLabels);
+			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.predictLabels);
 			populatedTrainingLabels.add(label);
 			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getWeightSum());
 			}
@@ -54,8 +58,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		Multinomial<String> labelPriors = new Multinomial<String>(populatedTrainingLabels);
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			final String label = theCluster.getDerivedLabelProbabilities()
-					.getDominantKeyInSet(this.trainingLabels); // PERF redundant
+			final String label =
+					theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.predictLabels); // PERF redundant
 			priors.put(theCluster, labelPriors.get(label));
 			}
 		return populatedTrainingLabels.elementSet();
@@ -75,7 +79,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		// we want to measure wrongness _both_ at the broad level, matching where the prediction is made (so a perfect match is possible),
 		// _and_ at the detailed level, where even a perfect broad prediction incurs a cost due to lack of precision.
 
-		String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(trainingLabels);
+		String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(predictLabels);
 		String detailedActualLabel = frag.getWeightedLabels().getDominantKeyInSet(testLabels);
 
 		try

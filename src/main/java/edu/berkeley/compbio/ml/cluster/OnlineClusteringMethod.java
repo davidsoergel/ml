@@ -46,6 +46,7 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -61,9 +62,10 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>, C extends
 
 	private static final Logger logger = Logger.getLogger(OnlineClusteringMethod.class);
 
-	public OnlineClusteringMethod(DissimilarityMeasure<T> dm)
+	public OnlineClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                              Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
-		super(dm);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 	//private Iterator<T> theDataPointProvider;
 

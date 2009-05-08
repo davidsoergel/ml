@@ -67,12 +67,12 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public LabelDecomposingBayesianClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
-	                                          double unknownDistanceThreshold, Set<String> leaveOneOutLabels)
+	public LabelDecomposingBayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
+	                                          Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                                          Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
-		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels);
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
-
 
 	/**
 	 * {@inheritDoc}
@@ -93,7 +93,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				{
 				T point = trainingIterator.next();
 
-				String bestLabel = point.getWeightedLabels().getDominantKeyInSet(trainingLabels);
+				String bestLabel = point.getWeightedLabels().getDominantKeyInSet(predictLabels);
 				//Cluster<T> cluster = theClusterMap.get(bestLabel);
 
 
@@ -101,7 +101,9 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 				if (theIntraLabelClustering == null)
 					{
-					theIntraLabelClustering = new GrowableKmeansClustering<T>(measure);
+					theIntraLabelClustering =
+							new GrowableKmeansClustering<T>(measure, potentialTrainingBins, predictLabels,
+							                                leaveOneOutLabels, testLabels);
 					theSubclusteringMap.put(bestLabel, theIntraLabelClustering);
 					}
 

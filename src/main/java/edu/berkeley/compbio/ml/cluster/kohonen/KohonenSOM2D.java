@@ -175,13 +175,14 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		return result;
 		}
 
-
-	public KohonenSOM2D(Integer[] cellsPerDimension, DissimilarityMeasure<T> dm, SimpleFunction moveFactorFunction,
-	                    SimpleFunction radiusFunction, SimpleFunction weightFunction,
+	public KohonenSOM2D(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                    Set<String> leaveOneOutLabels, Set<String> testLabels, Integer[] cellsPerDimension,
+	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction, SimpleFunction weightFunction,
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap, double minRadius,
 	                    KohonenSOM2DSearchStrategy<T> searchStrategy)
 		{
-		super(dm);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+
 		this.cellsPerDimension = DSArrayUtils.toPrimitive(cellsPerDimension);
 
 		this.dimensions = cellsPerDimension.length;

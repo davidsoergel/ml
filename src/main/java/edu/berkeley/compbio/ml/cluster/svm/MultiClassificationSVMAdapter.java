@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -41,9 +42,17 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	private BinaryClassificationSVM<BatchCluster<T>, T> binarySvm;
 
-	public MultiClassificationSVMAdapter(@NotNull ImmutableSvmParameter<BatchCluster<T>, T> param)
+	//public MultiClassificationSVMAdapter(@NotNull ImmutableSvmParameter<BatchCluster<T>, T> param)
+	//	{
+	//	super(null);
+	//	this.param = param;
+	//	}
+
+	public MultiClassificationSVMAdapter(Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                                     Set<String> leaveOneOutLabels, Set<String> testLabels,
+	                                     @NotNull ImmutableSvmParameter<BatchCluster<T>, T> param)
 		{
-		super(null);
+		super(null, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		this.param = param;
 		}
 
@@ -72,7 +81,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		while (trainingIterator.hasNext())
 			{
 			T sample = trainingIterator.next();
-			String label = sample.getWeightedLabels().getDominantKeyInSet(trainingLabels);
+			String label = sample.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
 
 			BatchCluster<T> cluster = theClusterMap.get(label);
 			cluster.add(sample);
@@ -108,9 +117,9 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 		// by analogy with BayesianClustering, take this opportunity to initialize the clusters
 
-		theClusterMap = new HashMap<String, BatchCluster<T>>(trainingLabels.size());
+		theClusterMap = new HashMap<String, BatchCluster<T>>(predictLabels.size());
 		int i = 0;
-		for (String label : trainingLabels)
+		for (String label : predictLabels)
 			{
 			BatchCluster<T> cluster = theClusterMap.get(label);
 

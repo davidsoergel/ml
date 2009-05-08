@@ -69,12 +69,16 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public KNNClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
-	                     Set<String> leaveOneOutLabels, int maxNeighbors, double voteProportionThreshold,
-	                     double voteTieThresholdRatio, double distanceTieThresholdRatio,
+	public KNNClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, Set<String> potentialTrainingBins,
+	                     Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels,
+	                     int maxNeighbors, double voteProportionThreshold, double voteTieThresholdRatio,
+	                     double distanceTieThresholdRatio,
 	                     SimpleFunction function) //, double decompositionDistanceThreshold)
 		{
-		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels, maxNeighbors);
+		//	super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels, maxNeighbors);
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels,
+		      maxNeighbors);
+
 		//		this.decompositionDistanceThreshold = decompositionDistanceThreshold;
 		this.voteProportionThreshold = voteProportionThreshold;
 		this.voteTieThresholdRatio = voteTieThresholdRatio;
@@ -189,7 +193,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		// we want to measure wrongness _both_ at the broad level, matching where the prediction is made (so a perfect match is possible),
 		// _and_ at the detailed level, where even a perfect broad prediction incurs a cost due to lack of precision.
 
-		String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(trainingLabels);
+		String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(predictLabels);
 		String detailedActualLabel = frag.getWeightedLabels().getDominantKeyInSet(testLabels);
 
 

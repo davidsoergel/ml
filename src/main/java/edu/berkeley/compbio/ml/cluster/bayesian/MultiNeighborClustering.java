@@ -40,12 +40,14 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	private static final Logger logger = Logger.getLogger(MultiNeighborClustering.class);
 
 
-	public MultiNeighborClustering(Set<String> potentialTrainingBins, DissimilarityMeasure<T> dm,
-	                               double unknownDistanceThreshold, Set<String> leaveOneOutLabels, int maxNeighbors)
+	public MultiNeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
+	                               Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                               Set<String> leaveOneOutLabels, Set<String> testLabels, int maxNeighbors)
 		{
-		super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels);
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		this.maxNeighbors = maxNeighbors;
 		}
+
 
 	/**
 	 * {@inheritDoc}

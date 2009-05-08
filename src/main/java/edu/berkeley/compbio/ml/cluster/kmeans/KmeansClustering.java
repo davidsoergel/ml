@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @version 1.0
@@ -62,12 +63,11 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 
 	//private int k;
 
-	public KmeansClustering(DissimilarityMeasure<T> dm)//throws CloneNotSupportedException
-		{
-		//super(dpp);
-		//this.k = k;
 
-		super(dm);
+	public KmeansClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                        Set<String> leaveOneOutLabels, Set<String> testLabels)
+		{
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
 	/**

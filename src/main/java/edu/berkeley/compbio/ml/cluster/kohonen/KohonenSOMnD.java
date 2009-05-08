@@ -135,11 +135,13 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends OnlineCluste
 		}
 
 
-	public KohonenSOMnD(int[] cellsPerDimension, DissimilarityMeasure<T> dm, T prototype,
+	public KohonenSOMnD(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                    Set<String> leaveOneOutLabels, Set<String> testLabels, int[] cellsPerDimension, T prototype,
 	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction,
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap)
 		{
-		super(dm);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+
 		this.cellsPerDimension = cellsPerDimension;
 
 		this.dimensions = cellsPerDimension.length;

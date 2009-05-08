@@ -35,6 +35,7 @@ package edu.berkeley.compbio.ml.cluster;
 import com.davidsoergel.stats.DissimilarityMeasure;
 
 import java.util.Iterator;
+import java.util.Set;
 
 
 /**
@@ -45,9 +46,12 @@ import java.util.Iterator;
  */
 public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extends HierarchicalClusteringMethod<T>
 	{
-	protected BatchTreeClusteringMethod(DissimilarityMeasure<T> dm, boolean leaveOneOut)
+
+	protected BatchTreeClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                                    Set<String> predictLabels, Set<String> leaveOneOutLabels,
+	                                    Set<String> testLabels)
 		{
-		super(dm, leaveOneOut);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
 	/**

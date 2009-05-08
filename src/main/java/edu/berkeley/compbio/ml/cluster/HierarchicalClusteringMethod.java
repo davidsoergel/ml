@@ -35,6 +35,8 @@ package edu.berkeley.compbio.ml.cluster;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
+import java.util.Set;
+
 /**
  * Represents a hierarchical clustering algorithm.  In general an algorithm will group Clusterable samples into a tree
  * of LengthWeightHierarchyNodes, with a corresponding Cluster for each.  Note that this produces overlapping Clusters,
@@ -50,9 +52,13 @@ import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
  */
 public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
-	protected HierarchicalClusteringMethod(DissimilarityMeasure<T> dm, boolean leaveOneOut)
+
+
+	protected HierarchicalClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                                       Set<String> predictLabels, Set<String> leaveOneOutLabels,
+	                                       Set<String> testLabels)
 		{
-		super(dm, leaveOneOut);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
 	/**

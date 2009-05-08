@@ -33,24 +33,31 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	protected Map<String, C> assignments = new HashMap<String, C>();// see whether anything changed
 	protected int n = 0;
 
-	protected Set<String> trainingLabels;
-	protected Set<String> testLabels;
+	protected final Set<String> potentialTrainingBins;
+	protected final Set<String> predictLabels;
+	protected final Set<String> leaveOneOutLabels;
+	protected final Set<String> testLabels;
 
-	public ClusteringMethod(DissimilarityMeasure<T> dm)
+	public ClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                        Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
 		measure = dm;
+		this.potentialTrainingBins = potentialTrainingBins;
+		this.leaveOneOutLabels = leaveOneOutLabels;
+		this.predictLabels = predictLabels;
+		this.testLabels = testLabels;
 		}
 
 	/**
 	 * Sets a list of labels to be used for classification.  For a supervised method, this must be called before training.
 	 *
-	 * @param trainingLabels a set of mutually-exclusive labels that we want to predict.  Note multiple bins may predict
+	 * @param predictLabels a set of mutually-exclusive labels that we want to predict.  Note multiple bins may predict
 	 *                       the same label; defining the clusters is a separate issue.
 	 */
-	public void setTrainingLabels(Set<String> trainingLabels)
-		{
-		this.trainingLabels = trainingLabels;
-		}
+//	public void setPredictLabels(Set<String> predictLabels)
+//		{
+//		this.predictLabels = predictLabels;
+//		}
 
 	/**
 	 * Sets a list of labels that the test samples will have, to which to compare our predictions.  Typically these will be
@@ -60,10 +67,10 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 	 * @param testLabels a set of mutually-exclusive labels that we want to predict.  Note multiple bins may predict the
 	 *                   same label; defining the clusters is a separate issue.
 	 */
-	public void setTestLabels(Set<String> testLabels)
-		{
-		this.testLabels = testLabels;
-		}
+//	public void setTestLabels(Set<String> testLabels)
+//		{
+//		this.testLabels = testLabels;
+//		}
 
 	/**
 	 * Returns the cluster to which the sample identified by the given String is assigned.
@@ -206,7 +213,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		Set<String> populatedTrainingLabels = new HashSet<String>();
 		for (C theCluster : theClusters)
 			{
-			String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(trainingLabels);
+			String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
 			populatedTrainingLabels.add(label);
 			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getWeightSum());
 			}
@@ -229,7 +236,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		// we want to measure wrongness _both_ at the broad level, matching where the prediction is made (so a perfect match is possible),
 		// _and_ at the detailed level, where even a perfect broad prediction incurs a cost due to lack of precision.
 
-		String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(trainingLabels);
+		String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(predictLabels);
 		String detailedActualLabel = frag.getWeightedLabels().getDominantKeyInSet(testLabels);
 
 		try
@@ -249,7 +256,7 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 
 			// get the predicted label and its cluster-conditional probability
 			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
-			String predictedLabel = labelsOnThisCluster.getDominantKeyInSet(trainingLabels);
+			String predictedLabel = labelsOnThisCluster.getDominantKeyInSet(predictLabels);
 			clusterProb = labelsOnThisCluster.getNormalized(predictedLabel);
 
 			// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown

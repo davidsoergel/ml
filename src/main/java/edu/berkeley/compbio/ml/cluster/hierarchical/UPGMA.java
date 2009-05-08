@@ -73,11 +73,10 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 	//	private SortedSet<ClusterPair<T>> theClusterPairs;
 
-	public UPGMA(DissimilarityMeasure<T> dissimilarityMeasure, boolean leaveOneOut)
+	public UPGMA(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
+	             Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
-		super(dissimilarityMeasure, leaveOneOut);
-
-		//		theClusterPairs = new TreeMap<ClusterPair<T>, Double>();
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
 	/**
@@ -145,12 +144,12 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			return result;
 			}
 
-		String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(trainingLabels);
+		//BAD what if we don't want to do leave-one-out?  this will throw NoSuchElementException
+		String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
 
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			if (leaveOneOut && disallowedLabel
-					.equals(theCluster.getWeightedLabels().getDominantKeyInSet(trainingLabels)))
+			if (disallowedLabel.equals(theCluster.getWeightedLabels().getDominantKeyInSet(predictLabels)))
 				{
 				// ignore this cluster
 				}

@@ -44,6 +44,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -56,12 +57,14 @@ import java.util.List;
  */
 public abstract class CentroidClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T, CentroidCluster<T>>
 	{
-	protected boolean leaveOneOut;
+	//protected boolean leaveOneOut;
 
-	protected CentroidClusteringMethod(DissimilarityMeasure<T> dm, boolean leaveOneOut)
+
+	protected CentroidClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                                   Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
-		super(dm);
-		this.leaveOneOut = leaveOneOut;
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		//	this.leaveOneOut = leaveOneOut;
 		}
 
 	private static final Logger logger = Logger.getLogger(CentroidClusteringMethod.class);

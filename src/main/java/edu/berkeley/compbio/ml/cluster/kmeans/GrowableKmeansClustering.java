@@ -36,6 +36,8 @@ import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 
+import java.util.Set;
+
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -44,9 +46,11 @@ import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 
 public class GrowableKmeansClustering<T extends AdditiveClusterable<T>> extends KmeansClustering<T>
 	{
-	public GrowableKmeansClustering(DissimilarityMeasure<T> dm)
+
+	public GrowableKmeansClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                                Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
-		super(dm);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
 	public void addCluster(CentroidCluster<T> cluster)

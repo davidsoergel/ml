@@ -118,7 +118,8 @@ public class UPGMATest
 
 		//ci = new MockClusterableIterator().init();
 
-		UPGMA<ClusterableDoubleArray> oc = new UPGMA<ClusterableDoubleArray>(EuclideanDistance.getInstance(), false);
+		UPGMA<ClusterableDoubleArray> oc =
+				new UPGMA<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null, null, null, null);
 
 		oc.addAll(points.iterator());
 		oc.performClustering();

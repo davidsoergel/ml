@@ -35,6 +35,7 @@ package edu.berkeley.compbio.ml.cluster;
 import com.davidsoergel.stats.DissimilarityMeasure;
 
 import java.util.Collection;
+import java.util.Set;
 
 
 /**
@@ -45,9 +46,13 @@ import java.util.Collection;
  */
 public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
-	protected BatchClusteringMethod(DissimilarityMeasure<T> dm, boolean leaveOneOut)
+
+
+	protected BatchClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                                Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
-		super(dm, leaveOneOut);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		//	this.leaveOneOut = leaveOneOut;
 		}
 	// different implementations may prefer different data structures
 	//Collection<Clusterable<T>> samples;
