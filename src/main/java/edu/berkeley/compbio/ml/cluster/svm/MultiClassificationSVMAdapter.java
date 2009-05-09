@@ -4,6 +4,9 @@ import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.google.common.base.Function;
+import com.google.common.base.Nullable;
+import com.google.common.collect.MapMaker;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel;
@@ -106,6 +109,28 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		//svm.setupQMatrix(problem);
 		logger.debug("Performing multiclass training");
 		model = svm.train(problem, param);
+
+		if (leaveOneOutLabels != null)
+			{
+			leaveOneOutModels =
+					new MapMaker().makeComputingMap(new Function<String, MultiClassModel<BatchCluster<T>, T>>()
+					{
+					public MultiClassModel<BatchCluster<T>, T> apply(@Nullable String disallowedLabel)
+						{
+						Set<BatchCluster<T>> disallowedClusters = new HashSet<BatchCluster<T>>();
+
+						for (BatchCluster<T> cluster : model.getLabels())
+							{
+							if (cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)
+									.equals(disallowedLabel))
+								{
+								disallowedClusters.add(cluster);
+								}
+							}
+						return new MultiClassModel<BatchCluster<T>, T>(model, disallowedClusters);
+						}
+					});
+			}
 		}
 
 
@@ -119,9 +144,9 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 		// by analogy with BayesianClustering, take this opportunity to initialize the clusters
 
-		theClusterMap = new HashMap<String, BatchCluster<T>>(predictLabels.size());
+		theClusterMap = new HashMap<String, BatchCluster<T>>(potentialTrainingBins.size());
 		int i = 0;
-		for (String label : predictLabels)
+		for (String label : potentialTrainingBins)
 			{
 			BatchCluster<T> cluster = theClusterMap.get(label);
 
@@ -140,34 +165,27 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		theClusters = theClusterMap.values();
 		}
 
+	Map<String, MultiClassModel<BatchCluster<T>, T>> leaveOneOutModels;
 
 	public ClusterMove<T, BatchCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
-
-		String disallowedLabel = null;
+		MultiClassModel<BatchCluster<T>, T> leaveOneOutModel = model;
 		if (leaveOneOutLabels != null)
 			{
 			try
 				{
-				disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+				String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+				leaveOneOutModel = leaveOneOutModels.get(disallowedLabel);
 				}
 			catch (NoSuchElementException e)
 				{
-				// OK, leave disallowedLabel==null then
+				// OK, just use the full model then
+				//leaveOneOutModel = model;
 				}
 			}
 
-		Set<BatchCluster<T>> disallowedClusters = new HashSet<BatchCluster<T>>();
 
-		for (BatchCluster<T> cluster : model.getLabels())
-			{
-			if (cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels).equals(disallowedLabel))
-				{
-				disallowedClusters.add(cluster);
-				}
-			}
-
-		VotingResult<BatchCluster<T>> r = model.predictLabelWithQuality(p, disallowedClusters);
+		VotingResult<BatchCluster<T>> r = leaveOneOutModel.predictLabelWithQuality(p);
 		ClusterMove<T, BatchCluster<T>> result = new ClusterMove<T, BatchCluster<T>>();
 		result.bestCluster = r.getBestLabel();
 

@@ -213,7 +213,8 @@ public abstract class ClusteringMethod<T extends Clusterable<T>, C extends Clust
 		Set<String> populatedTrainingLabels = new HashSet<String>();
 		for (C theCluster : theClusters)
 			{
-			String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
+			// note this also insures that every cluster has a training label, otherwise it throws NoSuchElementException
+			String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(potentialTrainingBins);
 			populatedTrainingLabels.add(label);
 			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getWeightSum());
 			}
