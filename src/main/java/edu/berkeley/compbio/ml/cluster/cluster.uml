@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClassDiagramm>
+  <classes>
+    <class fqn="edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod" x="2362.8104651162785" y="228.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod" x="780.268798449612" y="304.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod" x="734.9999999999998" y="400.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod" x="2647.018798449612" y="400.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOM2D" x="1846.143798449612" y="562.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod" x="2205.018798449612" y="400.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.bayesian.LabelDecomposingBayesianClustering" x="596.393798449612" y="638.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.kmeans.KmeansClustering" x="3545.099224806201" y="486.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.BatchClusteringMethod" x="1692.893798449612" y="152.0" />
+    <class fqn="java.lang.Object" x="2777.5604651162785" y="152.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.AbstractUnsupervisedOnlineClusteringMethod" x="0.0" y="400.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.svm.MultiClassificationSVMAdapter" x="2444.8104651162785" y="304.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod" x="2836.518798449612" y="562.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.bayesian.NeighborClustering" x="974.7499999999998" y="486.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.HierarchicalClusteringMethod" x="2830.018798449612" y="486.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.bayesian.MultiNeighborClustering" x="1359.143798449612" y="562.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.ClusterSet" x="2385.8104651162785" y="0.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.kmeans.GrowableKmeansClustering" x="3513.099224806201" y="562.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.hierarchical.UPGMA" x="2906.018798449612" y="638.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.bayesian.KNNClustering" x="1605.393798449612" y="638.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.bayesian.TacoaClustering" x="1175.393798449612" y="638.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod" x="1588.643798449612" y="228.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.UnsupervisedClusteringMethod" x="3425.724224806201" y="304.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOMnD" x="2275.143798449612" y="562.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOM" x="2369.018798449612" y="486.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.bayesian.BayesianClustering" x="660.893798449612" y="562.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod" x="1637.893798449612" y="304.0" />
+    <class fqn="edu.berkeley.compbio.ml.cluster.ClusteringMethod" x="2359.3104651162785" y="76.0" />
+  </classes>
+  <packages />
+  <edges>
+    <edge source="edu.berkeley.compbio.ml.cluster.svm.MultiClassificationSVMAdapter" target="edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod" relationship="GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod" target="edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod" relationship="GENERALIZATION">
+      <point x="174.0" y="-13.0" />
+      <point x="1256.9999999999998" y="380.0" />
+      <point x="1824.193798449612" y="380.0" />
+      <point x="-124.20000000000005" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.HierarchicalClusteringMethod" target="edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod" relationship="REALIZATION">
+      <point x="-148.33333333333348" y="-13.0" />
+      <point x="2904.1854651162785" y="456.0" />
+      <point x="2468.768798449612" y="456.0" />
+      <point x="52.75" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod" target="edu.berkeley.compbio.ml.cluster.UnsupervisedClusteringMethod" relationship="INTERFACE_GENERALIZATION">
+      <point x="117.75" y="-13.0" />
+      <point x="3000.268798449612" y="380.0" />
+      <point x="3540.224224806201" y="380.0" />
+      <point x="-114.5" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod" target="edu.berkeley.compbio.ml.cluster.BatchClusteringMethod" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="-100.25" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOM" target="edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod" relationship="INTERFACE_GENERALIZATION">
+      <point x="-97.5" y="-13.0" />
+      <point x="2466.518798449612" y="466.0" />
+      <point x="2363.268798449612" y="466.0" />
+      <point x="-52.75" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.bayesian.MultiNeighborClustering" target="edu.berkeley.compbio.ml.cluster.bayesian.NeighborClustering" relationship="GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="1592.643798449612" y="542.0" />
+      <point x="1299.4999999999998" y="542.0" />
+      <point x="108.25" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.kmeans.KmeansClustering" target="edu.berkeley.compbio.ml.cluster.UnsupervisedClusteringMethod" relationship="REALIZATION">
+      <point x="141.33333333333348" y="-13.0" />
+      <point x="3898.4325581395346" y="466.0" />
+      <point x="3769.224224806201" y="466.0" />
+      <point x="114.5" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.bayesian.LabelDecomposingBayesianClustering" target="edu.berkeley.compbio.ml.cluster.bayesian.BayesianClustering" relationship="GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.bayesian.NeighborClustering" target="edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod" relationship="REALIZATION">
+      <point x="108.25" y="-13.0" />
+      <point x="1299.4999999999998" y="466.0" />
+      <point x="2257.768798449612" y="466.0" />
+      <point x="-158.25" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.HierarchicalClusteringMethod" target="edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod" relationship="GENERALIZATION">
+      <point x="148.33333333333348" y="-13.0" />
+      <point x="3200.8521317829454" y="466.0" />
+      <point x="3353.390891472868" y="466.0" />
+      <point x="3353.390891472868" y="279.0" />
+      <point x="2873.6437984496124" y="279.0" />
+      <point x="204.33333333333348" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.UnsupervisedClusteringMethod" target="edu.berkeley.compbio.ml.cluster.ClusteringMethod" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="3654.724224806201" y="122.0" />
+      <point x="2677.8104651162785" y="122.0" />
+      <point x="136.5" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod" target="java.lang.Object" relationship="GENERALIZATION">
+      <point x="153.25" y="-13.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOM2D" target="edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod" relationship="GENERALIZATION">
+      <point x="-102.25" y="-13.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.bayesian.NeighborClustering" target="edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod" relationship="GENERALIZATION">
+      <point x="-108.25" y="-13.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.BatchClusteringMethod" target="edu.berkeley.compbio.ml.cluster.ClusteringMethod" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="1893.393798449612" y="132.0" />
+      <point x="2495.8104651162785" y="132.0" />
+      <point x="-45.5" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod" target="edu.berkeley.compbio.ml.cluster.HierarchicalClusteringMethod" relationship="GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.kmeans.GrowableKmeansClustering" target="edu.berkeley.compbio.ml.cluster.kmeans.KmeansClustering" relationship="GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod" target="edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod" relationship="GENERALIZATION">
+      <point x="155.25" y="-13.0" />
+      <point x="2103.643798449612" y="279.0" />
+      <point x="2464.9771317829454" y="279.0" />
+      <point x="-204.33333333333326" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.bayesian.TacoaClustering" target="edu.berkeley.compbio.ml.cluster.bayesian.MultiNeighborClustering" relationship="GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="1380.393798449612" y="613.0" />
+      <point x="1475.893798449612" y="613.0" />
+      <point x="-116.75" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.kmeans.KmeansClustering" target="edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod" relationship="GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="3757.099224806201" y="350.0" />
+      <point x="2196.793798449612" y="350.0" />
+      <point x="248.39999999999986" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod" target="edu.berkeley.compbio.ml.cluster.BatchClusteringMethod" relationship="REALIZATION">
+      <point x="-153.25" y="-13.0" />
+      <point x="2516.0604651162785" y="203.0" />
+      <point x="1993.643798449612" y="203.0" />
+      <point x="100.25" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.ClusteringMethod" target="edu.berkeley.compbio.ml.cluster.ClusterSet" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod" target="edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod" relationship="REALIZATION">
+      <point x="-155.25" y="-13.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod" target="edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod" relationship="INTERFACE_GENERALIZATION">
+      <point x="-117.75" y="-13.0" />
+      <point x="2764.768798449612" y="360.0" />
+      <point x="1146.1021317829454" y="360.0" />
+      <point x="146.33333333333348" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.bayesian.KNNClustering" target="edu.berkeley.compbio.ml.cluster.bayesian.MultiNeighborClustering" relationship="GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="1804.893798449612" y="613.0" />
+      <point x="1709.393798449612" y="613.0" />
+      <point x="116.75" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOMnD" target="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOM" relationship="REALIZATION">
+      <point x="102.25" y="-13.0" />
+      <point x="2581.893798449612" y="542.0" />
+      <point x="2661.518798449612" y="542.0" />
+      <point x="97.5" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOMnD" target="edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod" relationship="GENERALIZATION">
+      <point x="-102.25" y="-13.0" />
+      <point x="2377.393798449612" y="532.0" />
+      <point x="2194.518798449612" y="532.0" />
+      <point x="2194.518798449612" y="380.0" />
+      <point x="2072.593798449612" y="380.0" />
+      <point x="124.20000000000005" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.AbstractUnsupervisedOnlineClusteringMethod" target="edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod" relationship="GENERALIZATION">
+      <point x="178.75" y="-13.0" />
+      <point x="536.25" y="370.0" />
+      <point x="1699.9937984496119" y="370.0" />
+      <point x="-248.4000000000001" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod" target="edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod" relationship="REALIZATION">
+      <point x="-174.0" y="-13.0" />
+      <point x="908.9999999999998" y="360.0" />
+      <point x="999.768798449612" y="360.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.AbstractUnsupervisedOnlineClusteringMethod" target="edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod" relationship="REALIZATION">
+      <point x="-178.75" y="-13.0" />
+      <point x="178.75" y="360.0" />
+      <point x="853.4354651162785" y="360.0" />
+      <point x="-146.33333333333348" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.HierarchicalClusteringMethod" target="edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod" relationship="REALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="3052.518798449612" y="466.0" />
+      <point x="3000.268798449612" y="466.0" />
+      <point x="117.75" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod" target="edu.berkeley.compbio.ml.cluster.ClusteringMethod" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="999.768798449612" y="122.0" />
+      <point x="2404.8104651162785" y="122.0" />
+      <point x="-136.5" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.kmeans.KmeansClustering" target="edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod" relationship="REALIZATION">
+      <point x="-141.33333333333337" y="-13.0" />
+      <point x="3615.7658914728677" y="446.0" />
+      <point x="2574.268798449612" y="446.0" />
+      <point x="158.25" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOM" target="edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod" relationship="INTERFACE_GENERALIZATION">
+      <point x="97.5" y="-13.0" />
+      <point x="2661.518798449612" y="466.0" />
+      <point x="2764.768798449612" y="466.0" />
+      <point x="-117.75" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOM2D" target="edu.berkeley.compbio.ml.cluster.kohonen.KohonenSOM" relationship="REALIZATION">
+      <point x="102.25" y="-13.0" />
+      <point x="2152.893798449612" y="542.0" />
+      <point x="2466.518798449612" y="542.0" />
+      <point x="-97.5" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod" target="edu.berkeley.compbio.ml.cluster.ClusteringMethod" relationship="INTERFACE_GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="2416.018798449612" y="370.0" />
+      <point x="3415.224224806201" y="370.0" />
+      <point x="3415.224224806201" y="132.0" />
+      <point x="2586.8104651162785" y="132.0" />
+      <point x="45.5" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.bayesian.BayesianClustering" target="edu.berkeley.compbio.ml.cluster.bayesian.NeighborClustering" relationship="GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="875.893798449612" y="542.0" />
+      <point x="1082.9999999999998" y="542.0" />
+      <point x="-108.25" y="13.0" />
+    </edge>
+    <edge source="edu.berkeley.compbio.ml.cluster.hierarchical.UPGMA" target="edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod" relationship="GENERALIZATION">
+      <point x="0.0" y="-13.0" />
+      <point x="0.0" y="13.0" />
+    </edge>
+  </edges>
+  <settings isCamel="false" isColorManagerEnabled="true" isFieldsVisible="false" isConstructorsVisible="false" isMethodsVisible="false" isShowDependencies="false" isShowInnerClasses="false" defaultVisibility="private" isPropertiesVisible="false" zoom="0.3667728237791932" x="2138.0" y="441.2011577424024" />
+  <SelectedNodes />
+</ClassDiagramm>
+
