@@ -210,4 +210,13 @@ public abstract class OnlineClusteringMethod<T extends Clusterable<T>, C extends
 	// -------------------------- INNER CLASSES --------------------------
 
 	//public abstract void createClusters(T sequenceFragment);
+
+	public String bestLabel(T sample, Set<String> predictLabels) throws NoGoodClusterException
+		{
+		Cluster<T> c = bestClusterMove(sample).bestCluster;
+		return c.getWeightedLabels().getDominantKeyInSet(predictLabels);
+/*		c.updateDerivedWeightedLabelsFromLocal();
+		WeightedSet<String> probs = c.getDerivedLabelProbabilities();
+		String label = probs.getDominantKey();*/
+		}
 	}

@@ -47,6 +47,7 @@ import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -176,7 +177,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		}
 
 	public KohonenSOM2D(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
-	                    Set<String> leaveOneOutLabels, Set<String> testLabels, Integer[] cellsPerDimension,
+	                    Set<String> leaveOneOutLabels, Set<String> testLabels, @NotNull Integer[] cellsPerDimension,
 	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction, SimpleFunction weightFunction,
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap, double minRadius,
 	                    KohonenSOM2DSearchStrategy<T> searchStrategy)

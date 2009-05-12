@@ -56,9 +56,25 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
 		throw new ClusterRuntimeException(
+				//logger.warn(
 				"It doesn't make sense to get the best clustermove with a multi-neighbor clustering; look for the best label instead using scoredClusterMoves");
+		//return scoredClusterMoves(p).values().iterator().next();
 		}
 
+	public String bestLabel(T sample, Set<String> predictLabels) throws NoGoodClusterException
+		{
+		TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(sample);
+
+		// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
+		final VotingResults votingResults = addUpNeighborVotes(moves, predictLabels);
+
+		// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
+
+		// now pick the best one
+		String predictedLabel = votingResults.getBestLabel();
+
+		return predictedLabel;
+		}
 
 	/**
 	 * Unlike situations where we make a cluster per label, here we make a whole "cluster" per test sample
