@@ -118,7 +118,7 @@ public class ClusteringTestResults
 	public void finish()
 		{
 		// keep track of whether any good predictions are ever made
-		if (DSCollectionUtils.allElementsEqual(computedDistances, ClusteringMethod.UNKNOWN_DISTANCE))
+		if (DSCollectionUtils.allElementsEqual(computedDistances, AbstractBatchClusteringMethod.UNKNOWN_DISTANCE))
 			{
 			computedDistances = null;
 			}

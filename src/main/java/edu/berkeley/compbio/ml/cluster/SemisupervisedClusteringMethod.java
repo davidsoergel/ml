@@ -1,7 +1,5 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.GenericFactory;
-import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 
@@ -11,7 +9,8 @@ import java.util.Iterator;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface SemisupervisedClusteringMethod<T extends Clusterable<T>>
+public interface SemisupervisedClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
+		extends UnsupervisedClusteringMethod<T, C>, SupervisedClusteringMethod<T, C>
 	{
 
 //	void performClustering();
@@ -46,9 +45,9 @@ public interface SemisupervisedClusteringMethod<T extends Clusterable<T>>
 	 *
 	 * @throws ClusterException
 	 */
-	public abstract void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                            GenericFactory<T> prototypeFactory)
-			throws GenericFactoryException, ClusterException;
+//	public abstract void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+//	                                            GenericFactory<T> prototypeFactory)
+//			throws GenericFactoryException, ClusterException;
 
 
 	/**

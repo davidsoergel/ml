@@ -33,15 +33,15 @@
 
 package edu.berkeley.compbio.ml.cluster.kmeans;
 
-import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AbstractCentroidCluster;
+import edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
-import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.UnsupervisedClusteringMethod;
 import org.apache.log4j.Logger;
 
 import java.util.Iterator;
@@ -51,7 +51,9 @@ import java.util.Set;
 /**
  * @version 1.0
  */
-public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T, CentroidCluster<T>>
+public class KmeansClustering<T extends AdditiveClusterable<T>>
+		extends AbstractOnlineClusteringMethod<T, CentroidCluster<T>>
+		implements UnsupervisedClusteringMethod<T, CentroidCluster<T>>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -74,11 +76,12 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void initializeWithRealData(Iterator<T> trainingIterator, int k, GenericFactory<T> prototypeFactory)
+	private void initializeWithRealData(Iterator<T> trainingIterator,
+	                                    int initsamples) //, GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException
 		{
 
-		for (int i = 0; i < k; i++)
+		for (int i = 0; i < initsamples; i++)
 			{
 			// initialize the clusters with the first k points
 
@@ -87,7 +90,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>> extends OnlineCl
 
 			theClusters.add(c);
 			}
-		logger.debug("initialized " + k + " clusters");
+		logger.debug("initialized " + initsamples + " clusters");
 		}
 
 	// -------------------------- OTHER METHODS --------------------------

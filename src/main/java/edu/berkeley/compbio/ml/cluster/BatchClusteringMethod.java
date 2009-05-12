@@ -32,22 +32,19 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.stats.DissimilarityMeasure;
-
-import java.util.Collection;
-import java.util.Set;
-
-
 /**
  * A clustering method that needs the complete set of samples on hand in order to operate.
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
+//@Deprecated
+
+public interface BatchClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>> extends ClusteringMethod<T, C>
+//public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
 
-
+/*
 	protected BatchClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
@@ -56,16 +53,16 @@ public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends Ce
 		}
 	// different implementations may prefer different data structures
 	//Collection<Clusterable<T>> samples;
-
+*/
 	/**
 	 * Recompute a set of clusters from the stored samples.
 	 */
-	public abstract void performClustering();
+//	public abstract void performClustering();
 
 	/**
 	 * Add the given samples to the set to be clustered.
 	 *
 	 * @param samples a Collection of Clusterable objects.
 	 */
-	public abstract void addAll(Collection<Clusterable<T>> samples);
+//	public abstract void addAll(Collection<Clusterable<T>> samples);
 	}

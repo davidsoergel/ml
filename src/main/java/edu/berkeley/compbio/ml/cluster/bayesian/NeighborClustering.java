@@ -1,12 +1,13 @@
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
+import edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
-import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,8 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class NeighborClustering<T extends AdditiveClusterable<T>>
-		extends OnlineClusteringMethod<T, CentroidCluster<T>>
+		extends AbstractOnlineClusteringMethod<T, CentroidCluster<T>>
+		implements SupervisedClusteringMethod<T, CentroidCluster<T>>
 	{
 	protected double unknownDistanceThreshold;
 

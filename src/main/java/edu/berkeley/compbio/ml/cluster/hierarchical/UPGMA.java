@@ -32,18 +32,14 @@
 
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
-import com.davidsoergel.dsutils.GenericFactory;
-import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
-import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.HierarchicalCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
-import edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
 import java.util.HashMap;
@@ -59,7 +55,6 @@ import java.util.Set;
  */
 
 public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T>
-		implements SemisupervisedClusteringMethod<T>
 	{
 
 	//private DissimilarityMeasure<T> dissimilarityMeasure;
@@ -88,13 +83,13 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		return theRoot;
 		}
 
-	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+	/*public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 	                                   GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException, ClusterException
 		{
 		// do nothing
 		}
-
+*/
 	/**
 	 * Returns the best cluster without adding the point.  Since in this case every sample is a cluster, just returns the
 	 * closest sample.

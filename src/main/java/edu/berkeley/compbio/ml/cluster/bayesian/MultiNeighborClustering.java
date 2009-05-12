@@ -1,8 +1,6 @@
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
-import com.davidsoergel.dsutils.GenericFactory;
-import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
@@ -15,7 +13,6 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
-import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
@@ -79,10 +76,10 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	/**
 	 * Unlike situations where we make a cluster per label, here we make a whole "cluster" per test sample
 	 */
-	@Override
-	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                   GenericFactory<T> prototypeFactory)
-			throws GenericFactoryException, ClusterException
+	//@Override
+	private void initializeWithRealData(Iterator<T> trainingIterator)
+//	, int initSamples,                                   GenericFactory<T> prototypeFactory)
+//			throws GenericFactoryException, ClusterException
 		{
 		theClusters = new HashSet<CentroidCluster<T>>();
 
@@ -366,7 +363,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	@Override
 	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
 		{
-		// do nothing
+		initializeWithRealData(trainingCollectionIteratorFactory.next());
 
 		// after that, normalize the label probabilities
 

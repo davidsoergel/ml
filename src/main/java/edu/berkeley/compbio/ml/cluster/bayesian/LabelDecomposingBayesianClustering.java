@@ -78,8 +78,8 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                   GenericFactory<T> prototypeFactory) throws ClusterException
+	protected void initializeWithRealData(Iterator<T> trainingIterator, GenericFactory<T> prototypeFactory)
+			throws ClusterException
 		{
 		Map<String, GrowableKmeansClustering<T>> theSubclusteringMap =
 				new HashMap<String, GrowableKmeansClustering<T>>();

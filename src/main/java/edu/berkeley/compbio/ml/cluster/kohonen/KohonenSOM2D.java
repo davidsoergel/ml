@@ -38,13 +38,13 @@ import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.SimpleFunction;
+import edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
-import edu.berkeley.compbio.ml.cluster.OnlineClusteringMethod;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -77,7 +77,7 @@ import java.util.Set;
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineClusteringMethod<T, KohonenSOMCell<T>>
+public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends AbstractOnlineClusteringMethod<T, KohonenSOMCell<T>>
 		implements KohonenSOM<T>
 	{
 	// we jump through some hoops to avoid actually storing the cells in an array,
@@ -238,7 +238,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 		{
 		for (int i = 0; i < totalCells; i++)
 			{
-			KohonenSOMCell<T> c = new KohonenSOMCell<T>(i, prototypeFactory == null ? null : prototypeFactory.create());
+			KohonenSOMCell<T> c =
+					new KohonenSOMCell<T>(i, prototypeFactory == null ? null : prototypeFactory.create(null));
 			c.setId(i);
 			theClusters.add(c);
 			}
@@ -378,8 +379,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends OnlineCluste
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                   GenericFactory<T> prototypeFactory) throws GenericFactoryException
+	private void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+	                                    GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
 		createClusters(prototypeFactory);
 		searchStrategy.setSOM(this);

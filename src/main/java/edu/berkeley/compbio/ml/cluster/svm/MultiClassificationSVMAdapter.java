@@ -1,8 +1,6 @@
 package edu.berkeley.compbio.ml.cluster.svm;
 
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
-import com.davidsoergel.dsutils.GenericFactory;
-import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.google.common.base.Function;
 import com.google.common.base.Nullable;
@@ -136,12 +134,16 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	Map<String, BatchCluster<T>> theClusterMap;
 
-	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                   GenericFactory<T> prototypeFactory)
-			throws GenericFactoryException, ClusterException
-		{		// do nothing with the iterator or any of that
-		assert initSamples == 0;
+//	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+//	                                   GenericFactory<T> prototypeFactory)
+//			throws GenericFactoryException, ClusterException
+//		{
+	// do nothing with the iterator or any of that
+	// assert initSamples == 0;
+//		}
 
+	private void initializeClusters()
+		{
 		// by analogy with BayesianClustering, take this opportunity to initialize the clusters
 
 		theClusterMap = new HashMap<String, BatchCluster<T>>(potentialTrainingBins.size());

@@ -51,6 +51,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -82,14 +83,21 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
+	@Override
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
+	                  final GenericFactory<T> prototypeFactory) throws IOException, ClusterException
+		{
+		initializeWithRealData(trainingCollectionIteratorFactory.next(), prototypeFactory);
+		super.train(trainingCollectionIteratorFactory, prototypeFactory);
+		}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                   final GenericFactory<T> prototypeFactory)
-			throws GenericFactoryException, ClusterException
+	protected void initializeWithRealData(Iterator<T> trainingIterator, final GenericFactory<T> prototypeFactory)
+			throws ClusterException
+		//	throws GenericFactoryException, ClusterException
 		{
 		final Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
 
@@ -172,9 +180,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
+	                  final GenericFactory<T> prototypeFactory) //, int iterations)
 		{
-		// do nothing
+		initializeWithRealData(trainingCollectionIteratorFactory.next(), prototypeFactory);
 
 
 		// after that, normalize the label probabilities
