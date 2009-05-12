@@ -33,17 +33,23 @@
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
+import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.SimpleFunction;
-import edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.AbstractUnsupervisedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
+import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
+import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -68,8 +74,8 @@ import java.util.Set;
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends AbstractOnlineClusteringMethod<T, KohonenSOMCell<T>>
-		implements KohonenSOM<T>
+public class KohonenSOMnD<T extends AdditiveClusterable<T>>
+		extends AbstractUnsupervisedOnlineClusteringMethod<T, KohonenSOMCell<T>> implements KohonenSOM<T>
 	{
 
 	// we jump through some hoops to avoid actually storing the cells in an array,
@@ -93,7 +99,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends AbstractOnli
 
 	int time = 0;
 
-	private DissimilarityMeasure<T> measure;
+	//private DissimilarityMeasure<T> measure;
 	private int dimensions;
 	private boolean edgesWrap;
 
@@ -211,11 +217,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends AbstractOnli
 
 	// -------------------------- OTHER METHODS --------------------------
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
+	public boolean add(T p) throws ClusterException, NoGoodClusterException
 		{
 		ClusterMove cm = bestClusterMove(p);
 		KohonenSOMCell<T> loser = (KohonenSOMCell<T>) cm.oldCluster;
@@ -244,20 +246,21 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends AbstractOnli
 		return true;
 		}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	private void initializeWithRealData(Iterator<T> trainingIterator, int initSamples)
+	public void initializeWithRealData(Iterator<T> initIterator, int initSamples
+	                                   // ,GenericFactory<T> prototypeFactory
+	) throws GenericFactoryException
 		//	, GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
 		for (int i = 0; i < initSamples; i++)
+			//int i = 0;
+			//while(initIterator.hasNext())
 			{
-			addToRandomCell(trainingIterator.next());
+			addToRandomCell(initIterator.next());
 			if (i % 100 == 0)
 				{
 				logger.debug("Initialized with " + i + " samples.");
 				}
+			//i++;
 			}
 		}
 
@@ -518,7 +521,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends AbstractOnli
 	 * @return
 	 */
 	@Override
-	public ClusterMove bestClusterMove(T p)
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p)
 		{
 		ClusterMove result = new ClusterMove();
 		//double bestDistance = Double.MAX_VALUE;
@@ -644,4 +647,29 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>> extends AbstractOnli
 		   throw new NotImplementedException();
 		   }
 	   }*/
+
+
+	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+		{
+		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
+		}
+
+	public void writeClusteringStatsToStream(OutputStream outf)
+		{
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		}
+
+	@Override
+	public String clusteringStats()
+		{
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
+		return b.toString();
+		}
+
+	@Override
+	public String shortClusteringStats()
+		{
+		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		}
 	}

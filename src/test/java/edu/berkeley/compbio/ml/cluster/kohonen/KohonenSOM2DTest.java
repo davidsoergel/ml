@@ -108,7 +108,7 @@ public class KohonenSOM2DTest
 				3,
 				4,
 				5
-		}), null);
+		}));
 
 		for (CentroidCluster<ClusterableDoubleArray> cell : som.getClusters())
 			{
@@ -135,7 +135,7 @@ public class KohonenSOM2DTest
 				3,
 				4,
 				5
-		}), null);
+		}));
 
 		assert som.bestClusterMove(new ClusterableDoubleArray("test1", new double[]{
 				0,

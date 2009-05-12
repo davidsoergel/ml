@@ -36,7 +36,6 @@ import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.dsutils.tree.TreePrinter;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
-import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.distancemeasure.EuclideanDistance;
@@ -59,7 +58,7 @@ public class UPGMATest
 
 	private static final Logger logger = Logger.getLogger(UPGMATest.class);
 
-	List<Clusterable<ClusterableDoubleArray>> points = new ArrayList<Clusterable<ClusterableDoubleArray>>();
+	List<ClusterableDoubleArray> points = new ArrayList<ClusterableDoubleArray>();
 
 	// -------------------------- OTHER METHODS --------------------------
 
@@ -122,7 +121,7 @@ public class UPGMATest
 				new UPGMA<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null, null, null, null);
 
 		oc.addAll(points.iterator());
-		oc.performClustering();
+		oc.train();
 
 		Collection<? extends CentroidCluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
 

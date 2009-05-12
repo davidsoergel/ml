@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.ml.cluster.svm;
 
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
+import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.google.common.base.Function;
 import com.google.common.base.Nullable;
@@ -13,12 +14,13 @@ import edu.berkeley.compbio.jlibsvm.multi.MultiClassProblemImpl;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.multi.VotingResult;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
+import edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
-import edu.berkeley.compbio.ml.cluster.SupervisedOnlineClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,7 +37,7 @@ import java.util.Set;
  * @version $Id$
  */
 public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
-		extends SupervisedOnlineClusteringMethod<T, BatchCluster<T>>
+		extends AbstractBatchClusteringMethod<T, BatchCluster<T>> implements SupervisedClusteringMethod<T>
 	{
 	private static final Logger logger = Logger.getLogger(MultiClassificationSVMAdapter.class);
 
@@ -67,18 +69,20 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	ImmutableSvmParameter<BatchCluster<T>, T> param;
 
+	Map<T, BatchCluster<T>> examples = new HashMap<T, BatchCluster<T>>();
+	Map<T, Integer> exampleIds = new HashMap<T, Integer>();
 
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
-			throws IOException, ClusterException
+
+	public void addAll(Iterator<T> trainingIterator) //CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
+
 		{
-		Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
+		//	Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
+
 
 		// cache the training set into an example map
 		//  (too bad the svm training requires all examples in memory)
 
 		//Multimap<String, T> examples = new HashMultimap<String, T>();
-		Map<T, BatchCluster<T>> examples = new HashMap<T, BatchCluster<T>>();
-		Map<T, Integer> exampleIds = new HashMap<T, Integer>();
 
 		int c = 0;
 		while (trainingIterator.hasNext())
@@ -99,6 +103,19 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				}
 			}
 		logger.debug("Prepared " + c + " training samples");
+		}
+
+
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
+	                  GenericFactory<T> prototypeFactory, int trainingEpochs) throws IOException, ClusterException
+		{
+		addAll(trainingCollectionIteratorFactory.next());
+		train();
+		}
+
+
+	public void train()
+		{
 
 		svm = new MultiClassificationSVM<BatchCluster<T>, T>(binarySvm);
 		MultiClassProblem<BatchCluster<T>, T> problem =

@@ -35,6 +35,9 @@ package edu.berkeley.compbio.ml.cluster;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Set;
 
 /**
@@ -51,8 +54,8 @@ import java.util.Set;
  * @Version 1.0
  */
 public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
-		extends AbstractBatchCentroidClusteringMethod<T>
-		implements SemisupervisedClusteringMethod<T, CentroidCluster<T>>
+		extends AbstractBatchClusteringMethod<T, CentroidCluster<T>>
+		implements CentroidClusteringMethod<T>, SemisupervisedClusteringMethod<T>
 	{
 
 
@@ -71,4 +74,28 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 	 *         procedure has not been performed yet.
 	 */
 	public abstract LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree();
+
+	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+		{
+		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
+		}
+
+	public void writeClusteringStatsToStream(OutputStream outf)
+		{
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		}
+
+	@Override
+	public String clusteringStats()
+		{
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
+		return b.toString();
+		}
+
+	@Override
+	public String shortClusteringStats()
+		{
+		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		}
 	}

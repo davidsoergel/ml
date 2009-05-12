@@ -32,16 +32,20 @@
 
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
+import com.davidsoergel.dsutils.CollectionIteratorFactory;
+import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
+import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.HierarchicalCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -125,7 +129,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
 		ClusterMove result = new ClusterMove();
 		result.bestDistance = Double.POSITIVE_INFINITY;
@@ -165,11 +169,19 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		return result;
 		}
 
+
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
+	                  GenericFactory<T> prototypeFactory, int trainingEpochs) throws IOException, ClusterException
+		{
+		addAll(trainingCollectionIteratorFactory.next());
+		train();
+		}
+
+
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void performClustering()
+	public void train()  // aka performClustering
 		{
 		n = theActiveNodeDistanceMatrix.numKeys();
 		HierarchicalCentroidCluster<T> composite = null;
@@ -237,8 +249,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void addAll(Iterator<? extends Clusterable<T>> samples)
+	public void addAll(Iterator<T> samples)
 		{
 		//theClusters.addAll(samples);
 		//Iterator<? extends Clusterable<T>> i = samples.iterator();
@@ -306,7 +317,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		}
 
 	/**
-	 * We can't add a single node when the matrix is empty, since it won't make any pairs ard thus won't retain the node at
+	 * We can't add a single node when the matrix is empty, since it won't make any pairs and thus won't retain the node at
 	 * all.  Hence the addInitialPair business above.
 	 *
 	 * @param node

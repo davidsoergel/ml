@@ -33,6 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
+import edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod;
 
 import java.util.Iterator;
@@ -46,7 +47,8 @@ import java.util.Set;
  * @version $Id$
  */
 
-public interface KohonenSOM<T extends AdditiveClusterable<T>> extends SemisupervisedClusteringMethod<T>
+public interface KohonenSOM<T extends AdditiveClusterable<T>>
+		extends SemisupervisedClusteringMethod<T>, CentroidClusteringMethod<T>
 	{
 	//boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
 

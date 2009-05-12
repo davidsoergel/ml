@@ -66,6 +66,7 @@ import java.util.Set;
  * @version $Id$
  */
 public class BayesianClustering<T extends AdditiveClusterable<T>> extends NeighborClustering<T>
+		//	implements SampleInitializedOnlineClusteringMethod<T>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -83,26 +84,16 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
-	@Override
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
-	                  final GenericFactory<T> prototypeFactory) throws IOException, ClusterException
-		{
-		initializeWithRealData(trainingCollectionIteratorFactory.next(), prototypeFactory);
-		super.train(trainingCollectionIteratorFactory, prototypeFactory);
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initializeWithRealData(Iterator<T> trainingIterator, final GenericFactory<T> prototypeFactory)
-			throws ClusterException
+	//BAD just initialize all clusters, then delete the empty ones
+	public void initializeWithSamples(Iterator<T> trainingIterator, int initSamples,
+	                                  final GenericFactory<T> prototypeFactory)
+		//	throws ClusterException
 		//	throws GenericFactoryException, ClusterException
 		{
 		final Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
 
 		// The reason this stuff is here, rather than in train(), is that train() expects that the clusters are already defined.
-		// but because of the way labelling works now, we have to consume the entire test iterator in order to know what the clusters should be.
+		// but because of the way labelling works now, we have to consume the entire training iterator in order to know what the clusters should be.
 		// we are provided with the list of potential training bins, but some of those may not actually have training samples.
 
 		final Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
@@ -179,12 +170,13 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
-	                  final GenericFactory<T> prototypeFactory) //, int iterations)
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
+			throws IOException, ClusterException
 		{
-		initializeWithRealData(trainingCollectionIteratorFactory.next(), prototypeFactory);
+		//	initializeWithRealData(trainingCollectionIteratorFactory.next(), prototypeFactory);
 
+		// don't need this, since initializeWithRealData already considered all of the points
+		//super.train(trainingCollectionIteratorFactory);
 
 		// after that, normalize the label probabilities
 
@@ -209,7 +201,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
 		ClusterMove result = new ClusterMove();
 

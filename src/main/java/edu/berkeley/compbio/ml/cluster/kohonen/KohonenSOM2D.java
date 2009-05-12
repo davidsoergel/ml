@@ -38,19 +38,23 @@ import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.SimpleFunction;
-import edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.AbstractUnsupervisedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
+import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
+import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -77,8 +81,8 @@ import java.util.Set;
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends AbstractOnlineClusteringMethod<T, KohonenSOMCell<T>>
-		implements KohonenSOM<T>
+public class KohonenSOM2D<T extends AdditiveClusterable<T>>
+		extends AbstractUnsupervisedOnlineClusteringMethod<T, KohonenSOMCell<T>> implements KohonenSOM<T>
 	{
 	// we jump through some hoops to avoid actually storing the cells in an array,
 	// since we don't know a priori how many dimensions it should have, and it would be redundant with
@@ -285,17 +289,23 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends AbstractOnli
 		super.train(trainingCollectionIteratorFactory, iterations);
 		labeler.propagateLabels(this);
 		}
+
+
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
+	                  GenericFactory<T> prototypeFactory, int trainingEpochs) throws IOException, ClusterException
+		{
+		train(trainingCollectionIteratorFactory, trainingEpochs);
+		}
+
 // -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * @param p
-	 * @param secondBestDistances not used, here only for the sake of the interface; passing null is fine
 	 * @return
 	 * @throws ClusterException
 	 * @throws NoGoodClusterException
 	 */
-	@Override
-	public boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException
+	public boolean add(T p) throws ClusterException, NoGoodClusterException
 		{
 		ClusterMove<T, KohonenSOMCell<T>> cm = bestClusterMove(p);
 
@@ -378,20 +388,22 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends AbstractOnli
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	private void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-	                                    GenericFactory<T> prototypeFactory) throws GenericFactoryException
+	public void initializeWithRealData(Iterator<T> initIterator, int initSamples, GenericFactory<T> prototypeFactory)
+			throws GenericFactoryException
 		{
 		createClusters(prototypeFactory);
 		searchStrategy.setSOM(this);
 
 		for (int i = 0; i < initSamples; i++)
+			//int i = 0;
+			//while(initIterator.hasNext())
 			{
-			addToRandomCell(trainingIterator.next());
+			addToRandomCell(initIterator.next());
 			if (i % 100 == 0)
 				{
 				logger.debug("Initialized with " + i + " samples.");
 				}
+			//	i++;
 			}
 		}
 
@@ -956,7 +968,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends AbstractOnli
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ClusterMove bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
 		return searchStrategy.bestClusterMove(p);
 		}
@@ -1051,7 +1063,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends AbstractOnli
 		/**
 		 * {@inheritDoc}
 		 */
-		// This is horribly inefficient but we don't do it often
+		// PERF This is horribly inefficient but we don't do it often
 		public Set<KohonenSOMCell<T>> next()
 			{
 
@@ -1086,5 +1098,29 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends AbstractOnli
 			{
 			throw new NotImplementedException();
 			}
+		}
+
+	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+		{
+		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
+		}
+
+	public void writeClusteringStatsToStream(OutputStream outf)
+		{
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		}
+
+	@Override
+	public String clusteringStats()
+		{
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
+		return b.toString();
+		}
+
+	@Override
+	public String shortClusteringStats()
+		{
+		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
 		}
 	}

@@ -40,12 +40,17 @@ import edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
+import edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
-import edu.berkeley.compbio.ml.cluster.UnsupervisedClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
+import edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod;
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -53,7 +58,7 @@ import java.util.Set;
  */
 public class KmeansClustering<T extends AdditiveClusterable<T>>
 		extends AbstractOnlineClusteringMethod<T, CentroidCluster<T>>
-		implements UnsupervisedClusteringMethod<T, CentroidCluster<T>>
+		implements SemisupervisedClusteringMethod<T>, CentroidClusteringMethod<T>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -72,12 +77,12 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
+
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	private void initializeWithRealData(Iterator<T> trainingIterator,
-	                                    int initsamples) //, GenericFactory<T> prototypeFactory)
+	public void initializeWithRealData(Iterator<T> trainingIterator,
+	                                   int initsamples) //, GenericFactory<T> prototypeFactory)
 			throws GenericFactoryException
 		{
 
@@ -96,20 +101,13 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	// -------------------------- OTHER METHODS --------------------------
 
 
-	/**
-	 * Adds a point to the best cluster.  Generally it's not a good idea to store the point itself in the cluster for
-	 * memory reasons; so this method is primarily useful for updating the position of the centroid.
-	 *
-	 * @param secondBestDistances List of second-best distances to add to (just for reporting purposes)
-	 */
-	@Override
-	public boolean add(T p, List<Double> secondBestDistances)
+	public boolean add(T p)
 		{
 		assert p != null;
 		//n++;
 		String id = p.getId();
 		ClusterMove<T, CentroidCluster<T>> cm = bestClusterMove(p);
-		secondBestDistances.add(cm.secondBestDistance);
+		//secondBestDistances.add(cm.secondBestDistance);
 		if (cm.isChanged())
 			{
 			try
@@ -189,4 +187,28 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	   assert p != null;
 	   bestCluster(theClusters, p).addAndRecenter(p);  // this will automatically recalculate the centroid, etc.
 	   }*/
+
+	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+		{
+		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
+		}
+
+	public void writeClusteringStatsToStream(OutputStream outf)
+		{
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		}
+
+	@Override
+	public String clusteringStats()
+		{
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
+		return b.toString();
+		}
+
+	@Override
+	public String shortClusteringStats()
+		{
+		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		}
 	}

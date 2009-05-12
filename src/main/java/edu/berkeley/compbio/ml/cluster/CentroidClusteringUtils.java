@@ -37,14 +37,13 @@ import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.log4j.Logger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 
 /**
@@ -55,21 +54,21 @@ import java.util.Set;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id: CentroidClusteringMethod.java 393 2009-05-08 00:49:01Z soergel $
  */
-public abstract class AbstractBatchCentroidClusteringMethod<T extends Clusterable<T>>
-		extends AbstractBatchClusteringMethod<T, CentroidCluster<T>> implements CentroidClusteringMethod<T>
+public final class CentroidClusteringUtils //<T extends Clusterable<T>>
+//		extends AbstractBatchClusteringMethod<T, CentroidCluster<T>> implements CentroidClusteringMethod<T>
 	{
 	//protected boolean leaveOneOut;
 
 
-	protected AbstractBatchCentroidClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                                Set<String> predictLabels, Set<String> leaveOneOutLabels,
-	                                                Set<String> testLabels)
-		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
-		//	this.leaveOneOut = leaveOneOut;
-		}
-
-	private static final Logger logger = Logger.getLogger(AbstractBatchCentroidClusteringMethod.class);
+	/*	protected AbstractBatchCentroidClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+													 Set<String> predictLabels, Set<String> leaveOneOutLabels,
+													 Set<String> testLabels)
+		 {
+		 super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		 //	this.leaveOneOut = leaveOneOut;
+		 }
+ */
+	private static final Logger logger = Logger.getLogger(CentroidClusteringUtils.class);
 
 	/**
 	 * for each cluster, compute the standard deviation of the distance of each point to the centroid.  This does not
@@ -78,7 +77,10 @@ public abstract class AbstractBatchCentroidClusteringMethod<T extends Clusterabl
 	 *
 	 * @param theDataPointProvider
 	 */
-	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+	public static <T extends Clusterable<T>> void computeClusterStdDevs(
+			Collection<? extends CentroidCluster<T>> theClusters, DissimilarityMeasure<T> measure,
+			Map<String, ? extends CentroidCluster<T>> assignments,
+			ClusterableIterator<T> theDataPointProvider) //throws IOException
 		{
 		theDataPointProvider.reset();
 		for (CentroidCluster<T> c : theClusters)
@@ -111,21 +113,23 @@ public abstract class AbstractBatchCentroidClusteringMethod<T extends Clusterabl
 	 *
 	 * @return
 	 */
-	public List<T> getCentroids()
-		{
-		List<T> result = new ArrayList<T>();
-		for (CentroidCluster<T> c : theClusters)
-			{
-			result.add(c.getCentroid());
-			}
-		return result;
-		}
-
+	/*
+	 public List<T> getCentroids()
+		 {
+		 List<T> result = new ArrayList<T>();
+		 for (CentroidCluster<T> c : theClusters)
+			 {
+			 result.add(c.getCentroid());
+			 }
+		 return result;
+		 }
+ */
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public String shortClusteringStats()
+
+	public static <T extends Clusterable<T>> String shortClusteringStats(
+			Collection<? extends CentroidCluster<T>> theClusters, DissimilarityMeasure<T> measure)
 		{
 		List<Double> distances = new ArrayList<Double>();
 		int numDistances = 0;
@@ -161,14 +165,16 @@ public abstract class AbstractBatchCentroidClusteringMethod<T extends Clusterabl
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public String clusteringStats()
-		{
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		writeClusteringStatsToStream(b);
-		return b.toString();
-		}
+	/*
+	 @Override
 
+	 public String clusteringStats()
+		 {
+		 ByteArrayOutputStream b = new ByteArrayOutputStream();
+		 writeClusteringStatsToStream(b);
+		 return b.toString();
+		 }
+ */
 	/**
 	 * Writes a long String describing statistics about the clustering, such as the complete cluster distance matrix, to
 	 * the given output stream.
@@ -176,7 +182,8 @@ public abstract class AbstractBatchCentroidClusteringMethod<T extends Clusterabl
 	 * @param outf an OutputStream to which to write the string as it's built
 	 * @return a long String describing statistics about the clustering.
 	 */
-	public void writeClusteringStatsToStream(OutputStream outf)
+	public static <T extends Clusterable<T>> void writeClusteringStatsToStream(
+			Collection<? extends CentroidCluster<T>> theClusters, DissimilarityMeasure<T> measure, OutputStream outf)
 		{
 		PrintWriter p = new PrintWriter(outf);
 		for (CentroidCluster<T> c : theClusters)

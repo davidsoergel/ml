@@ -77,8 +77,8 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 	 * Unlike situations where we make a cluster per label, here we make a whole "cluster" per test sample
 	 */
 	//@Override
-	private void initializeWithRealData(Iterator<T> trainingIterator)
-//	, int initSamples,                                   GenericFactory<T> prototypeFactory)
+	public void initializeWithRealData(
+			Iterator<T> trainingIterator) //,                             GenericFactory<T> prototypeFactory)
 //			throws GenericFactoryException, ClusterException
 		{
 		theClusters = new HashSet<CentroidCluster<T>>();
@@ -357,11 +357,12 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>> 
 		return cm;
 		}
 
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
 		{
 		initializeWithRealData(trainingCollectionIteratorFactory.next());
 

@@ -34,7 +34,6 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
 
-import java.util.Iterator;
 import java.util.Set;
 
 
@@ -57,12 +56,12 @@ public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extend
 	/**
 	 * Recompute a set of clusters from the stored samples.
 	 */
-	public abstract void performClustering();
+//	public abstract void train();
 
 	/**
 	 * Add the given samples to the set to be clustered.
 	 *
 	 * @param samples a Collection of Clusterable objects.
 	 */
-	public abstract void addAll(Iterator<? extends Clusterable<T>> samples);
+//	public abstract void addAll(Iterable<? extends Clusterable<T>> samples);
 	}

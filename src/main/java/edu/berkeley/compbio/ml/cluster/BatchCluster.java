@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Explicitly stores all the points in a cluster.
+ *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id: BatchCluster.java 312 2008-11-04 01:40:15Z soergel $
  */
