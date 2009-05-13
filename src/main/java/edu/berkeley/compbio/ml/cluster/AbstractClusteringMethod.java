@@ -25,6 +25,8 @@ import java.util.concurrent.Future;
 public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
 		implements ClusteringMethod<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(AbstractClusteringMethod.class);
 
 	protected static final Double UNKNOWN_DISTANCE = 1e308; // Double.MAX_VALUE; triggers MySQL bug # 21497
@@ -39,6 +41,9 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	protected final Set<String> leaveOneOutLabels;
 	protected final Set<String> testLabels;
 
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	public AbstractClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
@@ -49,57 +54,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		this.testLabels = testLabels;
 		}
 
-	protected void normalizeClusterLabelProbabilities()
-		{
-		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
-		for (final Cluster<T> c : theClusters)
-			{
-			execService.submit(new Runnable()
-			{
-			public void run()
-				{
-				c.updateDerivedWeightedLabelsFromLocal();
-				}
-			});
-			}
-		execService.finish("Normalized %d training probabilities", 30);
-		}
-
-
-	/**
-	 * Sets a list of labels to be used for classification.  For a supervised method, this must be called before training.
-	 *
-	 * @param predictLabels a set of mutually-exclusive labels that we want to predict.  Note multiple bins may predict
-	 *                       the same label; defining the clusters is a separate issue.
-	 */
-//	public void setPredictLabels(Set<String> predictLabels)
-//		{
-//		this.predictLabels = predictLabels;
-//		}
-
-	/**
-	 * Sets a list of labels that the test samples will have, to which to compare our predictions.  Typically these will be
-	 * the same as the training labels, but they need not be, as long as the wrongness measure can compare across the two
-	 * sets.
-	 *
-	 * @param testLabels a set of mutually-exclusive labels that we want to predict.  Note multiple bins may predict the
-	 *                   same label; defining the clusters is a separate issue.
-	 */
-//	public void setTestLabels(Set<String> testLabels)
-//		{
-//		this.testLabels = testLabels;
-//		}
-
-	/**
-	 * Returns the cluster to which the sample identified by the given String is assigned.
-	 *
-	 * @param id the unique String identifier of the sample
-	 * @return the Cluster to which the sample belongs
-	 */
-	public C getAssignment(String id)
-		{
-		return assignments.get(id);
-		}
+// --------------------- GETTER / SETTER METHODS ---------------------
 
 	/**
 	 * Returns the number of samples clustered so far
@@ -111,13 +66,10 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		return n;
 		}
 
-	/**
-	 * Return a ClusterMove object describing the best way to reassign the given point to a new cluster.
-	 *
-	 * @param p
-	 * @return
-	 */
-	public abstract ClusterMove<T, C> bestClusterMove(T p) throws NoGoodClusterException;
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface ClusterSet ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -127,39 +79,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		return theClusters;
 		}
 
-	/**
-	 * Returns a randomly selected cluster.
-	 *
-	 * @return a randomly selected cluster.
-	 */
-	protected Cluster<T> chooseRandomCluster()
-		{		// PERF slow, but rarely used		// we have to iterate since we don't know the underlying Collection type.
+// --------------------- Interface ClusteringMethod ---------------------
 
-		int index = MersenneTwisterFast.randomInt(theClusters.size());
-		Iterator<? extends Cluster<T>> iter = theClusters.iterator();
-		Cluster<T> result = iter.next();
-		for (int i = 0; i < index; result = iter.next())
-			{
-			i++;
-			}
-		return result;
-
-		//return theClusters.get(MersenneTwisterFast.randomInt(theClusters.size()));
-		}
-
-	/**
-	 * choose the best cluster for each incoming data point and report it
-	 */
-	public void writeAssignmentsAsTextToStream(OutputStream outf)
-		{
-		int c = 0;
-		PrintWriter p = new PrintWriter(outf);
-		for (String s : assignments.keySet())
-			{
-			p.println(s + " " + assignments.get(s).getId());
-			}
-		p.flush();
-		}
 
 	/**
 	 * Evaluates the classification accuracy of this clustering using an iterator of test samples.  These samples should
@@ -223,6 +144,54 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		}
 
 	/**
+	 * Choose the best label for the given sample from the set of permissible labels
+	 *
+	 * @param sample
+	 * @param predictLabels
+	 * @return
+	 * @throws NoGoodClusterException
+	 */
+	public String bestLabel(T sample, Set<String> predictLabels) throws NoGoodClusterException
+		{
+		Cluster<T> c = bestClusterMove(sample).bestCluster;
+		return c.getWeightedLabels().getDominantKeyInSet(predictLabels);
+/*		c.updateDerivedWeightedLabelsFromLocal();
+		WeightedSet<String> probs = c.getDerivedLabelProbabilities();
+		String label = probs.getDominantKey();*/
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * Returns a randomly selected cluster.
+	 *
+	 * @return a randomly selected cluster.
+	 */
+	protected Cluster<T> chooseRandomCluster()
+		{		// PERF slow, but rarely used		// we have to iterate since we don't know the underlying Collection type.
+		int index = MersenneTwisterFast.randomInt(theClusters.size());
+		Iterator<? extends Cluster<T>> iter = theClusters.iterator();
+		Cluster<T> result = iter.next();
+		for (int i = 0; i < index; result = iter.next())
+			{
+			i++;
+			}
+		return result;
+
+		//return theClusters.get(MersenneTwisterFast.randomInt(theClusters.size()));
+		}
+
+	/**
+	 * Returns a long String describing statistics about the clustering, such as the complete cluster distance matrix.
+	 *
+	 * @return a long String describing statistics about the clustering.
+	 */
+	public String clusteringStats()
+		{
+		return "No clustering stats available";
+		}
+
+	/**
 	 * Figure out which of the potential training labels were actually populated (some got tossed to provide for unknown
 	 * test samples) while we're at it, sum up the cluster masses
 	 */
@@ -237,6 +206,68 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getWeightSum());
 			}
 		return populatedTrainingLabels;
+		}
+
+	/**
+	 * Sets a list of labels to be used for classification.  For a supervised method, this must be called before training.
+	 *
+	 * @param predictLabels a set of mutually-exclusive labels that we want to predict.  Note multiple bins may predict
+	 *                       the same label; defining the clusters is a separate issue.
+	 */
+//	public void setPredictLabels(Set<String> predictLabels)
+//		{
+//		this.predictLabels = predictLabels;
+//		}
+
+	/**
+	 * Sets a list of labels that the test samples will have, to which to compare our predictions.  Typically these will be
+	 * the same as the training labels, but they need not be, as long as the wrongness measure can compare across the two
+	 * sets.
+	 *
+	 * @param testLabels a set of mutually-exclusive labels that we want to predict.  Note multiple bins may predict the
+	 *                   same label; defining the clusters is a separate issue.
+	 */
+//	public void setTestLabels(Set<String> testLabels)
+//		{
+//		this.testLabels = testLabels;
+//		}
+
+	/**
+	 * Returns the cluster to which the sample identified by the given String is assigned.
+	 *
+	 * @param id the unique String identifier of the sample
+	 * @return the Cluster to which the sample belongs
+	 */
+	public C getAssignment(String id)
+		{
+		return assignments.get(id);
+		}
+
+	protected void normalizeClusterLabelProbabilities()
+		{
+		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+		for (final Cluster<T> c : theClusters)
+			{
+			execService.submit(new Runnable()
+			{
+			public void run()
+				{
+				c.updateDerivedWeightedLabelsFromLocal();
+				}
+			});
+			}
+		execService.finish("Normalized %d training probabilities", 30);
+		}
+
+	/**
+	 * Returns a short String describing statistics about the clustering, such as the mean and stddev of the distances
+	 * between clusters.
+	 *
+	 * @return a short String describing statistics about the clustering.
+	 */
+	public String shortClusteringStats()
+		{
+		return "No clustering stats available";
 		}
 
 	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
@@ -326,40 +357,24 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		}
 
 	/**
-	 * Returns a short String describing statistics about the clustering, such as the mean and stddev of the distances
-	 * between clusters.
+	 * Return a ClusterMove object describing the best way to reassign the given point to a new cluster.
 	 *
-	 * @return a short String describing statistics about the clustering.
-	 */
-	public String shortClusteringStats()
-		{
-		return "No clustering stats available";
-		}
-
-	/**
-	 * Returns a long String describing statistics about the clustering, such as the complete cluster distance matrix.
-	 *
-	 * @return a long String describing statistics about the clustering.
-	 */
-	public String clusteringStats()
-		{
-		return "No clustering stats available";
-		}
-
-	/**
-	 * Choose the best label for the given sample from the set of permissible labels
-	 *
-	 * @param sample
-	 * @param predictLabels
+	 * @param p
 	 * @return
-	 * @throws NoGoodClusterException
 	 */
-	public String bestLabel(T sample, Set<String> predictLabels) throws NoGoodClusterException
+	public abstract ClusterMove<T, C> bestClusterMove(T p) throws NoGoodClusterException;
+
+	/**
+	 * choose the best cluster for each incoming data point and report it
+	 */
+	public void writeAssignmentsAsTextToStream(OutputStream outf)
 		{
-		Cluster<T> c = bestClusterMove(sample).bestCluster;
-		return c.getWeightedLabels().getDominantKeyInSet(predictLabels);
-/*		c.updateDerivedWeightedLabelsFromLocal();
-		WeightedSet<String> probs = c.getDerivedLabelProbabilities();
-		String label = probs.getDominantKey();*/
+		int c = 0;
+		PrintWriter p = new PrintWriter(outf);
+		for (String s : assignments.keySet())
+			{
+			p.println(s + " " + assignments.get(s).getId());
+			}
+		p.flush();
 		}
 	}

@@ -54,90 +54,22 @@ import java.util.Queue;
 
 public class RonPSA extends RonPSANode
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(RonPSA.class);
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public RonPSA()
 		{
 
 		}
 
-	/*	public RonPSA(byte[] alphabet)
-	   {
-	   super(new byte[0], alphabet);
-	   }*/
-
-	/**
-	 * Convert a PST into a PSA as described in Ron et al Appendix B.  Assumes we're starting from an empty node.
-	 *
-	 * @param pst
-	 */
-	private void convertFrom(RonPST pst)
-		{
-		setAlphabet(pst.getAlphabet());
-		setId(new byte[0]);
-		copyProbsFromSpectrumRecursively(pst);
-		buildPSARecursivelyFromPSTNode(pst, pst);
-		updateLogProbsRecursive();
-		setOriginalSequenceLength(pst.getOriginalSequenceLength());
-
-		// at this point we have a pure tree with a full set of probabilities at every node
-
-		setBacklinks();
-		}
-
-	private void buildPSARecursivelyFromPSTNode(RonPSTNode pstNode, SequenceSpectrum spectrum)
-		{
-		getOrAddNodeAndIntermediates(pstNode.getIdBytes(), spectrum);
-
-		for (RonPSTNode pstUpstream : pstNode.getUpstreamNodes())
-			{
-			if (pstUpstream != null)
-				{
-				buildPSARecursivelyFromPSTNode(pstUpstream, spectrum);
-				}
-			}
-		}
-
-	private RonPSANode getOrAddNodeAndIntermediates(byte[] id, SequenceSpectrum spectrum)
-		{
-		//RonPSANode psaNode = new RonPSANode(id, alphabet);
-		RonPSANode result = getDescendant(id);
-		if (result == null)
-			{
-			RonPSANode parent = getOrAddNodeAndIntermediates(DSArrayUtils.prefix(id, id.length - 1), spectrum);
-			result = parent.addChild(id[id.length - 1]);
-			result.copyProbsFromSpectrumRecursively(spectrum);
-			}
-		return result;
-		}
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	public void learn(double branchAbsoluteMin, double branchConditionalMin, double pRatioMinMax, int l_max,
-	                  SequenceSpectrum fromSpectrum, DistributionProcessor<RonPSA> completionProcessor)
-			throws DistributionProcessorException
-		{
-		RonPST pst = new RonPST(branchAbsoluteMin, branchConditionalMin, pRatioMinMax, l_max, fromSpectrum);
-		convertFrom(pst);
-		if (completionProcessor != null)
-			{
-			completionProcessor.process(this);
-			}
-		diagnostics();
-		}
-
-	private List<RonPSANode> setBacklinks()
-		{
-		List<RonPSANode> result = new LinkedList();
-		Queue<RonPSANode> breadthFirstQueue = new LinkedList<RonPSANode>();
-		breadthFirstQueue.add(this);
-		while (!breadthFirstQueue.isEmpty())
-			{
-			RonPSANode next = breadthFirstQueue.remove();
-			next.setBacklinksUsingRoot(this, breadthFirstQueue);
-			result.add(next);
-			}
-		return result;
-		}
+// --------------------- Interface SequenceSpectrum ---------------------
 
 	//	@NotNull
 	//	public MarkovTreeNode nextNode(byte sigma)
@@ -239,5 +171,84 @@ public class RonPSA extends RonPSANode
 
 			return logprob;
 			}
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	public void learn(double branchAbsoluteMin, double branchConditionalMin, double pRatioMinMax, int l_max,
+	                  SequenceSpectrum fromSpectrum, DistributionProcessor<RonPSA> completionProcessor)
+			throws DistributionProcessorException
+		{
+		RonPST pst = new RonPST(branchAbsoluteMin, branchConditionalMin, pRatioMinMax, l_max, fromSpectrum);
+		convertFrom(pst);
+		if (completionProcessor != null)
+			{
+			completionProcessor.process(this);
+			}
+		diagnostics();
+		}
+
+	/*	public RonPSA(byte[] alphabet)
+	   {
+	   super(new byte[0], alphabet);
+	   }*/
+
+	/**
+	 * Convert a PST into a PSA as described in Ron et al Appendix B.  Assumes we're starting from an empty node.
+	 *
+	 * @param pst
+	 */
+	private void convertFrom(RonPST pst)
+		{
+		setAlphabet(pst.getAlphabet());
+		setId(new byte[0]);
+		copyProbsFromSpectrumRecursively(pst);
+		buildPSARecursivelyFromPSTNode(pst, pst);
+		updateLogProbsRecursive();
+		setOriginalSequenceLength(pst.getOriginalSequenceLength());
+
+		// at this point we have a pure tree with a full set of probabilities at every node
+
+		setBacklinks();
+		}
+
+	private void buildPSARecursivelyFromPSTNode(RonPSTNode pstNode, SequenceSpectrum spectrum)
+		{
+		getOrAddNodeAndIntermediates(pstNode.getIdBytes(), spectrum);
+
+		for (RonPSTNode pstUpstream : pstNode.getUpstreamNodes())
+			{
+			if (pstUpstream != null)
+				{
+				buildPSARecursivelyFromPSTNode(pstUpstream, spectrum);
+				}
+			}
+		}
+
+	private RonPSANode getOrAddNodeAndIntermediates(byte[] id, SequenceSpectrum spectrum)
+		{
+		//RonPSANode psaNode = new RonPSANode(id, alphabet);
+		RonPSANode result = getDescendant(id);
+		if (result == null)
+			{
+			RonPSANode parent = getOrAddNodeAndIntermediates(DSArrayUtils.prefix(id, id.length - 1), spectrum);
+			result = parent.addChild(id[id.length - 1]);
+			result.copyProbsFromSpectrumRecursively(spectrum);
+			}
+		return result;
+		}
+
+	private List<RonPSANode> setBacklinks()
+		{
+		List<RonPSANode> result = new LinkedList();
+		Queue<RonPSANode> breadthFirstQueue = new LinkedList<RonPSANode>();
+		breadthFirstQueue.add(this);
+		while (!breadthFirstQueue.isEmpty())
+			{
+			RonPSANode next = breadthFirstQueue.remove();
+			next.setBacklinksUsingRoot(this, breadthFirstQueue);
+			result.add(next);
+			}
+		return result;
 		}
 	}

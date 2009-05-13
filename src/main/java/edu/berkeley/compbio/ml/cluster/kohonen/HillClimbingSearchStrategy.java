@@ -51,26 +51,9 @@ import java.util.Set;
 
 public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(HillClimbingSearchStrategy.class);
-
-	//** @Property
-	//private final int gridSpacing = 4;
-
-
-	//private int searchRadius;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setSOM(KohonenSOM2D<T> som)
-		{
-		super.setSOM(som);
-
-		fallbackStrategy.setSOM(som);
-		//** @Property
-		//setSearchRadius(8);
-		}
 
 	/*	private void setSearchRadius(int i)
 		 {
@@ -78,12 +61,8 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 		 }
  */ KohonenSOM2DSearchStrategy<T> fallbackStrategy = new CoarseGridSearchStrategy<T>();
 
-	@Override
-	public void setDistanceMeasure(DissimilarityMeasure<T> dissimilarityMeasure)
-		{
-		super.setDistanceMeasure(dissimilarityMeasure);
-		fallbackStrategy.setDistanceMeasure(dissimilarityMeasure);
-		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Copied from KmeansClustering
@@ -159,5 +138,31 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 	public double getSearchRadius()
 		{
 		return 3;
+		}
+
+	@Override
+	public void setDistanceMeasure(DissimilarityMeasure<T> dissimilarityMeasure)
+		{
+		super.setDistanceMeasure(dissimilarityMeasure);
+		fallbackStrategy.setDistanceMeasure(dissimilarityMeasure);
+		}
+
+	//** @Property
+	//private final int gridSpacing = 4;
+
+
+	//private int searchRadius;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setSOM(KohonenSOM2D<T> som)
+		{
+		super.setSOM(som);
+
+		fallbackStrategy.setSOM(som);
+		//** @Property
+		//setSearchRadius(8);
 		}
 	}

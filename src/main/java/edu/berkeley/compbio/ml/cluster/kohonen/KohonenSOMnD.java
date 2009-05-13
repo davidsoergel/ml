@@ -78,15 +78,13 @@ import java.util.Set;
 public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 		extends AbstractUnsupervisedOnlineClusteringMethod<T, KohonenSOMCell<T>> implements KohonenSOM<T>
 	{
+// ------------------------------ FIELDS ------------------------------
 
 	// we jump through some hoops to avoid actually storing the cells in an array,
 	// since we don't know a priori how many dimensions it should have, and it would be redundant with
 	// OnlineClusteringMethod.theClusters
 
 	// aha: since theClusters is a list, we can map our array into it.  see listIndexFor(int[] cellposition)
-
-	// ------------------------------ FIELDS ------------------------------
-
 	private static final Logger logger = Logger.getLogger(KohonenSOMnD.class);
 
 	// how many cells wide is the grid along each axis
@@ -100,6 +98,8 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 
 	int time = 0;
 
+	KohonenSOMCell<T>[] immediateNeighbors;
+
 	//private DissimilarityMeasure<T> measure;
 	private int dimensions;
 	private boolean edgesWrap;
@@ -109,36 +109,16 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 	private SimpleFunction moveFactorFunction;
 	private SimpleFunction radiusFunction;
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+	/*
+	 private void initializeClusters(List<Interval<Double>> axisRanges)
+		 {
 
-	/**
-	 * assumes inputs are entirely positive and within the bounds given by cellsPerDimension
-	 *
-	 * @param cellposition
-	 * @return
-	 */
-	private int listIndexFor(int[] cellposition)
-		{
-		int result = 0;
-		assert cellposition.length == cellsPerDimension.length;
-		for (int i = 0; i < dimensions; i++)
-			{
-			result += cellposition[i] * blockSize[i];
-			}
-		return result;
-		}
+		 }
+ */
+	private int idCount = 0;
 
-	private int[] cellPositionFor(int listIndex)
-		{
-		int[] result = new int[dimensions];
-		for (int i = 0; i < dimensions; i++)
-			{
-			result[i] = listIndex / blockSize[i];
-			listIndex = listIndex % blockSize[i];
-			}
-		return result;
-		}
 
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public KohonenSOMnD(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
 	                    Set<String> leaveOneOutLabels, Set<String> testLabels, int[] cellsPerDimension,
@@ -172,57 +152,117 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 		maxRadius = DSArrayUtils.norm(cellsPerDimension);
 		}
 
-	public void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface CentroidClusteringMethod ---------------------
+
+
+	@Override
+	public String shortClusteringStats()
 		{
-		int[] zeroCell = new int[dimensions];
-		Arrays.fill(zeroCell, 0);
-		createClusters(zeroCell, -1, prototypeFactory);
+		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
 		}
 
 	/*
-	 private void initializeClusters(List<Interval<Double>> axisRanges)
-		 {
+   private class OldBogusNeighborhoodIterator implements Iterator<KohonenSOMCell<T>>
+	   {
+	   double radius;
 
-		 }
- */
-	private int idCount = 0;
+	   KohonenSOMCell<T> center;
+	   // this will likely need optimizing later
+	   Set<KohonenSOMCell<T>> todo = new HashSet<KohonenSOMCell<T>>();
+	   Set<KohonenSOMCell<T>> done = new HashSet<KohonenSOMCell<T>>();
 
-	/**
-	 * Create a rectangular grid of cells using the given dimensionality and size, assigning a null vector to each
-	 *
-	 * @param cellPosition
-	 * @param changingDimension // * @param prototype
-	 */
-	private void createClusters(int[] cellPosition, int changingDimension, GenericFactory<T> prototypeFactory)
-			throws GenericFactoryException
+
+	   private NeighborhoodIterator(KohonenSOMCell<T> center, int time)
+		   {
+		   this.center = center;
+		   radius = radiusFunction.f(time);
+		   todo.add(center);
+		   }
+
+	   public boolean hasNext()
+		   {
+		   return !todo.isEmpty();
+		   }
+
+	   public KohonenSOMCell<T> next()
+		   {
+		   KohonenSOMCell<T> trav = todo.iterator().next();
+		   done.add(trav);
+
+		   computeImmediateNeighbors(trav);
+		   for (KohonenSOMCell<T> neighbor : immediateNeighbors)
+			   {
+			   // careful not to repeat cells when the radius is large
+			   // no problem, the done list deals with that
+
+			   // optimizations possible here, i.e. test squares inscribed in circle first before doing sqrt
+			   if (neighbor != null && euclideanDistance(neighbor, center) <= radius && !done.contains(neighbor))
+				   {
+				   todo.add(neighbor);
+				   }
+			   }
+		   return trav;
+		   }
+
+	   private double euclideanDistance(KohonenSOMCell<T> neighbor, KohonenSOMCell<T> center)
+		   {
+		   int[] a = cellPositionFor(theClusters.indexOf(neighbor));
+		   int[] b = cellPositionFor(theClusters.indexOf(center));
+
+		   int sum = 0;
+		   for (int i = 0; i < dimensions; i++)
+			   {
+			   int dist = a[i] - b[i];
+			   if (edgesWrap)
+				   {
+				   dist = Math.min(dist, b[i] - a[i]);
+				   }
+			   sum += dist * dist;
+			   }
+		   return Math.sqrt(sum);
+		   }
+
+
+	   public void remove()
+		   {
+		   throw new NotImplementedException();
+		   }
+	   }*/
+
+
+	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
 		{
-		changingDimension++;
-		if (changingDimension == dimensions)
-			{
-			KohonenSOMCell<T> c = new KohonenSOMCell<T>(idCount++, prototypeFactory.create());//measure,
-			((List<KohonenSOMCell<T>>) theClusters).set(listIndexFor(cellPosition), c);
-			}
-		else
-			{
-			for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
-				{
-				cellPosition[changingDimension] = i;
-				createClusters(cellPosition, changingDimension, prototypeFactory);
-				}
-			}
-
-		/*  for (int i = 0; i < k; i++) {
-			  // initialize the clusters with the first k points
-
-			  Cluster<T> c = new AdditiveCluster<T>(measure);
-			  c.setId(i);
-
-			  theClusters.add(c);
-		  }
-		  logger.debug("initialized " + k + " clusters");*/
+		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+	@Override
+	public String clusteringStats()
+		{
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
+		return b.toString();
+		}
+
+	public void writeClusteringStatsToStream(OutputStream outf)
+		{
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		}
+
+// --------------------- Interface DiffusableLabelClusteringMethod ---------------------
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell)
+		{
+		return new NeighborhoodShellIterator(cell);
+		}
+
+// --------------------- Interface OnlineClusteringMethod ---------------------
 
 	public boolean add(T p) throws ClusterException, NoGoodClusterException
 		{
@@ -253,6 +293,18 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 		return true;
 		}
 
+// --------------------- Interface PrototypeBasedCentroidClusteringMethod ---------------------
+
+	public void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
+		{
+		int[] zeroCell = new int[dimensions];
+		Arrays.fill(zeroCell, 0);
+		createClusters(zeroCell, -1, prototypeFactory);
+		}
+
+// --------------------- Interface SampleInitializedOnlineClusteringMethod ---------------------
+
+
 	public void initializeWithSamples(Iterator<T> initIterator, int initSamples
 	                                  // ,GenericFactory<T> prototypeFactory
 	) //throws GenericFactoryException
@@ -271,243 +323,11 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 			}
 		}
 
+// -------------------------- OTHER METHODS --------------------------
+
 	public void addToRandomCell(T p)
 		{
 		throw new NotImplementedException();
-		}
-
-
-	private double moveFactor(int time)
-		{
-		return moveFactorFunction.f(time);
-		//throw new NotImplementedException();
-		}
-
-	KohonenSOMCell<T>[] immediateNeighbors;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell)
-		{
-		return new NeighborhoodShellIterator(cell);
-		}
-
-
-	private class NeighborhoodShellIterator implements Iterator<Set<KohonenSOMCell<T>>>
-		{
-
-		int radius = 0;
-		private int radiusSquared;
-		int centerPos[];
-
-		public NeighborhoodShellIterator(KohonenSOMCell<T> cell)
-			{
-			centerPos = cellPositionFor(((List<KohonenSOMCell<T>>) theClusters).indexOf(cell));
-			prevShell.add(cell);
-			}
-
-
-		private double getNextRadius()
-			{
-			return radius + 1;
-			}
-
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean hasNext()
-			{
-			return (radius + 1) <= maxRadius;
-			}
-
-
-		Set<KohonenSOMCell<T>> prevShell = new HashSet<KohonenSOMCell<T>>();
-		Set<KohonenSOMCell<T>> prevPrevShell = new HashSet<KohonenSOMCell<T>>();
-		;
-
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public Set<KohonenSOMCell<T>> next()
-			{
-			Set<KohonenSOMCell<T>> shell = new HashSet<KohonenSOMCell<T>>();
-			for (KohonenSOMCell<T> cell : prevShell)
-				{
-				// ** problem with edges when not wrapping; need to include edges in the shell?
-				computeImmediateNeighbors(cell);
-				for (KohonenSOMCell<T> neighbor : immediateNeighbors)
-					{
-					if (neighbor != null && !prevShell.contains(neighbor) && !prevPrevShell.contains(neighbor)
-							&& isWithinCurrentRadius(neighbor))
-						{
-						shell.add(neighbor);
-						}
-					}
-				}
-
-			prevPrevShell = prevShell;
-			prevShell = shell;
-
-			radius++;
-			radiusSquared = radius * radius;
-
-			return shell;
-			}
-
-		private boolean isWithinCurrentRadius(KohonenSOMCell<T> neighbor)
-			{
-			int pos[] = cellPositionFor(((List<KohonenSOMCell<T>>) theClusters).indexOf(neighbor));
-
-			int sum = 0;
-			for (int i = 0; i < dimensions; i++)
-				{
-				int dist = Math.abs(pos[i] - centerPos[i]);
-				if (edgesWrap)
-					{
-					dist = Math.min(dist, cellsPerDimension[i] - dist);
-					}
-				sum += dist * dist;
-				}
-
-			return sum <= radiusSquared;
-			}
-
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public void remove()
-			{
-			throw new NotImplementedException();
-			}
-
-
-		//  populates the immediateNeighbors array (which is allocated only once for efficiency). straight-line neighbors of
-		//  this node (not including diagonals)
-
-		//  @param trav
-		//  @return
-
-		private void computeImmediateNeighbors(KohonenSOMCell<T> trav)
-			{
-			//	theClusters.get(target).getNeighbors(radius);
-
-			// no need to reallocate every time; see immediateNeighbors array
-			//List<KohonenSOMCell<T>> result = new ArrayList<KohonenSOMCell<T>>(2 * dimensions);
-
-			int[] pos = cellPositionFor(((List<KohonenSOMCell<T>>) theClusters).indexOf(trav));
-			List<KohonenSOMCell<T>> clusterList = (List<KohonenSOMCell<T>>) theClusters;
-			for (int i = 0; i < dimensions; i++)
-				{
-				// the -1 neighbor
-				pos[i]--;
-				if (pos[i] == -1)
-					{
-					if (edgesWrap)
-						{
-						pos[i] = cellsPerDimension[i] - 1;
-						immediateNeighbors[2 * i] = clusterList.get(listIndexFor(pos));
-						pos[i] = -1;
-						}
-					else
-						{
-						immediateNeighbors[2 * i] = null;
-						}
-					}
-				else
-					{
-					immediateNeighbors[2 * i] = clusterList.get(listIndexFor(pos));
-					}
-
-				// the +1 neighbor
-				pos[i] += 2;
-				if (pos[i] == cellsPerDimension[i] - 1)
-					{
-					if (edgesWrap)
-						{
-						pos[i] = 0;
-						immediateNeighbors[2 * i + 1] = clusterList.get(listIndexFor(pos));
-						pos[i] = cellsPerDimension[i] - 1;
-						}
-					else
-						{
-						immediateNeighbors[2 * i + 1] = null;
-						}
-					}
-				else
-					{
-					immediateNeighbors[2 * i + 1] = clusterList.get(listIndexFor(pos));
-					}
-
-				// return to the original position
-				pos[i]--;
-				}
-			}
-		}
-
-
-	/**
-	 * Iterates over all the cells within a given radius of a center cell, using a fast algorithm from
-	 * http://homepage.smc.edu/kennedy_john/BCIRCLE.PDF
-	 * <p/>
-	 * We can probably speed this up further by caching the results (circle masks, basically)
-	 */
-	private class NeighborhoodIterator implements Iterator<KohonenSOMCell<T>>
-		{
-
-		//	KohonenSOMCell<T> center;
-		private NeighborhoodShellIterator shells;
-		private Set<KohonenSOMCell<T>> currentShell;
-		private Iterator<KohonenSOMCell<T>> currentShellIterator;
-
-
-		private NeighborhoodIterator(KohonenSOMCell<T> center, int time)
-			{
-			shells = new NeighborhoodShellIterator(center);
-			maxRadius = radiusFunction.f(time);
-			}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public boolean hasNext()
-			{
-			return currentShellIterator.hasNext() || (shells.hasNext() && shells.getNextRadius() <= maxRadius);
-			}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public KohonenSOMCell<T> next()
-			{
-			try
-				{
-				return currentShellIterator.next();
-				}
-			catch (NoSuchElementException e)
-				{
-				if (shells.getNextRadius() > maxRadius)
-					{
-					throw new NoSuchElementException();
-					}
-				currentShell = shells.next();
-				currentShellIterator = currentShell.iterator();
-
-				return currentShellIterator.next();
-				}
-			}
-
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public void remove()
-			{
-			throw new NotImplementedException();
-			}
 		}
 
 	/**
@@ -587,96 +407,304 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 		return result;
 		}
 
-	/*
-   private class OldBogusNeighborhoodIterator implements Iterator<KohonenSOMCell<T>>
-	   {
-	   double radius;
-
-	   KohonenSOMCell<T> center;
-	   // this will likely need optimizing later
-	   Set<KohonenSOMCell<T>> todo = new HashSet<KohonenSOMCell<T>>();
-	   Set<KohonenSOMCell<T>> done = new HashSet<KohonenSOMCell<T>>();
-
-
-	   private NeighborhoodIterator(KohonenSOMCell<T> center, int time)
-		   {
-		   this.center = center;
-		   radius = radiusFunction.f(time);
-		   todo.add(center);
-		   }
-
-	   public boolean hasNext()
-		   {
-		   return !todo.isEmpty();
-		   }
-
-	   public KohonenSOMCell<T> next()
-		   {
-		   KohonenSOMCell<T> trav = todo.iterator().next();
-		   done.add(trav);
-
-		   computeImmediateNeighbors(trav);
-		   for (KohonenSOMCell<T> neighbor : immediateNeighbors)
-			   {
-			   // careful not to repeat cells when the radius is large
-			   // no problem, the done list deals with that
-
-			   // optimizations possible here, i.e. test squares inscribed in circle first before doing sqrt
-			   if (neighbor != null && euclideanDistance(neighbor, center) <= radius && !done.contains(neighbor))
-				   {
-				   todo.add(neighbor);
-				   }
-			   }
-		   return trav;
-		   }
-
-	   private double euclideanDistance(KohonenSOMCell<T> neighbor, KohonenSOMCell<T> center)
-		   {
-		   int[] a = cellPositionFor(theClusters.indexOf(neighbor));
-		   int[] b = cellPositionFor(theClusters.indexOf(center));
-
-		   int sum = 0;
-		   for (int i = 0; i < dimensions; i++)
-			   {
-			   int dist = a[i] - b[i];
-			   if (edgesWrap)
-				   {
-				   dist = Math.min(dist, b[i] - a[i]);
-				   }
-			   sum += dist * dist;
-			   }
-		   return Math.sqrt(sum);
-		   }
-
-
-	   public void remove()
-		   {
-		   throw new NotImplementedException();
-		   }
-	   }*/
-
-
-	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+	private int[] cellPositionFor(int listIndex)
 		{
-		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
+		int[] result = new int[dimensions];
+		for (int i = 0; i < dimensions; i++)
+			{
+			result[i] = listIndex / blockSize[i];
+			listIndex = listIndex % blockSize[i];
+			}
+		return result;
 		}
 
-	public void writeClusteringStatsToStream(OutputStream outf)
+	/**
+	 * Create a rectangular grid of cells using the given dimensionality and size, assigning a null vector to each
+	 *
+	 * @param cellPosition
+	 * @param changingDimension // * @param prototype
+	 */
+	private void createClusters(int[] cellPosition, int changingDimension, GenericFactory<T> prototypeFactory)
+			throws GenericFactoryException
 		{
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		changingDimension++;
+		if (changingDimension == dimensions)
+			{
+			KohonenSOMCell<T> c = new KohonenSOMCell<T>(idCount++, prototypeFactory.create());//measure,
+			((List<KohonenSOMCell<T>>) theClusters).set(listIndexFor(cellPosition), c);
+			}
+		else
+			{
+			for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
+				{
+				cellPosition[changingDimension] = i;
+				createClusters(cellPosition, changingDimension, prototypeFactory);
+				}
+			}
+
+		/*  for (int i = 0; i < k; i++) {
+			  // initialize the clusters with the first k points
+
+			  Cluster<T> c = new AdditiveCluster<T>(measure);
+			  c.setId(i);
+
+			  theClusters.add(c);
+		  }
+		  logger.debug("initialized " + k + " clusters");*/
 		}
 
-	@Override
-	public String clusteringStats()
+	/**
+	 * assumes inputs are entirely positive and within the bounds given by cellsPerDimension
+	 *
+	 * @param cellposition
+	 * @return
+	 */
+	private int listIndexFor(int[] cellposition)
 		{
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
-		return b.toString();
+		int result = 0;
+		assert cellposition.length == cellsPerDimension.length;
+		for (int i = 0; i < dimensions; i++)
+			{
+			result += cellposition[i] * blockSize[i];
+			}
+		return result;
 		}
 
-	@Override
-	public String shortClusteringStats()
+	private double moveFactor(int time)
 		{
-		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		return moveFactorFunction.f(time);
+		//throw new NotImplementedException();
+		}
+
+// -------------------------- INNER CLASSES --------------------------
+
+	private class NeighborhoodShellIterator implements Iterator<Set<KohonenSOMCell<T>>>
+		{
+// ------------------------------ FIELDS ------------------------------
+
+		int radius = 0;
+		int centerPos[];
+
+
+		Set<KohonenSOMCell<T>> prevShell = new HashSet<KohonenSOMCell<T>>();
+		Set<KohonenSOMCell<T>> prevPrevShell = new HashSet<KohonenSOMCell<T>>();
+		private int radiusSquared;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+		public NeighborhoodShellIterator(KohonenSOMCell<T> cell)
+			{
+			centerPos = cellPositionFor(((List<KohonenSOMCell<T>>) theClusters).indexOf(cell));
+			prevShell.add(cell);
+			}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Iterator ---------------------
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasNext()
+			{
+			return (radius + 1) <= maxRadius;
+			}
+
+		;
+
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public Set<KohonenSOMCell<T>> next()
+			{
+			Set<KohonenSOMCell<T>> shell = new HashSet<KohonenSOMCell<T>>();
+			for (KohonenSOMCell<T> cell : prevShell)
+				{
+				// ** problem with edges when not wrapping; need to include edges in the shell?
+				computeImmediateNeighbors(cell);
+				for (KohonenSOMCell<T> neighbor : immediateNeighbors)
+					{
+					if (neighbor != null && !prevShell.contains(neighbor) && !prevPrevShell.contains(neighbor)
+							&& isWithinCurrentRadius(neighbor))
+						{
+						shell.add(neighbor);
+						}
+					}
+				}
+
+			prevPrevShell = prevShell;
+			prevShell = shell;
+
+			radius++;
+			radiusSquared = radius * radius;
+
+			return shell;
+			}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void remove()
+			{
+			throw new NotImplementedException();
+			}
+
+// -------------------------- OTHER METHODS --------------------------
+
+		//  populates the immediateNeighbors array (which is allocated only once for efficiency). straight-line neighbors of
+		//  this node (not including diagonals)
+
+		//  @param trav
+		//  @return
+
+		private void computeImmediateNeighbors(KohonenSOMCell<T> trav)
+			{
+			//	theClusters.get(target).getNeighbors(radius);
+
+			// no need to reallocate every time; see immediateNeighbors array
+			//List<KohonenSOMCell<T>> result = new ArrayList<KohonenSOMCell<T>>(2 * dimensions);
+
+			int[] pos = cellPositionFor(((List<KohonenSOMCell<T>>) theClusters).indexOf(trav));
+			List<KohonenSOMCell<T>> clusterList = (List<KohonenSOMCell<T>>) theClusters;
+			for (int i = 0; i < dimensions; i++)
+				{
+				// the -1 neighbor
+				pos[i]--;
+				if (pos[i] == -1)
+					{
+					if (edgesWrap)
+						{
+						pos[i] = cellsPerDimension[i] - 1;
+						immediateNeighbors[2 * i] = clusterList.get(listIndexFor(pos));
+						pos[i] = -1;
+						}
+					else
+						{
+						immediateNeighbors[2 * i] = null;
+						}
+					}
+				else
+					{
+					immediateNeighbors[2 * i] = clusterList.get(listIndexFor(pos));
+					}
+
+				// the +1 neighbor
+				pos[i] += 2;
+				if (pos[i] == cellsPerDimension[i] - 1)
+					{
+					if (edgesWrap)
+						{
+						pos[i] = 0;
+						immediateNeighbors[2 * i + 1] = clusterList.get(listIndexFor(pos));
+						pos[i] = cellsPerDimension[i] - 1;
+						}
+					else
+						{
+						immediateNeighbors[2 * i + 1] = null;
+						}
+					}
+				else
+					{
+					immediateNeighbors[2 * i + 1] = clusterList.get(listIndexFor(pos));
+					}
+
+				// return to the original position
+				pos[i]--;
+				}
+			}
+
+		private double getNextRadius()
+			{
+			return radius + 1;
+			}
+
+		private boolean isWithinCurrentRadius(KohonenSOMCell<T> neighbor)
+			{
+			int pos[] = cellPositionFor(((List<KohonenSOMCell<T>>) theClusters).indexOf(neighbor));
+
+			int sum = 0;
+			for (int i = 0; i < dimensions; i++)
+				{
+				int dist = Math.abs(pos[i] - centerPos[i]);
+				if (edgesWrap)
+					{
+					dist = Math.min(dist, cellsPerDimension[i] - dist);
+					}
+				sum += dist * dist;
+				}
+
+			return sum <= radiusSquared;
+			}
+		}
+
+	/**
+	 * Iterates over all the cells within a given radius of a center cell, using a fast algorithm from
+	 * http://homepage.smc.edu/kennedy_john/BCIRCLE.PDF
+	 * <p/>
+	 * We can probably speed this up further by caching the results (circle masks, basically)
+	 */
+	private class NeighborhoodIterator implements Iterator<KohonenSOMCell<T>>
+		{
+// ------------------------------ FIELDS ------------------------------
+
+		//	KohonenSOMCell<T> center;
+		private NeighborhoodShellIterator shells;
+		private Set<KohonenSOMCell<T>> currentShell;
+		private Iterator<KohonenSOMCell<T>> currentShellIterator;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+		private NeighborhoodIterator(KohonenSOMCell<T> center, int time)
+			{
+			shells = new NeighborhoodShellIterator(center);
+			maxRadius = radiusFunction.f(time);
+			}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Iterator ---------------------
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasNext()
+			{
+			return currentShellIterator.hasNext() || (shells.hasNext() && shells.getNextRadius() <= maxRadius);
+			}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public KohonenSOMCell<T> next()
+			{
+			try
+				{
+				return currentShellIterator.next();
+				}
+			catch (NoSuchElementException e)
+				{
+				if (shells.getNextRadius() > maxRadius)
+					{
+					throw new NoSuchElementException();
+					}
+				currentShell = shells.next();
+				currentShellIterator = currentShell.iterator();
+
+				return currentShellIterator.next();
+				}
+			}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void remove()
+			{
+			throw new NotImplementedException();
+			}
 		}
 	}

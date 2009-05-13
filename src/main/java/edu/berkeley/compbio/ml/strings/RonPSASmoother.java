@@ -49,14 +49,15 @@ import java.util.List;
 @PropertyConsumer
 public class RonPSASmoother implements DistributionProcessor<RonPSA>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(RonPSASmoother.class);
 
 	@Property(helpmessage = "Smoothing factor (aka gammaMin)", defaultvalue = "0.01")
 	public Double smoothFactor;
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public RonPSASmoother()//String injectorId)//double smoothFactor)
 		{
@@ -64,9 +65,10 @@ public class RonPSASmoother implements DistributionProcessor<RonPSA>
 		//ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
 		}
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
-	// --------------------- Interface DistributionProcessor ---------------------
+
+// --------------------- Interface DistributionProcessor ---------------------
 
 	public void process(RonPSA ronPSA)
 		{
@@ -97,6 +99,4 @@ public class RonPSASmoother implements DistributionProcessor<RonPSA>
 			throw new Error(e);
 			}
 		}
-
-	// -------------------------- OTHER METHODS --------------------------
 	}

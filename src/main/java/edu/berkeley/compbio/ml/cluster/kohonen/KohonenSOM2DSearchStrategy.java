@@ -45,20 +45,24 @@ import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 
 public abstract class KohonenSOM2DSearchStrategy<T extends AdditiveClusterable<T>>
 	{
-	//void setSOM(KohonenSOM2D<T> som);
+// ------------------------------ FIELDS ------------------------------
 
+	//void setSOM(KohonenSOM2D<T> som);
 	protected KohonenSOM2D<T> som;
 	protected DissimilarityMeasure<T> measure;
 
-	public void setSOM(KohonenSOM2D<T> som)
-		{
-		this.som = som;
-		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	abstract ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p) throws NoGoodClusterException;
 
 	public void setDistanceMeasure(DissimilarityMeasure<T> measure)
 		{
 		this.measure = measure;
+		}
+
+	public void setSOM(KohonenSOM2D<T> som)
+		{
+		this.som = som;
 		}
 	}

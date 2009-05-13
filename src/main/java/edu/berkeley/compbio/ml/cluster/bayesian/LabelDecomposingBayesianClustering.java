@@ -67,8 +67,15 @@ import java.util.Set;
 public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>> extends NearestNeighborClustering<T>
 		implements SampleInitializedOnlineClusteringMethod<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(LabelDecomposingBayesianClustering.class);
 
+
+	GenericFactory<T> prototypeFactory;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * @param dm                       The distance measure to use
@@ -81,13 +88,18 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
+// ------------------------ INTERFACE METHODS ------------------------
 
-	GenericFactory<T> prototypeFactory;
+
+// --------------------- Interface PrototypeBasedCentroidClusteringMethod ---------------------
 
 	public void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
 		this.prototypeFactory = prototypeFactory;
 		}
+
+// --------------------- Interface SampleInitializedOnlineClusteringMethod ---------------------
+
 
 	/**
 	 * {@inheritDoc}
@@ -181,6 +193,8 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 			throw new ClusterRuntimeException(e);
 			}
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * {@inheritDoc}

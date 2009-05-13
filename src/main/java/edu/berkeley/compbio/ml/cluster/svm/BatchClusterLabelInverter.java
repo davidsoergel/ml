@@ -13,8 +13,16 @@ import java.util.Map;
  */
 public class BatchClusterLabelInverter<T extends Clusterable<T>> implements LabelInverter<BatchCluster<T>>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	// cache the inversions so as not to always create new ones
 	Map<BatchCluster<T>, BatchCluster<T>> inversions = new HashMap<BatchCluster<T>, BatchCluster<T>>();
+
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface LabelInverter ---------------------
 
 	public BatchCluster<T> invert(BatchCluster<T> label)
 		{

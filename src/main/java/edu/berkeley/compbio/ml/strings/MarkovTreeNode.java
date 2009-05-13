@@ -69,12 +69,11 @@ import java.util.Locale;
 public class MarkovTreeNode extends AbstractGenericFactoryAware
 		implements SequenceSpectrum<MarkovTreeNode>, MutableDistribution
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(MarkovTreeNode.class);
 	protected byte[] id;
 	protected byte[] alphabet;
-	private double[] logprobs;
 
 	// use the alphabet to get indexes into the child array, instead of the HashM'p, for efficiency (no autoboxing, etc)
 
@@ -86,27 +85,50 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	protected Multinomial<Byte> probs = new Multinomial<Byte>();
 
 	protected boolean leaf = true;
+	private double[] logprobs;
 
 	private String label;
 
-	public String getExclusiveLabel()
-		{
-		return label;
-		}
-
-	public void setLabel(String label)
-		{
-		this.label = label;
-		}
-
 	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
-	public WeightedSet<String> getWeightedLabels()
-		{
-		return weightedLabels;
-		}
+	/**
+	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
+	 * implicit assumption is that the sequences being modeled have some correlation length, and thus that statistical
+	 * models of them can be built from substrings up to that length.  Thus, this method tells the maximum correlation
+	 * length provided by the model.  A manifestation of this is that conditional probabilities of symbols given a prefix
+	 * will cease to change as the prefix is lengthened (to the left) past this length.
+	 *
+	 * @return the maximum correlation length considered in the model.
+	 */
+	/*	public int getMaxDepth()
+	   {
+	   // inefficient; could be cached
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+	   int result = 0;
+	   if (probs.size() > 0)
+		   {
+		   result = 1;
+		   }
+	   for (MarkovTreeNode child : children)//.values())
+		   {
+		   if (child != null)
+			   {
+			   result = Math.max(result, child.getMaxDepth() + 1);
+			   }
+		   }
+	   return result;
+	   }*/
+
+
+	// diagnostics
+	private int total = 0, leaves = 0, maxdepth = 0;
+
+	private double avgdepth = 0;
+
+	private int originalSequenceLength;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public MarkovTreeNode()
 		{
@@ -130,7 +152,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		children = new MarkovTreeNode[alphabet.length];
 		}
 
-	// --------------------- GETTER / SETTER METHODS ---------------------
+// --------------------- GETTER / SETTER METHODS ---------------------
 
 	/**
 	 * Returns the alphabet of this SequenceSpectrum object.
@@ -142,6 +164,30 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return alphabet;
 		}
 
+	public MarkovTreeNode[] getChildren()
+		{
+		return children;
+		}
+
+	/**
+	 * Returns the number of samples on which this spectrum is based.
+	 *
+	 * @return The number of samples
+	 */
+	/*	public int getNumberOfSamples()
+		 {
+		 throw new NotImplementedException();
+		 }
+*/
+	public int getOriginalSequenceLength()
+		{
+		return originalSequenceLength;
+		}
+
+	public void setOriginalSequenceLength(int originalSequenceLength)
+		{
+		this.originalSequenceLength = originalSequenceLength;
+		}
 
 	/**
 	 * Returns a mapping of symbols to child nodes, describing the possible transitions from this node to its children.
@@ -158,6 +204,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return probs;
 		}
 
+	public WeightedSet<String> getWeightedLabels()
+		{
+		return weightedLabels;
+		}
+
 	public boolean isLeaf()
 		{
 		return leaf;
@@ -168,7 +219,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		this.id = id;
 		}
 
-	// ------------------------ CANONICAL METHODS ------------------------
+	public void setLabel(String label)
+		{
+		this.label = label;
+		}
+
+// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
 	 * Performs a deep copy of this node.
@@ -233,11 +289,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return children[DSArrayUtils.indexOf(alphabet, sigma)];
 		}
 
-	public MarkovTreeNode[] getChildren()
-		{
-		return children;
-		}
-
 	private void addChild(byte b, MarkovTreeNode child) throws SequenceSpectrumException
 		{
 		leaf = false;
@@ -245,12 +296,17 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		children[childIndex] = child;
 		}
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface AdditiveClusterable ---------------------
+// --------------------- Interface AdditiveClusterable ---------------------
 
 	public void decrementBy(MarkovTreeNode object)
+		{
+		throw new NotImplementedException();
+		}
+
+	public void decrementByWeighted(MarkovTreeNode object, double weight)
 		{
 		throw new NotImplementedException();
 		}
@@ -260,24 +316,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new NotImplementedException();
 		}
 
-
-	public void decrementByWeighted(MarkovTreeNode object, double weight)
-		{
-		throw new NotImplementedException();
-		}
-
 	public void incrementByWeighted(MarkovTreeNode object, double weight)
 		{
 		throw new NotImplementedException();
 		}
 
-
 	public MarkovTreeNode minus(MarkovTreeNode object)
-		{
-		throw new NotImplementedException();
-		}
-
-	public MarkovTreeNode plus(MarkovTreeNode object)
 		{
 		throw new NotImplementedException();
 		}
@@ -287,12 +331,17 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new NotImplementedException();
 		}
 
+	public MarkovTreeNode plus(MarkovTreeNode object)
+		{
+		throw new NotImplementedException();
+		}
+
 	public MarkovTreeNode times(double v)
 		{
 		throw new NotImplementedException();
 		}
 
-	// --------------------- Interface Clusterable ---------------------
+// --------------------- Interface Clusterable ---------------------
 
 	/**
 	 * Recursively tests the deep equality of two PSTNodes.  Requires that the id, the alphabet, the tree structure, and
@@ -382,12 +431,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		//throw new NotImplementedException();
 		}
 
-	public String getSourceId()
-		{
-		throw new NotImplementedException();
-		}
-	// --------------------- Interface SequenceSpectrum ---------------------
-
+// --------------------- Interface SequenceSpectrum ---------------------
 
 	/**
 	 * Computes the conditional probability distribution of symbols given a prefix under the model.
@@ -493,141 +537,18 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		}
 
-	public int getNumNodes()
-		{
-		return total;
-		}
-
-	public int getNumLeaves()
-		{
-		return leaves;
-		}
-
-	public double getAvgDepth()
-		{
-		return avgdepth;
-		}
-
 	/**
-	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
-	 * implicit assumption is that the sequences being modeled have some correlation length, and thus that statistical
-	 * models of them can be built from substrings up to that length.  Thus, this method tells the maximum correlation
-	 * length provided by the model.  A manifestation of this is that conditional probabilities of symbols given a prefix
-	 * will cease to change as the prefix is lengthened (to the left) past this length.
+	 * Careful-- this gets cached on the first call so will be invalid later if the tree is changed
 	 *
-	 * @return the maximum correlation length considered in the model.
+	 * @return
 	 */
-	/*	public int getMaxDepth()
-	   {
-	   // inefficient; could be cached
-
-	   int result = 0;
-	   if (probs.size() > 0)
-		   {
-		   result = 1;
-		   }
-	   for (MarkovTreeNode child : children)//.values())
-		   {
-		   if (child != null)
-			   {
-			   result = Math.max(result, child.getMaxDepth() + 1);
-			   }
-		   }
-	   return result;
-	   }*/
-
-
-	// diagnostics
-	private int total = 0, leaves = 0, maxdepth = 0;
-
-	private double avgdepth = 0;
-
-	protected void diagnostics()
+	public int getMaxDepth()
 		{
-		for (MarkovTreeNode node : getAllDownstreamNodes())
+		if (maxdepth == 0)  // not computed yet;  node has a depth of at least 1
 			{
-			total++;
-			if (node.isLeaf())
-				{
-				leaves++;
-				int depth = node.getIdBytes().length;//length();
-				avgdepth += depth;
-				maxdepth = Math.max(maxdepth, depth);
-				}
+			diagnostics();
 			}
-		maxdepth -= getIdBytes().length;  // the symbols upstream of this node don't count
-		maxdepth += 1;
-		avgdepth /= leaves;
-		avgdepth += 1;
-		//	logger.info("Learned Ron PST using params " + branchAbsoluteMin + " " + branchConditionalMin + " " + pRatioMinMax
-		//			+ " " + l_max);
-		logger.debug("Learned Ron PSA with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
-				+ ", max depth " + maxdepth);
-		if (logger.isTraceEnabled())
-			{
-			logger.trace("\n" + toLongString());
-			}
-		}
-
-	public String toLongString()
-		{
-		StringBuffer sb = new StringBuffer();
-		Formatter formatter = new Formatter(sb, Locale.US);
-		appendString(formatter, "");
-		return sb.toString();
-		}
-
-
-	/**
-	 * Gets a List<RonPSTNode> of all nodes in the subtree starting from this node, including this node.
-	 *
-	 * @return a List of all nodes in the subtree starting from this node, including this node.
-	 */
-	public List<MarkovTreeNode> getAllDownstreamNodes()
-		{
-		List<MarkovTreeNode> result = new ArrayList<MarkovTreeNode>();
-
-		collectDownstreamNodes(result);
-		return result;
-		}
-
-	/**
-	 * Recursively append this node and all its children (upstream nodes) to the provided List<RonPSTNode>
-	 *
-	 * @param nodeList a List to which to add this node and its children
-	 */
-	private void collectDownstreamNodes(List<MarkovTreeNode> nodeList)
-		{
-		nodeList.add(this);
-		for (MarkovTreeNode n : children)
-			{
-			if (n != null)
-				{
-				n.collectDownstreamNodes(nodeList);
-				}
-			}
-		}
-
-	/**
-	 * Returns the number of samples on which this spectrum is based.
-	 *
-	 * @return The number of samples
-	 */
-	/*	public int getNumberOfSamples()
-		 {
-		 throw new NotImplementedException();
-		 }
-*/
-	public int getOriginalSequenceLength()
-		{
-		return originalSequenceLength;
-		}
-
-	private int originalSequenceLength;
-
-	public void setOriginalSequenceLength(int originalSequenceLength)
-		{
-		this.originalSequenceLength = originalSequenceLength;
+		return maxdepth;
 		}
 
 	/**
@@ -675,24 +596,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				 }*/
 		}
 
-	/**
-	 * Test whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
-	 * implementations of this interface may contain additional state which make them not strictly equal; here we're only
-	 * interested in whether they're equal as far as this interface is concerned.
-	 * <p/>
-	 * Naive implementations will simply test for exact equality; more sophisticated implementations ought to use a more
-	 * rigorous idea of "statistically equivalent", though in that case we'll probabably need to provide more parameters,
-	 * such as a p-value threshold to use.  Note that the spectra know the number of samples used to generate them, so at
-	 * least that's covered.
-	 *
-	 * @param spectrum the SequenceSpectrum to compare
-	 * @return True if the spectra are equivalent, false otherwise
-	 */
-	public boolean spectrumEquals(SequenceSpectrum spectrum)
-		{
-		throw new NotImplementedException();
-		}
-
 	/*
 	 public void runBeginTrainingProcessor() throws DistributionProcessorException
 		 {
@@ -722,21 +625,25 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		// not relevant here
 		}
 
-
-	// -------------------------- OTHER METHODS --------------------------
 	/**
-	 * Careful-- this gets cached on the first call so will be invalid later if the tree is changed
+	 * Test whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
+	 * implementations of this interface may contain additional state which make them not strictly equal; here we're only
+	 * interested in whether they're equal as far as this interface is concerned.
+	 * <p/>
+	 * Naive implementations will simply test for exact equality; more sophisticated implementations ought to use a more
+	 * rigorous idea of "statistically equivalent", though in that case we'll probabably need to provide more parameters,
+	 * such as a p-value threshold to use.  Note that the spectra know the number of samples used to generate them, so at
+	 * least that's covered.
 	 *
-	 * @return
+	 * @param spectrum the SequenceSpectrum to compare
+	 * @return True if the spectra are equivalent, false otherwise
 	 */
-	public int getMaxDepth()
+	public boolean spectrumEquals(SequenceSpectrum spectrum)
 		{
-		if (maxdepth == 0)  // not computed yet;  node has a depth of at least 1
-			{
-			diagnostics();
-			}
-		return maxdepth;
+		throw new NotImplementedException();
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Gets the child node associated with the given sequence, creating it (and nodes along the way) as needed
@@ -786,26 +693,44 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new NotImplementedException();
 		}
 
-	public void appendString(Formatter formatter, String indent)
+	public double conditionalProbability(byte sigma) throws SequenceSpectrumException
 		{
-		for (int i = 0; i < alphabet.length; i++)
+		try
 			{
-			byte b = alphabet[i];
-			try
-				{
-				formatter.format("%s %3.3g -> %c\n", indent, probs.get(b), b);
-				//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
-				MarkovTreeNode child = children[i];
-				if (child != null && child.getId().length() > getId().length())
-					{
-					child.appendString(formatter, indent + "     | ");
-					}
-				}
-			catch (DistributionException e)
-				{
-				//sb.append(indent + "ERROR ->" + b);
-				formatter.format("%s %s -> %c\n", indent, "ERROR", b);
-				}
+			return probs.get(sigma);
+			}
+		catch (DistributionException e)
+			{
+			logger.error("Error", e);
+			throw new SequenceSpectrumException(e);
+			}
+		}
+
+	public double conditionalProbability(byte[] suffix, byte[] prefix) throws SequenceSpectrumException
+		{
+		if (suffix.length == 0)
+			{
+			return 1;
+			}
+		byte sigma = suffix[0];
+		if (suffix.length == 1)
+			{
+			return conditionalProbability(sigma, prefix);
+			}
+		return conditionalProbability(sigma, prefix) * conditionalProbability(DSArrayUtils.suffix(suffix, 1),
+		                                                                      DSArrayUtils.append(prefix, sigma));
+		}
+
+	public double conditionalProbabilityByAlphabetIndex(int c)
+		{
+		try
+			{
+			return probs.get(alphabet[c]);
+			}
+		catch (DistributionException e)
+			{
+			logger.error("Error", e);
+			throw new Error(e);
 			}
 		}
 
@@ -893,63 +818,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		probs.put(b, prob);
 		}
 
-
-	public void updateLogProbsRecursive()
-		{
-		updateLogProbs();
-		for (MarkovTreeNode child : children)//.values())
-			{
-			if (child != null)
-				{
-				child.updateLogProbsRecursive();
-				}
-			}
-		}
-
-	public void updateLogProbs()
-		{
-		try
-			{
-			for (int i = 0; i < alphabet.length; i++)
-				{
-				logprobs[i] = MathUtils.approximateLog(probs.get(alphabet[i]));
-				}
-			}
-		catch (DistributionException e)
-			{
-			logger.error("Error", e);
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		}
-
-	public double conditionalProbability(byte sigma) throws SequenceSpectrumException
-		{
-		try
-			{
-			return probs.get(sigma);
-			}
-		catch (DistributionException e)
-			{
-			logger.error("Error", e);
-			throw new SequenceSpectrumException(e);
-			}
-		}
-
-	public double conditionalProbability(byte[] suffix, byte[] prefix) throws SequenceSpectrumException
-		{
-		if (suffix.length == 0)
-			{
-			return 1;
-			}
-		byte sigma = suffix[0];
-		if (suffix.length == 1)
-			{
-			return conditionalProbability(sigma, prefix);
-			}
-		return conditionalProbability(sigma, prefix) * conditionalProbability(DSArrayUtils.suffix(suffix, 1),
-		                                                                      DSArrayUtils.append(prefix, sigma));
-		}
-
 	public int countChildren()
 		{
 		int result = 0;
@@ -961,6 +829,99 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				}
 			}
 		return result;
+		}
+
+	protected void diagnostics()
+		{
+		for (MarkovTreeNode node : getAllDownstreamNodes())
+			{
+			total++;
+			if (node.isLeaf())
+				{
+				leaves++;
+				int depth = node.getIdBytes().length;//length();
+				avgdepth += depth;
+				maxdepth = Math.max(maxdepth, depth);
+				}
+			}
+		maxdepth -= getIdBytes().length;  // the symbols upstream of this node don't count
+		maxdepth += 1;
+		avgdepth /= leaves;
+		avgdepth += 1;
+		//	logger.info("Learned Ron PST using params " + branchAbsoluteMin + " " + branchConditionalMin + " " + pRatioMinMax
+		//			+ " " + l_max);
+		logger.debug("Learned Ron PSA with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
+				+ ", max depth " + maxdepth);
+		if (logger.isTraceEnabled())
+			{
+			logger.trace("\n" + toLongString());
+			}
+		}
+
+	/**
+	 * Gets a List<RonPSTNode> of all nodes in the subtree starting from this node, including this node.
+	 *
+	 * @return a List of all nodes in the subtree starting from this node, including this node.
+	 */
+	public List<MarkovTreeNode> getAllDownstreamNodes()
+		{
+		List<MarkovTreeNode> result = new ArrayList<MarkovTreeNode>();
+
+		collectDownstreamNodes(result);
+		return result;
+		}
+
+	/**
+	 * Recursively append this node and all its children (upstream nodes) to the provided List<RonPSTNode>
+	 *
+	 * @param nodeList a List to which to add this node and its children
+	 */
+	private void collectDownstreamNodes(List<MarkovTreeNode> nodeList)
+		{
+		nodeList.add(this);
+		for (MarkovTreeNode n : children)
+			{
+			if (n != null)
+				{
+				n.collectDownstreamNodes(nodeList);
+				}
+			}
+		}
+
+	public byte[] getIdBytes()
+		{
+		return id;
+		}
+
+	public String toLongString()
+		{
+		StringBuffer sb = new StringBuffer();
+		Formatter formatter = new Formatter(sb, Locale.US);
+		appendString(formatter, "");
+		return sb.toString();
+		}
+
+	public void appendString(Formatter formatter, String indent)
+		{
+		for (int i = 0; i < alphabet.length; i++)
+			{
+			byte b = alphabet[i];
+			try
+				{
+				formatter.format("%s %3.3g -> %c\n", indent, probs.get(b), b);
+				//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
+				MarkovTreeNode child = children[i];
+				if (child != null && child.getId().length() > getId().length())
+					{
+					child.appendString(formatter, indent + "     | ");
+					}
+				}
+			catch (DistributionException e)
+				{
+				//sb.append(indent + "ERROR ->" + b);
+				formatter.format("%s %s -> %c\n", indent, "ERROR", b);
+				}
+			}
 		}
 
 	/**
@@ -1079,14 +1040,90 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new Error("Impossible");
 		}
 
+	public double getAvgDepth()
+		{
+		return avgdepth;
+		}
+
+	/**
+	 * gets the node associated with the the given sequence, or null if that node does not exist
+	 *
+	 * @param descendantId the sequence to walk
+	 * @return the MarkovTreeNode
+	 */
+	public MarkovTreeNode getDescendant(byte[] descendantId)//throws SequenceSpectrumException
+		{
+		MarkovTreeNode result = this;
+		MarkovTreeNode next;
+
+		// this could also have been recursive, but that would have involved making each suffix byte[] explicitly
+		for (byte b : descendantId)
+			{
+			next = result.getChild(b);
+			if (next == null)
+				{
+				return null;
+				}
+			else
+				{
+				result = next;
+				}
+			}
+
+		return result;
+		}
+
+	public String getExclusiveLabel()
+		{
+		return label;
+		}
+
 	public List<byte[]> getFirstWords(int k)
 		{
 		throw new NotImplementedException();
 		}
 
-	public byte[] getIdBytes()
+	/**
+	 * gets the node associated with the longest available prefix of the given sequence.
+	 *
+	 * @param prefix the sequence to walk
+	 * @return the MarkovTreeNode
+	 */
+	public MarkovTreeNode getLongestPrefix(byte[] prefix) throws SequenceSpectrumException
 		{
-		return id;
+		MarkovTreeNode result = this;
+		MarkovTreeNode next;
+
+		// this could also have been recursive, but that would have involved making each suffix byte[] explicitly
+		for (byte b : prefix)
+			{
+			next = result.getChild(b);
+			if (next == null)
+				{
+				return result;
+				}
+			else
+				{
+				result = next;
+				}
+			}
+
+		return result;
+		}
+
+	public int getNumLeaves()
+		{
+		return leaves;
+		}
+
+	public int getNumNodes()
+		{
+		return total;
+		}
+
+	public String getSourceId()
+		{
+		throw new NotImplementedException();
 		}
 
 	public int getSubtreeNodes()
@@ -1118,30 +1155,14 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		catch (IndexOutOfBoundsException e)
 			{
-
 			throw new SequenceSpectrumException("Symbol " + (char) sigma + " not in alphabet");
 			}
 		}
-
 
 	public double logConditionalProbabilityByAlphabetIndex(int c)
 		{
 		return logprobs[c];
 		}
-
-	public double conditionalProbabilityByAlphabetIndex(int c)
-		{
-		try
-			{
-			return probs.get(alphabet[c]);
-			}
-		catch (DistributionException e)
-			{
-			logger.error("Error", e);
-			throw new Error(e);
-			}
-		}
-
 
 	/*
    public Set<MarkovTreeNode> getAllNodes()
@@ -1169,61 +1190,31 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		probs.normalize();
 		}
 
-
-	/**
-	 * gets the node associated with the longest available prefix of the given sequence.
-	 *
-	 * @param prefix the sequence to walk
-	 * @return the MarkovTreeNode
-	 */
-	public MarkovTreeNode getLongestPrefix(byte[] prefix) throws SequenceSpectrumException
+	public void updateLogProbsRecursive()
 		{
-		MarkovTreeNode result = this;
-		MarkovTreeNode next;
-
-		// this could also have been recursive, but that would have involved making each suffix byte[] explicitly
-		for (byte b : prefix)
+		updateLogProbs();
+		for (MarkovTreeNode child : children)//.values())
 			{
-			next = result.getChild(b);
-			if (next == null)
+			if (child != null)
 				{
-				return result;
-				}
-			else
-				{
-				result = next;
+				child.updateLogProbsRecursive();
 				}
 			}
-
-		return result;
 		}
 
-
-	/**
-	 * gets the node associated with the the given sequence, or null if that node does not exist
-	 *
-	 * @param descendantId the sequence to walk
-	 * @return the MarkovTreeNode
-	 */
-	public MarkovTreeNode getDescendant(byte[] descendantId)//throws SequenceSpectrumException
+	public void updateLogProbs()
 		{
-		MarkovTreeNode result = this;
-		MarkovTreeNode next;
-
-		// this could also have been recursive, but that would have involved making each suffix byte[] explicitly
-		for (byte b : descendantId)
+		try
 			{
-			next = result.getChild(b);
-			if (next == null)
+			for (int i = 0; i < alphabet.length; i++)
 				{
-				return null;
-				}
-			else
-				{
-				result = next;
+				logprobs[i] = MathUtils.approximateLog(probs.get(alphabet[i]));
 				}
 			}
-
-		return result;
+		catch (DistributionException e)
+			{
+			logger.error("Error", e);
+			throw new SequenceSpectrumRuntimeException(e);
+			}
 		}
 	}

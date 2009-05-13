@@ -44,15 +44,16 @@ import org.apache.log4j.Logger;
 
 public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<RelativeMarkovTreeNode>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(SimplexVectorTargetAndProportion.class);
 	Multinomial<T> target = new Multinomial<T>();
 	double mixingProportion;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	//	protected MarkovTreeNode backoffParent;
-
-
-	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * Constructs a new RelativeMarkovTreeNode by comparing one MarkovTreeNode with another and representing the difference
@@ -128,7 +129,7 @@ public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<R
 			}
 		}
 
-	// --------------------- GETTER / SETTER METHODS ---------------------
+// --------------------- GETTER / SETTER METHODS ---------------------
 
 	public double getMixingProportion()
 		{

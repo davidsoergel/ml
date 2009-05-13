@@ -54,13 +54,14 @@ import java.util.List;
  */
 public class UPGMATest
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(UPGMATest.class);
 
 	List<ClusterableDoubleArray> points = new ArrayList<ClusterableDoubleArray>();
 
-	// -------------------------- OTHER METHODS --------------------------
+
+// -------------------------- OTHER METHODS --------------------------
 
 	@BeforeSuite
 	public void setUp()

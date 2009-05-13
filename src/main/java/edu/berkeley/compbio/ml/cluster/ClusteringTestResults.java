@@ -14,8 +14,9 @@ import java.util.List;
  * @version $Id$
  */
 public class ClusteringTestResults
-	{		//	public Histogram1D correctProbabilities = new FixedWidthHistogram1D(0., 1., .01);		//	public Histogram1D wrongProbabilities = new FixedWidthHistogram1D(0., 1., .01);
-
+	{
+// ------------------------------ FIELDS ------------------------------
+	//	public Histogram1D correctProbabilities = new FixedWidthHistogram1D(0., 1., .01);		//	public Histogram1D wrongProbabilities = new FixedWidthHistogram1D(0., 1., .01);
 	//public List<Double> correctDistances = new ArrayList<Double>();		//public List<Double> wrongDistances = new ArrayList<Double>();
 
 	/**
@@ -25,69 +26,31 @@ public class ClusteringTestResults
 	private List<Double> predictionDistances = new ArrayList<Double>();
 	private List<Double> predictionDistancesWithPrecisionCost = new ArrayList<Double>();
 
-	public List<Double> getPredictionDistances()
-		{
-		return predictionDistances;
-		}
-
-	public List<Double> getPredictionDistancesWithPrecisionCost()
-		{
-		return predictionDistancesWithPrecisionCost;
-		}
-
 	/**
 	 * The computed distance between the sample and the predicted bin
 	 */
 	private List<Double> computedDistances = new ArrayList<Double>();
-
-	public Double[] getComputedDistancesArray()
-		{
-		return computedDistances == null ? null : computedDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
-		}
 
 	/**
 	 * The second-best distance as a proportion of the best distance; 1.0 = tie
 	 */
 	private List<Double> secondToBestDistanceRatios = new ArrayList<Double>();
 
-	public Double[] getSecondToBestDistanceRatiosArray()
-		{
-		return secondToBestDistanceRatios == null ? null :
-				secondToBestDistanceRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
-		}
-
 	/**
 	 * For voting-based classifiers, the proportion of votes that the best label got
 	 */
 	private List<Double> bestVoteProportions = new ArrayList<Double>();
-
-	public Double[] getBestVoteProportionsArray()
-		{
-		return bestVoteProportions == null ? null : bestVoteProportions.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
-		}
 
 	/**
 	 * For voting-based classifiers, the second-best number of votes as a proportion of the best votes; 1.0 = tie
 	 */
 	private List<Double> secondToBestVoteRatios = new ArrayList<Double>();
 
-	public Double[] getSecondToBestVoteRatiosArray()
-		{
-		return secondToBestVoteRatios == null ? null :
-				secondToBestVoteRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
-		}
-
 	/**
 	 * Probability of the best label, given the best cluster.  Used for unsupervised clustering where each cluster may
 	 * contain samples with multiple labels.
 	 */
 	private List<Double> labelWithinClusterProbabilities = new ArrayList<Double>();
-
-	public Double[] getLabelWithinClusterProbabilitiesArray()
-		{
-		return labelWithinClusterProbabilities == null ? null :
-				labelWithinClusterProbabilities.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
-		}
 
 
 	//public double correct = 0;
@@ -100,6 +63,102 @@ public class ClusteringTestResults
 	private double trainingSeconds;
 	private double testingSeconds;
 	private double totalTrainingMass = 0;
+
+
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	public int getNumClusters()
+		{
+		return numClusters;
+		}
+
+	public synchronized void setNumClusters(int numClusters)
+		{
+		this.numClusters = numClusters;
+		}
+
+	public List<Double> getPredictionDistances()
+		{
+		return predictionDistances;
+		}
+
+	public List<Double> getPredictionDistancesWithPrecisionCost()
+		{
+		return predictionDistancesWithPrecisionCost;
+		}
+
+	public int getShouldHaveBeenUnknown()
+		{
+		return shouldHaveBeenUnknown;
+		}
+
+	public int getShouldNotHaveBeenUnknown()
+		{
+		return shouldNotHaveBeenUnknown;
+		}
+
+	public int getTestSamples()
+		{
+		return testSamples;
+		}
+
+	public synchronized void setTestSamples(int i)
+		{
+		testSamples = i;
+		}
+
+	public double getTestingSeconds()
+		{
+		return testingSeconds;
+		}
+
+	public void setTestingSeconds(double testingSeconds)
+		{
+		this.testingSeconds = testingSeconds;
+		}
+
+	public double getTotalTrainingMass()
+		{
+		return totalTrainingMass;
+		}
+
+	public double getTrainingSeconds()
+		{
+		return trainingSeconds;
+		}
+
+	public void setTrainingSeconds(double trainingSeconds)
+		{
+		this.trainingSeconds = trainingSeconds;
+		}
+
+	public int getUnknown()
+		{
+		return unknown;
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	public synchronized void addResult(double broadWrongness, double detailedWrongness, double bestDistance,
+	                                   double secondToBestDistanceRatio, double clusterProb, double bestVoteProportion,
+	                                   double secondToBestVoteRatio)
+		{
+		assert !(Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness));
+		assert !(Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness));
+		assert !(Double.isNaN(bestDistance) || Double.isInfinite(bestDistance));
+		assert !(Double.isNaN(secondToBestDistanceRatio) || Double.isInfinite(secondToBestDistanceRatio));
+		assert !(Double.isNaN(secondToBestVoteRatio) || Double.isInfinite(secondToBestVoteRatio));
+		assert !(Double.isNaN(clusterProb) || Double.isInfinite(clusterProb));
+
+		predictionDistances.add(broadWrongness);
+		predictionDistancesWithPrecisionCost.add(detailedWrongness);
+		computedDistances.add(bestDistance);
+		secondToBestDistanceRatios.add(secondToBestDistanceRatio);
+		bestVoteProportions.add(bestVoteProportion);
+		secondToBestVoteRatios.add(secondToBestVoteRatio);
+		labelWithinClusterProbabilities.add(clusterProb);
+		}
+
 	//public int perfect = 0;
 
 	/**
@@ -201,39 +260,32 @@ public class ClusteringTestResults
 			}
 		}
 
-	public synchronized void addResult(double broadWrongness, double detailedWrongness, double bestDistance,
-	                                   double secondToBestDistanceRatio, double clusterProb, double bestVoteProportion,
-	                                   double secondToBestVoteRatio)
+	public Double[] getBestVoteProportionsArray()
 		{
-		assert !(Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness));
-		assert !(Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness));
-		assert !(Double.isNaN(bestDistance) || Double.isInfinite(bestDistance));
-		assert !(Double.isNaN(secondToBestDistanceRatio) || Double.isInfinite(secondToBestDistanceRatio));
-		assert !(Double.isNaN(secondToBestVoteRatio) || Double.isInfinite(secondToBestVoteRatio));
-		assert !(Double.isNaN(clusterProb) || Double.isInfinite(clusterProb));
-
-		predictionDistances.add(broadWrongness);
-		predictionDistancesWithPrecisionCost.add(detailedWrongness);
-		computedDistances.add(bestDistance);
-		secondToBestDistanceRatios.add(secondToBestDistanceRatio);
-		bestVoteProportions.add(bestVoteProportion);
-		secondToBestVoteRatios.add(secondToBestVoteRatio);
-		labelWithinClusterProbabilities.add(clusterProb);
+		return bestVoteProportions == null ? null : bestVoteProportions.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
-	public synchronized void setNumClusters(int numClusters)
+	public Double[] getComputedDistancesArray()
 		{
-		this.numClusters = numClusters;
+		return computedDistances == null ? null : computedDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
-	public synchronized void setTestSamples(int i)
+	public Double[] getLabelWithinClusterProbabilitiesArray()
 		{
-		testSamples = i;
+		return labelWithinClusterProbabilities == null ? null :
+				labelWithinClusterProbabilities.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
-	public synchronized void incrementTotalTrainingMass(double weightSum)
+	public Double[] getSecondToBestDistanceRatiosArray()
 		{
-		totalTrainingMass += weightSum;
+		return secondToBestDistanceRatios == null ? null :
+				secondToBestDistanceRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
+		}
+
+	public Double[] getSecondToBestVoteRatiosArray()
+		{
+		return secondToBestVoteRatios == null ? null :
+				secondToBestVoteRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
 	public synchronized void incrementShouldHaveBeenUnknown()
@@ -246,58 +298,13 @@ public class ClusteringTestResults
 		shouldNotHaveBeenUnknown++;
 		}
 
+	public synchronized void incrementTotalTrainingMass(double weightSum)
+		{
+		totalTrainingMass += weightSum;
+		}
+
 	public synchronized void incrementUnknown()
 		{
 		unknown++;
-		}
-
-	public void setTrainingSeconds(double trainingSeconds)
-		{
-		this.trainingSeconds = trainingSeconds;
-		}
-
-	public void setTestingSeconds(double testingSeconds)
-		{
-		this.testingSeconds = testingSeconds;
-		}
-
-	public int getNumClusters()
-		{
-		return numClusters;
-		}
-
-	public int getUnknown()
-		{
-		return unknown;
-		}
-
-	public int getShouldHaveBeenUnknown()
-		{
-		return shouldHaveBeenUnknown;
-		}
-
-	public int getShouldNotHaveBeenUnknown()
-		{
-		return shouldNotHaveBeenUnknown;
-		}
-
-	public int getTestSamples()
-		{
-		return testSamples;
-		}
-
-	public double getTrainingSeconds()
-		{
-		return trainingSeconds;
-		}
-
-	public double getTestingSeconds()
-		{
-		return testingSeconds;
-		}
-
-	public double getTotalTrainingMass()
-		{
-		return totalTrainingMass;
 		}
 	}

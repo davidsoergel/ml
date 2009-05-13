@@ -44,12 +44,12 @@ import org.apache.log4j.Logger;
  */
 public class NoGoodClusterException extends ChainedException
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(ClusterException.class);
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public NoGoodClusterException()
 		{

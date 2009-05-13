@@ -49,7 +49,7 @@ import java.util.Map;
 @PropertyConsumer
 public abstract class MonteCarlo//<T extends MonteCarloState>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(MonteCarlo.class);
 
@@ -69,14 +69,14 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.MoveTypeSet")
 	public MoveTypeSet movetypes;
 
+	@Property(helpmessage = "= kT.  Must be >= 1.  1 is cold chain", defaultvalue = "1")
+	public double heatFactor = 1;
+
 	//@Property(inherited = true)
 	protected DataCollector dataCollector;
 
 
 	protected int acceptedCount;
-
-	@Property(helpmessage = "= kT.  Must be >= 1.  1 is cold chain", defaultvalue = "1")
-	public double heatFactor = 1;
 
 	protected String id;
 	//protected int[] accepted;
@@ -94,7 +94,98 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 
 	private int step = 0;
 
-	// -------------------------- STATIC METHODS --------------------------
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+	public MonteCarlo()//String injectorId)
+		{
+		//ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
+		}
+
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	/*
+	 public T getNewState()
+		 {
+		 return newState;
+		 }
+
+	 public void setNewState(T newState)
+		 {
+		 this.newState = newState;
+		 }
+ */
+	// -------------------------- OTHER METHODS --------------------------
+
+	public DataCollector getDataCollector()
+		{
+		return dataCollector;
+		}
+
+	public void setDataCollector(DataCollector dc)
+		{
+		this.dataCollector = dc;
+		}
+
+	/*
+	 public T getCurrentState()
+		 {
+		 return currentState;
+		 }
+
+	 public void setCurrentState(T currentState)
+		 {
+		 this.currentState = currentState;
+		 }
+ */
+
+	public double getHeatFactor()
+		{
+		return heatFactor;
+		}
+
+	public void setHeatFactor(double t)
+		{
+		heatFactor = t;
+		}
+
+	public String getId()
+		{
+		return id;
+		}
+
+	public void setId(String id)
+		{
+		this.id = id;
+		}
+
+	public MoveTypeSet getMovetypes()
+		{
+		return movetypes;
+		}
+
+	public void setMovetypes(MoveTypeSet movetypes)
+		{
+		this.movetypes = movetypes;
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	/*
+   public void setChainSharedState(Object chainSharedState)
+	   {
+	   }
+
+   public Object getChainSharedState()
+	   {
+	   return null;
+	   }*/
+
+	public void init()
+		{
+		resetCounts();
+		}
+
 	public void run() throws IOException, GenericFactoryException//MonteCarloFactory mcf, int burnIn, int numSteps)
 		{
 		burnIn();
@@ -111,37 +202,6 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			}
 		resetCounts();
 		step = 0;
-		}
-
-	public void runNoBurnIn()
-			throws IOException, GenericFactoryException//MonteCarloFactory mcf, int burnIn, int numSteps)
-		{
-
-		for (int i = 0; i < numSteps; i++)
-			{
-			/*
-		   if (i % writeToConsoleInterval == 0)
-			   {
-			   }*/
-			doStep();
-			//logger.warn("Step: " + i);
-			}
-		}
-
-	public void resetCounts()
-		{
-
-		proposedCount = 0;
-		acceptedCount = 0;//writeToConsoleInterval;
-		//Arrays.fill(proposed, 0);
-		//Arrays.fill(accepted, 0);
-		//	proposed.clear();
-		//	accepted.clear();
-		for (Class c : movetypes.pluginMap.getAvailablePlugins())
-			{
-			proposed.put(c, 0);
-			accepted.put(c, 0);
-			}
 		}
 
 	public void doStep() throws IOException, GenericFactoryException
@@ -206,8 +266,9 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			for (GenericFactory<Move> f : movetypes.getFactories())
 				{
 				Class c = f.getCreatesClass();
-				logger.debug("[ " + id + " ] Accepted " + accepted.get(c) + " out of " + proposed.get(c) + " proposed "
-						+ c + " moves.");
+				logger.debug(
+						"[ " + id + " ] Accepted " + accepted.get(c) + " out of " + proposed.get(c) + " proposed " + c
+								+ " moves.");
 				}
 			//System.out.println("\n\n");
 			//acceptedCount = writeToConsoleInterval;
@@ -221,78 +282,9 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			}
 		}
 
-	public abstract void setCurrentState(MonteCarloState newState);
-
 	public abstract MonteCarloState getCurrentState();
 
-	// --------------------------- CONSTRUCTORS ---------------------------
-
-	public MonteCarlo()//String injectorId)
-		{
-		//ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
-		}
-
-	// --------------------- GETTER / SETTER METHODS ---------------------
-
-	/*
-	 public T getCurrentState()
-		 {
-		 return currentState;
-		 }
-
-	 public void setCurrentState(T currentState)
-		 {
-		 this.currentState = currentState;
-		 }
- */
-
-	public double getHeatFactor()
-		{
-		return heatFactor;
-		}
-
-	public void setHeatFactor(double t)
-		{
-		heatFactor = t;
-		}
-
-	public String getId()
-		{
-		return id;
-		}
-
-	public void setId(String id)
-		{
-		this.id = id;
-		}
-
-	public MoveTypeSet getMovetypes()
-		{
-		return movetypes;
-		}
-
-	public void setMovetypes(MoveTypeSet movetypes)
-		{
-		this.movetypes = movetypes;
-		}
-
-	/*
-	 public T getNewState()
-		 {
-		 return newState;
-		 }
-
-	 public void setNewState(T newState)
-		 {
-		 this.newState = newState;
-		 }
- */
-	// -------------------------- OTHER METHODS --------------------------
-
-	public DataCollector getDataCollector()
-		{
-		return dataCollector;
-		}
+	public abstract void setCurrentState(MonteCarloState newState);
 
 	/*
    public void init()
@@ -312,14 +304,38 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		return isColdest;
 		}
 
+	public void resetCounts()
+		{
+		proposedCount = 0;
+		acceptedCount = 0;//writeToConsoleInterval;
+		//Arrays.fill(proposed, 0);
+		//Arrays.fill(accepted, 0);
+		//	proposed.clear();
+		//	accepted.clear();
+		for (Class c : movetypes.pluginMap.getAvailablePlugins())
+			{
+			proposed.put(c, 0);
+			accepted.put(c, 0);
+			}
+		}
+
+	public void runNoBurnIn()
+			throws IOException, GenericFactoryException//MonteCarloFactory mcf, int burnIn, int numSteps)
+		{
+		for (int i = 0; i < numSteps; i++)
+			{
+			/*
+		   if (i % writeToConsoleInterval == 0)
+			   {
+			   }*/
+			doStep();
+			//logger.warn("Step: " + i);
+			}
+		}
+
 	public void setColdest(boolean coldest)
 		{
 		isColdest = coldest;
-		}
-
-	public void setDataCollector(DataCollector dc)
-		{
-		this.dataCollector = dc;
 		}
 
 	public double unnormalizedLogLikelihood(MonteCarloState mcs)
@@ -329,20 +345,5 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		                           mcs.unnormalizedLogLikelihood(), heatFactor,
 		                           mcs.unnormalizedLogLikelihood() * (1. / heatFactor)));
 		return mcs.unnormalizedLogLikelihood() * (1. / heatFactor);
-		}
-
-	/*
-   public void setChainSharedState(Object chainSharedState)
-	   {
-	   }
-
-   public Object getChainSharedState()
-	   {
-	   return null;
-	   }*/
-
-	public void init()
-		{
-		resetCounts();
 		}
 	}

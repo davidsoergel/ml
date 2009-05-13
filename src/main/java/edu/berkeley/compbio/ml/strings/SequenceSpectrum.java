@@ -53,10 +53,18 @@ import org.jetbrains.annotations.NotNull;
 public interface SequenceSpectrum<T extends SequenceSpectrum>
 		extends AdditiveClusterable<T>, Cloneable, GenericFactoryAware
 	{
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ CANONICAL METHODS ------------------------
+
+	/**
+	 * {@inheritDoc}
+	 */
+	T clone();
 
 
-	// --------------------- Interface GenericFactoryAware ---------------------
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface GenericFactoryAware ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -65,12 +73,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	GenericFactory getFactory();
 
 
-	// -------------------------- OTHER METHODS --------------------------
-
-	/**
-	 * {@inheritDoc}
-	 */
-	T clone();
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Computes the conditional probability of generating a symbol given a prefix under the model.
@@ -118,16 +121,6 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	byte[] getAlphabet();
 
 	/**
-	 * Returns the length of the sequence that was scanned to produce this spectrum.  This number may be greater than that
-	 * given by {@link #getNumberOfSamples()} because every symbol is not necessarily counted as a sample, depending on the
-	 * implementation.
-	 *
-	 * @return the length (type int) of this Kcount object.
-	 * @see #addUnknown()
-	 */
-	int getOriginalSequenceLength();
-
-	/**
 	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
 	 * implicit assumption is that the sequences being modeled have some correlation length, and thus that statistical
 	 * models of them can be built from substrings up to that length.  Thus, this method tells the maximum correlation
@@ -137,6 +130,16 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @return the maximum correlation length considered in the model.
 	 */
 	int getMaxDepth();
+
+	/**
+	 * Returns the length of the sequence that was scanned to produce this spectrum.  This number may be greater than that
+	 * given by {@link #getNumberOfSamples()} because every symbol is not necessarily counted as a sample, depending on the
+	 * implementation.
+	 *
+	 * @return the length (type int) of this Kcount object.
+	 * @see #addUnknown()
+	 */
+	int getOriginalSequenceLength();
 
 	/**
 	 * Returns the number of real samples on which this spectrum is based, not including pseudocounts or any other smoothing whatnot.

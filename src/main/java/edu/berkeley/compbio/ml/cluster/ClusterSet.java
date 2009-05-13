@@ -43,6 +43,8 @@ import java.util.Collection;
  */
 public interface ClusterSet<T extends Clusterable<T>>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
 	/**
 	 * Returns the contained Collection of Clusters.
 	 *

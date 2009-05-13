@@ -46,12 +46,15 @@ import java.util.Set;
 
 public class GrowableKmeansClustering<T extends AdditiveClusterable<T>> extends KmeansClustering<T>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public GrowableKmeansClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	public void addCluster(CentroidCluster<T> cluster)
 		{

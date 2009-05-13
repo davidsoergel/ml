@@ -40,6 +40,8 @@ import org.apache.commons.lang.NotImplementedException;
  */
 public class BasicCentroidCluster<T extends Clusterable<T>> extends AbstractCentroidCluster<T>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	/**
 	 * Constructs a new Cluster with the given id and centroid.  Note the centroid may be modified in the course of running
 	 * a clustering algorithm, so it may not be a good idea to provide a real data point here (i.e., it's probably best to
@@ -52,6 +54,11 @@ public class BasicCentroidCluster<T extends Clusterable<T>> extends AbstractCent
 		{
 		super(id, centroid);
 		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Cluster ---------------------
 
 	// we can't support adding and removing points because we don't know how to modify the centroid if it's not additive
 
@@ -67,15 +74,17 @@ public class BasicCentroidCluster<T extends Clusterable<T>> extends AbstractCent
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean addAll(CentroidCluster<T> point)
+	public boolean remove(T point)
 		{
 		throw new NotImplementedException();
 		}
 
+// -------------------------- OTHER METHODS --------------------------
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean remove(T point)
+	public boolean addAll(CentroidCluster<T> point)
 		{
 		throw new NotImplementedException();
 		}

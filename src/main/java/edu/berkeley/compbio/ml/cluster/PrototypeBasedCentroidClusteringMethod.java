@@ -12,7 +12,7 @@ import com.davidsoergel.dsutils.GenericFactoryException;
  */
 public interface PrototypeBasedCentroidClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
-
+// -------------------------- OTHER METHODS --------------------------
 
 	void createClusters(final GenericFactory<T> prototypeFactory) throws GenericFactoryException;
 	}

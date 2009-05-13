@@ -41,7 +41,7 @@ package edu.berkeley.compbio.ml.mcmc;
  */
 public interface MonteCarloState
 	{
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	//	abstract void init();
 

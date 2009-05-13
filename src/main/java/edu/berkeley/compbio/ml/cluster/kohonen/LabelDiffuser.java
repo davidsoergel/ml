@@ -45,6 +45,8 @@ import edu.berkeley.compbio.ml.cluster.CentroidCluster;
  */
 public interface LabelDiffuser<T extends AdditiveClusterable<T>, C extends CentroidCluster<T>>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
 	/**
 	 * Once a Kohonen SOM is learned, propagate the sample labels around in some way to give label confidences for every
 	 * cell.

@@ -11,6 +11,7 @@ import java.util.Iterator;
  */
 public interface SampleInitializedOnlineClusteringMethod<T extends Clusterable<T>> extends OnlineClusteringMethod<T>
 	{
+// -------------------------- OTHER METHODS --------------------------
 
 //	void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, final GenericFactory<T> prototypeFactory,
 //	           int trainingEpochs) throws IOException, ClusterException;

@@ -42,24 +42,24 @@ import org.apache.log4j.Logger;
  */
 public class EuclideanDistance implements DissimilarityMeasure<ClusterableDoubleArray>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(EuclideanDistance.class);
 
 	private static EuclideanDistance _instance = new EuclideanDistance();
 
 
-	// -------------------------- STATIC METHODS --------------------------
+// -------------------------- STATIC METHODS --------------------------
 
 	public static EuclideanDistance getInstance()
 		{
 		return _instance;
 		}
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface DistanceMeasure ---------------------
+// --------------------- Interface DissimilarityMeasure ---------------------
 
 	/**
 	 * {@inheritDoc}

@@ -11,6 +11,8 @@ import java.util.Set;
 public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
 		extends AbstractOnlineClusteringMethod<T, C> implements SupervisedClusteringMethod<T>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	protected AbstractSupervisedOnlineClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                                   Set<String> predictLabels, Set<String> leaveOneOutLabels,
 	                                                   Set<String> testLabels)

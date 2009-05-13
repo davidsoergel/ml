@@ -44,12 +44,12 @@ import org.apache.log4j.Logger;
  */
 public class SequenceSpectrumException extends ChainedException
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(SequenceSpectrumException.class);
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public SequenceSpectrumException(String s)
 		{

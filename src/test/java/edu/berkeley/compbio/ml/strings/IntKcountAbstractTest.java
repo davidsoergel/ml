@@ -13,12 +13,19 @@ import java.util.Queue;
 public class IntKcountAbstractTest<T extends IntKcount>
 		extends ContractTestAwareContractTest<Kcount>//implements TestInstanceFactory<Kcount>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	protected TestInstanceFactory<T> tif;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public IntKcountAbstractTest(TestInstanceFactory<T> tif)
 		{
 		this.tif = tif;
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * {@inheritDoc}

@@ -65,9 +65,14 @@ import java.util.Set;
 public class RonPST extends RonPSTNode
 		implements SequenceSpectrum<RonPST>, MutableDistribution//implements SequenceSpectrumTranslator
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(RonPST.class);
+
+	@Property(helpmessage = "A distribution processor to run on this PST, typically used for smoothing",
+	          defaultvalue = "edu.berkeley.compbio.ml.strings.RonPSTSmoother", isNullable = true)
+	//isPlugin = true,
+	public DistributionProcessor<RonPST> completionProcessor;
 	//private double eta0, eta1, eta2, gammaMin, L;
 
 	//private double pMin, alpha, pRatioMinMax, gammaMin;
@@ -81,33 +86,16 @@ public class RonPST extends RonPSTNode
 
 	private String label;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getExclusiveLabel()
-		{
-		return label;
-		}
-
-	public void setLabel(String label)
-		{
-		this.label = label;
-		}
-
 	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
-	public WeightedSet<String> getWeightedLabels()
-		{
-		return weightedLabels;
-		}
+	private int originalSequenceLength;
 
-	@Property(helpmessage = "A distribution processor to run on this PST, typically used for smoothing",
-	          defaultvalue = "edu.berkeley.compbio.ml.strings.RonPSTSmoother", isNullable = true)
-	//isPlugin = true,
-	public DistributionProcessor<RonPST> completionProcessor;
+	// diagnostics
+	private int total = 0, leaves = 0, maxdepth = 0;
+	private double avgdepth = 0;
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public RonPST()//String injectorId)
 		{
@@ -156,8 +144,6 @@ public class RonPST extends RonPSTNode
 		learn(branchAbsoluteMin, branchConditionalMin, pRatioMinMax, l_max, prob);
 		originalSequenceLength = prob.getOriginalSequenceLength();
 		}
-
-	private int originalSequenceLength;
 
 	/*	public RonPST(double pMin, double alpha, double pRatioMinMax, double gammaMin, int l_max, SequenceSpectrum prob)
 		   //throws SequenceSpectrumException//DistributionException,
@@ -319,9 +305,21 @@ public class RonPST extends RonPSTNode
 		diagnostics();
 		}
 
-	// diagnostics
-	private int total = 0, leaves = 0, maxdepth = 0;
-	private double avgdepth = 0;
+	/**
+	 * Adds each suffix of the given string to the tree.  Note that each suffix is started fresh from the root.  (A call to
+	 * the regular add() makes all suffixes present further down the tree anyway, which is to say, conditional on the
+	 * prefix up to that point.  Here, we want nodes for each suffix without such conditioning.)
+	 *
+	 * @param s the byte[]
+	 */
+	private void addAllSuffixes(byte[] s) throws SequenceSpectrumException
+		{
+		while (s.length > 0)
+			{
+			addUpstreamNode(s);
+			s = DSArrayUtils.suffix(s, 1);
+			}
+		}
 
 	private void diagnostics()
 		{
@@ -349,22 +347,6 @@ public class RonPST extends RonPSTNode
 			}
 		}
 
-	/**
-	 * Adds each suffix of the given string to the tree.  Note that each suffix is started fresh from the root.  (A call to
-	 * the regular add() makes all suffixes present further down the tree anyway, which is to say, conditional on the
-	 * prefix up to that point.  Here, we want nodes for each suffix without such conditioning.)
-	 *
-	 * @param s the byte[]
-	 */
-	private void addAllSuffixes(byte[] s) throws SequenceSpectrumException
-		{
-		while (s.length > 0)
-			{
-			addUpstreamNode(s);
-			s = DSArrayUtils.suffix(s, 1);
-			}
-		}
-
 	public String toLongString()
 		{
 		StringBuffer sb = new StringBuffer();
@@ -373,10 +355,32 @@ public class RonPST extends RonPSTNode
 		return sb.toString();
 		}
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// --------------------- GETTER / SETTER METHODS ---------------------
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public byte[] getAlphabet()
+		{
+		return alphabet;
+		}
 
-	// --------------------- Interface SequenceSpectrum ---------------------
+	public int getOriginalSequenceLength()
+		{
+		return originalSequenceLength;
+		}
+
+	public WeightedSet<String> getWeightedLabels()
+		{
+		return weightedLabels;
+		}
+
+	public void setLabel(String label)
+		{
+		this.label = label;
+		}
+
+// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
 	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
@@ -393,10 +397,79 @@ public class RonPST extends RonPSTNode
 		throw new NotImplementedException();
 		}
 
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface AdditiveClusterable ---------------------
+
+
+	public void decrementBy(RonPST object)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void decrementByWeighted(RonPST object, double weight)
+		{
+		throw new NotImplementedException();
+		}
+
+	public void incrementBy(RonPST object)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void incrementByWeighted(RonPST object, double weight)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public RonPST minus(RonPST object)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void multiplyBy(double v)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public RonPST plus(RonPST object)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public RonPST times(double v)
+		{
+		throw new NotImplementedException();
+		}
+
+// --------------------- Interface Clusterable ---------------------
+
 	public boolean equalValue(RonPST other)
 		{
 		throw new NotImplementedException();
 		}
+
+// --------------------- Interface SequenceSpectrum ---------------------
+
 
 	/**
 	 * Computes the conditional probability of generating a symbol given a prefix under the model, backing off to shorter
@@ -447,44 +520,6 @@ public class RonPST extends RonPSTNode
 			throws SequenceSpectrumException
 		{
 		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public byte[] getAlphabet()
-		{
-		return alphabet;
-		}
-
-
-	public int getOriginalSequenceLength()
-		{
-		return originalSequenceLength;
-		}
-
-	public int getNumNodes()
-		{
-		return total;
-		}
-
-	public int getNumLeaves()
-		{
-		return leaves;
-		}
-	/*
-   public int getMaxDepth()
-	   {
-	   if(maxdepth == 0)
-		   {
-		   maxdepth = super.getMaxDepth();
-		   }
-	   return maxdepth;
-	   }*/
-
-	public double getAvgDepth()
-		{
-		return avgdepth;
 		}
 
 	/**
@@ -569,7 +604,30 @@ public class RonPST extends RonPSTNode
 		return result;
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
+
+	/*
+   public int getMaxDepth()
+	   {
+	   if(maxdepth == 0)
+		   {
+		   maxdepth = super.getMaxDepth();
+		   }
+	   return maxdepth;
+	   }*/
+
+	public double getAvgDepth()
+		{
+		return avgdepth;
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getExclusiveLabel()
+		{
+		return label;
+		}
 
 	/*
 	 public RonPSTNode getBackoffPrior(byte[] id) throws SequenceSpectrumException
@@ -593,65 +651,13 @@ public class RonPST extends RonPSTNode
 		return currentNode;
 		}
 
-
-	public void decrementBy(RonPST object)
+	public int getNumLeaves()
 		{
-		throw new NotImplementedException();
+		return leaves;
 		}
 
-
-	public void incrementBy(RonPST object)
+	public int getNumNodes()
 		{
-		throw new NotImplementedException();
-		}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void decrementByWeighted(RonPST object, double weight)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void incrementByWeighted(RonPST object, double weight)
-		{
-		throw new NotImplementedException();
-		}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public RonPST minus(RonPST object)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public RonPST plus(RonPST object)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public RonPST times(double v)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void multiplyBy(double v)
-		{
-		throw new NotImplementedException();
+		return total;
 		}
 	}

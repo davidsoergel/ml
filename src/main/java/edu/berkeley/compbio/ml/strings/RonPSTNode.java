@@ -59,18 +59,16 @@ import java.util.List;
  */
 public class RonPSTNode extends AbstractGenericFactoryAware
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(RonPSTNode.class);
+	protected byte[] alphabet;
 
 	private byte[] id;
-	protected byte[] alphabet;
 	private double[] logProbs;
 	private Multinomial<Byte> probs = new Multinomial<Byte>();
 
 	private boolean leaf = true;
-
-	public RonPSTNode()
-		{
-		}
 
 	/**
 	 * The upstream node for each symbol, indexed by the alphabet index.  Contains nulls for symbols where no upstream node
@@ -79,52 +77,10 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	private RonPSTNode[] upstreamNodes;
 
 
-	/**
-	 * Returns an array of upstream nodes for each symbol, indexed by the alphabet index.  Contains nulls for symbols where
-	 * no upstream node exists.
-	 */
-	public RonPSTNode[] getUpstreamNodes()
-		{
-		return upstreamNodes;
-		}
+// --------------------------- CONSTRUCTORS ---------------------------
 
-	/**
-	 * Get the upstream node for the specified symbol.  Returns null if the node does not exist.
-	 *
-	 * @param b the symbol specifying the upstream transition to follow
-	 * @return the node found by following the requested transition, or null if the node does not exist.
-	 * @throws SequenceSpectrumException if the requested symbol is not part of the alphabet
-	 */
-	public RonPSTNode getUpstreamNode(byte b) throws SequenceSpectrumException
+	public RonPSTNode()
 		{
-		try
-			{
-			return upstreamNodes[DSArrayUtils.indexOf(alphabet, b)];
-			}
-		catch (Exception e)
-			{
-			throw new SequenceSpectrumException(e);
-			}
-		}
-
-	/**
-	 * Gets the probability distribution over symbols following the suffix specified by this node's id.
-	 *
-	 * @return a Multinomial<Byte> distribution over symbols.
-	 */
-	public Multinomial<Byte> getProbs()
-		{
-		return probs;
-		}
-
-	/**
-	 * Sets the id of this node, which is just the suffix associated with this node represented as a byte[].
-	 *
-	 * @param id
-	 */
-	public void setId(byte[] id)
-		{
-		this.id = id;
 		}
 
 	/**
@@ -152,63 +108,53 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		upstreamNodes = new RonPSTNode[alphabet.length];
 		}
 
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	public double[] getLogProbs()
+		{
+		return logProbs;
+		}
+
 	/**
-	 * Sets the probability of the given symbol to the given value.  This may cause the probability distribution to become
-	 * unnormalized.
+	 * Gets the probability distribution over symbols following the suffix specified by this node's id.
 	 *
-	 * @param b    the symbol
-	 * @param prob the probability
-	 * @throws DistributionException if something bad happens, like a negative probability
+	 * @return a Multinomial<Byte> distribution over symbols.
 	 */
-	private void setProb(byte b, double prob) throws DistributionException
+	public Multinomial<Byte> getProbs()
 		{
-		probs.put(b, prob);
+		return probs;
 		}
 
 	/**
-	 * Normalize the underlying probability distribution
+	 * Returns an array of upstream nodes for each symbol, indexed by the alphabet index.  Contains nulls for symbols where
+	 * no upstream node exists.
+	 */
+	public RonPSTNode[] getUpstreamNodes()
+		{
+		return upstreamNodes;
+		}
+
+	/**
+	 * Tells whether this node is a leaf or not.
 	 *
-	 * @throws DistributionException
+	 * @return true if this node has no upstream nodes, and false otherwise
 	 */
-	public void normalize() throws DistributionException
+	public boolean isLeaf()
 		{
-		probs.normalize();
+		return leaf;
 		}
 
 	/**
-	 * Takes the logs of all the probabilities at this node and caches them; then follows the upstream transitions and
-	 * repeats recursively.
+	 * Sets the id of this node, which is just the suffix associated with this node represented as a byte[].
+	 *
+	 * @param id
 	 */
-	public void updateLogProbsRecursive()
+	public void setId(byte[] id)
 		{
-		updateLogProbs();
-		for (RonPSTNode upstream : upstreamNodes)//.values())
-			{
-			if (upstream != null)
-				{
-				upstream.updateLogProbsRecursive();
-				}
-			}
+		this.id = id;
 		}
 
-	/**
-	 * Takes the logs of all the probabilities at this node and caches them.
-	 */
-	public void updateLogProbs()
-		{
-		try
-			{
-			for (int i = 0; i < alphabet.length; i++)
-				{
-				logProbs[i] = MathUtils.approximateLog(probs.get(alphabet[i]));
-				}
-			}
-		catch (DistributionException e)
-			{
-			logger.error("Error", e);
-			throw new SequenceSpectrumRuntimeException(e);
-			}
-		}
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Gets the upstream node associated with the given suffix starting from this node, creating it (and nodes along the
@@ -235,7 +181,6 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 				}
 		throw new Error("Impossible");
 		}
-
 
 	/**
 	 * Gets the upstream node associated with the given symbol starting from this node, creating it first if needed.
@@ -297,36 +242,6 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		}
 
 	/**
-	 * Gets a List<RonPSTNode> of all nodes in the subtree starting from this node, including this node.
-	 *
-	 * @return a List of all nodes in the subtree starting from this node, including this node.
-	 */
-	public List<RonPSTNode> getAllUpstreamNodes()
-		{
-		List<RonPSTNode> result = new ArrayList<RonPSTNode>();
-
-		collectUpstreamNodes(result);
-		return result;
-		}
-
-	/**
-	 * Recursively append this node and all its children (upstream nodes) to the provided List<RonPSTNode>
-	 *
-	 * @param nodeList a List to which to add this node and its children
-	 */
-	private void collectUpstreamNodes(List<RonPSTNode> nodeList)
-		{
-		nodeList.add(this);
-		for (RonPSTNode n : upstreamNodes)
-			{
-			if (n != null)
-				{
-				n.collectUpstreamNodes(nodeList);
-				}
-			}
-		}
-
-	/**
 	 * Gets the id of this node, which is just the suffix associated with this node represented as a byte[].
 	 */
 	public byte[] getIdBytes()
@@ -334,31 +249,6 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		return id;
 		//	return new String(id);
 		}
-
-	/**
-	 * Gets the id of this node, which is just the suffix associated with this node represented as a byte[], here converted
-	 * to String for the sake of the Clusterable interface.
-	 */
-	public String getId()
-		{
-		return new String(id);
-		}
-
-	public String getSourceId()
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * Tells whether this node is a leaf or not.
-	 *
-	 * @return true if this node has no upstream nodes, and false otherwise
-	 */
-	public boolean isLeaf()
-		{
-		return leaf;
-		}
-
 
 	/**
 	 * Recursively fills out the tree so that each node has either a complete set of probabilities or none at all, and
@@ -425,6 +315,19 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		}
 
 	/**
+	 * Sets the probability of the given symbol to the given value.  This may cause the probability distribution to become
+	 * unnormalized.
+	 *
+	 * @param b    the symbol
+	 * @param prob the probability
+	 * @throws DistributionException if something bad happens, like a negative probability
+	 */
+	private void setProb(byte b, double prob) throws DistributionException
+		{
+		probs.put(b, prob);
+		}
+
+	/**
 	 * Counts the immediately upstream nodes that exist.
 	 *
 	 * @returns an int between 0 and the size of the alphabet (inclusive) giving the number of symbols that lead to more
@@ -443,9 +346,43 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 		return result;
 		}
 
-	public double[] getLogProbs()
+	/**
+	 * Gets a List<RonPSTNode> of all nodes in the subtree starting from this node, including this node.
+	 *
+	 * @return a List of all nodes in the subtree starting from this node, including this node.
+	 */
+	public List<RonPSTNode> getAllUpstreamNodes()
 		{
-		return logProbs;
+		List<RonPSTNode> result = new ArrayList<RonPSTNode>();
+
+		collectUpstreamNodes(result);
+		return result;
+		}
+
+	/**
+	 * Recursively append this node and all its children (upstream nodes) to the provided List<RonPSTNode>
+	 *
+	 * @param nodeList a List to which to add this node and its children
+	 */
+	private void collectUpstreamNodes(List<RonPSTNode> nodeList)
+		{
+		nodeList.add(this);
+		for (RonPSTNode n : upstreamNodes)
+			{
+			if (n != null)
+				{
+				n.collectUpstreamNodes(nodeList);
+				}
+			}
+		}
+
+	/**
+	 * Gets the id of this node, which is just the suffix associated with this node represented as a byte[], here converted
+	 * to String for the sake of the Clusterable interface.
+	 */
+	public String getId()
+		{
+		return new String(id);
 		}
 
 	public int getMaxDepth()
@@ -464,5 +401,74 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			}
 
 		return result;
+		}
+
+	public String getSourceId()
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * Get the upstream node for the specified symbol.  Returns null if the node does not exist.
+	 *
+	 * @param b the symbol specifying the upstream transition to follow
+	 * @return the node found by following the requested transition, or null if the node does not exist.
+	 * @throws SequenceSpectrumException if the requested symbol is not part of the alphabet
+	 */
+	public RonPSTNode getUpstreamNode(byte b) throws SequenceSpectrumException
+		{
+		try
+			{
+			return upstreamNodes[DSArrayUtils.indexOf(alphabet, b)];
+			}
+		catch (Exception e)
+			{
+			throw new SequenceSpectrumException(e);
+			}
+		}
+
+	/**
+	 * Normalize the underlying probability distribution
+	 *
+	 * @throws DistributionException
+	 */
+	public void normalize() throws DistributionException
+		{
+		probs.normalize();
+		}
+
+	/**
+	 * Takes the logs of all the probabilities at this node and caches them; then follows the upstream transitions and
+	 * repeats recursively.
+	 */
+	public void updateLogProbsRecursive()
+		{
+		updateLogProbs();
+		for (RonPSTNode upstream : upstreamNodes)//.values())
+			{
+			if (upstream != null)
+				{
+				upstream.updateLogProbsRecursive();
+				}
+			}
+		}
+
+	/**
+	 * Takes the logs of all the probabilities at this node and caches them.
+	 */
+	public void updateLogProbs()
+		{
+		try
+			{
+			for (int i = 0; i < alphabet.length; i++)
+				{
+				logProbs[i] = MathUtils.approximateLog(probs.get(alphabet[i]));
+				}
+			}
+		catch (DistributionException e)
+			{
+			logger.error("Error", e);
+			throw new SequenceSpectrumRuntimeException(e);
+			}
 		}
 	}

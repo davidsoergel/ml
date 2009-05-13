@@ -45,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Clusterable<T extends Clusterable> extends Cloneable
 	{
-	// -------------------------- OTHER METHODS --------------------------
+// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
 	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
@@ -57,6 +57,9 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 * @see java.lang.Cloneable
 	 */
 	T clone();
+
+
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Test whether the given object is the same as this one.  Differs from equals() in that implementations of this

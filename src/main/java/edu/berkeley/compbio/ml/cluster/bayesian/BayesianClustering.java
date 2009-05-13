@@ -59,10 +59,12 @@ import java.util.Set;
 public class BayesianClustering<T extends AdditiveClusterable<T>> extends NearestNeighborClustering<T>
 		//	implements SampleInitializedOnlineClusteringMethod<T>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(BayesianClustering.class);
 
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * @param dm                       The distance measure to use
@@ -74,6 +76,11 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 		{
 		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface PrototypeBasedCentroidClusteringMethod ---------------------
 
 	public void createClusters(final GenericFactory<T> prototypeFactory)
 		{
@@ -108,6 +115,8 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 			throw new ClusterRuntimeException(e);
 			}
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	//BAD just initialize all clusters, then delete the empty ones
 /*	public void initializeWithSamples(Iterator<T> trainingIterator, int initSamples,
@@ -206,7 +215,4 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 		normalizeClusterLabelProbabilities();
 		}
-
-
-	// -------------------------- OTHER METHODS --------------------------
 	}

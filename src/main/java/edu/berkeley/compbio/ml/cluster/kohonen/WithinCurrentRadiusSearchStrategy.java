@@ -43,6 +43,8 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 public class WithinCurrentRadiusSearchStrategy<T extends AdditiveClusterable<T>>
 		extends NearCurrentPositionSearchStrategy<T>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
 	/**
 	 * {@inheritDoc}
 	 */

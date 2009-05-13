@@ -42,6 +42,8 @@ package edu.berkeley.compbio.ml.cluster;
  */
 public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> implements Comparable<ClusterMove<T, C>>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	/**
 	 * The destination cluster
 	 */
@@ -56,11 +58,6 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> impleme
 	 * The source cluster
 	 */
 	public C oldCluster;
-
-	/**
-	 * The distance of the point under consideration to the source cluster centroid
-	 */
-	double oldDistance;
 
 	/**
 	 * Sometimes it's interesting to know how much better the best distance is than the second-best one, so we allow
@@ -84,14 +81,12 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> impleme
 	public double secondBestVoteProportion;
 
 	/**
-	 * Tells whether this move has any effect.
-	 *
-	 * @return true if the new cluster differs from the old one; false otherwise.
+	 * The distance of the point under consideration to the source cluster centroid
 	 */
-	public boolean isChanged()
-		{
-		return (oldCluster == null || (!bestCluster.equals(oldCluster)));
-		}
+	double oldDistance;
+
+
+// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
 	 * Returns a string representation of the object. In general, the <code>toString</code> method returns a string that
@@ -115,8 +110,25 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> impleme
 				+ ", oldDistance = " + oldDistance;
 		}
 
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Comparable ---------------------
+
 	public int compareTo(ClusterMove<T, C> o)
 		{
 		return bestCluster.getId() - o.bestCluster.getId();
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * Tells whether this move has any effect.
+	 *
+	 * @return true if the new cluster differs from the old one; false otherwise.
+	 */
+	public boolean isChanged()
+		{
+		return (oldCluster == null || (!bestCluster.equals(oldCluster)));
 		}
 	}

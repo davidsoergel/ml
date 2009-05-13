@@ -45,12 +45,12 @@ import java.io.IOException;
  */
 public class KmeansClusteringTest
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(KmeansClusteringTest.class);
 
 
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	@BeforeSuite
 	public void setUp()

@@ -43,12 +43,12 @@ import org.apache.log4j.Logger;
  */
 public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends AbstractCentroidCluster<T>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(AdditiveCentroidCluster.class);
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * Constructs a new AdditiveCluster with the given DistanceMeasure and centroid.  Note the centroid may be modified in
@@ -62,7 +62,10 @@ public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends A
 		super(id, centroid);
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Cluster ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -101,7 +104,6 @@ public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends A
 		centroid.decrementBy(point);
 		return true;
 		}
-
 
 	@Override
 	public boolean removeAll(Cluster<T> otherCluster)

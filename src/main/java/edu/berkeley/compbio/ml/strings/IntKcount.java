@@ -54,12 +54,12 @@ import java.util.Arrays;
  */
 public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implements IntArrayContainer
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	protected int[] counts;
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * Creates a new Kcount instance.
@@ -68,7 +68,7 @@ public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implement
 		{
 		}
 
-	// ------------------------ CANONICAL METHODS ------------------------
+// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
 	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
@@ -83,10 +83,10 @@ public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implement
 	public abstract T clone();
 
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface Clusterable ---------------------
+// --------------------- Interface Clusterable ---------------------
 
 	/**
 	 * Test whether the given pattern counts are equal to those stored here.  Differs from equals() in that implementations
@@ -101,7 +101,7 @@ public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implement
 		return Arrays.equals(counts, other.counts);
 		}
 
-	// --------------------- Interface IntArrayContainer ---------------------
+// --------------------- Interface IntArrayContainer ---------------------
 
 	/**
 	 * Returns an array of the counts.  The mapping of patterns to array indices is implementation-dependent.  A typical
@@ -114,7 +114,7 @@ public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implement
 		return counts;
 		}
 
-	// --------------------- Interface SequenceSpectrum ---------------------
+// --------------------- Interface SequenceSpectrum ---------------------
 
 	/*		{
 	   if (numberOfBins == 1)

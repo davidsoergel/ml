@@ -57,9 +57,9 @@ import java.util.Map;
 public final class CentroidClusteringUtils //<T extends Clusterable<T>>
 //		extends AbstractBatchClusteringMethod<T, CentroidCluster<T>> implements CentroidClusteringMethod<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	//protected boolean leaveOneOut;
-
-
 	/*	protected AbstractBatchCentroidClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 													 Set<String> predictLabels, Set<String> leaveOneOutLabels,
 													 Set<String> testLabels)
@@ -69,6 +69,9 @@ public final class CentroidClusteringUtils //<T extends Clusterable<T>>
 		 }
  */
 	private static final Logger logger = Logger.getLogger(CentroidClusteringUtils.class);
+
+
+// -------------------------- STATIC METHODS --------------------------
 
 	/**
 	 * for each cluster, compute the standard deviation of the distance of each point to the centroid.  This does not

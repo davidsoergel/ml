@@ -49,11 +49,15 @@ import java.util.Queue;
  */
 public class RonPSANode extends MarkovTreeNode
 	{
+// ------------------------------ FIELDS ------------------------------
 
 	private RonPSANode backoffPrior;
 
 	// includes both the real children and the backlinks together
 	private RonPSANode[] nextNodes;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public RonPSANode()
 		{
@@ -69,92 +73,14 @@ public class RonPSANode extends MarkovTreeNode
 		super(id, alphabet);
 		}
 
-	@Override
-	public void setAlphabet(byte[] alphabet)
-		{
-		super.setAlphabet(alphabet);
-		nextNodes = new RonPSANode[alphabet.length];
-		}
+// --------------------- GETTER / SETTER METHODS ---------------------
 
 	public RonPSANode getBackoffPrior()
 		{
 		return backoffPrior;
 		}
 
-
-	public void setBacklinksUsingRoot(RonPSANode rootNode, Queue<RonPSANode> breadthFirstQueue)
-		{
-		for (MarkovTreeNode child : children)//.values())
-			{
-			if (child != null)
-				{
-				breadthFirstQueue.add((RonPSANode) child);//.setBacklinksUsingRoot(rootNode);
-				}
-			}
-
-		//	if (children.isEmpty())
-		//		{
-		if (id.length > 0)
-			{
-			try
-				{
-				setBackoffPrior(rootNode.getLongestSuffix(DSArrayUtils.suffix(id, 1)));
-				}
-			catch (SequenceSpectrumException e)
-				{
-				throw new Error("Impossible");
-				}
-			}
-		//		}
-		//else
-		//	{
-
-		//	}
-		}
-
-
-	public RonPSANode[] nextNodes()
-		{
-		return nextNodes;
-		}
-
-	/**
-	 * This method assumes that it has not been run before, and that all nodes at higher levels in the tree have already
-	 * been proceesed.  So it must be run in breadth-first order exactly once.
-	 *
-	 * @param backoffPrior
-	 */
-	public void setBackoffPrior(RonPSANode backoffPrior)
-		{
-		this.backoffPrior = backoffPrior;
-		/*	if (children.isEmpty())
-		   {
-		   leaf = true;
-		   }*/
-		for (int i = 0; i < alphabet.length; i++)
-			{
-			if (nextNodes[i] == null)
-				{
-				nextNodes[i] = getBackoffPrior().nextNodes[i];//get(sigma));
-				}
-			}
-		}
-
-	/**
-	 * Gets the child node associated with the given sequence, if it exists
-	 *
-	 * @param sigma the symbol to follow from this node
-	 * @return the node pointed to, or null if that leaf does not exist
-	 */
-	public RonPSANode nextNode(byte sigma) throws SequenceSpectrumException
-		{
-		return nextNodes[DSArrayUtils.indexOf(alphabet, sigma)];
-		}
-
-	public RonPSANode nextNodeByAlphabetIndex(int c)
-		{
-		return nextNodes[c];
-		}
+// -------------------------- OTHER METHODS --------------------------
 
 	/*
 	 private void addChild(byte b, RonPSANode child) throws SequenceSpectrumException
@@ -188,7 +114,6 @@ public class RonPSANode extends MarkovTreeNode
 		return result;
 		}
 
-
 	@Override
 	public void appendString(Formatter formatter, String indent)
 		{
@@ -212,7 +137,6 @@ public class RonPSANode extends MarkovTreeNode
 				}
 			}
 		}
-
 
 	/**
 	 * Gets the child node associated with the given sequence, if it exists
@@ -246,6 +170,92 @@ public class RonPSANode extends MarkovTreeNode
 		throw new Error("Impossible");
 		}
 
+	/*
+	 public RonPSANode[] getChildren()
+		 {
+		 return (RonPSANode[]) children;
+		 }
+ */
+	@Override
+	public RonPSANode getChild(byte sigma)//throws SequenceSpectrumException
+		{
+		return (RonPSANode) (super.getChild(sigma));
+		}
+
+	@Override
+	public RonPSANode getDescendant(byte[] descendantId)//throws SequenceSpectrumException
+		{
+		return (RonPSANode) super.getDescendant(descendantId);
+		}
+
+	public RonPSANode nextNodeByAlphabetIndex(int c)
+		{
+		return nextNodes[c];
+		}
+
+	public RonPSANode[] nextNodes()
+		{
+		return nextNodes;
+		}
+
+	@Override
+	public void setAlphabet(byte[] alphabet)
+		{
+		super.setAlphabet(alphabet);
+		nextNodes = new RonPSANode[alphabet.length];
+		}
+
+	public void setBacklinksUsingRoot(RonPSANode rootNode, Queue<RonPSANode> breadthFirstQueue)
+		{
+		for (MarkovTreeNode child : children)//.values())
+			{
+			if (child != null)
+				{
+				breadthFirstQueue.add((RonPSANode) child);//.setBacklinksUsingRoot(rootNode);
+				}
+			}
+
+		//	if (children.isEmpty())
+		//		{
+		if (id.length > 0)
+			{
+			try
+				{
+				setBackoffPrior(rootNode.getLongestSuffix(DSArrayUtils.suffix(id, 1)));
+				}
+			catch (SequenceSpectrumException e)
+				{
+				throw new Error("Impossible");
+				}
+			}
+		//		}
+		//else
+		//	{
+
+		//	}
+		}
+
+	/**
+	 * This method assumes that it has not been run before, and that all nodes at higher levels in the tree have already
+	 * been proceesed.  So it must be run in breadth-first order exactly once.
+	 *
+	 * @param backoffPrior
+	 */
+	public void setBackoffPrior(RonPSANode backoffPrior)
+		{
+		this.backoffPrior = backoffPrior;
+		/*	if (children.isEmpty())
+		   {
+		   leaf = true;
+		   }*/
+		for (int i = 0; i < alphabet.length; i++)
+			{
+			if (nextNodes[i] == null)
+				{
+				nextNodes[i] = getBackoffPrior().nextNodes[i];//get(sigma));
+				}
+			}
+		}
 
 	/**
 	 * gets the node associated with the longest available suffix of the given sequence.
@@ -264,22 +274,14 @@ public class RonPSANode extends MarkovTreeNode
 		return currentNode;
 		}
 
-	/*
-	 public RonPSANode[] getChildren()
-		 {
-		 return (RonPSANode[]) children;
-		 }
- */
-	@Override
-	public RonPSANode getChild(byte sigma)//throws SequenceSpectrumException
+	/**
+	 * Gets the child node associated with the given sequence, if it exists
+	 *
+	 * @param sigma the symbol to follow from this node
+	 * @return the node pointed to, or null if that leaf does not exist
+	 */
+	public RonPSANode nextNode(byte sigma) throws SequenceSpectrumException
 		{
-		return (RonPSANode) (super.getChild(sigma));
-		}
-
-	@Override
-	public RonPSANode getDescendant(byte[] descendantId)//throws SequenceSpectrumException
-		{
-		return (RonPSANode) super.getDescendant(descendantId);
+		return nextNodes[DSArrayUtils.indexOf(alphabet, sigma)];
 		}
 	}
-

@@ -35,10 +35,15 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 //		extends AbstractOnlineClusteringMethod<T, CentroidCluster<T>>
 //		implements SupervisedClusteringMethod<T, CentroidCluster<T>>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(NearestNeighborClustering.class);
 	protected double unknownDistanceThreshold;
 
 	protected Map<CentroidCluster<T>, Double> priors;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public NearestNeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
 	                                 Set<String> potentialTrainingBins, Set<String> predictLabels,
@@ -48,36 +53,56 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		}
 
-	private void limitToPopulatedClusters()
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface CentroidClusteringMethod ---------------------
+
+
+	@Override
+	public String shortClusteringStats()
 		{
-		try
-			{
-			// remove any clusters for which there were no training samples, to avoid any later confusion
+		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		}
 
-			// while we're at it, make a uniform prior for the populated bins
-			final Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
-
-			for (Iterator<CentroidCluster<T>> i = theClusters.iterator(); i.hasNext();)
-				{
-				CentroidCluster<T> c = i.next();
-				if (c.getN() == 0)
-					{
-					priors.remove(c);
-					i.remove();
-					}
-				else
-					{
-					priorsMult.put(c, 1);
-					}
-				}
-			priorsMult.normalize();
-			priors = priorsMult.getValueMap();
-			}
-		catch (DistributionException e)
+	/*public void addAll(Iterable<T> samples)
+		{
+		for (Clusterable<T> sample : samples)
 			{
-			logger.error("Error", e);
-			throw new ClusterRuntimeException(e);
+			add(sample);
 			}
+		}
+*/
+	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+		{
+		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
+		}
+
+	@Override
+	public String clusteringStats()
+		{
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
+		return b.toString();
+		}
+
+	public void writeClusteringStatsToStream(OutputStream outf)
+		{
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		}
+
+// --------------------- Interface OnlineClusteringMethod ---------------------
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean add(T p) throws ClusterException, NoGoodClusterException //, List<Double> secondBestDistances
+		{
+		ClusterMove best = bestClusterMove(p);
+		//secondBestDistances.add(best.secondBestDistance);
+		best.bestCluster.add(p);
+		return true;
 		}
 
 	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
@@ -86,6 +111,8 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 		super.train(trainingCollectionIteratorFactory, trainingEpochs);
 		limitToPopulatedClusters();
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * {@inheritDoc}
@@ -160,46 +187,35 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 		return result;
 		}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean add(T p) throws ClusterException, NoGoodClusterException //, List<Double> secondBestDistances
+	private void limitToPopulatedClusters()
 		{
-		ClusterMove best = bestClusterMove(p);
-		//secondBestDistances.add(best.secondBestDistance);
-		best.bestCluster.add(p);
-		return true;
-		}
-
-	/*public void addAll(Iterable<T> samples)
-		{
-		for (Clusterable<T> sample : samples)
+		try
 			{
-			add(sample);
+			// remove any clusters for which there were no training samples, to avoid any later confusion
+
+			// while we're at it, make a uniform prior for the populated bins
+			final Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
+
+			for (Iterator<CentroidCluster<T>> i = theClusters.iterator(); i.hasNext();)
+				{
+				CentroidCluster<T> c = i.next();
+				if (c.getN() == 0)
+					{
+					priors.remove(c);
+					i.remove();
+					}
+				else
+					{
+					priorsMult.put(c, 1);
+					}
+				}
+			priorsMult.normalize();
+			priors = priorsMult.getValueMap();
 			}
-		}
-*/
-	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
-		{
-		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
-		}
-
-	public void writeClusteringStatsToStream(OutputStream outf)
-		{
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
-		}
-
-	@Override
-	public String clusteringStats()
-		{
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
-		return b.toString();
-		}
-
-	@Override
-	public String shortClusteringStats()
-		{
-		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		catch (DistributionException e)
+			{
+			logger.error("Error", e);
+			throw new ClusterRuntimeException(e);
+			}
 		}
 	}

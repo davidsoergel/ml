@@ -11,6 +11,8 @@ import java.util.Set;
 public abstract class AbstractBatchClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
 		extends AbstractClusteringMethod<T, C> implements BatchClusteringMethod<T>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	public AbstractBatchClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                     Set<String> predictLabels, Set<String> leaveOneOutLabels,
 	                                     Set<String> testLabels)

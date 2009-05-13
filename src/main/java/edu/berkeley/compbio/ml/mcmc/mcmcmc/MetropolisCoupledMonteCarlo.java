@@ -53,7 +53,7 @@ import java.io.IOException;
 @PropertyConsumer
 public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(MetropolisCoupledMonteCarlo.class);
 
@@ -77,6 +77,16 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	//@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.mcmcmc.ChainList")
 	public ChainList currentState = new ChainList();
 
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+	public MetropolisCoupledMonteCarlo() throws IOException
+		{
+		super();
+		}
+
+// --------------------- GETTER / SETTER METHODS ---------------------
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -86,14 +96,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		return currentState;
 		}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setCurrentState(MonteCarloState currentState)
-		{
-		this.currentState = (ChainList) currentState;
-		}
+// -------------------------- OTHER METHODS --------------------------
 
 	//	@Property(helpmessage = "", defaultvalue = "10")
 	//	public int swapInterval;
@@ -107,8 +110,6 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		super.init();
 		//	super.setDataCollector(dataCollector);
 		}
-
-	// -------------------------- STATIC METHODS --------------------------
 
 	/**
 	 * {@inheritDoc}
@@ -179,6 +180,11 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		resetCounts();
 		}
 
+	public ChainList getCurrentChainList()
+		{
+		return (ChainList) currentState;
+		}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -201,15 +207,12 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		super.doStep();
 		}
 
-	public ChainList getCurrentChainList()
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setCurrentState(MonteCarloState currentState)
 		{
-		return (ChainList) currentState;
-		}
-
-	// --------------------------- CONSTRUCTORS ---------------------------
-
-	public MetropolisCoupledMonteCarlo() throws IOException
-		{
-		super();
+		this.currentState = (ChainList) currentState;
 		}
 	}

@@ -12,13 +12,15 @@ import java.io.OutputStream;
  */
 public interface CentroidClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
+	String clusteringStats();
+
 	void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException;
 
 //	List<T> getCentroids();
 
 	String shortClusteringStats();
-
-	String clusteringStats();
 
 	void writeClusteringStatsToStream(OutputStream outf);
 	}

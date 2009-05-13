@@ -45,40 +45,13 @@ import org.testng.annotations.Test;
 
 public class RonPSTNodeTest
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(RonPSTNodeTest.class);
 	RonPSTNode theNode;
 
-	@BeforeMethod
-	public void setUp()
-		{
-		MathUtils.initApproximateLog(-12, 12, 3, 100000);
-		try
-			{
-			buildSimplePST();
-			}
-		catch (SequenceSpectrumException e)
-			{
-			logger.error("Error", e);
-			}
-		}
 
-	@Test
-	public void updateLogProbsWorks()
-		{
-		theNode.copyProbsFrom(new RonPSTTest.StubSequenceSpectrum());
-		theNode.updateLogProbs();
-		assert MathUtils.equalWithinFPError(theNode.getLogProbs()[0], -1.6094379124341003);
-		}
-
-
-	@Test
-	public void updateLogProbsRecursiveWorks() throws SequenceSpectrumException
-		{
-		theNode.copyProbsFrom(new RonPSTTest.StubSequenceSpectrum());
-		theNode.updateLogProbsRecursive();
-		assert MathUtils.equalWithinFPError(theNode.getUpstreamNode((byte) 'a').getLogProbs()[0], -2.3025850929940455);
-		}
-
+// -------------------------- OTHER METHODS --------------------------
 
 	@Test
 	public void addDirectlyUpstreamNodeWorks() throws SequenceSpectrumException
@@ -93,7 +66,6 @@ public class RonPSTNodeTest
 		theNode.addUpstreamNode((byte) 'a');
 		assert theNode.getUpstreamNode((byte) 'a') != null;
 		}
-
 
 	@Test
 	public void addUpstreamNodeChainWorks() throws SequenceSpectrumException
@@ -115,21 +87,6 @@ public class RonPSTNodeTest
 				.getUpstreamNode((byte) 'a') != null;
 		}
 
-
-	@Test
-	public void getAllUpstreamNodesWorks()
-		{
-		assert theNode.getAllUpstreamNodes().size() == 11;
-		}
-
-
-	@Test
-	public void countUpstreamNodesWorks()
-		{
-		assert theNode.countUpstreamNodes() == 3;
-		}
-
-
 	@Test
 	public void copyProbsFromWorks()
 		{
@@ -146,6 +103,32 @@ public class RonPSTNodeTest
 			{
 			logger.error("Error", e);
 			assert false;
+			}
+		}
+
+	@Test
+	public void countUpstreamNodesWorks()
+		{
+		assert theNode.countUpstreamNodes() == 3;
+		}
+
+	@Test
+	public void getAllUpstreamNodesWorks()
+		{
+		assert theNode.getAllUpstreamNodes().size() == 11;
+		}
+
+	@BeforeMethod
+	public void setUp()
+		{
+		MathUtils.initApproximateLog(-12, 12, 3, 100000);
+		try
+			{
+			buildSimplePST();
+			}
+		catch (SequenceSpectrumException e)
+			{
+			logger.error("Error", e);
 			}
 		}
 
@@ -173,5 +156,21 @@ public class RonPSTNodeTest
 		trav.addUpstreamNode((byte) 'b');
 		trav.addUpstreamNode((byte) 'c');
 		trav.addUpstreamNode((byte) 'd');
+		}
+
+	@Test
+	public void updateLogProbsRecursiveWorks() throws SequenceSpectrumException
+		{
+		theNode.copyProbsFrom(new RonPSTTest.StubSequenceSpectrum());
+		theNode.updateLogProbsRecursive();
+		assert MathUtils.equalWithinFPError(theNode.getUpstreamNode((byte) 'a').getLogProbs()[0], -2.3025850929940455);
+		}
+
+	@Test
+	public void updateLogProbsWorks()
+		{
+		theNode.copyProbsFrom(new RonPSTTest.StubSequenceSpectrum());
+		theNode.updateLogProbs();
+		assert MathUtils.equalWithinFPError(theNode.getLogProbs()[0], -1.6094379124341003);
 		}
 	}

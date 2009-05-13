@@ -17,6 +17,13 @@ package edu.berkeley.compbio.ml.mcmc;
  */
 public interface DataCollector
 	{
+// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * Perform any summary computations and clean up resources, e.g. closing output streams and database connections.
+	 */
+	void close();
+
 	/**
 	 * Initialize this DataCollector.  May be automatically called by Spring, even if there are no explicit references to
 	 * it in the code.
@@ -24,9 +31,12 @@ public interface DataCollector
 	void init();
 
 	/**
-	 * Perform any summary computations and clean up resources, e.g. closing output streams and database connections.
+	 * Create and return a DataCollector that is a child of this one.
+	 *
+	 * @param name a String describing the child DataCollector that distinguishes it from other children
+	 * @return the newly created DataCollector
 	 */
-	void close();
+	DataCollector newSubCollector(String name);
 
 	/**
 	 * Append the given value to the named timecourse.  Note it's important to keep all timecourses in sync by calling this
@@ -46,12 +56,4 @@ public interface DataCollector
 	 * @param s the String to record
 	 */
 	void writeSample(String s);
-
-	/**
-	 * Create and return a DataCollector that is a child of this one.
-	 *
-	 * @param name a String describing the child DataCollector that distinguishes it from other children
-	 * @return the newly created DataCollector
-	 */
-	DataCollector newSubCollector(String name);
 	}

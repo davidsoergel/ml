@@ -50,7 +50,7 @@ import java.util.List;
 @PropertyConsumer
 public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(KneserNeyPSASmoother.class);
 
@@ -59,7 +59,7 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 	private double smoothFactorTimesFour;// = smoothFactor * 4;
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public KneserNeyPSASmoother()//String injectorId)//double smoothFactor)
 		{
@@ -67,10 +67,10 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 		//ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
 		}
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface DistributionProcessor ---------------------
+// --------------------- Interface DistributionProcessor ---------------------
 
 	public void process(RonPSA ronPSA)
 		{
@@ -118,7 +118,7 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 			}
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	public void init()
 		{

@@ -35,13 +35,29 @@ import java.util.Set;
 public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		extends AbstractBatchClusteringMethod<T, BatchCluster<T>> implements SupervisedClusteringMethod<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(MultiClassificationSVMAdapter.class);
+
+
+	ImmutableSvmParameter<BatchCluster<T>, T> param;
+
+	Map<T, BatchCluster<T>> examples = new HashMap<T, BatchCluster<T>>();
+	Map<T, Integer> exampleIds = new HashMap<T, Integer>();
+
+
+	Map<String, BatchCluster<T>> theClusterMap;
+
+	Map<String, MultiClassModel<BatchCluster<T>, T>> leaveOneOutModels;
 
 	private MultiClassificationSVM<BatchCluster<T>, T> svm;
 	private MultiClassModel<BatchCluster<T>, T> model;
 
 
 	private BinaryClassificationSVM<BatchCluster<T>, T> binarySvm;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	//public MultiClassificationSVMAdapter(@NotNull ImmutableSvmParameter<BatchCluster<T>, T> param)
 	//	{
@@ -57,20 +73,19 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		this.param = param;
 		}
 
+// --------------------- GETTER / SETTER METHODS ---------------------
+
 	public void setBinarySvm(BinaryClassificationSVM<BatchCluster<T>, T> binarySvm)
 		{
 		this.binarySvm = binarySvm;
 		}
 
+// ------------------------ INTERFACE METHODS ------------------------
 
-	ImmutableSvmParameter<BatchCluster<T>, T> param;
 
-	Map<T, BatchCluster<T>> examples = new HashMap<T, BatchCluster<T>>();
-	Map<T, Integer> exampleIds = new HashMap<T, Integer>();
-
+// --------------------- Interface BatchClusteringMethod ---------------------
 
 	public void addAll(Iterator<T> trainingIterator) //CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
-
 		{
 		//	Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
 
@@ -101,6 +116,38 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		logger.debug("Prepared " + c + " training samples");
 		}
 
+//	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
+//	                                   GenericFactory<T> prototypeFactory)
+//			throws GenericFactoryException, ClusterException
+//		{
+	// do nothing with the iterator or any of that
+	// assert initSamples == 0;
+//		}
+
+	public void createClusters()
+		{
+		// by analogy with BayesianClustering, take this opportunity to initialize the clusters
+
+		theClusterMap = new HashMap<String, BatchCluster<T>>(potentialTrainingBins.size());
+		int i = 0;
+		for (String label : potentialTrainingBins)
+			{
+			BatchCluster<T> cluster = theClusterMap.get(label);
+
+			if (cluster == null)
+				{
+				cluster = new BatchCluster<T>(i++);
+				theClusterMap.put(label, cluster);
+
+				// ** consider how best to store the test labels
+				HashWeightedSet<String> derivedLabelProbabilities = new HashWeightedSet<String>();
+				derivedLabelProbabilities.add(label, 1.);
+				derivedLabelProbabilities.incrementItems();
+				cluster.setDerivedLabelProbabilities(derivedLabelProbabilities);
+				}
+			}
+		theClusters = theClusterMap.values();
+		}
 
 /*	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
 	                  int trainingEpochs) throws IOException, ClusterException
@@ -143,43 +190,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 			}
 		}
 
-
-	Map<String, BatchCluster<T>> theClusterMap;
-
-//	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
-//	                                   GenericFactory<T> prototypeFactory)
-//			throws GenericFactoryException, ClusterException
-//		{
-	// do nothing with the iterator or any of that
-	// assert initSamples == 0;
-//		}
-
-	public void createClusters()
-		{
-		// by analogy with BayesianClustering, take this opportunity to initialize the clusters
-
-		theClusterMap = new HashMap<String, BatchCluster<T>>(potentialTrainingBins.size());
-		int i = 0;
-		for (String label : potentialTrainingBins)
-			{
-			BatchCluster<T> cluster = theClusterMap.get(label);
-
-			if (cluster == null)
-				{
-				cluster = new BatchCluster<T>(i++);
-				theClusterMap.put(label, cluster);
-
-				// ** consider how best to store the test labels
-				HashWeightedSet<String> derivedLabelProbabilities = new HashWeightedSet<String>();
-				derivedLabelProbabilities.add(label, 1.);
-				derivedLabelProbabilities.incrementItems();
-				cluster.setDerivedLabelProbabilities(derivedLabelProbabilities);
-				}
-			}
-		theClusters = theClusterMap.values();
-		}
-
-	Map<String, MultiClassModel<BatchCluster<T>, T>> leaveOneOutModels;
+// -------------------------- OTHER METHODS --------------------------
 
 	public ClusterMove<T, BatchCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{

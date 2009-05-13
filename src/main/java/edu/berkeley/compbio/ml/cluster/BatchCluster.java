@@ -11,26 +11,32 @@ import java.util.Set;
  */
 public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> implements Comparable<BatchCluster<T>>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	/**
 	 * The set of samples contained in this cluster.
 	 */
 	private Set<T> thePoints = new HashSet<T>();
 
 
-	public Set<T> getPoints()
-		{
-		return thePoints;
-		}
-
-	public int compareTo(BatchCluster<T> o)
-		{
-		return id - o.getId();
-		}
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public BatchCluster(int id)
 		{
 		super(id);
 		}
+
+// ------------------------ CANONICAL METHODS ------------------------
+
+	public String toString()
+		{
+		return "BatchCluster containing " + thePoints.size() + " points";
+		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Cluster ---------------------
 
 
 	/**
@@ -89,6 +95,15 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 		return false;
 		}
 
+// --------------------- Interface Comparable ---------------------
+
+	public int compareTo(BatchCluster<T> o)
+		{
+		return id - o.getId();
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
 	/**
 	 * drop the references to the training examples, but don't forget the label distribution
 	 */
@@ -97,9 +112,8 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 		thePoints = new HashSet<T>();
 		}
 
-
-	public String toString()
+	public Set<T> getPoints()
 		{
-		return "BatchCluster containing " + thePoints.size() + " points";
+		return thePoints;
 		}
 	}

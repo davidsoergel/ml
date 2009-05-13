@@ -56,6 +56,7 @@ import java.util.Set;
 
 public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T>
 	{
+// ------------------------------ FIELDS ------------------------------
 
 	//private DissimilarityMeasure<T> dissimilarityMeasure;
 	//private SymmetricPairwiseDistanceMatrix theActiveNodeDistanceMatrix = new SymmetricPairwiseDistanceMatrix();
@@ -66,6 +67,11 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	private Map<T, HierarchicalCentroidCluster<T>> sampleToLeafClusterMap =
 			new HashMap<T, HierarchicalCentroidCluster<T>>();
 
+	private int idCount = 0;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	//	private SortedSet<ClusterPair<T>> theClusterPairs;
 
 	public UPGMA(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
@@ -74,13 +80,186 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface BatchClusteringMethod ---------------------
+
+
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree()
+	public void addAll(Iterator<T> samples)
 		{
-		return theRoot;
+		//theClusters.addAll(samples);
+		//Iterator<? extends Clusterable<T>> i = samples.iterator();
+
+		if (theActiveNodeDistanceMatrix.numKeys() == 0)
+			{
+			HierarchicalCentroidCluster a = new HierarchicalCentroidCluster(idCount++, samples.next());
+			HierarchicalCentroidCluster b = new HierarchicalCentroidCluster(idCount++, samples.next());
+			//a.setN(1);
+			//b.setN(1);
+
+			addInitialPair(a, b);
+			}
+
+		while (samples.hasNext())
+			{
+			Clusterable<T> sample = samples.next();
+			HierarchicalCentroidCluster c = new HierarchicalCentroidCluster(idCount++, sample);
+			//c.setN(1);
+			addAndComputeDistances(c);
+			}
+		}
+
+	public void createClusters()
+		{
+		// do nothing
+		}
+
+/*
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory) throws IOException, ClusterException
+		{
+		addAll(trainingCollectionIteratorFactory.next());
+		train();
+		}
+*/
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void train()  // aka performClustering
+		{
+		n = theActiveNodeDistanceMatrix.numKeys();
+		HierarchicalCentroidCluster<T> composite = null;
+		while (theActiveNodeDistanceMatrix.numKeys() > 1)
+			{
+			// find shortest distance
+
+			//	NodePair<T> pair = theActiveNodeDistanceMatrix.getClosestPair();// the map is sorted by distance
+
+			Double distance = theActiveNodeDistanceMatrix.getSmallestValue() / 2;
+			HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
+			HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
+
+
+			// set the branch lengths
+
+			a.setLength(distance);
+			b.setLength(distance);
+
+
+			// create a composite node
+
+			composite = new HierarchicalCentroidCluster<T>(idCount++,
+			                                               null);  // don't bother storing explicit centroids for composite nodes
+			a.setParent(composite);
+			b.setParent(composite);
+
+			composite.addAll(a);
+			composite.addAll(b);
+
+			// weight and weightedLabels.getItemCount() are maybe redundant; too bad
+			composite.setWeight(a.getWeight() + b.getWeight());
+			//composite.setN(a.getN() + b.getN());
+
+			theClusters.add(composite);
+
+			// compute the distance from the composite node to each remaining cluster
+			for (HierarchicalCentroidCluster<T> node : new HashSet<HierarchicalCentroidCluster<T>>(
+					theActiveNodeDistanceMatrix.getActiveKeys()))
+				{
+				if (node == a || node == b)
+					{
+					continue;
+					}
+				distance = (a.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(a, node)
+						+ (b.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(b, node);
+				theActiveNodeDistanceMatrix.put(node, composite, distance);
+				}
+
+			// remove the two merged clusters from consideration
+
+			theActiveNodeDistanceMatrix.remove(a);
+			theActiveNodeDistanceMatrix.remove(b);
+
+			// add the composite node to the active list
+			// no longer needed; automatic
+			// theActiveNodeDistanceMatrix.add(composite);
+			}
+
+		theRoot = composite;//theActiveNodeDistanceMatrix.getActiveKeys().iterator().next();
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void addAllAndRemember(Iterator<T> samples)
+		{
+		//theClusters.addAll(samples);
+		//Iterator<? extends Clusterable<T>> i = samples.iterator();
+
+		if (theActiveNodeDistanceMatrix.numKeys() == 0)
+			{
+			final T sA = samples.next();
+			HierarchicalCentroidCluster<T> a = new HierarchicalCentroidCluster<T>(idCount++, sA);
+			sampleToLeafClusterMap.put(sA, a);
+
+			final T sB = samples.next();
+			HierarchicalCentroidCluster<T> b = new HierarchicalCentroidCluster<T>(idCount++, sB);
+			sampleToLeafClusterMap.put(sB, b);
+			//a.setN(1);
+			//b.setN(1);
+
+			addInitialPair(a, b);
+			}
+
+		while (samples.hasNext())
+			{
+			T sample = samples.next();
+			HierarchicalCentroidCluster<T> c = new HierarchicalCentroidCluster<T>(idCount++, sample);
+			sampleToLeafClusterMap.put(sample, c);
+			//c.setN(1);
+			addAndComputeDistances(c);
+			}
+		}
+
+	void addInitialPair(HierarchicalCentroidCluster<T> node1, HierarchicalCentroidCluster<T> node2)
+		{
+		theClusters.add(node1);
+		theClusters.add(node2);
+
+		Double d = measure.distanceFromTo(node1.getValue().getCentroid(), node2.getValue().getCentroid());
+		theActiveNodeDistanceMatrix.put(node1, node2, d);
+		}
+
+	/**
+	 * We can't add a single node when the matrix is empty, since it won't make any pairs and thus won't retain the node at
+	 * all.  Hence the addInitialPair business above.
+	 *
+	 * @param node
+	 */
+	void addAndComputeDistances(HierarchicalCentroidCluster<T> node)
+		{
+		theClusters.add(node);
+		Set<HierarchicalCentroidCluster<T>> activeNodes =
+				new HashSet(theActiveNodeDistanceMatrix.getActiveKeys());// avoid ConcurrentModificationException
+
+		/*	Double d = distanceMeasure.distanceFromTo(node.getValue().getCentroid(),
+																 node.getValue().getCentroid());// probably 0, but you never know
+					   NodePair<T> pair = getOrCreateNodePair(node, node);
+
+					   distanceToPair.put(d, pair);
+					   pairToDistance.put(pair, d);
+		   */
+		for (HierarchicalCentroidCluster<T> theActiveNode : activeNodes)
+			{
+			Double d = measure.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
+			theActiveNodeDistanceMatrix.put(node, theActiveNode, d);
+			}
 		}
 
 	/*public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
@@ -165,180 +344,12 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		return result;
 		}
 
-/*
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory) throws IOException, ClusterException
-		{
-		addAll(trainingCollectionIteratorFactory.next());
-		train();
-		}
-*/
-
 	/**
 	 * {@inheritDoc}
 	 */
-	public void train()  // aka performClustering
+	@Override
+	public LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree()
 		{
-		n = theActiveNodeDistanceMatrix.numKeys();
-		HierarchicalCentroidCluster<T> composite = null;
-		while (theActiveNodeDistanceMatrix.numKeys() > 1)
-			{
-			// find shortest distance
-
-			//	NodePair<T> pair = theActiveNodeDistanceMatrix.getClosestPair();// the map is sorted by distance
-
-			Double distance = theActiveNodeDistanceMatrix.getSmallestValue() / 2;
-			HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
-			HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
-
-
-			// set the branch lengths
-
-			a.setLength(distance);
-			b.setLength(distance);
-
-
-			// create a composite node
-
-			composite = new HierarchicalCentroidCluster<T>(idCount++,
-			                                               null);  // don't bother storing explicit centroids for composite nodes
-			a.setParent(composite);
-			b.setParent(composite);
-
-			composite.addAll(a);
-			composite.addAll(b);
-
-			// weight and weightedLabels.getItemCount() are maybe redundant; too bad
-			composite.setWeight(a.getWeight() + b.getWeight());
-			//composite.setN(a.getN() + b.getN());
-
-			theClusters.add(composite);
-
-			// compute the distance from the composite node to each remaining cluster
-			for (HierarchicalCentroidCluster<T> node : new HashSet<HierarchicalCentroidCluster<T>>(
-					theActiveNodeDistanceMatrix.getActiveKeys()))
-				{
-				if (node == a || node == b)
-					{
-					continue;
-					}
-				distance = (a.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(a, node)
-						+ (b.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(b, node);
-				theActiveNodeDistanceMatrix.put(node, composite, distance);
-				}
-
-			// remove the two merged clusters from consideration
-
-			theActiveNodeDistanceMatrix.remove(a);
-			theActiveNodeDistanceMatrix.remove(b);
-
-			// add the composite node to the active list
-			// no longer needed; automatic
-			// theActiveNodeDistanceMatrix.add(composite);
-			}
-
-		theRoot = composite;//theActiveNodeDistanceMatrix.getActiveKeys().iterator().next();
-		}
-
-	public void createClusters()
-		{
-		// do nothing
-		}
-
-	private int idCount = 0;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void addAll(Iterator<T> samples)
-		{
-		//theClusters.addAll(samples);
-		//Iterator<? extends Clusterable<T>> i = samples.iterator();
-
-		if (theActiveNodeDistanceMatrix.numKeys() == 0)
-			{
-			HierarchicalCentroidCluster a = new HierarchicalCentroidCluster(idCount++, samples.next());
-			HierarchicalCentroidCluster b = new HierarchicalCentroidCluster(idCount++, samples.next());
-			//a.setN(1);
-			//b.setN(1);
-
-			addInitialPair(a, b);
-			}
-
-		while (samples.hasNext())
-			{
-			Clusterable<T> sample = samples.next();
-			HierarchicalCentroidCluster c = new HierarchicalCentroidCluster(idCount++, sample);
-			//c.setN(1);
-			addAndComputeDistances(c);
-			}
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void addAllAndRemember(Iterator<T> samples)
-		{
-		//theClusters.addAll(samples);
-		//Iterator<? extends Clusterable<T>> i = samples.iterator();
-
-		if (theActiveNodeDistanceMatrix.numKeys() == 0)
-			{
-			final T sA = samples.next();
-			HierarchicalCentroidCluster<T> a = new HierarchicalCentroidCluster<T>(idCount++, sA);
-			sampleToLeafClusterMap.put(sA, a);
-
-			final T sB = samples.next();
-			HierarchicalCentroidCluster<T> b = new HierarchicalCentroidCluster<T>(idCount++, sB);
-			sampleToLeafClusterMap.put(sB, b);
-			//a.setN(1);
-			//b.setN(1);
-
-			addInitialPair(a, b);
-			}
-
-		while (samples.hasNext())
-			{
-			T sample = samples.next();
-			HierarchicalCentroidCluster<T> c = new HierarchicalCentroidCluster<T>(idCount++, sample);
-			sampleToLeafClusterMap.put(sample, c);
-			//c.setN(1);
-			addAndComputeDistances(c);
-			}
-		}
-
-
-	void addInitialPair(HierarchicalCentroidCluster<T> node1, HierarchicalCentroidCluster<T> node2)
-		{
-		theClusters.add(node1);
-		theClusters.add(node2);
-
-		Double d = measure.distanceFromTo(node1.getValue().getCentroid(), node2.getValue().getCentroid());
-		theActiveNodeDistanceMatrix.put(node1, node2, d);
-		}
-
-	/**
-	 * We can't add a single node when the matrix is empty, since it won't make any pairs and thus won't retain the node at
-	 * all.  Hence the addInitialPair business above.
-	 *
-	 * @param node
-	 */
-	void addAndComputeDistances(HierarchicalCentroidCluster<T> node)
-		{
-		theClusters.add(node);
-		Set<HierarchicalCentroidCluster<T>> activeNodes =
-				new HashSet(theActiveNodeDistanceMatrix.getActiveKeys());// avoid ConcurrentModificationException
-
-		/*	Double d = distanceMeasure.distanceFromTo(node.getValue().getCentroid(),
-																 node.getValue().getCentroid());// probably 0, but you never know
-					   NodePair<T> pair = getOrCreateNodePair(node, node);
-
-					   distanceToPair.put(d, pair);
-					   pairToDistance.put(pair, d);
-		   */
-		for (HierarchicalCentroidCluster<T> theActiveNode : activeNodes)
-			{
-			Double d = measure.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
-			theActiveNodeDistanceMatrix.put(node, theActiveNode, d);
-			}
+		return theRoot;
 		}
 	}

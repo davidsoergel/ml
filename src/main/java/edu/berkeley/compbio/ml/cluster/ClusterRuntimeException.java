@@ -44,12 +44,12 @@ import org.apache.log4j.Logger;
  */
 public class ClusterRuntimeException extends ChainedRuntimeException
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(ClusterException.class);
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public ClusterRuntimeException(String s)
 		{

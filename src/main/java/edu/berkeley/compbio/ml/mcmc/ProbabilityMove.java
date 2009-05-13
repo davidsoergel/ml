@@ -49,7 +49,7 @@ package edu.berkeley.compbio.ml.mcmc;
  */
 public interface ProbabilityMove<T extends MonteCarloState>
 	{
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	//abstract T doMove();
 

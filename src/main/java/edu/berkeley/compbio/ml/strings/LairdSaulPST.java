@@ -43,7 +43,7 @@ import java.io.Reader;
 
 public class LairdSaulPST
 	{
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public LairdSaulPST(Reader in)
 		{

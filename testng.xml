@@ -33,20 +33,20 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="ml" verbose="1" parallel="false" thread-count="1">
-	<test name="ml">
-		<packages>
-			<package name="edu.berkeley.compbio.ml"/>
-			<package name="edu.berkeley.compbio.ml.cluster"/>
+    <test name="ml">
+        <packages>
+            <package name="edu.berkeley.compbio.ml"/>
+            <package name="edu.berkeley.compbio.ml.cluster"/>
             <package name="edu.berkeley.compbio.ml.cluster.hierarchical"/>
             <package name="edu.berkeley.compbio.ml.cluster.kmeans"/>
             <package name="edu.berkeley.compbio.ml.cluster.kohonen"/>
-			<package name="edu.berkeley.compbio.ml.distancemeasure"/>
-			<package name="edu.berkeley.compbio.ml.mcmc"/>
-		</packages>
-		<classes>
-			<class name="edu.berkeley.compbio.ml.strings.MarkovTreeNodeTest"/>
-			<class name="edu.berkeley.compbio.ml.strings.RonPSTNodeTest"/>
-			<class name="edu.berkeley.compbio.ml.strings.RonPSTTest"/>
-		</classes>
-	</test>
+            <package name="edu.berkeley.compbio.ml.distancemeasure"/>
+            <package name="edu.berkeley.compbio.ml.mcmc"/>
+        </packages>
+        <classes>
+            <class name="edu.berkeley.compbio.ml.strings.MarkovTreeNodeTest"/>
+            <class name="edu.berkeley.compbio.ml.strings.RonPSTNodeTest"/>
+            <class name="edu.berkeley.compbio.ml.strings.RonPSTTest"/>
+        </classes>
+    </test>
 </suite>

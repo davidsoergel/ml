@@ -48,11 +48,10 @@ import java.io.IOException;
  */
 public interface KcountScanner extends SequenceSpectrumScanner
 	{
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface SequenceSpectrumScanner ---------------------
-
+// --------------------- Interface SequenceSpectrumScanner ---------------------
 
 	/**
 	 * {@inheritDoc}

@@ -8,11 +8,12 @@ import com.davidsoergel.dsutils.CollectionIteratorFactory;
  */
 public interface OnlineClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
 	/**
 	 * Create some initial clusters using the first few training samples.
 	 */
 	// void initializeWithRealData(Iterator<T> trainingIterator, GenericFactory<T> prototypeFactory) throws GenericFactoryException;
-
 	/**
 	 * Adds a point to the best cluster.  Generally it's not a good idea to store the point itself in the cluster for
 	 * memory reasons; so this method is primarily useful for updating the position of the centroid.

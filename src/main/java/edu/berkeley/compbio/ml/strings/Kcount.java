@@ -43,21 +43,20 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		implements AdditiveClusterable<T>, SequenceSpectrum<T>, DiscreteDistribution1D
 	{
-	// ------------------------------ FIELDS ------------------------------
-
-	protected int k;
-	protected int numberOfBins;
+// ------------------------------ FIELDS ------------------------------
 
 	protected static final double UNKNOWN_SUM_OF_COUNTS = -1;
 
 	protected static final int UNKNOWN_NUMBER_OF_SAMPLES = -1;
+	protected int k;
+	protected int numberOfBins;
 
 	//protected int numberOfSamples = UNKNOWN_NUMBER_OF_SAMPLES;
 
 	protected int originalSequenceLength = 0; // = UNKNOWN_LENGTH;
 
 
-	// --------------------- GETTER / SETTER METHODS ---------------------
+// --------------------- GETTER / SETTER METHODS ---------------------
 
 	/**
 	 * Returns the pattern length K that this Kcount handles (i.e. the number of symbols per word being counted)
@@ -67,6 +66,17 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	public int getK()
 		{
 		return k;
+		}
+
+	/**
+	 * Returns the number of bins, which is the number of possible patterns in this Kcount.  Typically this will the
+	 * alphabet size to the power of K.  Assuming a straightforward implementation, this will equal getCounts().size().
+	 *
+	 * @return The number of bins
+	 */
+	public int getNumberOfBins()
+		{
+		return numberOfBins;
 		}
 
 	/**
@@ -82,21 +92,10 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		return originalSequenceLength;
 		}
 
-	/**
-	 * Returns the number of bins, which is the number of possible patterns in this Kcount.  Typically this will the
-	 * alphabet size to the power of K.  Assuming a straightforward implementation, this will equal getCounts().size().
-	 *
-	 * @return The number of bins
-	 */
-	public int getNumberOfBins()
-		{
-		return numberOfBins;
-		}
-
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface AdditiveClusterable ---------------------
+// --------------------- Interface AdditiveClusterable ---------------------
 
 	/**
 	 * updates this object by subtracting another one from it.
@@ -140,7 +139,16 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 		return result;
 		}
 
-	// --------------------- Interface SequenceSpectrum ---------------------
+// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * Adds an "unknown" sample to this kcount, indicating that a character was consumed without incrementing any counter.
+	 */
+	public void addUnknown()
+		{
+		//metadata.length++;//incrementLength();
+		originalSequenceLength++;
+		}
 
 	/**
 	 * Returns the number of real samples on which this Kcount is based, not including pseudocounts.
@@ -158,17 +166,6 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	 * on different levels of a Kcount due to lastwords.
 	 */
 	public abstract double getSumOfCounts();
-
-	// -------------------------- OTHER METHODS --------------------------
-
-	/**
-	 * Adds an "unknown" sample to this kcount, indicating that a character was consumed without incrementing any counter.
-	 */
-	public void addUnknown()
-		{
-		//metadata.length++;//incrementLength();
-		originalSequenceLength++;
-		}
 
 	@Override
 	public boolean hasParent()

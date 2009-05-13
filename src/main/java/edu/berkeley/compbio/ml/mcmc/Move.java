@@ -38,12 +38,12 @@ package edu.berkeley.compbio.ml.mcmc;
  */
 public abstract class Move//<T extends MonteCarloState>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static ThreadLocal type_tl;
 
 
-	// -------------------------- STATIC METHODS --------------------------
+// -------------------------- STATIC METHODS --------------------------
 
 	public static void setType(int t)
 		{
@@ -51,7 +51,7 @@ public abstract class Move//<T extends MonteCarloState>
 		type_tl.set(Integer.valueOf(t));
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	public int getType()
 		{

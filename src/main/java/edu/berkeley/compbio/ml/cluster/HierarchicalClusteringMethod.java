@@ -57,7 +57,7 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 		extends AbstractBatchClusteringMethod<T, CentroidCluster<T>>
 		implements SemisupervisedClusteringMethod<T>, CentroidClusteringMethod<T>
 	{
-
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	protected HierarchicalClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                       Set<String> predictLabels, Set<String> leaveOneOutLabels,
@@ -66,23 +66,21 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
-	/**
-	 * Returns a LengthWeightHierarchyNode representing the root of the computed clustering tree.  Only valid after
-	 * performClustering() has been run.
-	 *
-	 * @return a LengthWeightHierarchyNode representing the root of the computed clustering tree, or null if the clustering
-	 *         procedure has not been performed yet.
-	 */
-	public abstract LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree();
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface CentroidClusteringMethod ---------------------
+
+
+	@Override
+	public String shortClusteringStats()
+		{
+		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		}
 
 	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
 		{
 		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
-		}
-
-	public void writeClusteringStatsToStream(OutputStream outf)
-		{
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
 		}
 
 	@Override
@@ -93,9 +91,19 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 		return b.toString();
 		}
 
-	@Override
-	public String shortClusteringStats()
+	public void writeClusteringStatsToStream(OutputStream outf)
 		{
-		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
 		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * Returns a LengthWeightHierarchyNode representing the root of the computed clustering tree.  Only valid after
+	 * performClustering() has been run.
+	 *
+	 * @return a LengthWeightHierarchyNode representing the root of the computed clustering tree, or null if the clustering
+	 *         procedure has not been performed yet.
+	 */
+	public abstract LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree();
 	}

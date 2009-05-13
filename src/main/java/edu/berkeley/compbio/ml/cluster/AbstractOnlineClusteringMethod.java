@@ -52,9 +52,12 @@ import java.util.Set;
 public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
 		extends AbstractClusteringMethod<T, C> implements OnlineClusteringMethod<T> //, CentroidClusteringMethod<T>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(AbstractOnlineClusteringMethod.class);
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public AbstractOnlineClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                      Set<String> predictLabels, Set<String> leaveOneOutLabels,
@@ -62,16 +65,14 @@ public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C
 		{
 		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface OnlineClusteringMethod ---------------------
+
 	//private Iterator<T> theDataPointProvider;
-
-
-	// --------------------- GETTER / SETTER METHODS ---------------------
-
-	// -------------------------- OTHER METHODS --------------------------
-
 	//public static <T extends AdditiveClusterable<T>> Cluster<T> bestCluster(List<Cluster<T>> theClusters, T p)
-
-
 	/*
 	   */
 
@@ -96,6 +97,7 @@ public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C
 		normalizeClusterLabelProbabilities();
 		}
 
+// -------------------------- OTHER METHODS --------------------------
 
 	protected boolean trainOneIteration(
 			CollectionIteratorFactory<T> trainingCollectionIteratorFactory) //, List<Double> secondBestDistances
@@ -153,7 +155,6 @@ public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C
 		return changed == 0;
 		}
 
-
 	/*public OnlineClustering(Iterator<T> vp)
 		 {
 		 theDataPointProvider = vp;
@@ -189,8 +190,5 @@ public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C
 //	public abstract void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
 //	                                            GenericFactory<T> prototypeFactory)
 //			throws GenericFactoryException, ClusterException;
-
-	// -------------------------- INNER CLASSES --------------------------
-
 	//public abstract void createClusters(T sequenceFragment);
 	}

@@ -12,8 +12,10 @@ import java.util.Set;
  */
 public interface ClusteringMethod<T extends Clusterable<T>> extends ClusterSet<T>
 	{
-	ClusteringTestResults test(Iterator<T> theTestIterator, final DissimilarityMeasure<String> intraLabelDistances)
-			throws DistributionException, ClusterException;
+// -------------------------- OTHER METHODS --------------------------
 
 	String bestLabel(T sample, Set<String> predictLabels) throws NoGoodClusterException;
+
+	ClusteringTestResults test(Iterator<T> theTestIterator, final DissimilarityMeasure<String> intraLabelDistances)
+			throws DistributionException, ClusterException;
 	}

@@ -52,12 +52,30 @@ import com.davidsoergel.stats.DistributionException;
  */
 public interface CentroidCluster<T extends Clusterable<T>> extends Cluster<T>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * Increments the sum of square distances.  Note there can be no online method of updating the sum of squares, because
+	 * the centroid keeps moving
+	 */
+	void addToSumOfSquareDistances(double v);
+
 	/**
 	 * Returns the centroid
 	 *
 	 * @return the centroid
 	 */
 	T getCentroid();
+
+	/**
+	 * Returns the standard deviation of the distances from each sample to the centroid, if this has already been computed.
+	 * Can be used as a (crude?) measure of clusteredness, in combination with the distances between the cluster centroids
+	 * themselves.  May return an obsolete value if the cluster centroid or members have been altered since the standard
+	 * deviation was computed.
+	 *
+	 * @return the standard deviation of the distances from each sample to the centroid
+	 */
+	double getStdDev();
 
 	/**
 	 * Sets the centroid
@@ -122,22 +140,6 @@ public interface CentroidCluster<T extends Clusterable<T>> extends Cluster<T>
 	 * @param i the sumOfSquareDistances
 	 */
 	void setSumOfSquareDistances(double i);
-
-	/**
-	 * Increments the sum of square distances.  Note there can be no online method of updating the sum of squares, because
-	 * the centroid keeps moving
-	 */
-	void addToSumOfSquareDistances(double v);
-
-	/**
-	 * Returns the standard deviation of the distances from each sample to the centroid, if this has already been computed.
-	 * Can be used as a (crude?) measure of clusteredness, in combination with the distances between the cluster centroids
-	 * themselves.  May return an obsolete value if the cluster centroid or members have been altered since the standard
-	 * deviation was computed.
-	 *
-	 * @return the standard deviation of the distances from each sample to the centroid
-	 */
-	double getStdDev();
 
 	//	String getDominantLabelInSet(Set<String> mutuallyExclusiveLabels);
 	}

@@ -47,7 +47,7 @@ import java.util.Set;
  */
 public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends AdditiveCentroidCluster<T>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(BatchAdditiveCentroidCluster.class);
 
@@ -57,12 +57,7 @@ public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> exte
 	private Set<T> thePoints = new HashSet<T>();
 
 
-	public Set<T> getPoints()
-		{
-		return thePoints;
-		}
-
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * Constructs a new Cluster with the given DistanceMeasure and centroid.  Note the centroid may be modified in the
@@ -75,6 +70,28 @@ public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> exte
 		{
 		super(id, centroid);
 		}
+
+// ------------------------ CANONICAL METHODS ------------------------
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+		{
+		StringBuffer sb = new StringBuffer("\nCluster:");
+		sb.append(" ").append(centroid).append("\n");
+		for (T t : thePoints)
+			{
+			sb.append(" ").append(t).append("\n");
+			}
+		return sb.toString();
+		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Cluster ---------------------
 
 	/*	public boolean recalculateCentroid() throws ClusterException
 		 {
@@ -153,18 +170,10 @@ public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> exte
 		return false;
 		}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString()
+// -------------------------- OTHER METHODS --------------------------
+
+	public Set<T> getPoints()
 		{
-		StringBuffer sb = new StringBuffer("\nCluster:");
-		sb.append(" ").append(centroid).append("\n");
-		for (T t : thePoints)
-			{
-			sb.append(" ").append(t).append("\n");
-			}
-		return sb.toString();
+		return thePoints;
 		}
 	}

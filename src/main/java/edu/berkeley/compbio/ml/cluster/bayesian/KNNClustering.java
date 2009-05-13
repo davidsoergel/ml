@@ -55,7 +55,7 @@ import java.util.Set;
 public class KNNClustering<T extends AdditiveClusterable<T>>
 		extends MultiNeighborClustering<T> //OnlineClusteringMethod<T, CentroidCluster<T>>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(KNNClustering.class);
 
@@ -63,6 +63,10 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	private double distanceTieThresholdRatio;
 	private double voteTieThresholdRatio;
 	private SimpleFunction function = null;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	//	private double decompositionDistanceThreshold;
 
 	/**
@@ -84,6 +88,27 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		this.voteTieThresholdRatio = voteTieThresholdRatio;
 		this.distanceTieThresholdRatio = distanceTieThresholdRatio;
 		this.function = function;
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * allow an overriding clustering method to tweak the distances, set vote weights, etc.
+	 *
+	 * @param cluster
+	 * @param distance
+	 * @return
+	 */
+	protected ClusterMove<T, CentroidCluster<T>> makeClusterMove(CentroidCluster<T> cluster, double distance)
+		{
+		ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
+		cm.bestCluster = cluster;
+		cm.bestDistance = distance;
+		if (function != null)
+			{
+			cm.voteWeight = function.f(distance);
+			}
+		return cm;
 		}
 
 	//** clean up code redundancy etc.
@@ -270,7 +295,6 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				}
 			else
 				{
-
 				// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
 				if (!populatedTrainingLabels.contains(broadActualLabel))
 					{
@@ -326,24 +350,5 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 		tr.addResult(broadWrongness, detailedWrongness, bestWeightedDistance, secondToBestDistanceRatio, 0,
 		             voteProportion, secondToBestVoteRatio);
-		}
-
-	/**
-	 * allow an overriding clustering method to tweak the distances, set vote weights, etc.
-	 *
-	 * @param cluster
-	 * @param distance
-	 * @return
-	 */
-	protected ClusterMove<T, CentroidCluster<T>> makeClusterMove(CentroidCluster<T> cluster, double distance)
-		{
-		ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
-		cm.bestCluster = cluster;
-		cm.bestDistance = distance;
-		if (function != null)
-			{
-			cm.voteWeight = function.f(distance);
-			}
-		return cm;
 		}
 	}

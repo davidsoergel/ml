@@ -54,14 +54,24 @@ import java.util.Set;
 public class NeighborhoodCollectingLabelDiffuser<T extends AdditiveClusterable<T>, C extends CentroidCluster<T>>
 		implements LabelDiffuser<T, C>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(NeighborhoodCollectingLabelDiffuser.class);
 	int requiredLabels;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public NeighborhoodCollectingLabelDiffuser(int requiredLabels) //, double labelRetainThreshold)
 		{
 		this.requiredLabels = requiredLabels;
 //		this.labelRetainThreshold = labelRetainThreshold;
 		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface LabelDiffuser ---------------------
 
 	/**
 	 * {@inheritDoc}

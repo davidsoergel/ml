@@ -61,16 +61,15 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 		implements SemisupervisedClusteringMethod<T>, CentroidClusteringMethod<T>,
 		           SampleInitializedOnlineClusteringMethod<T>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(KmeansClustering.class);
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	//private DistanceMeasure<T> distanceMeasure;
-
-
-	// --------------------------- CONSTRUCTORS ---------------------------
-
 	//private int k;
-
 
 	public KmeansClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
 	                        Set<String> leaveOneOutLabels, Set<String> testLabels)
@@ -78,29 +77,43 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
+// ------------------------ INTERFACE METHODS ------------------------
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void initializeWithSamples(Iterator<T> trainingIterator,
-	                                  int initsamples) //, GenericFactory<T> prototypeFactory)
-		//	throws GenericFactoryException
+
+// --------------------- Interface CentroidClusteringMethod ---------------------
+
+
+	@Override
+	public String shortClusteringStats()
 		{
-
-		for (int i = 0; i < initsamples; i++)
-			{
-			// initialize the clusters with the first k points
-
-			AbstractCentroidCluster<T> c = new AdditiveCentroidCluster<T>(i, trainingIterator.next());
-			//c.setId(i);
-
-			theClusters.add(c);
-			}
-		logger.debug("initialized " + initsamples + " clusters");
+		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+	/*	public void addAndRecenter(T p)
+	   {
+	   assert p != null;
+	   bestCluster(theClusters, p).addAndRecenter(p);  // this will automatically recalculate the centroid, etc.
+	   }*/
 
+	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+		{
+		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
+		}
+
+	@Override
+	public String clusteringStats()
+		{
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
+		return b.toString();
+		}
+
+	public void writeClusteringStatsToStream(OutputStream outf)
+		{
+		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		}
+
+// --------------------- Interface OnlineClusteringMethod ---------------------
 
 	public boolean add(T p)
 		{
@@ -124,6 +137,29 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 			}
 		return false;
 		}
+
+// --------------------- Interface SampleInitializedOnlineClusteringMethod ---------------------
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void initializeWithSamples(Iterator<T> trainingIterator,
+	                                  int initsamples) //, GenericFactory<T> prototypeFactory)
+		//	throws GenericFactoryException
+		{
+		for (int i = 0; i < initsamples; i++)
+			{
+			// initialize the clusters with the first k points
+
+			AbstractCentroidCluster<T> c = new AdditiveCentroidCluster<T>(i, trainingIterator.next());
+			//c.setId(i);
+
+			theClusters.add(c);
+			}
+		logger.debug("initialized " + initsamples + " clusters");
+		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * {@inheritDoc}
@@ -181,35 +217,5 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 			//assert false;
 			}
 		return result;
-		}
-
-	/*	public void addAndRecenter(T p)
-	   {
-	   assert p != null;
-	   bestCluster(theClusters, p).addAndRecenter(p);  // this will automatically recalculate the centroid, etc.
-	   }*/
-
-	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
-		{
-		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
-		}
-
-	public void writeClusteringStatsToStream(OutputStream outf)
-		{
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
-		}
-
-	@Override
-	public String clusteringStats()
-		{
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
-		return b.toString();
-		}
-
-	@Override
-	public String shortClusteringStats()
-		{
-		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
 		}
 	}

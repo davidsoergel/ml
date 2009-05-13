@@ -51,7 +51,7 @@ import java.util.List;
 
 public interface FirstWordProvider
 	{
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Returns a list of all the initial words of length k that are associated with this object.  A single sequence has

@@ -45,7 +45,7 @@ package edu.berkeley.compbio.ml.cluster;
  */
 public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clusterable<T>
 	{
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * updates this object by subtracting another one from it.
@@ -55,11 +55,31 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 	void decrementBy(T point);
 
 	/**
+	 * Updates this object by subtracting another one from it in a weighted manner.  Usually equivalent to
+	 * decrementBy(point.times(motionFactor)).
+	 *
+	 * @param point        the object to subtract from this one
+	 * @param motionFactor the strength of the desired effect in arbitrary units (in many implementations, this will likely
+	 *                     be between 0 and 1)
+	 */
+	void decrementByWeighted(T point, double motionFactor);
+
+	/**
 	 * updates this object by adding another one to it.
 	 *
 	 * @param point the object to add to this one
 	 */
 	void incrementBy(T point);
+
+	/**
+	 * Updates this object by adding another one to it in a weighted manner.  Usually equivalent to
+	 * incrementBy(point.times(motionFactor)).
+	 *
+	 * @param point        the object to add to this one
+	 * @param motionFactor the strength of the desired effect in arbitrary units (in many implementations, this will likely
+	 *                     be between 0 and 1)
+	 */
+	void incrementByWeighted(T point, double motionFactor);
 
 	/**
 	 * Returns a new object representing the difference between this one and the given argument.
@@ -68,6 +88,13 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 	 * @return the difference between this object and the argument
 	 */
 	T minus(T point);
+
+	/**
+	 * Multiply this object by the given scalar in place.
+	 *
+	 * @param v the scalar multiplier
+	 */
+	void multiplyBy(double v);
 
 	/**
 	 * Returns a new object representing the sum of this one and the given argument.
@@ -84,33 +111,6 @@ public interface AdditiveClusterable<T extends AdditiveClusterable> extends Clus
 	 * @return the product of this object and the argument
 	 */
 	T times(double v);
-
-	/**
-	 * Multiply this object by the given scalar in place.
-	 *
-	 * @param v the scalar multiplier
-	 */
-	void multiplyBy(double v);
-
-	/**
-	 * Updates this object by adding another one to it in a weighted manner.  Usually equivalent to
-	 * incrementBy(point.times(motionFactor)).
-	 *
-	 * @param point        the object to add to this one
-	 * @param motionFactor the strength of the desired effect in arbitrary units (in many implementations, this will likely
-	 *                     be between 0 and 1)
-	 */
-	void incrementByWeighted(T point, double motionFactor);
-
-	/**
-	 * Updates this object by subtracting another one from it in a weighted manner.  Usually equivalent to
-	 * decrementBy(point.times(motionFactor)).
-	 *
-	 * @param point        the object to subtract from this one
-	 * @param motionFactor the strength of the desired effect in arbitrary units (in many implementations, this will likely
-	 *                     be between 0 and 1)
-	 */
-	void decrementByWeighted(T point, double motionFactor);
 
 
 	//public T weightedAverage(T object, double weight);

@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
  */
 public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(MetropolisCoupledSwapMove.class);
 
@@ -54,7 +54,7 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 	private int swap1, swap2;
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public MetropolisCoupledSwapMove(ChainList cl)
 		{
@@ -84,10 +84,10 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 				while (swap2 == swap1);*/
 		}
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface ProbabilityMove ---------------------
+// --------------------- Interface ProbabilityMove ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -99,8 +99,9 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 			MonteCarlo mc1 = chains.get(swap1);
 			MonteCarlo mc2 = chains.get(swap2);
 
-			logger.debug("SWAPPING CHAINS " + swap1 + " (" + mc1.getHeatFactor() + ") " + swap2 + " ("
-					+ mc2.getHeatFactor() + ") ");
+			logger.debug(
+					"SWAPPING CHAINS " + swap1 + " (" + mc1.getHeatFactor() + ") " + swap2 + " (" + mc2.getHeatFactor()
+							+ ") ");
 			double temp = mc1.getHeatFactor();
 			mc1.setHeatFactor(mc2.getHeatFactor());
 			mc2.setHeatFactor(temp);
@@ -124,7 +125,7 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 		return chains;
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	private boolean isAccepted()
 		{
@@ -161,5 +162,3 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 		return Math.log(MersenneTwisterFast.random()) < swapLogLikelihoodRatio;
 		}
 	}
-
-

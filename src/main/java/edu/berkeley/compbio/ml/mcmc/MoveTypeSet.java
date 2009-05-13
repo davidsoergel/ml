@@ -52,12 +52,11 @@ import java.util.Collection;
 @PropertyConsumer
 public class MoveTypeSet//<T extends MonteCarloState>
 	{
-	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.Move {edu.berkeley.compbio.ml.mcmc.mcmcmc}")
-	public PluginMap<Double> pluginMap;
-
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(MoveTypeSet.class);
+	@Property(defaultvalue = "edu.berkeley.compbio.ml.mcmc.Move {edu.berkeley.compbio.ml.mcmc.mcmcmc}")
+	public PluginMap<Double> pluginMap;
 
 	//	private static ThreadLocal<HashMap<Object, MoveTypeSet>> _instance_tl =
 	//			new ThreadLocal<HashMap<Object, MoveTypeSet>>();
@@ -72,6 +71,19 @@ public class MoveTypeSet//<T extends MonteCarloState>
 	//	Map<Class<Move>, Double> moveProbabilities;// = new PluginMap;
 
 	private Multinomial<GenericFactory<Move>> types = new Multinomial<GenericFactory<Move>>();
+
+
+// -------------------------- OTHER METHODS --------------------------
+
+	/*	public int size()
+	   {
+	   return numTypes;//types.size();
+	   }*/
+
+	public Collection<GenericFactory<Move>> getFactories()
+		{
+		return types.getElements();
+		}
 
 	//	private Class[] setTypeArgTypes = {int.class};
 
@@ -196,15 +208,5 @@ public class MoveTypeSet//<T extends MonteCarloState>
 			logger.error("Error", e);
 			throw new Error(e);
 			}
-		}
-
-	/*	public int size()
-	   {
-	   return numTypes;//types.size();
-	   }*/
-
-	public Collection<GenericFactory<Move>> getFactories()
-		{
-		return types.getElements();
 		}
 	}

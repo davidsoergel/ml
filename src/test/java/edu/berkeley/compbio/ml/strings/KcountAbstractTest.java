@@ -48,20 +48,20 @@ import java.util.Arrays;
 
 public class KcountAbstractTest<T extends Kcount> extends AtomicContractTest
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	//public abstract Kcount createInstance() throws Exception;
 	private TestInstanceFactory<T> tif;
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public KcountAbstractTest(TestInstanceFactory<T> tif)
 		{
 		this.tif = tif;
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	@Test
 	public void addUnknownIncrementsLength() throws Exception

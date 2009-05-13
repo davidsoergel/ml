@@ -45,12 +45,19 @@ import java.util.Queue;
 public class DoubleKcountAbstractTest<T extends DoubleKcount>
 		extends ContractTestAwareContractTest<Kcount>//implements TestInstanceFactory<Kcount>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	protected TestInstanceFactory<T> tif;
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public DoubleKcountAbstractTest(TestInstanceFactory<T> tif)
 		{
 		this.tif = tif;
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * {@inheritDoc}

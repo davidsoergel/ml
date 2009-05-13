@@ -22,10 +22,14 @@ import java.util.Set;
  */
 public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeighborClustering<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(TacoaClustering.class);
 
 	private double bestScoreRatioThreshold;
 
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * @param dm The distance measure to use
@@ -40,6 +44,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		      maxNeighbors);
 		this.bestScoreRatioThreshold = bestScoreRatioThreshold;
 		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	protected Set<String> findPopulatedTrainingLabels(ClusteringTestResults tr) throws DistributionException
 		{
@@ -63,6 +69,24 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			priors.put(theCluster, labelPriors.get(label));
 			}
 		return populatedTrainingLabels.elementSet();
+		}
+
+	/**
+	 * allow an overriding clustering method to tweak the distances, set vote weights, etc.
+	 *
+	 * @param cluster
+	 * @param distance
+	 * @return
+	 */
+	protected ClusterMove<T, CentroidCluster<T>> makeClusterMove(CentroidCluster<T> cluster, double distance)
+		{
+		ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
+		cm.bestCluster = cluster;
+		cm.voteWeight = distance;
+
+		// ** hack: monotonic positive inversion to a distance-like metric (smaller better)
+		cm.bestDistance = 1.0 / distance;
+		return cm;
 		}
 
 	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
@@ -181,23 +205,6 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		             secondToBestVoteRatio);
 		}
 
-	/**
-	 * allow an overriding clustering method to tweak the distances, set vote weights, etc.
-	 *
-	 * @param cluster
-	 * @param distance
-	 * @return
-	 */
-	protected ClusterMove<T, CentroidCluster<T>> makeClusterMove(CentroidCluster<T> cluster, double distance)
-		{
-		ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
-		cm.bestCluster = cluster;
-		cm.voteWeight = distance;
-
-		// ** hack: monotonic positive inversion to a distance-like metric (smaller better)
-		cm.bestDistance = 1.0 / distance;
-		return cm;
-		}
 /*
 	private VotingResults addUpNeighborVotes(TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves, Set<String> populatedTrainingLabels)
 		{

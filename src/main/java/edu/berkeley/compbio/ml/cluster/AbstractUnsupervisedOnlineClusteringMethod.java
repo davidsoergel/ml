@@ -13,7 +13,12 @@ import java.util.Set;
 public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
 		extends AbstractOnlineClusteringMethod<T, C> implements UnsupervisedClusteringMethod<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(AbstractUnsupervisedOnlineClusteringMethod.class);
+
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	protected AbstractUnsupervisedOnlineClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                                     Set<String> predictLabels, Set<String> leaveOneOutLabels,
@@ -22,6 +27,10 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface OnlineClusteringMethod ---------------------
 
 	/**
 	 * consider each of the incoming data points exactly once per iteration.  Note iterations > 1 only makes sense for

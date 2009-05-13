@@ -50,107 +50,23 @@ import java.util.Iterator;
 public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends BasicPhylogenyNode<CentroidCluster<T>>
 		implements CentroidCluster<T>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	public HierarchicalCentroidCluster(int id, Clusterable<T> sample)
 		{
 		super(new BasicCentroidCluster(id, sample));
 		setWeight(1.);
 		}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public T getCentroid()
-		{
-		return getValue().getCentroid();
-		}
+// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setCentroid(T centroid)
+	@Override
+	public HierarchicalCentroidCluster<T> clone()
 		{
-		getValue().setCentroid(centroid);
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public int getId()
-		{
-		return getValue().getId();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setId(int id)
-		{
-		getValue().setId(id);
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public int getN()
-		{
-		return getValue().getN();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean add(T point)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean remove(T point)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean addAll(Cluster<T> point)
-		{
-		return getValue().addAll(point);
-		//throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean removeAll(Cluster<T> point)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setSumOfSquareDistances(double i)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void addToSumOfSquareDistances(double v)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public double getStdDev()
-		{
-		throw new NotImplementedException();
+		return (HierarchicalCentroidCluster<T>) super.clone();
 		}
 
 	/**
@@ -173,13 +89,70 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		return f.out().toString();
 		}
 
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface CentroidCluster ---------------------
+
+
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public HierarchicalCentroidCluster<T> clone()
+	public void addToSumOfSquareDistances(double v)
 		{
-		return (HierarchicalCentroidCluster<T>) super.clone();
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public T getCentroid()
+		{
+		return getValue().getCentroid();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public double getStdDev()
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setCentroid(T centroid)
+		{
+		getValue().setCentroid(centroid);
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setSumOfSquareDistances(double i)
+		{
+		throw new NotImplementedException();
+		}
+
+// --------------------- Interface Cluster ---------------------
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean add(T point)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean addAll(Cluster<T> point)
+		{
+		return getValue().addAll(point);
+		//throw new NotImplementedException();
 		}
 
 	/**
@@ -190,6 +163,49 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		{
 		return getValue().getDerivedLabelProbabilities();
 //		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int getId()
+		{
+		return getValue().getId();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int getN()
+		{
+		return getValue().getN();
+		}
+
+	/**
+	 * Gets the probabilities of mutually exclusive String labels.
+	 *
+	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
+	 */
+	public WeightedSet<String> getWeightedLabels()
+		{
+		return getValue().getWeightedLabels();
+		//	throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean remove(T point)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean removeAll(Cluster<T> point)
+		{
+		throw new NotImplementedException();
 		}
 
 	/**
@@ -204,6 +220,14 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public void setId(int id)
+		{
+		getValue().setId(id);
+		}
+
+	/**
 	 * Copy the local label weights into the derived label weights.
 	 */
 	public void updateDerivedWeightedLabelsFromLocal()
@@ -211,16 +235,8 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		getValue().updateDerivedWeightedLabelsFromLocal();
 		}
 
-	/**
-	 * Gets the probabilities of mutually exclusive String labels.
-	 *
-	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
-	 */
-	public WeightedSet<String> getWeightedLabels()
-		{
-		return getValue().getWeightedLabels();
-		//	throw new NotImplementedException();
-		}
+// --------------------- Interface LengthWeightHierarchyNode ---------------------
+
 
 	/**
 	 * Gets the probabilities of mutually exclusive String labels.

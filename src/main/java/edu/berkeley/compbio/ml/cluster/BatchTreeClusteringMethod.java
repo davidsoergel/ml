@@ -45,6 +45,7 @@ import java.util.Set;
  */
 public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extends HierarchicalClusteringMethod<T>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	protected BatchTreeClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                    Set<String> predictLabels, Set<String> leaveOneOutLabels,

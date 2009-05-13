@@ -47,7 +47,7 @@ import org.testng.annotations.Test;
 
 public class SequenceSpectrumInterfaceTest extends AtomicContractTest
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(SequenceSpectrumInterfaceTest.class);
 	//public abstract SequenceSpectrum createInstance() throws Exception;
@@ -55,14 +55,14 @@ public class SequenceSpectrumInterfaceTest extends AtomicContractTest
 	private TestInstanceFactory<SequenceSpectrum> tif;
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public SequenceSpectrumInterfaceTest(TestInstanceFactory<SequenceSpectrum> tif)
 		{
 		this.tif = tif;
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	@Test
 	public void getRandomReturnsAlphabetSymbols() throws Exception
@@ -122,8 +122,7 @@ public class SequenceSpectrumInterfaceTest extends AtomicContractTest
 						c
 				});
 				double cond1 = ss.conditionalProbability(b, new byte[0]);
-				double cond2 = ss
-						.conditionalProbability(c, new byte[]{b});
+				double cond2 = ss.conditionalProbability(c, new byte[]{b});
 				double mult = cond1 * cond2;
 				if (!MathUtils.equalWithinFPError(total, mult))
 					{

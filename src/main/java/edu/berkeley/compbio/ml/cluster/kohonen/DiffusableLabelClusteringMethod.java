@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public interface DiffusableLabelClusteringMethod<T extends AdditiveClusterable<T>, C extends CentroidCluster<T>>
 	{
-
+// -------------------------- OTHER METHODS --------------------------
 
 	Collection<? extends C> getClusters();
 

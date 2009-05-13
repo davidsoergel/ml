@@ -49,6 +49,8 @@ import java.util.Set;
 
 public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(CoarseGridSearchStrategy.class);
 
 	//** @Property
@@ -58,23 +60,15 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 	private int gridSpacing;
 	private Set<? extends KohonenSOMCell<T>> sparseGrid;
 
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	public CoarseGridSearchStrategy()
 		{
 		super();
 		}
 
-	public void setGridSpacing(int gridSpacing)
-		{
-		this.gridSpacing = gridSpacing;
-		sparseGrid = getSparseGridClusters();
-		}
-
-	@Override
-	public void setSOM(KohonenSOM2D<T> som)
-		{
-		super.setSOM(som);
-		setGridSpacing(4);
-		}
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Copied from KmeansClustering
@@ -96,7 +90,6 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 			}
 		for (KohonenSOMCell<T> c : sparseGrid)
 			{
-
 			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{
@@ -138,6 +131,19 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 			throw new NoGoodClusterException("No cluster found for " + p + ": " + result);
 			}
 		return result;
+		}
+
+	@Override
+	public void setSOM(KohonenSOM2D<T> som)
+		{
+		super.setSOM(som);
+		setGridSpacing(4);
+		}
+
+	public void setGridSpacing(int gridSpacing)
+		{
+		this.gridSpacing = gridSpacing;
+		sparseGrid = getSparseGridClusters();
 		}
 
 	public Set<? extends KohonenSOMCell<T>> getSparseGridClusters()

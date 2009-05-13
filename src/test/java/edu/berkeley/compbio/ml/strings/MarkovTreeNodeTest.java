@@ -53,7 +53,20 @@ import java.util.Queue;
 public class MarkovTreeNodeTest extends ContractTestAware<MarkovTreeNode>
 		implements TestInstanceFactory<SequenceSpectrum>
 	{
-	// --------------------- Interface TestInstanceFactory ---------------------
+// ------------------------------ FIELDS ------------------------------
+
+	private byte[] alphabet = new byte[]{
+			'a',
+			'b',
+			'c',
+			'd'
+	};
+
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface TestInstanceFactory ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -66,36 +79,7 @@ public class MarkovTreeNodeTest extends ContractTestAware<MarkovTreeNode>
 		return n;
 		}
 
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void addContractTestsToQueue(Queue<ContractTest> theContractTests)
-		{
-		theContractTests.add(new SequenceSpectrumInterfaceTest(this));
-		}
-
-	@Factory
-	public Object[] instantiateAllContractTests()
-		{
-		return super.instantiateAllContractTestsWithName(MarkovTreeNode.class.getCanonicalName());
-		}
-
-	// ------------------------------ FIELDS ------------------------------
-
-	private byte[] alphabet = new byte[]{
-			'a',
-			'b',
-			'c',
-			'd'
-	};
-
-
-	// ------------------------ INTERFACE METHODS ------------------------
-
-
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	@Test
 	public void addChildSequenceWorks() throws SequenceSpectrumException
@@ -114,6 +98,36 @@ public class MarkovTreeNodeTest extends ContractTestAware<MarkovTreeNode>
 		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b') != null;
 		assert n.getChild((byte) 'd').getChild((byte) 'a').getChild((byte) 'a').getChild((byte) 'b').getMaxDepth() == 1;
 		assert n.getChild((byte) 'd').getMaxDepth() == 4;
+		}
+
+	private MarkovTreeNode createComplexMarkovTree() throws SequenceSpectrumException
+		{
+		MarkovTreeNode node = new MarkovTreeNode(new byte[0], alphabet);
+		node.add(new byte[]{
+				'b',
+				'c',
+				'b'
+		});
+		node.add(new byte[]{
+				'b',
+				'a',
+				'b'
+		});
+		node.add(new byte[]{
+				'a',
+				'a',
+				'b'
+		});
+		return node;
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void addContractTestsToQueue(Queue<ContractTest> theContractTests)
+		{
+		theContractTests.add(new SequenceSpectrumInterfaceTest(this));
 		}
 
 	@Test
@@ -141,71 +155,6 @@ public class MarkovTreeNodeTest extends ContractTestAware<MarkovTreeNode>
 		assert n.conditionalProbability((byte) 'd', new byte[]{'b'}) == 0.36;
 		assert n.conditionalProbability((byte) 'd', new byte[]{'a'})
 				== 0.0;// this one was not specified, but shouldn't throw an exception-- that's the "complete" part
-		}
-
-	@Test(expectedExceptions = {SequenceSpectrumException.class})
-	public void conditionalProbabilityThrowsExceptionOnOverlySpecificProbabilityRequest()
-			throws SequenceSpectrumException, DistributionException
-		{
-		SequenceSpectrum ss = createMockSimpleSpectrum();
-
-		MarkovTreeNode n = createSimpleMarkovTree();
-		n.copyProbsFromSpectrumRecursively(ss);
-
-		n.conditionalProbability((byte) 'd', new byte[]{
-				'b',
-				'a',
-				'd'
-		});
-		}
-
-	@Test
-	public void emptyClonesHaveEqualValue() throws SequenceSpectrumException
-		{
-		MarkovTreeNode n = createComplexMarkovTree();
-		assert n.clone().equalValue(n);
-		}
-
-	private MarkovTreeNode createComplexMarkovTree() throws SequenceSpectrumException
-		{
-		MarkovTreeNode node = new MarkovTreeNode(new byte[0], alphabet);
-		node.add(new byte[]{
-				'b',
-				'c',
-				'b'
-		});
-		node.add(new byte[]{
-				'b',
-				'a',
-				'b'
-		});
-		node.add(new byte[]{
-				'a',
-				'a',
-				'b'
-		});
-		return node;
-		}
-
-	@Test
-	public void maxDepthWorks() throws SequenceSpectrumException
-		{
-		MarkovTreeNode n = createComplexMarkovTree();
-		assert n.getChild((byte) 'd') == null;
-		n.addChild((byte) 'd');
-		assert n.getChild((byte) 'd') != null;
-		assert n.getChild((byte) 'd').getMaxDepth() == 1;
-		}
-
-	@Test
-	public void populatedClonesHaveEqualValue() throws SequenceSpectrumException, DistributionException
-		{
-		SequenceSpectrum ss = createMockSimpleSpectrum();
-
-		MarkovTreeNode n = createSimpleMarkovTree();
-		n.copyProbsFromSpectrumRecursively(ss);
-
-		assert n.clone().equalValue(n);
 		}
 
 	public static SequenceSpectrum createMockSimpleSpectrum() throws SequenceSpectrumException
@@ -354,6 +303,55 @@ public class MarkovTreeNodeTest extends ContractTestAware<MarkovTreeNode>
 		return node;
 		}
 
+	@Test(expectedExceptions = {SequenceSpectrumException.class})
+	public void conditionalProbabilityThrowsExceptionOnOverlySpecificProbabilityRequest()
+			throws SequenceSpectrumException, DistributionException
+		{
+		SequenceSpectrum ss = createMockSimpleSpectrum();
+
+		MarkovTreeNode n = createSimpleMarkovTree();
+		n.copyProbsFromSpectrumRecursively(ss);
+
+		n.conditionalProbability((byte) 'd', new byte[]{
+				'b',
+				'a',
+				'd'
+		});
+		}
+
+	@Test
+	public void emptyClonesHaveEqualValue() throws SequenceSpectrumException
+		{
+		MarkovTreeNode n = createComplexMarkovTree();
+		assert n.clone().equalValue(n);
+		}
+
+	@Factory
+	public Object[] instantiateAllContractTests()
+		{
+		return super.instantiateAllContractTestsWithName(MarkovTreeNode.class.getCanonicalName());
+		}
+
+	@Test
+	public void maxDepthWorks() throws SequenceSpectrumException
+		{
+		MarkovTreeNode n = createComplexMarkovTree();
+		assert n.getChild((byte) 'd') == null;
+		n.addChild((byte) 'd');
+		assert n.getChild((byte) 'd') != null;
+		assert n.getChild((byte) 'd').getMaxDepth() == 1;
+		}
+
+	@Test
+	public void populatedClonesHaveEqualValue() throws SequenceSpectrumException, DistributionException
+		{
+		SequenceSpectrum ss = createMockSimpleSpectrum();
+
+		MarkovTreeNode n = createSimpleMarkovTree();
+		n.copyProbsFromSpectrumRecursively(ss);
+
+		assert n.clone().equalValue(n);
+		}
 
 	@Test
 	public void totalProbabilitiesAreCorrect() throws SequenceSpectrumException, DistributionException

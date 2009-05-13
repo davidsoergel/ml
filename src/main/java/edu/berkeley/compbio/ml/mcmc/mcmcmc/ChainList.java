@@ -45,20 +45,15 @@ import java.util.ArrayList;
  */
 public class ChainList extends ArrayList<MonteCarlo> implements MonteCarloState
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(ChainList.class);
 
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface MonteCarloState ---------------------
-
-	public void init()
-		{
-		//To change body of implemented methods use File | Settings | File Templates.
-		}
+// --------------------- Interface MonteCarloState ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -74,5 +69,12 @@ public class ChainList extends ArrayList<MonteCarlo> implements MonteCarloState
 	public void writeToDataCollector(int step, DataCollector dc)
 		{
 		// ignore, this never happens
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	public void init()
+		{
+		//To change body of implemented methods use File | Settings | File Templates.
 		}
 	}

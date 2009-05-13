@@ -48,7 +48,7 @@ import org.apache.log4j.Logger;
 
 public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDoubleArray>, DoubleArrayContainer
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(ClusterableDoubleArray.class);
 
@@ -58,28 +58,10 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 
 	private String label;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getExclusiveLabel()
-		{
-		return label;
-		}
+	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
-	public void setLabel(String label)
-		{
-		this.label = label;
-		}
 
-	public double getArraySum()
-		{
-		if (dataSum == null)
-			{
-			dataSum = DSArrayUtils.sum(data);
-			}
-		return dataSum;
-		}
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public ClusterableDoubleArray()
 		{
@@ -91,7 +73,19 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		this.data = data;
 		}
 
-	// ------------------------ CANONICAL METHODS ------------------------
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+	public WeightedSet<String> getWeightedLabels()
+		{
+		return weightedLabels;
+		}
+
+	public void setLabel(String label)
+		{
+		this.label = label;
+		}
+
+// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
 	 * {@inheritDoc}
@@ -103,10 +97,10 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		                                  data.clone());//To change body of overridden methods use File | Settings | File Templates.
 		}
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface AdditiveClusterable ---------------------
+// --------------------- Interface AdditiveClusterable ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -121,21 +115,20 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	/**
 	 * {@inheritDoc}
 	 */
-	public void incrementBy(ClusterableDoubleArray object)
-		{
-		//data = ArrayUtils.plus(data, object.data);
-		DSArrayUtils.incrementBy(data, object.data);
-		dataSum = null;
-		}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void decrementByWeighted(ClusterableDoubleArray object, double weight)
 		{
 		//data = ArrayUtils.minus(data, object.data);
 		DSArrayUtils.decrementByWeighted(data, object.data, weight);
+		dataSum = null;
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void incrementBy(ClusterableDoubleArray object)
+		{
+		//data = ArrayUtils.plus(data, object.data);
+		DSArrayUtils.incrementBy(data, object.data);
 		dataSum = null;
 		}
 
@@ -152,19 +145,19 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 	/**
 	 * {@inheritDoc}
 	 */
-	public void multiplyBy(double scalar)
+	public ClusterableDoubleArray minus(ClusterableDoubleArray object)
 		{
-		//data = ArrayUtils.times(data, scalar);
-		DSArrayUtils.multiplyBy(data, scalar);
-		dataSum = null;  // we could multiply it by that might be less numerically precise...??
+		return new ClusterableDoubleArray(id + "+" + object.getId(), DSArrayUtils.minus(data, object.data));
 		}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public ClusterableDoubleArray minus(ClusterableDoubleArray object)
+	public void multiplyBy(double scalar)
 		{
-		return new ClusterableDoubleArray(id + "+" + object.getId(), DSArrayUtils.minus(data, object.data));
+		//data = ArrayUtils.times(data, scalar);
+		DSArrayUtils.multiplyBy(data, scalar);
+		dataSum = null;  // we could multiply it by that might be less numerically precise...??
 		}
 
 	/**
@@ -183,7 +176,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		return new ClusterableDoubleArray(id + "*" + scalar, DSArrayUtils.times(data, scalar));
 		}
 
-	// --------------------- Interface Clusterable ---------------------
+// --------------------- Interface Clusterable ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -201,12 +194,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		return null;
 		}
 
-	public String getSourceId()
-		{
-		throw new NotImplementedException();
-		}
-	// --------------------- Interface DoubleArrayContainer ---------------------
-
+// --------------------- Interface DoubleArrayContainer ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -216,22 +204,37 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		return data;
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+	public double getArraySum()
+		{
+		if (dataSum == null)
+			{
+			dataSum = DSArrayUtils.sum(data);
+			}
+		return dataSum;
+		}
+
+// -------------------------- OTHER METHODS --------------------------
 
 	public double get(int i)
 		{
 		return data[i];
 		}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getExclusiveLabel()
+		{
+		return label;
+		}
+
+	public String getSourceId()
+		{
+		throw new NotImplementedException();
+		}
+
 	public int length()
 		{
 		return data.length;
-		}
-
-	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
-
-	public WeightedSet<String> getWeightedLabels()
-		{
-		return weightedLabels;
 		}
 	}

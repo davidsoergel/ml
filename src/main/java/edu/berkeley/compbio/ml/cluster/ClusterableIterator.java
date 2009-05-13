@@ -50,8 +50,19 @@ import java.util.NoSuchElementException;
 public interface ClusterableIterator<T extends Clusterable<T>>
 		extends Iterator<T>, Iterable<T>//, Comparable<ClusterableIterator<T>>
 	{
+// ------------------------ INTERFACE METHODS ------------------------
 
-	// -------------------------- OTHER METHODS --------------------------
+
+// --------------------- Interface Iterator ---------------------
+
+	/**
+	 * Returns the next object from the iterator
+	 */
+	@NotNull
+	T next() throws NoSuchElementException;
+
+
+// -------------------------- OTHER METHODS --------------------------
 
 	//public abstract ClusterableIterator<T> clone() throws CloneNotSupportedException;
 
@@ -61,11 +72,4 @@ public interface ClusterableIterator<T extends Clusterable<T>>
 	 * @throws IOException when something goes wrong
 	 */
 	void reset(); //throws IOException;
-
-
-	/**
-	 * Returns the next object from the iterator
-	 */
-	@NotNull
-	T next() throws NoSuchElementException;
 	}

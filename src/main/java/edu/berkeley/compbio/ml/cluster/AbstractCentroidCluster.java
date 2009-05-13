@@ -51,14 +51,10 @@ import java.util.Formatter;
 public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends AbstractCluster<T>
 		implements CentroidCluster<T>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(AbstractCentroidCluster.class);
 
-	/**
-	 * The distance measure to use for computing distances from samples to the centroid of this cluster
-	 */
-	//	protected DistanceMeasure<T> theDistanceMeasure;
 
 	/**
 	 * Field centroid
@@ -66,28 +62,13 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	protected T centroid;
 
 	/**
-	 * The number of samples in this cluster
-	 */
-	//protected int n = 0;
-
-	/**
 	 * The sum of the squared distances from samples in this cluster to the centroid
 	 */
 	protected double sumOfSquareDistances = 0;
 
-	//private Multiset<String> exclusiveLabelCounts = new HashMultiset<String>();
 
+// --------------------------- CONSTRUCTORS ---------------------------
 
-	// we let the label probabilities be completely distinct from the local weights themselves, so that the probabilities
-	// can be set based on outside information (e.g., in the case of the Kohonen map, neighboring cells
-	// may exert an influence)
-
-	//	new Multinomial<String>();
-
-	//private int totalLabels = 0;
-
-
-	// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * Constructs a new Cluster with the given id and centroid.  Note the centroid may be modified in the course of running
@@ -111,7 +92,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 		//theDistanceMeasure = dm;
 		}
 
-	// --------------------- GETTER / SETTER METHODS ---------------------
+// --------------------- GETTER / SETTER METHODS ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -130,48 +111,6 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 		this.centroid = centroid;
 		}
 
-	/*	public Multiset<String> getExclusiveLabelCounts()
-	   {
-	   return exclusiveLabelCounts;
-	   }*/
-
-	/**
-	 * {@inheritDoc}
-	 */
-	/*	public void setN(int n)
-	   {
-	   this.n = n;
-	   }*/
-
-	/*	public int getTotalLabels()
-	   {
-	   return totalLabels;
-	   }*/
-
-	/*	public void normalize()
-		   {
-		   centroid.normalize(n);
-		   }*/
-
-	/**
-	 * Returns the DistanceMeasure used for computing distances from samples to this cluster
-	 *
-	 * @return
-	 */
-	/*	public DistanceMeasure<T> getTheDistanceMeasure()
-	   {
-	   return theDistanceMeasure;
-	   }*/
-
-	/**
-	 * Sets the theDistanceMeasure used for computing distances from samples to this cluster
-	 *
-	 * @param theDistanceMeasure the theDistanceMeasure
-	 */
-	/*	public void setTheDistanceMeasure(DistanceMeasure<T> theDistanceMeasure)
-	   {
-	   this.theDistanceMeasure = theDistanceMeasure;
-	   }*/
 
 	/**
 	 * {@inheritDoc}
@@ -181,25 +120,8 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 		sumOfSquareDistances = v;
 		}
 
-	// ------------------------ CANONICAL METHODS ------------------------
+// ------------------------ CANONICAL METHODS ------------------------
 
-	/**
-	 * Computes the distance from the given point to the centroid of this cluster, using the distance measure previously
-	 * assigned to this cluster.
-	 *
-	 * @param p the point
-	 * @return the distance
-	 */
-	/*	public double distanceToCentroid(T p)
-	   {
-	   return theDistanceMeasure.distanceFromTo(p, centroid);
-	   }*/
-
-	// premature optimization
-	/*	public double distanceToCentroid(T p, double distanceToBeat)
-	   {
-	   return theDistanceMeasure.distanceFromTo(p, centroid, distanceToBeat);
-	   }*/
 
 	/**
 	 * {@inheritDoc}
@@ -233,15 +155,6 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 		return result;
 		}
 
-	/*
-	 public Cluster<T> clone()
-		 {
-		 Cluster<T> result = new Cluster<T>(theDistanceMeasure, centroid);
-		 result.addAll(this);
-		 return result;
-		 }
- */
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -262,49 +175,8 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 		return Math.sqrt(sumOfSquareDistances / getN());
 		}
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
-
-	// --------------------- Interface Cluster ---------------------
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	/*	public double getDominantProbability() throws DistributionException
-	   {
-	   exclusiveLabelProbabilities.normalize();
-	   return exclusiveLabelProbabilities.getDominantProbability();
-	   }*/
-
-	/**
-	 * {@inheritDoc}
-	 */
-	/*	public String getDominantExclusiveLabel()
-	   {
-	   return exclusiveLabelProbabilities.getDominantKey();
-	   }*/
-
-	/**
-	 * {@inheritDoc}
-	 */
-	/*	public void addExclusiveLabel(T point)
-	   {
-	   totalLabels++;
-	   exclusiveLabelCounts.add(point.getExclusiveLabel());
-	   weightedLabels.addAll(point.getWeightedLabels());
-	   }*/
-
-	/**
-	 * {@inheritDoc}
-	 */
-	/*	public void removeExclusiveLabel(T point)
-	   {
-	   totalLabels--;
-	   // we don't sanity check that the label was present to begin with
-	   exclusiveLabelCounts.remove(point.getExclusiveLabel());
-	   weightedLabels.removeAll(point.getWeightedLabels());
-	   }*/
 
 	/**
 	 * {@inheritDoc}

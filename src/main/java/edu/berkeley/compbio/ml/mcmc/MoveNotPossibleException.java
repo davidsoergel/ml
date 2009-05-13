@@ -8,8 +8,7 @@ import com.davidsoergel.dsutils.ChainedException;
  */
 public class MoveNotPossibleException extends ChainedException
 	{
-
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public MoveNotPossibleException(String s)
 		{

@@ -48,8 +48,17 @@ import java.io.IOException;
  */
 public interface SequenceSpectrumScanner
 	{
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
+	/**
+	 * Returns an empty SequenceSpectrum of the appropriate type.  This spectrum is "empty" in the sense that it is not
+	 * based on any sequence, but it may nonetheless represent some prior, e.g. uniform.
+	 *
+	 * @return an empty SequenceSpectrum of the appropriate type.
+	 */
+	SequenceSpectrum getEmpty();
+
+	NucleotideFilter getNucleotideFilter();
 	/*	Kcount scanSequence(SequenceReader in, int desiredlength, List<byte[]> firstWords) //, int firstWordLength)
 				throws IOException, FilterException, NotEnoughSequenceException;*/
 
@@ -101,14 +110,4 @@ public interface SequenceSpectrumScanner
 	                              byte[] prefix)
 			throws IOException, FilterException, NotEnoughSequenceException, DistributionProcessorException,
 			       GenericFactoryException;
-
-	/**
-	 * Returns an empty SequenceSpectrum of the appropriate type.  This spectrum is "empty" in the sense that it is not
-	 * based on any sequence, but it may nonetheless represent some prior, e.g. uniform.
-	 *
-	 * @return an empty SequenceSpectrum of the appropriate type.
-	 */
-	SequenceSpectrum getEmpty();
-
-	NucleotideFilter getNucleotideFilter();
 	}

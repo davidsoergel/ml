@@ -45,6 +45,23 @@ import java.util.Iterator;
 public interface BatchClusteringMethod<T extends Clusterable<T>> extends ClusteringMethod<T>
 //public abstract class BatchClusteringMethod<T extends Clusterable<T>> extends CentroidClusteringMethod<T>
 	{
+// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * Add the given samples to the set to be clustered.
+	 *
+	 * @param samples a Collection of Clusterable objects.
+	 */
+	void addAll(Iterator<T> samples);  //? extends Clusterable<T>
+
+	/**
+	 * Add the given samples to the set to be clustered, and remember the mapping from sample to cluster
+	 *
+	 * @param testIterator
+	 */
+//	void addAllAndRemember(Iterator<T> testIterator);
+
+	void createClusters();
 
 /*
 	protected BatchClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
@@ -73,20 +90,4 @@ public interface BatchClusteringMethod<T extends Clusterable<T>> extends Cluster
 	 * Recompute a set of clusters from the stored samples.
 	 */
 	public abstract void train();
-
-	/**
-	 * Add the given samples to the set to be clustered.
-	 *
-	 * @param samples a Collection of Clusterable objects.
-	 */
-	void addAll(Iterator<T> samples);  //? extends Clusterable<T>
-
-	/**
-	 * Add the given samples to the set to be clustered, and remember the mapping from sample to cluster
-	 *
-	 * @param testIterator
-	 */
-//	void addAllAndRemember(Iterator<T> testIterator);
-
-	void createClusters();
 	}

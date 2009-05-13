@@ -45,12 +45,12 @@ import org.apache.log4j.Logger;
  */
 public class ClusterException extends ChainedException
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(ClusterException.class);
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public ClusterException(String s)
 		{

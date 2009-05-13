@@ -44,12 +44,12 @@ import org.apache.log4j.Logger;
  */
 public class DistanceMeasureRuntimeException extends ChainedRuntimeException
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(DistanceMeasureRuntimeException.class);
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public DistanceMeasureRuntimeException(String s)
 		{

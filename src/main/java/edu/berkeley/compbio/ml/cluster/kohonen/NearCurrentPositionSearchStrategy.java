@@ -48,26 +48,9 @@ import java.util.Iterator;
 
 public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(NearCurrentPositionSearchStrategy.class);
-
-	//** @Property
-	//private final int gridSpacing = 4;
-
-
-	//private int searchRadius;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setSOM(KohonenSOM2D<T> som)
-		{
-		super.setSOM(som);
-
-		fallbackStrategy.setSOM(som);
-		//** @Property
-		//setSearchRadius(8);
-		}
 
 	/*	private void setSearchRadius(int i)
 		 {
@@ -76,12 +59,7 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
  */ KohonenSOM2DSearchStrategy<T> fallbackStrategy = new CoarseGridSearchStrategy<T>();
 
 
-	@Override
-	public void setDistanceMeasure(DissimilarityMeasure<T> dissimilarityMeasure)
-		{
-		super.setDistanceMeasure(dissimilarityMeasure);
-		fallbackStrategy.setDistanceMeasure(dissimilarityMeasure);
-		}
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Copied from KmeansClustering
@@ -140,5 +118,31 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 	public double getSearchRadius()
 		{
 		return 8;
+		}
+
+	@Override
+	public void setDistanceMeasure(DissimilarityMeasure<T> dissimilarityMeasure)
+		{
+		super.setDistanceMeasure(dissimilarityMeasure);
+		fallbackStrategy.setDistanceMeasure(dissimilarityMeasure);
+		}
+
+	//** @Property
+	//private final int gridSpacing = 4;
+
+
+	//private int searchRadius;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setSOM(KohonenSOM2D<T> som)
+		{
+		super.setSOM(som);
+
+		fallbackStrategy.setSOM(som);
+		//** @Property
+		//setSearchRadius(8);
 		}
 	}

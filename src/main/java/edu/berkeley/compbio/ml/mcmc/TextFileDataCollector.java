@@ -52,24 +52,24 @@ import java.util.Locale;
 @PropertyConsumer
 public class TextFileDataCollector implements DataCollector
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(TextFileDataCollector.class);
-	private HashMap<String, DoubleTimecourse> timecourses = new HashMap<String, DoubleTimecourse>();
-
-	private int lastStep;
 	// protected DataCollector chainTo;
 
 	@Property(inherited = true)
 	public String outputDirectoryName;
-
-	private File outputDirectory;
 
 	@Property(defaultvalue = "trajectory")
 	public String trajectoryFilename;
 
 	@Property(defaultvalue = "ensemble")
 	public String ensembleFilename;
+	private HashMap<String, DoubleTimecourse> timecourses = new HashMap<String, DoubleTimecourse>();
+
+	private int lastStep;
+
+	private File outputDirectory;
 
 	//@ComputedProperty("runId")
 	//public String runId;
@@ -78,8 +78,44 @@ public class TextFileDataCollector implements DataCollector
 	private FileWriter ensembleWriter;
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// ------------------------ CANONICAL METHODS ------------------------
 
+	@Override
+	public String toString()
+		{
+		StringBuffer sb = new StringBuffer();
+		Formatter formatter = new Formatter(sb, Locale.US);
+
+		//sb.append(getStep()).append("\n");
+		for (DoubleTimecourse t : timecourses.values())
+			{
+			formatter.format("%1$20s = %2$10s, %3$10s\n", t.name(), t.last(), t.runningaverage());
+			}
+
+		return sb.toString();
+		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface DataCollector ---------------------
+
+	public void close()
+		{
+		try
+			{
+			trajectoryWriter.flush();
+			trajectoryWriter.close();
+			ensembleWriter.flush();
+			ensembleWriter.close();
+			trajectoryWriter = null;
+			ensembleWriter = null;
+			}
+		catch (IOException e)
+			{
+			logger.error("Error", e);
+			}
+		}
 
 	public void init()
 		{
@@ -101,56 +137,9 @@ public class TextFileDataCollector implements DataCollector
 			}
 		}
 
-	// ------------------------ CANONICAL METHODS ------------------------
-
-	@Override
-	public String toString()
+	public DataCollector newSubCollector(String name)
 		{
-		StringBuffer sb = new StringBuffer();
-		Formatter formatter = new Formatter(sb, Locale.US);
-
-		//sb.append(getStep()).append("\n");
-		for (DoubleTimecourse t : timecourses.values())
-			{
-			formatter.format("%1$20s = %2$10s, %3$10s\n", t.name(), t.last(), t.runningaverage());
-			}
-
-		return sb.toString();
-		}
-
-	// -------------------------- OTHER METHODS --------------------------
-
-	public void close()
-		{
-		try
-			{
-			trajectoryWriter.flush();
-			trajectoryWriter.close();
-			ensembleWriter.flush();
-			ensembleWriter.close();
-			trajectoryWriter = null;
-			ensembleWriter = null;
-			}
-		catch (IOException e)
-			{
-			logger.error("Error", e);
-			}
-		}
-
-	/*
-   public void setChainTo(DataCollector dc)
-	   {
-	   chainTo = dc;
-	   }*/
-
-	public int getStep()
-		{
-		return lastStep;
-		}
-
-	public void setStep(int lastStep)
-		{
-		this.lastStep = lastStep;
+		throw new NotImplementedException();
 		}
 
 	public void setTimecourseValue(String name, double val)
@@ -177,9 +166,22 @@ public class TextFileDataCollector implements DataCollector
 			}
 		}
 
-	public DataCollector newSubCollector(String name)
+// -------------------------- OTHER METHODS --------------------------
+
+	/*
+   public void setChainTo(DataCollector dc)
+	   {
+	   chainTo = dc;
+	   }*/
+
+	public int getStep()
 		{
-		throw new NotImplementedException();
+		return lastStep;
+		}
+
+	public void setStep(int lastStep)
+		{
+		this.lastStep = lastStep;
 		}
 
 	/**

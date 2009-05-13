@@ -46,13 +46,13 @@ import com.davidsoergel.stats.IntArrayContainer;
 @PropertyConsumer
 public class IntPseudocountAdder implements DistributionProcessor<IntArrayContainer>//extends DoubleArrayProcessor
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	@Property(helpmessage = "Pseudocounts to add to every bin", defaultvalue = "0")
 	public int uniformPseudoCount;
 
 
-	// --------------------------- CONSTRUCTORS ---------------------------
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public IntPseudocountAdder()//String injectorId)//double smoothFactor)
 		{
@@ -60,10 +60,10 @@ public class IntPseudocountAdder implements DistributionProcessor<IntArrayContai
 		//ResultsCollectingProgramRun.getProps().injectProperties(injectorId, this);
 		}
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface DistributionProcessor ---------------------
+// --------------------- Interface DistributionProcessor ---------------------
 
 	public void process(IntArrayContainer c)
 		{

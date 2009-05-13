@@ -7,7 +7,6 @@ package edu.berkeley.compbio.ml.cluster;
 public interface SemisupervisedClusteringMethod<T extends Clusterable<T>>
 		extends UnsupervisedClusteringMethod<T>, SupervisedClusteringMethod<T>
 	{
-
 //	void performClustering();
 
 	//(Iterator<T> combinedIterator);

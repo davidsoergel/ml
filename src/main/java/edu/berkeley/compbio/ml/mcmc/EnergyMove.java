@@ -47,7 +47,8 @@ package edu.berkeley.compbio.ml.mcmc;
  */
 public interface EnergyMove
 	{
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
+
 	/**
 	 * Decide whether or not to accept this move, and if so, perform it.
 	 *

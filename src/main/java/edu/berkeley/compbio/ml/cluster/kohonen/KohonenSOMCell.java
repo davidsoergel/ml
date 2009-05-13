@@ -45,10 +45,17 @@ import org.apache.commons.lang.NotImplementedException;
 
 public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCentroidCluster<T>
 	{
+// --------------------------- CONSTRUCTORS ---------------------------
+
 	public KohonenSOMCell(int id, T centroid)//DistanceMeasure<T> dm,
 		{
 		super(id, centroid);//dm
 		}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface Cluster ---------------------
 
 	/**
 	 * {@inheritDoc}
@@ -70,32 +77,6 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCe
 		throw new NotImplementedException();
 		}
 
-	public void recenterByAddingWeighted(T point, double motionFactor)
-		{
-		// REVIEW Note assumption of an additive statistical model for the centroids
-		/*		if (!additiveModel)
-		   {
-		   centroid.multiplyBy(1 - motionFactor);
-		   }*/
-
-		// this is slow because point.times() requires an array copy, since we don't want to modify the original
-		//centroid.incrementBy(point.times(motionFactor));
-
-		centroid.incrementByWeighted(point, motionFactor);
-		}
-
-
-	public void recenterByRemovingWeighted(T point, double motionFactor)
-		{
-		// REVIEW Note assumption of an additive statistical model for the centroids
-		/*		if (!additiveModel)
-		   {
-		   centroid.multiplyBy(1 - motionFactor);
-		   }*/
-		centroid.decrementByWeighted(point, motionFactor);
-		}
-
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -116,5 +97,31 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCe
 	public boolean removeAll(Cluster<T> otherCluster)
 		{
 		throw new NotImplementedException();
+		}
+
+// -------------------------- OTHER METHODS --------------------------
+
+	public void recenterByAddingWeighted(T point, double motionFactor)
+		{
+		// REVIEW Note assumption of an additive statistical model for the centroids
+		/*		if (!additiveModel)
+		   {
+		   centroid.multiplyBy(1 - motionFactor);
+		   }*/
+
+		// this is slow because point.times() requires an array copy, since we don't want to modify the original
+		//centroid.incrementBy(point.times(motionFactor));
+
+		centroid.incrementByWeighted(point, motionFactor);
+		}
+
+	public void recenterByRemovingWeighted(T point, double motionFactor)
+		{
+		// REVIEW Note assumption of an additive statistical model for the centroids
+		/*		if (!additiveModel)
+		   {
+		   centroid.multiplyBy(1 - motionFactor);
+		   }*/
+		centroid.decrementByWeighted(point, motionFactor);
 		}
 	}

@@ -44,8 +44,12 @@ import org.apache.log4j.Logger;
 
 public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends KohonenSOM2DSearchStrategy<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
 	private static final Logger logger = Logger.getLogger(BruteForceSearchStrategy.class);
 
+
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Copied from KmeansClustering

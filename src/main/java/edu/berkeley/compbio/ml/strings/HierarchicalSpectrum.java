@@ -49,14 +49,19 @@ import java.util.List;
 public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> extends AbstractGenericFactoryAware
 		implements SequenceSpectrum<T>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(HierarchicalSpectrum.class);
 
 	protected T parent = null;
 
+	protected String label;
 
-	// --------------------- GETTER / SETTER METHODS ---------------------
+
+	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+
+
+// --------------------- GETTER / SETTER METHODS ---------------------
 
 	/**
 	 * Returns the parent of this Kcount.
@@ -91,8 +96,17 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 	 */
 	protected abstract void newParent() throws SequenceSpectrumException;//throws SequenceSpectrumException;
 
+	public WeightedSet<String> getWeightedLabels()
+		{
+		return weightedLabels;
+		}
 
-	// ------------------------ CANONICAL METHODS ------------------------
+	public void setLabel(String label)
+		{
+		this.label = label;
+		}
+
+// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
 	 * Clone this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
@@ -107,7 +121,7 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 	public abstract T clone();
 
 
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * Recursively generalize thisKcount, creating a chain of "parents" until no further generalization is possible
@@ -136,23 +150,8 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 		return result;
 		}
 
-
-	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
-
-	public WeightedSet<String> getWeightedLabels()
-		{
-		return weightedLabels;
-		}
-
-	protected String label;
-
 	public String getExclusiveLabel()
 		{
 		return label;
-		}
-
-	public void setLabel(String label)
-		{
-		this.label = label;
 		}
 	}

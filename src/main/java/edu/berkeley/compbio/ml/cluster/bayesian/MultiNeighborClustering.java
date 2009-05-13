@@ -40,14 +40,17 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		implements SampleInitializedOnlineClusteringMethod<T>
 		//, CentroidClusteringMethod<T>
 	{
+// ------------------------------ FIELDS ------------------------------
+
+	private static final Logger logger = Logger.getLogger(MultiNeighborClustering.class);
 	protected final int maxNeighbors;
 
 	protected double unknownDistanceThreshold;
 
 	protected Map<CentroidCluster<T>, Double> priors;
 
-	private static final Logger logger = Logger.getLogger(MultiNeighborClustering.class);
 
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	public MultiNeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
 	                               Set<String> potentialTrainingBins, Set<String> predictLabels,
@@ -58,18 +61,10 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		}
 
+// ------------------------ INTERFACE METHODS ------------------------
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
-		{
-		throw new ClusterRuntimeException(
-				//logger.warn(
-				"It doesn't make sense to get the best clustermove with a multi-neighbor clustering; look for the best label instead using scoredClusterMoves");
-		//return scoredClusterMoves(p).values().iterator().next();
-		}
+
+// --------------------- Interface ClusteringMethod ---------------------
 
 	public String bestLabel(T sample, Set<String> predictLabels) throws NoGoodClusterException
 		{
@@ -86,6 +81,9 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		return predictedLabel;
 		}
 
+// --------------------- Interface OnlineClusteringMethod ---------------------
+
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -96,6 +94,16 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		best.bestCluster.add(p);
 		return true;
 		}
+
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
+			throws ClusterException
+		{
+		normalizeClusterLabelProbabilities();
+		// do nothing; we already consumed all the training samples with initializeWithSamples
+		}
+
+// --------------------- Interface SampleInitializedOnlineClusteringMethod ---------------------
+
 
 	/**
 	 * Unlike situations where we make a cluster per label, here we make a whole "cluster" per training sample
@@ -119,7 +127,6 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 
 			while (trainingIterator.hasNext())
 				{
-
 				final T point = trainingIterator.next();
 				final int clusterId = i++;
 				//		execService.submit(new Runnable()
@@ -128,7 +135,6 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 				//			{
 				try
 					{
-
 					// generate one "cluster" per training sample.
 					CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
 
@@ -157,142 +163,78 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			}
 		}
 
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
-			throws ClusterException
+// -------------------------- OTHER METHODS --------------------------
+
+	/**
+	 * {@inheritDoc}
+	 */
+/*	@Override
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
 		{
-		normalizeClusterLabelProbabilities();
-		// do nothing; we already consumed all the training samples with initializeWithSamples
+		//initializeWithRealData(trainingCollectionIteratorFactory.next());
+
+		// after that, normalize the label probabilities
+
+		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+		for (final Cluster c : theClusters)
+			{
+			execService.submit(new Runnable()
+			{
+			public void run()
+				{
+				c.updateDerivedWeightedLabelsFromLocal();
+				}
+			});
+			}
+		execService.finish("Normalized %d training probabilities", 30);
+		}*/
+	protected VotingResults addUpNeighborVotes(TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves,
+	                                           Set<String> populatedTrainingLabels)
+		{
+		VotingResults result = new VotingResults();
+
+		int neighborsCounted = 0;
+		double lastDistance = 0.0;
+		for (ClusterMove<T, CentroidCluster<T>> cm : moves.values())
+			{
+			if (neighborsCounted >= maxNeighbors)
+				{
+				break;
+				}
+
+			// the moves must be sorted in order of increasing distance
+			assert cm.bestDistance >= lastDistance;
+			lastDistance = cm.bestDistance;
+
+			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
+
+			result.addVotes(labelsOnThisCluster, cm.voteWeight);
+
+			for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
+				{
+				final String label = entry.getKey();
+				final Double labelProbability = entry.getValue();
+
+				result.addContribution(cm, label, labelProbability);
+				}
+
+			neighborsCounted++;
+			}
+		result.finish(populatedTrainingLabels);
+		return result;
 		}
 
-	protected class VotingResults
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{
-		// use WeightedSet instead of MultiSet so we can aggregate label probabilities
-
-		// keep track of clusters per label, for the sake of tracking computed distances to the clusters contributing to each label
-		private final Map<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>> labelContributions =
-				new HashMap<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>>();
-
-		private String bestLabel;
-		private String secondBestLabel;
-
-		private WeightedSet<String> labelVotes = new HashWeightedSet<String>();
-
-		public String getBestLabel()
-			{
-			return bestLabel;
-			}
-
-		public String getSecondBestLabel()
-			{
-			return secondBestLabel;
-			}
-
-		public void finish(Set<String> predictionLabels)
-			{
-			// primary sort the labels by votes, secondary by weighted distance
-			// even if there is a unique label with the most votes, the second place one may still matter depending on the unknown thresholds
-
-			Comparator weightedDistanceSort = new Comparator()
-			{
-			Map<String, Double> cache = new HashMap<String, Double>();
-
-			private Double getWeightedDistance(String label)
-				{
-				Double result = cache.get(label);
-				if (result == null)
-					{
-					result = computeWeightedDistance(labelContributions.get(label));
-					cache.put(label, result);
-					}
-				return result;
-				}
-
-			public int compare(Object o1, Object o2)
-				{
-				return Double.compare(getWeightedDistance((String) o1), getWeightedDistance((String) o2));
-				}
-			};
-
-			labelVotes.retainKeys(predictionLabels);
-			Iterator<String> vi = labelVotes.keysInDecreasingWeightOrder(weightedDistanceSort).iterator();
-
-			bestLabel = vi.next();
-			try
-				{
-				secondBestLabel = vi.next();
-				}
-			catch (NoSuchElementException e)
-				{
-				//no problem
-				}
-			}
-
-		/*public WeightedSet<ClusterMove<T, CentroidCluster<T>>> getContributions(String label)
-			{
-			return labelContributions.get(label);
-			}*/
-
-		public double computeWeightedDistance(String label)
-			{
-			return computeWeightedDistance(labelContributions.get(label));
-			}
-
-		/**
-		 * compute weighted average computed distance to clusters contributing to this label
-		 */
-		private double computeWeightedDistance(
-				WeightedSet<ClusterMove<T, CentroidCluster<T>>> dominantLabelContributions)
-			{
-			double weightedComputedDistance = 0;
-
-			for (Map.Entry<ClusterMove<T, CentroidCluster<T>>, Double> entry : dominantLabelContributions
-					.getItemNormalizedMap().entrySet())
-				{
-				ClusterMove<T, CentroidCluster<T>> contributingCm = entry.getKey();
-				Double contributionWeight = entry.getValue();
-				weightedComputedDistance += contributionWeight * contributingCm.bestDistance;
-				}
-			return weightedComputedDistance;
-			}
-
-		public double getProb(String bestLabel)
-			{
-			return labelVotes.getNormalized(bestLabel);
-			}
-
-		public boolean hasSecondBestLabel()
-			{
-			return secondBestLabel != null;
-			}
-
-		public double getVotes(String label)
-			{
-			return labelVotes.get(label);
-			}
-
-		public void addVotes(WeightedSet<String> labelsOnThisCluster)
-			{
-			labelVotes.addAll(labelsOnThisCluster);
-			}
-
-		public void addVotes(WeightedSet<String> labelsOnThisCluster, double multiplier)
-			{
-			labelVotes.addAll(labelsOnThisCluster, multiplier);
-			}
-
-		public void addContribution(ClusterMove<T, CentroidCluster<T>> cm, String label, Double labelProbability)
-			{
-			WeightedSet<ClusterMove<T, CentroidCluster<T>>> contributionSet = labelContributions.get(label);
-			if (contributionSet == null)
-				{
-				contributionSet = new HashWeightedSet<ClusterMove<T, CentroidCluster<T>>>();
-				labelContributions.put(label, contributionSet);
-				}
-			contributionSet.add(cm, labelProbability);
-			contributionSet.incrementItems();
-			}
+		throw new ClusterRuntimeException(
+				//logger.warn(
+				"It doesn't make sense to get the best clustermove with a multi-neighbor clustering; look for the best label instead using scoredClusterMoves");
+		//return scoredClusterMoves(p).values().iterator().next();
 		}
-
 
 	/**
 	 * Returns a map from distance to cluster, sorted by distance; includes only those clusters with distances better than
@@ -388,63 +330,140 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		return cm;
 		}
 
+// -------------------------- INNER CLASSES --------------------------
 
-	/**
-	 * {@inheritDoc}
-	 */
-/*	@Override
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
+	protected class VotingResults
 		{
-		//initializeWithRealData(trainingCollectionIteratorFactory.next());
+// ------------------------------ FIELDS ------------------------------
 
-		// after that, normalize the label probabilities
+		// use WeightedSet instead of MultiSet so we can aggregate label probabilities
+		// keep track of clusters per label, for the sake of tracking computed distances to the clusters contributing to each label
+		private final Map<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>> labelContributions =
+				new HashMap<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>>();
 
-		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
-		for (final Cluster c : theClusters)
+		private String bestLabel;
+		private String secondBestLabel;
+
+		private WeightedSet<String> labelVotes = new HashWeightedSet<String>();
+
+
+// --------------------- GETTER / SETTER METHODS ---------------------
+
+		public String getBestLabel()
 			{
-			execService.submit(new Runnable()
-			{
-			public void run()
-				{
-				c.updateDerivedWeightedLabelsFromLocal();
-				}
-			});
+			return bestLabel;
 			}
-		execService.finish("Normalized %d training probabilities", 30);
-		}*/
-	protected VotingResults addUpNeighborVotes(TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves,
-	                                           Set<String> populatedTrainingLabels)
-		{
-		VotingResults result = new VotingResults();
 
-		int neighborsCounted = 0;
-		double lastDistance = 0.0;
-		for (ClusterMove<T, CentroidCluster<T>> cm : moves.values())
+		public String getSecondBestLabel()
 			{
-			if (neighborsCounted >= maxNeighbors)
-				{
-				break;
-				}
-
-			// the moves must be sorted in order of increasing distance
-			assert cm.bestDistance >= lastDistance;
-			lastDistance = cm.bestDistance;
-
-			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
-
-			result.addVotes(labelsOnThisCluster, cm.voteWeight);
-
-			for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
-				{
-				final String label = entry.getKey();
-				final Double labelProbability = entry.getValue();
-
-				result.addContribution(cm, label, labelProbability);
-				}
-
-			neighborsCounted++;
+			return secondBestLabel;
 			}
-		result.finish(populatedTrainingLabels);
-		return result;
+
+// -------------------------- OTHER METHODS --------------------------
+
+		public void addContribution(ClusterMove<T, CentroidCluster<T>> cm, String label, Double labelProbability)
+			{
+			WeightedSet<ClusterMove<T, CentroidCluster<T>>> contributionSet = labelContributions.get(label);
+			if (contributionSet == null)
+				{
+				contributionSet = new HashWeightedSet<ClusterMove<T, CentroidCluster<T>>>();
+				labelContributions.put(label, contributionSet);
+				}
+			contributionSet.add(cm, labelProbability);
+			contributionSet.incrementItems();
+			}
+
+		public void addVotes(WeightedSet<String> labelsOnThisCluster)
+			{
+			labelVotes.addAll(labelsOnThisCluster);
+			}
+
+		public void addVotes(WeightedSet<String> labelsOnThisCluster, double multiplier)
+			{
+			labelVotes.addAll(labelsOnThisCluster, multiplier);
+			}
+
+		/*public WeightedSet<ClusterMove<T, CentroidCluster<T>>> getContributions(String label)
+			{
+			return labelContributions.get(label);
+			}*/
+
+		public double computeWeightedDistance(String label)
+			{
+			return computeWeightedDistance(labelContributions.get(label));
+			}
+
+		public void finish(Set<String> predictionLabels)
+			{
+			// primary sort the labels by votes, secondary by weighted distance
+			// even if there is a unique label with the most votes, the second place one may still matter depending on the unknown thresholds
+
+			Comparator weightedDistanceSort = new Comparator()
+			{
+			Map<String, Double> cache = new HashMap<String, Double>();
+
+			private Double getWeightedDistance(String label)
+				{
+				Double result = cache.get(label);
+				if (result == null)
+					{
+					result = computeWeightedDistance(labelContributions.get(label));
+					cache.put(label, result);
+					}
+				return result;
+				}
+
+			public int compare(Object o1, Object o2)
+				{
+				return Double.compare(getWeightedDistance((String) o1), getWeightedDistance((String) o2));
+				}
+			};
+
+			labelVotes.retainKeys(predictionLabels);
+			Iterator<String> vi = labelVotes.keysInDecreasingWeightOrder(weightedDistanceSort).iterator();
+
+			bestLabel = vi.next();
+			try
+				{
+				secondBestLabel = vi.next();
+				}
+			catch (NoSuchElementException e)
+				{
+				//no problem
+				}
+			}
+
+		/**
+		 * compute weighted average computed distance to clusters contributing to this label
+		 */
+		private double computeWeightedDistance(
+				WeightedSet<ClusterMove<T, CentroidCluster<T>>> dominantLabelContributions)
+			{
+			double weightedComputedDistance = 0;
+
+			for (Map.Entry<ClusterMove<T, CentroidCluster<T>>, Double> entry : dominantLabelContributions
+					.getItemNormalizedMap().entrySet())
+				{
+				ClusterMove<T, CentroidCluster<T>> contributingCm = entry.getKey();
+				Double contributionWeight = entry.getValue();
+				weightedComputedDistance += contributionWeight * contributingCm.bestDistance;
+				}
+			return weightedComputedDistance;
+			}
+
+		public double getProb(String bestLabel)
+			{
+			return labelVotes.getNormalized(bestLabel);
+			}
+
+		public double getVotes(String label)
+			{
+			return labelVotes.get(label);
+			}
+
+		public boolean hasSecondBestLabel()
+			{
+			return secondBestLabel != null;
+			}
 		}
 	}

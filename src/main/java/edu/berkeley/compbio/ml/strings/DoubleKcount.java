@@ -54,21 +54,14 @@ import java.util.Arrays;
  */
 public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> implements DoubleArrayContainer
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	protected double[] counts;
 
 	protected Double dataSum = null;
 
-	public synchronized double getArraySum()
-		{
-		if (dataSum == null)
-			{
-			dataSum = DSArrayUtils.sum(counts);
-			}
-		return dataSum;
-		}
-	// --------------------------- CONSTRUCTORS ---------------------------
+
+// --------------------------- CONSTRUCTORS ---------------------------
 
 	/**
 	 * Creates a new Kcount instance.
@@ -78,7 +71,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 		super();
 		}
 
-	// ------------------------ CANONICAL METHODS ------------------------
+// ------------------------ CANONICAL METHODS ------------------------
 
 	/**
 	 * Clones this object.  Should behave like {@link Object#clone()} except that it returns an appropriate type and so
@@ -93,10 +86,19 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	public abstract T clone();
 
 
-	// ------------------------ INTERFACE METHODS ------------------------
+// ------------------------ INTERFACE METHODS ------------------------
 
 
-	// --------------------- Interface Clusterable ---------------------
+// --------------------- Interface AdditiveClusterable ---------------------
+
+
+	public synchronized void multiplyBy(double v)
+		{
+		DSArrayUtils.multiplyBy(counts, v);
+		dataSum = null;
+		}
+
+// --------------------- Interface Clusterable ---------------------
 
 	/**
 	 * Tests whether the given pattern counts are equal to those stored here.  Differs from equals() in that
@@ -111,8 +113,18 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 		return Arrays.equals(counts, other.counts);
 		}
 
-	// --------------------- Interface SequenceSpectrum ---------------------
+// --------------------- Interface DoubleArrayContainer ---------------------
 
+	public synchronized double getArraySum()
+		{
+		if (dataSum == null)
+			{
+			dataSum = DSArrayUtils.sum(counts);
+			}
+		return dataSum;
+		}
+
+// --------------------- Interface SequenceSpectrum ---------------------
 
 	/**
 	 * Tests whether the given sequence statistics are equivalent to this one.  Differs from equals() in that
@@ -128,7 +140,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 		return equalValue((T) spectrum);
 		}
 
-	// -------------------------- OTHER METHODS --------------------------
+// -------------------------- OTHER METHODS --------------------------
 
 	public synchronized double[] getLevelOneArray()
 		{
@@ -158,12 +170,5 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	public synchronized double[] getArray()
 		{
 		return counts;
-		}
-
-
-	public synchronized void multiplyBy(double v)
-		{
-		DSArrayUtils.multiplyBy(counts, v);
-		dataSum = null;
 		}
 	}

@@ -61,10 +61,12 @@ import java.util.Queue;
 
 public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestInstanceFactory<SequenceSpectrum>
 	{
-	// ------------------------------ FIELDS ------------------------------
+// ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(RonPSTTest.class);
 
+
+// -------------------------- OTHER METHODS --------------------------
 
 	/**
 	 * {@inheritDoc}
@@ -74,14 +76,6 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		{
 		theContractTests.add(new SequenceSpectrumInterfaceTest(this));
 		}
-
-	@Factory
-	public Object[] instantiateAllContractTests()
-		{
-		return super.instantiateAllContractTestsWithName(RonPST.class.getCanonicalName());
-		}
-
-	// -------------------------- OTHER METHODS --------------------------
 
 	@Test
 	public void afterCompleteEveryNodeHasTransitionsForEverySymbolOrNone()
@@ -102,43 +96,6 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		RonPST pst = new RonPST(0.0001, 0.01, 1.1, 4, ss);
 		//pst.copyProbsFrom(ss);
 		return pst;
-		}
-
-	public static SequenceSpectrum createStubSimpleSequenceSpectrum() throws SequenceSpectrumException
-		{
-		return new StubSequenceSpectrum();
-		/*SequenceSpectrum ss = createMock(SequenceSpectrum.class);
-
-		expect(ss.getAlphabet()).andReturn(new byte[]{'a', 'b', 'c', 'd'}).anyTimes();
-
-		expect(ss.totalProbability(aryEq(new byte[]{'a'}))).andReturn(.1);
-		expect(ss.totalProbability(aryEq(new byte[]{'b'}))).andReturn(.2);
-		expect(ss.totalProbability(aryEq(new byte[]{'c'}))).andReturn(.3);
-		expect(ss.totalProbability(aryEq(new byte[]{'d'}))).andReturn(.4);
-
-
-		expect(ss.totalProbability(aryEq(new byte[]{'a', 'a'}))).andReturn(.1);
-		expect(ss.totalProbability(aryEq(new byte[]{'a', 'b'}))).andReturn(.2);
-		expect(ss.totalProbability(aryEq(new byte[]{'a', 'c'}))).andReturn(.3);
-		expect(ss.totalProbability(aryEq(new byte[]{'a', 'd'}))).andReturn(.4);
-
-		expect(ss.totalProbability(aryEq(new byte[]{'b', 'a'}))).andReturn(.4);
-		expect(ss.totalProbability(aryEq(new byte[]{'b', 'b'}))).andReturn(.3);
-		expect(ss.totalProbability(aryEq(new byte[]{'b', 'c'}))).andReturn(.2);
-		expect(ss.totalProbability(aryEq(new byte[]{'b', 'd'}))).andReturn(.1);
-
-		expect(ss.totalProbability(aryEq(new byte[]{'c', 'a'}))).andReturn(.11);
-		expect(ss.totalProbability(aryEq(new byte[]{'c', 'b'}))).andReturn(.21);
-		expect(ss.totalProbability(aryEq(new byte[]{'c', 'c'}))).andReturn(.31);
-		expect(ss.totalProbability(aryEq(new byte[]{'c', 'd'}))).andReturn(.37);
-
-		expect(ss.totalProbability(aryEq(new byte[]{'d', 'a'}))).andReturn(.1);
-		expect(ss.totalProbability(aryEq(new byte[]{'d', 'b'}))).andReturn(.2);
-		expect(ss.totalProbability(aryEq(new byte[]{'d', 'c'}))).andReturn(.3);
-		expect(ss.totalProbability(aryEq(new byte[]{'d', 'd'}))).andReturn(.4);
-
-		replay(ss);
-		return ss;*/
 		}
 
 	private boolean allNodesAreCompleteOrEmpty(RonPSTNode node, int maxWidth)
@@ -206,6 +163,49 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		assert pst.getMaxDepth() == 1;
 		}
 
+	public static SequenceSpectrum createStubSimpleSequenceSpectrum() throws SequenceSpectrumException
+		{
+		return new StubSequenceSpectrum();
+		/*SequenceSpectrum ss = createMock(SequenceSpectrum.class);
+
+		expect(ss.getAlphabet()).andReturn(new byte[]{'a', 'b', 'c', 'd'}).anyTimes();
+
+		expect(ss.totalProbability(aryEq(new byte[]{'a'}))).andReturn(.1);
+		expect(ss.totalProbability(aryEq(new byte[]{'b'}))).andReturn(.2);
+		expect(ss.totalProbability(aryEq(new byte[]{'c'}))).andReturn(.3);
+		expect(ss.totalProbability(aryEq(new byte[]{'d'}))).andReturn(.4);
+
+
+		expect(ss.totalProbability(aryEq(new byte[]{'a', 'a'}))).andReturn(.1);
+		expect(ss.totalProbability(aryEq(new byte[]{'a', 'b'}))).andReturn(.2);
+		expect(ss.totalProbability(aryEq(new byte[]{'a', 'c'}))).andReturn(.3);
+		expect(ss.totalProbability(aryEq(new byte[]{'a', 'd'}))).andReturn(.4);
+
+		expect(ss.totalProbability(aryEq(new byte[]{'b', 'a'}))).andReturn(.4);
+		expect(ss.totalProbability(aryEq(new byte[]{'b', 'b'}))).andReturn(.3);
+		expect(ss.totalProbability(aryEq(new byte[]{'b', 'c'}))).andReturn(.2);
+		expect(ss.totalProbability(aryEq(new byte[]{'b', 'd'}))).andReturn(.1);
+
+		expect(ss.totalProbability(aryEq(new byte[]{'c', 'a'}))).andReturn(.11);
+		expect(ss.totalProbability(aryEq(new byte[]{'c', 'b'}))).andReturn(.21);
+		expect(ss.totalProbability(aryEq(new byte[]{'c', 'c'}))).andReturn(.31);
+		expect(ss.totalProbability(aryEq(new byte[]{'c', 'd'}))).andReturn(.37);
+
+		expect(ss.totalProbability(aryEq(new byte[]{'d', 'a'}))).andReturn(.1);
+		expect(ss.totalProbability(aryEq(new byte[]{'d', 'b'}))).andReturn(.2);
+		expect(ss.totalProbability(aryEq(new byte[]{'d', 'c'}))).andReturn(.3);
+		expect(ss.totalProbability(aryEq(new byte[]{'d', 'd'}))).andReturn(.4);
+
+		replay(ss);
+		return ss;*/
+		}
+
+	@Factory
+	public Object[] instantiateAllContractTests()
+		{
+		return super.instantiateAllContractTestsWithName(RonPST.class.getCanonicalName());
+		}
+
 	@Test
 	public void lowRatioThresholdProducesDeepTree() throws SequenceSpectrumException
 		{
@@ -252,37 +252,79 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		//	stubSequenceFragmentIteratorFactory = new PropertyConsumerFactory<StubSequenceFragmentIterator>(n);
 		}
 
-	// -------------------------- INNER CLASSES --------------------------
+// -------------------------- INNER CLASSES --------------------------
 
 	public static class StubSequenceSpectrum extends AbstractGenericFactoryAware
 			implements SequenceSpectrum<StubSequenceSpectrum>
 		{
+// ------------------------------ FIELDS ------------------------------
+
 		Map<Byte, Double> counts = new HashMap<Byte, Double>();
 		Map<Byte, Map<Byte, Double>> counts2 = new HashMap<Byte, Map<Byte, Double>>();
 
+		private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public String getExclusiveLabel()
+
+// --------------------------- CONSTRUCTORS ---------------------------
+
+		public StubSequenceSpectrum()
 			{
-			return "Stub";
+			Map<Byte, Double> aCounts = new HashMap<Byte, Double>();
+			aCounts.put((byte) 'a', 1.);
+			aCounts.put((byte) 'b', 2.);
+			aCounts.put((byte) 'c', 3.);
+			aCounts.put((byte) 'd', 4.);
+			counts2.put((byte) 'a', aCounts);
+			counts.put((byte) 'a', DSCollectionUtils.sum(aCounts.values()));
+
+			Map<Byte, Double> bCounts = new HashMap<Byte, Double>();
+			bCounts.put((byte) 'a', 3.);
+			bCounts.put((byte) 'b', 3.);
+			bCounts.put((byte) 'c', 3.);
+			bCounts.put((byte) 'd', 1.);
+			counts2.put((byte) 'b', bCounts);
+			counts.put((byte) 'b', DSCollectionUtils.sum(bCounts.values()));
+
+			Map<Byte, Double> cCounts = new HashMap<Byte, Double>();
+			cCounts.put((byte) 'a', 2.);
+			cCounts.put((byte) 'b', 4.);
+			cCounts.put((byte) 'c', 6.);
+			cCounts.put((byte) 'd', 8.);
+			counts2.put((byte) 'c', cCounts);
+			counts.put((byte) 'c', DSCollectionUtils.sum(cCounts.values()));
+
+			Map<Byte, Double> dCounts = new HashMap<Byte, Double>();
+			dCounts.put((byte) 'a', 4.);
+			dCounts.put((byte) 'b', 3.);
+			dCounts.put((byte) 'c', 2.);
+			dCounts.put((byte) 'd', 1.);
+			counts2.put((byte) 'd', dCounts);
+			counts.put((byte) 'd', DSCollectionUtils.sum(dCounts.values()));
 			}
 
-		private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+// --------------------- GETTER / SETTER METHODS ---------------------
 
 		public WeightedSet<String> getWeightedLabels()
 			{
 			return weightedLabels;
 			}
 
+// ------------------------ CANONICAL METHODS ------------------------
+
 		/**
 		 * {@inheritDoc}
 		 */
-		public void multiplyBy(double v)
+		@Override
+		public StubSequenceSpectrum clone()
 			{
 			throw new NotImplementedException();
 			}
+
+// ------------------------ INTERFACE METHODS ------------------------
+
+
+// --------------------- Interface AdditiveClusterable ---------------------
+
 
 		/**
 		 * updates this object by subtracting another one from it.
@@ -332,6 +374,14 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			}
 
 		/**
+		 * {@inheritDoc}
+		 */
+		public void multiplyBy(double v)
+			{
+			throw new NotImplementedException();
+			}
+
+		/**
 		 * Returns a new object representing the sum of this one and the given argument.
 		 *
 		 * @param object the object to be added to this one
@@ -350,63 +400,8 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			throw new NotImplementedException();
 			}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public int getOriginalSequenceLength()
-			{
-			return 50;
-			//throw new NotImplementedException();
-			}
+// --------------------- Interface Clusterable ---------------------
 
-		public void addPseudocounts()
-			{
-			throw new NotImplementedException();
-			}
-
-		public StubSequenceSpectrum()
-			{
-			Map<Byte, Double> aCounts = new HashMap<Byte, Double>();
-			aCounts.put((byte) 'a', 1.);
-			aCounts.put((byte) 'b', 2.);
-			aCounts.put((byte) 'c', 3.);
-			aCounts.put((byte) 'd', 4.);
-			counts2.put((byte) 'a', aCounts);
-			counts.put((byte) 'a', DSCollectionUtils.sum(aCounts.values()));
-
-			Map<Byte, Double> bCounts = new HashMap<Byte, Double>();
-			bCounts.put((byte) 'a', 3.);
-			bCounts.put((byte) 'b', 3.);
-			bCounts.put((byte) 'c', 3.);
-			bCounts.put((byte) 'd', 1.);
-			counts2.put((byte) 'b', bCounts);
-			counts.put((byte) 'b', DSCollectionUtils.sum(bCounts.values()));
-
-			Map<Byte, Double> cCounts = new HashMap<Byte, Double>();
-			cCounts.put((byte) 'a', 2.);
-			cCounts.put((byte) 'b', 4.);
-			cCounts.put((byte) 'c', 6.);
-			cCounts.put((byte) 'd', 8.);
-			counts2.put((byte) 'c', cCounts);
-			counts.put((byte) 'c', DSCollectionUtils.sum(cCounts.values()));
-
-			Map<Byte, Double> dCounts = new HashMap<Byte, Double>();
-			dCounts.put((byte) 'a', 4.);
-			dCounts.put((byte) 'b', 3.);
-			dCounts.put((byte) 'c', 2.);
-			dCounts.put((byte) 'd', 1.);
-			counts2.put((byte) 'd', dCounts);
-			counts.put((byte) 'd', DSCollectionUtils.sum(dCounts.values()));
-			}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public StubSequenceSpectrum clone()
-			{
-			throw new NotImplementedException();
-			}
 
 		/**
 		 * Test whether the given object is the same as this one.  Differs from equals() in that implementations of this
@@ -421,7 +416,6 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			throw new NotImplementedException();
 			}
 
-
 		/**
 		 * {@inheritDoc}
 		 */
@@ -430,10 +424,8 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			return "Test Spectrum";
 			}
 
-		public String getSourceId()
-			{
-			throw new NotImplementedException();
-			}
+// --------------------- Interface SequenceSpectrum ---------------------
+
 
 		/**
 		 * {@inheritDoc}
@@ -508,9 +500,10 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public int getSumOfCounts()
+		public int getOriginalSequenceLength()
 			{
 			return 50;
+			//throw new NotImplementedException();
 			}
 
 		/**
@@ -557,6 +550,22 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
+		public void setIgnoreEdges(boolean ignoreEdges)
+			{
+			// not relevant here...
+			}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void setImmutable()
+			{
+			// not relevant here
+			}
+
+		/**
+		 * {@inheritDoc}
+		 */
 		public boolean spectrumEquals(SequenceSpectrum spectrum)
 			{
 			return spectrum == this;
@@ -582,6 +591,21 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			throw new SequenceSpectrumException("depth oops");
 			}
 
+// -------------------------- OTHER METHODS --------------------------
+
+		public void addPseudocounts()
+			{
+			throw new NotImplementedException();
+			}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public String getExclusiveLabel()
+			{
+			return "Stub";
+			}
+
 		/*
 		public void runBeginTrainingProcessor() throws DistributionProcessorException
 			{
@@ -599,20 +623,17 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			throw new NotImplementedException();
 			}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		public void setIgnoreEdges(boolean ignoreEdges)
+		public String getSourceId()
 			{
-			// not relevant here...
+			throw new NotImplementedException();
 			}
 
 		/**
 		 * {@inheritDoc}
 		 */
-		public void setImmutable()
+		public int getSumOfCounts()
 			{
-			// not relevant here
+			return 50;
 			}
 		}
 	}
