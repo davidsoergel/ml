@@ -199,6 +199,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		this.minRadius = minRadius;
 		this.searchStrategy = searchStrategy;
 
+
 		if (dimensions != 2)
 			{
 			throw new ClusterRuntimeException("KohonenSOM2D accepts only two-dimensional grid.");
@@ -236,6 +237,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		{
 		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
 		createClusters(totalCells, prototypeFactory);
+
+		searchStrategy.setSOM(this);
 		}
 
 	private void createClusters(int totalCells, GenericFactory<T> prototypeFactory) throws GenericFactoryException
@@ -392,7 +395,6 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 		{
 		//createClusters(prototypeFactory);
-		searchStrategy.setSOM(this);
 
 		for (int i = 0; i < initSamples; i++)
 			//int i = 0;

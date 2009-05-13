@@ -97,7 +97,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	 * @param id       an integer uniquely identifying this cluster
 	 * @param centroid the T
 	 */
-	public AbstractCentroidCluster(int id, @NotNull T centroid)//DistanceMeasure<T> dm
+	public AbstractCentroidCluster(int id, T centroid)//DistanceMeasure<T> dm
 		{
 		super(id);
 		this.centroid = centroid;//.clone();
