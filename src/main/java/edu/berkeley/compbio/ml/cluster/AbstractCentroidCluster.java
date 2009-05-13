@@ -34,6 +34,7 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Formatter;
 
@@ -96,7 +97,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	 * @param id       an integer uniquely identifying this cluster
 	 * @param centroid the T
 	 */
-	public AbstractCentroidCluster(int id, T centroid)//DistanceMeasure<T> dm
+	public AbstractCentroidCluster(int id, @NotNull T centroid)//DistanceMeasure<T> dm
 		{
 		super(id);
 		this.centroid = centroid;//.clone();
@@ -115,6 +116,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	/**
 	 * {@inheritDoc}
 	 */
+	@NotNull
 	public T getCentroid()
 		{
 		return centroid;
@@ -123,7 +125,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setCentroid(T centroid)
+	public void setCentroid(@NotNull T centroid)
 		{
 		this.centroid = centroid;
 		}

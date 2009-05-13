@@ -54,7 +54,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		// we're going to hack the prior probabilities using the number of clusters per label
 		// TacoaDistanceMeasure takes the prior to be per label, not per cluster
 
-		priors = new HashMap<CentroidCluster, Double>();
+		priors = new HashMap<CentroidCluster<T>, Double>();
 		Multinomial<String> labelPriors = new Multinomial<String>(populatedTrainingLabels);
 		for (CentroidCluster<T> theCluster : theClusters)
 			{

@@ -33,11 +33,9 @@
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.PrototypeBasedCentroidClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.SampleInitializedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod;
-
-import java.util.Iterator;
-import java.util.Set;
 
 
 /**
@@ -48,18 +46,10 @@ import java.util.Set;
  */
 
 public interface KohonenSOM<T extends AdditiveClusterable<T>>
-		extends SemisupervisedClusteringMethod<T>, CentroidClusteringMethod<T>
+		extends SemisupervisedClusteringMethod<T>, PrototypeBasedCentroidClusteringMethod<T>,
+		        SampleInitializedOnlineClusteringMethod<T>, DiffusableLabelClusteringMethod<T, KohonenSOMCell<T>>
 	{
 	//boolean add(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;
-
-	/**
-	 * Gets an iterator over cells in the neighborhood of the given cell.  The definition of "neighborhood" is
-	 * implementation-specific, and may have parameters (such as a radius).
-	 *
-	 * @param cell the cell whose neighborhood to iterate over.
-	 * @return an iterator over cells in the neighborhood, in no particular order.
-	 */
-	Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(KohonenSOMCell<T> cell);
 
 
 	//int getBestCluster(T p, List<Double> secondBestDistances) throws ClusterException, NoGoodClusterException;

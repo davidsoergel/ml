@@ -32,69 +32,24 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
-import com.davidsoergel.dsutils.collections.WeightedSet;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
-import org.apache.log4j.Logger;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 
 
 /**
- * Label each cell in a Kohonen SOM with label proportions according to the label counts that are present in the cell,
- * or in the smallest neighborhood around the cell including a given number of real data points.
+ * Once a Kohonen SOM is learned, propagate the sample labels around in some way to give label confidences for every
+ * cell.
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
- * @Author David Soergel
- * @Version 1.0
  */
-public class KohonenSOMNeighborhoodCollectingRelabeler<T extends AdditiveClusterable<T>> implements KohonenSOMLabeler<T>
+public interface LabelDiffuser<T extends AdditiveClusterable<T>, C extends CentroidCluster<T>>
 	{
-	private static final Logger logger = Logger.getLogger(KohonenSOMNeighborhoodCollectingRelabeler.class);
-	int requiredLabels;
-
-	public KohonenSOMNeighborhoodCollectingRelabeler(int requiredLabels) //, double labelRetainThreshold)
-		{
-		this.requiredLabels = requiredLabels;
-//		this.labelRetainThreshold = labelRetainThreshold;
-		}
-
 	/**
-	 * {@inheritDoc}
+	 * Once a Kohonen SOM is learned, propagate the sample labels around in some way to give label confidences for every
+	 * cell.
+	 *
+	 * @param theMap the KohonenSOM<T>
 	 */
-	public void propagateLabels(KohonenSOM theMap)
-		{
-		int i = 0;
-		for (KohonenSOMCell cell : (List<KohonenSOMCell>) theMap.getClusters())
-			{
-			WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
-			Iterator<Set<KohonenSOMCell>> shells = theMap.getNeighborhoodShellIterator(cell);
-
-			while (weightedLabels.getWeightSum() < requiredLabels)
-				{
-				for (KohonenSOMCell shellMember : shells.next())
-					{
-					weightedLabels.addAll(shellMember.getWeightedLabels());
-					}
-				}
-
-			//try
-			//	{
-			cell.setDerivedLabelProbabilities(weightedLabels);
-			/*	}
-			catch (DistributionException e)
-				{
-				logger.warn("Empty bag?", e);
-				cell.setDerivedLabelProbabilities(null);
-				}*/
-			if (i % 1000 == 0)
-				{
-				logger.debug("Relabeled " + i + " nodes.");
-				}
-			i++;
-			}
-		}
+	void propagateLabels(DiffusableLabelClusteringMethod<T, C> theMap);
 	}

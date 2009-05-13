@@ -33,6 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
+import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.SimpleFunction;
@@ -140,7 +141,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 
 
 	public KohonenSOMnD(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
-	                    Set<String> leaveOneOutLabels, Set<String> testLabels, int[] cellsPerDimension, T prototype,
+	                    Set<String> leaveOneOutLabels, Set<String> testLabels, int[] cellsPerDimension,
 	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction,
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap)
 		{
@@ -164,13 +165,18 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 			blockSize[i] = blockSize[i + 1] * cellsPerDimension[i];
 			}
 
-		int[] zeroCell = new int[dimensions];
-		Arrays.fill(zeroCell, 0);
-		createClusters(zeroCell, -1, prototype);
+
 		//List<Interval<Double>> axisRanges;
 		//	initializeClusters(axisRanges);
 
 		maxRadius = DSArrayUtils.norm(cellsPerDimension);
+		}
+
+	public void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
+		{
+		int[] zeroCell = new int[dimensions];
+		Arrays.fill(zeroCell, 0);
+		createClusters(zeroCell, -1, prototypeFactory);
 		}
 
 	/*
@@ -187,12 +193,13 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 	 * @param cellPosition
 	 * @param changingDimension // * @param prototype
 	 */
-	private void createClusters(int[] cellPosition, int changingDimension, T prototype)
+	private void createClusters(int[] cellPosition, int changingDimension, GenericFactory<T> prototypeFactory)
+			throws GenericFactoryException
 		{
 		changingDimension++;
 		if (changingDimension == dimensions)
 			{
-			KohonenSOMCell<T> c = new KohonenSOMCell<T>(idCount++, prototype.clone());//measure,
+			KohonenSOMCell<T> c = new KohonenSOMCell<T>(idCount++, prototypeFactory.create());//measure,
 			((List<KohonenSOMCell<T>>) theClusters).set(listIndexFor(cellPosition), c);
 			}
 		else
@@ -200,7 +207,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 			for (int i = 0; i < cellsPerDimension[changingDimension]; i++)
 				{
 				cellPosition[changingDimension] = i;
-				createClusters(cellPosition, changingDimension, prototype);
+				createClusters(cellPosition, changingDimension, prototypeFactory);
 				}
 			}
 
@@ -246,9 +253,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 		return true;
 		}
 
-	public void initializeWithRealData(Iterator<T> initIterator, int initSamples
-	                                   // ,GenericFactory<T> prototypeFactory
-	) throws GenericFactoryException
+	public void initializeWithSamples(Iterator<T> initIterator, int initSamples
+	                                  // ,GenericFactory<T> prototypeFactory
+	) //throws GenericFactoryException
 		//	, GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
 		for (int i = 0; i < initSamples; i++)
@@ -552,7 +559,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 				}
 */
 			// otherwise find the nearest cluster
-			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
+			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			if (logger.isTraceEnabled())
 				{
 				logger.trace("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);

@@ -1,7 +1,5 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.GenericFactory;
-
 import java.util.Iterator;
 
 /**
@@ -17,6 +15,12 @@ public interface SampleInitializedOnlineClusteringMethod<T extends Clusterable<T
 //	void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, final GenericFactory<T> prototypeFactory,
 //	           int trainingEpochs) throws IOException, ClusterException;
 
-	void initializeWithSamples(Iterator<T> sequenceFragmentIterator, int initSamples,
-	                           GenericFactory<T> prototypeFactory);
+	/**
+	 * if the implementation is also a PrototypeBasedControidClusteringMethod, then createClusters must be called first to
+	 * provide the prototype factory
+	 *
+	 * @param sequenceFragmentIterator
+	 * @param initSamples
+	 */
+	void initializeWithSamples(Iterator<T> sequenceFragmentIterator, int initSamples);
 	}

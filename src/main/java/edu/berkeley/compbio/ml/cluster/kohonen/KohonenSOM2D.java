@@ -128,7 +128,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	// how many point assignments have changed in this epoch
 	int changed = 0;
 
-	private KohonenSOMLabeler<T> labeler;
+	private LabelDiffuser<T, KohonenSOMCell<T>> labeler;
 
 	// --------------------------- CONSTRUCTORS ---------------------------
 
@@ -232,7 +232,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 		 }
  */
-	private void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
+	public void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
 		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
 		createClusters(totalCells, prototypeFactory);
@@ -243,7 +243,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		for (int i = 0; i < totalCells; i++)
 			{
 			KohonenSOMCell<T> c =
-					new KohonenSOMCell<T>(i, prototypeFactory == null ? null : prototypeFactory.create(null));
+					new KohonenSOMCell<T>(i, prototypeFactory == null ? null : prototypeFactory.create("" + i));
 			c.setId(i);
 			theClusters.add(c);
 			}
@@ -284,7 +284,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	//		}
 	@Override
 	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
-			throws IOException, ClusterException
+			throws ClusterException
 		{
 		super.train(trainingCollectionIteratorFactory, iterations);
 		labeler.propagateLabels(this);
@@ -388,10 +388,10 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void initializeWithRealData(Iterator<T> initIterator, int initSamples, GenericFactory<T> prototypeFactory)
-			throws GenericFactoryException
+	public void initializeWithSamples(Iterator<T> initIterator, int initSamples)
+
 		{
-		createClusters(prototypeFactory);
+		//createClusters(prototypeFactory);
 		searchStrategy.setSOM(this);
 
 		for (int i = 0; i < initSamples; i++)
@@ -571,7 +571,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		return radius;
 		}
 
-	public void setLabeler(KohonenSOMLabeler<T> labeler)
+	public void setLabeler(LabelDiffuser<T, KohonenSOMCell<T>> labeler)
 		{
 		this.labeler = labeler;
 		}

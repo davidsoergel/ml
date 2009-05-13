@@ -33,7 +33,6 @@
 
 package edu.berkeley.compbio.ml.cluster.kmeans;
 
-import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AbstractCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod;
@@ -44,6 +43,7 @@ import edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
+import edu.berkeley.compbio.ml.cluster.SampleInitializedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod;
 import org.apache.log4j.Logger;
 
@@ -58,7 +58,8 @@ import java.util.Set;
  */
 public class KmeansClustering<T extends AdditiveClusterable<T>>
 		extends AbstractOnlineClusteringMethod<T, CentroidCluster<T>>
-		implements SemisupervisedClusteringMethod<T>, CentroidClusteringMethod<T>
+		implements SemisupervisedClusteringMethod<T>, CentroidClusteringMethod<T>,
+		           SampleInitializedOnlineClusteringMethod<T>
 	{
 	// ------------------------------ FIELDS ------------------------------
 
@@ -81,9 +82,9 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void initializeWithRealData(Iterator<T> trainingIterator,
-	                                   int initsamples) //, GenericFactory<T> prototypeFactory)
-			throws GenericFactoryException
+	public void initializeWithSamples(Iterator<T> trainingIterator,
+	                                  int initsamples) //, GenericFactory<T> prototypeFactory)
+		//	throws GenericFactoryException
 		{
 
 		for (int i = 0; i < initsamples; i++)
@@ -153,7 +154,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 			}
 		for (CentroidCluster<T> c : theClusters)
 			{
-			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
+			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			if (logger.isTraceEnabled())
 				{
 				logger.trace("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);

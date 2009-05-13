@@ -4,7 +4,6 @@ import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -29,7 +28,7 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 	 * unsupervised clustering.
 	 */
 	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
-			throws IOException, ClusterException//, int maxpoints) throws IOException
+			throws ClusterException//, int maxpoints) throws IOException
 		{
 		// if initializeWithRealData is required, override this and then call super.train() as appropriate
 
@@ -43,5 +42,6 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 				break;
 				}
 			}
+		normalizeClusterLabelProbabilities();
 		}
 	}

@@ -87,4 +87,6 @@ public interface BatchClusteringMethod<T extends Clusterable<T>> extends Cluster
 	 * @param testIterator
 	 */
 //	void addAllAndRemember(Iterator<T> testIterator);
+
+	void createClusters();
 	}

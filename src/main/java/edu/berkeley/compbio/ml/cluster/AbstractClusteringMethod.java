@@ -49,6 +49,23 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		this.testLabels = testLabels;
 		}
 
+	protected void normalizeClusterLabelProbabilities()
+		{
+		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+		for (final Cluster<T> c : theClusters)
+			{
+			execService.submit(new Runnable()
+			{
+			public void run()
+				{
+				c.updateDerivedWeightedLabelsFromLocal();
+				}
+			});
+			}
+		execService.finish("Normalized %d training probabilities", 30);
+		}
+
+
 	/**
 	 * Sets a list of labels to be used for classification.  For a supervised method, this must be called before training.
 	 *

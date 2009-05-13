@@ -34,12 +34,10 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
-import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
@@ -88,10 +86,14 @@ public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C
 	   {
 	   run(theDataPointProvider, iterations, Integer.MAX_VALUE);
 	   }*/
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
-	                  GenericFactory<T> prototypeFactory, int trainingEpochs) throws IOException, ClusterException
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
+			throws ClusterException
 		{
-		trainOneIteration(trainingCollectionIteratorFactory);
+		for (int i = 0; i < trainingEpochs; i++)
+			{
+			trainOneIteration(trainingCollectionIteratorFactory);
+			}
+		normalizeClusterLabelProbabilities();
 		}
 
 

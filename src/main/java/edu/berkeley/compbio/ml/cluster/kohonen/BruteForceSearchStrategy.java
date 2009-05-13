@@ -85,7 +85,7 @@ public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends 
 					  }
 	  */
 			// otherwise find the nearest cluster
-			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
+			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			/*	if (logger.isDebugEnabled())
 			   {
 			   logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);

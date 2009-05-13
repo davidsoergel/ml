@@ -105,4 +105,10 @@ public class AggregateSequenceFragment extends SequenceFragment
 		{
 		theScanner = scanner;
 		}
+
+	@NotNull
+	public SequenceReader getReaderForSynchronizing()
+		{
+		throw new NotImplementedException("Can't get a reader on an aggregate");
+		}
 	}

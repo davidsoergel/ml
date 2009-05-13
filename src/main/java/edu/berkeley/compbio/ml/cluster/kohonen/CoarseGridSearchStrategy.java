@@ -97,7 +97,7 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 		for (KohonenSOMCell<T> c : sparseGrid)
 			{
 
-			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
+			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{
 				result.secondBestDistance = result.bestDistance;
@@ -115,7 +115,7 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 				som.getWeightedMask(gridSpacing * 2).iterator((KohonenSOMCell<T>) result.bestCluster); i.hasNext();)
 			{
 			KohonenSOMCell<T> c = i.next().theCell;
-			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
+			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{
 				result.secondBestDistance = result.bestDistance;

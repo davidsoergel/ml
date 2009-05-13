@@ -32,23 +32,70 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
+import edu.berkeley.compbio.ml.cluster.CentroidCluster;
+import org.apache.log4j.Logger;
+
+import java.util.Iterator;
+import java.util.Set;
 
 
 /**
- * Once a Kohonen SOM is learned, propagate the sample labels around in some way to give label confidences for every
- * cell.
+ * Label each cell in a Kohonen SOM with label proportions according to the label counts that are present in the cell,
+ * or in the smallest neighborhood around the cell including a given number of real data points.
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
+ * @Author David Soergel
+ * @Version 1.0
  */
-public interface KohonenSOMLabeler<T extends AdditiveClusterable<T>>
+public class NeighborhoodCollectingLabelDiffuser<T extends AdditiveClusterable<T>, C extends CentroidCluster<T>>
+		implements LabelDiffuser<T, C>
 	{
+	private static final Logger logger = Logger.getLogger(NeighborhoodCollectingLabelDiffuser.class);
+	int requiredLabels;
+
+	public NeighborhoodCollectingLabelDiffuser(int requiredLabels) //, double labelRetainThreshold)
+		{
+		this.requiredLabels = requiredLabels;
+//		this.labelRetainThreshold = labelRetainThreshold;
+		}
+
 	/**
-	 * Once a Kohonen SOM is learned, propagate the sample labels around in some way to give label confidences for every
-	 * cell.
-	 *
-	 * @param theMap the KohonenSOM<T>
+	 * {@inheritDoc}
 	 */
-	void propagateLabels(KohonenSOM<T> theMap);
+	public void propagateLabels(DiffusableLabelClusteringMethod<T, C> theMap)
+		{
+		int i = 0;
+		for (C cell : theMap.getClusters())
+			{
+			WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+			Iterator<Set<C>> shells = theMap.getNeighborhoodShellIterator(cell);
+
+			while (weightedLabels.getWeightSum() < requiredLabels)
+				{
+				for (CentroidCluster<T> shellMember : shells.next())
+					{
+					weightedLabels.addAll(shellMember.getWeightedLabels());
+					}
+				}
+
+			//try
+			//	{
+			cell.setDerivedLabelProbabilities(weightedLabels);
+			/*	}
+			catch (DistributionException e)
+				{
+				logger.warn("Empty bag?", e);
+				cell.setDerivedLabelProbabilities(null);
+				}*/
+			if (i % 1000 == 0)
+				{
+				logger.debug("Relabeled " + i + " nodes.");
+				}
+			i++;
+			}
+		}
 	}

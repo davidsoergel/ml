@@ -101,7 +101,7 @@ public class KohonenSOM2DTest
 						10
 				}, moveFactorFunction, radiusFunction, weightFunction, false, true, 1, bruteForceStrategy);
 
-		som.initializeWithRealData(null, 0, prototypeFactory);
+		som.createClusters(prototypeFactory);
 		som.add(new ClusterableDoubleArray("test1", new double[]{
 				1,
 				2,
@@ -128,7 +128,7 @@ public class KohonenSOM2DTest
 						10
 				}, moveFactorFunction, radiusFunction, weightFunction, false, true, 1, bruteForceStrategy);
 
-		som.initializeWithRealData(null, 0, prototypeFactory);
+		som.createClusters(prototypeFactory);
 		som.add(new ClusterableDoubleArray("test1", new double[]{
 				1,
 				2,
@@ -278,7 +278,7 @@ public class KohonenSOM2DTest
 					   som.clusterAt(x, y).setCentroid(zeroArray);
 					   }
 				   }*/
-		som.initializeWithRealData(null, 0, prototypeFactory);
+		som.createClusters(prototypeFactory);
 
 		som.clusterAt(2, 2).setCentroid(new ClusterableDoubleArray("test1", new double[]{
 				1,

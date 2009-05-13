@@ -1,7 +1,5 @@
 package edu.berkeley.compbio.ml.cluster.svm;
 
-import com.davidsoergel.dsutils.CollectionIteratorFactory;
-import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.google.common.base.Function;
 import com.google.common.base.Nullable;
@@ -16,7 +14,6 @@ import edu.berkeley.compbio.jlibsvm.multi.VotingResult;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
-import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
@@ -24,7 +21,6 @@ import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -106,17 +102,16 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		}
 
 
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
-	                  GenericFactory<T> prototypeFactory, int trainingEpochs) throws IOException, ClusterException
+/*	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
+	                  int trainingEpochs) throws IOException, ClusterException
 		{
 		addAll(trainingCollectionIteratorFactory.next());
 		train();
-		}
+		}*/
 
 
 	public void train()
 		{
-
 		svm = new MultiClassificationSVM<BatchCluster<T>, T>(binarySvm);
 		MultiClassProblem<BatchCluster<T>, T> problem =
 				new MultiClassProblemImpl<BatchCluster<T>, T>(BatchCluster.class, new BatchClusterLabelInverter<T>(),
@@ -159,7 +154,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 	// assert initSamples == 0;
 //		}
 
-	private void initializeClusters()
+	public void createClusters()
 		{
 		// by analogy with BayesianClustering, take this opportunity to initialize the clusters
 

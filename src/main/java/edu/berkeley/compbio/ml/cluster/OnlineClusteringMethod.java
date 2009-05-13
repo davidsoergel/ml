@@ -1,5 +1,7 @@
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.CollectionIteratorFactory;
+
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id: OnlineClusteringMethod.java 398 2009-05-12 05:11:40Z soergel $
@@ -21,4 +23,7 @@ public interface OnlineClusteringMethod<T extends Clusterable<T>> extends Cluste
 	 * @throws NoGoodClusterException
 	 */
 	boolean add(T p) throws ClusterException, NoGoodClusterException;  //, List<Double> secondBestDistances
+
+	void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
+			throws ClusterException;
 	}

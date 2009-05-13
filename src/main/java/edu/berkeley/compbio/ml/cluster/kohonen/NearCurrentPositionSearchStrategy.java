@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
@@ -75,6 +76,13 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
  */ KohonenSOM2DSearchStrategy<T> fallbackStrategy = new CoarseGridSearchStrategy<T>();
 
 
+	@Override
+	public void setDistanceMeasure(DissimilarityMeasure<T> dissimilarityMeasure)
+		{
+		super.setDistanceMeasure(dissimilarityMeasure);
+		fallbackStrategy.setDistanceMeasure(dissimilarityMeasure);
+		}
+
 	/**
 	 * Copied from KmeansClustering
 	 *
@@ -104,7 +112,7 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 		     i.hasNext();)
 			{
 			KohonenSOMCell<T> c = i.next().theCell;
-			double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
+			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{
 				result.secondBestDistance = result.bestDistance;

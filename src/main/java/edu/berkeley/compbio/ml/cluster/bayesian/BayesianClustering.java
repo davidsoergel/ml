@@ -36,26 +36,17 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
-import com.davidsoergel.dsutils.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
-import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
-import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
-import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
-import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -65,7 +56,7 @@ import java.util.Set;
  * @author David Soergel
  * @version $Id$
  */
-public class BayesianClustering<T extends AdditiveClusterable<T>> extends NeighborClustering<T>
+public class BayesianClustering<T extends AdditiveClusterable<T>> extends NearestNeighborClustering<T>
 		//	implements SampleInitializedOnlineClusteringMethod<T>
 	{
 	// ------------------------------ FIELDS ------------------------------
@@ -84,8 +75,42 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
+	public void createClusters(final GenericFactory<T> prototypeFactory)
+		{
+		assert theClusters.isEmpty();
+
+		try
+			{
+			final Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
+			int i = 0;
+			for (String potentialTrainingBin : potentialTrainingBins)
+				{
+				final T centroid = prototypeFactory.create(potentialTrainingBin);
+
+				final int clusterId = i++;
+				CentroidCluster<T> cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
+				theClusters.add(cluster);
+
+				//** for now we make a uniform prior
+				priorsMult.put(cluster, 1);
+				}
+			priorsMult.normalize();
+			priors = priorsMult.getValueMap();
+			}
+		catch (DistributionException e)
+			{
+			logger.error("Error", e);
+			throw new ClusterRuntimeException(e);
+			}
+		catch (GenericFactoryException e)
+			{
+			logger.error("Error", e);
+			throw new ClusterRuntimeException(e);
+			}
+		}
+
 	//BAD just initialize all clusters, then delete the empty ones
-	public void initializeWithSamples(Iterator<T> trainingIterator, int initSamples,
+/*	public void initializeWithSamples(Iterator<T> trainingIterator, int initSamples,
 	                                  final GenericFactory<T> prototypeFactory)
 		//	throws ClusterException
 		//	throws GenericFactoryException, ClusterException
@@ -165,7 +190,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 
 		theClusters = theClusterMap.values();
 		}
-
+*/
 
 	/**
 	 * {@inheritDoc}
@@ -173,100 +198,15 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neighb
 	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
 			throws IOException, ClusterException
 		{
-		//	initializeWithRealData(trainingCollectionIteratorFactory.next(), prototypeFactory);
+		super.train(trainingCollectionIteratorFactory, 1);
 
-		// don't need this, since initializeWithRealData already considered all of the points
-		//super.train(trainingCollectionIteratorFactory);
+		//limitToPopulatedClusters();
 
 		// after that, normalize the label probabilities
 
-		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
-		for (final Cluster c : theClusters)
-			{
-			execService.submit(new Runnable()
-			{
-			public void run()
-				{
-				c.updateDerivedWeightedLabelsFromLocal();
-				}
-			});
-			}
-		execService.finish("Normalized %d training probabilities", 30);
+		normalizeClusterLabelProbabilities();
 		}
+
 
 	// -------------------------- OTHER METHODS --------------------------
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
-		{
-		ClusterMove result = new ClusterMove();
-
-		result.secondBestDistance = Double.POSITIVE_INFINITY;
-		result.bestDistance = Double.POSITIVE_INFINITY;
-
-		String disallowedLabel = null;
-		if (leaveOneOutLabels != null)
-			{
-			try
-				{
-				disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
-				}
-			catch (NoSuchElementException e)
-				{
-				// OK, leave disallowedLabel==null then
-				}
-			}
-
-		for (CentroidCluster<T> cluster : theClusters)
-			{
-			double distance;
-			if (disallowedLabel != null && disallowedLabel
-					.equals(cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)))
-				{
-				// ignore this cluster
-				}
-			else
-				{
-				// Note that different distance measures may need to deal with the priors differently:
-				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
-				// so, just pass the priors in and let the distance measure decide what to do with them
-				if (measure instanceof ProbabilisticDissimilarityMeasure)
-					{
-					distance = ((ProbabilisticDissimilarityMeasure) measure)
-							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
-					}
-				else
-					{
-					distance = measure.distanceFromTo(p, cluster.getCentroid());
-					}
-
-				if (distance <= result.bestDistance)
-					{
-					result.secondBestDistance = result.bestDistance;
-					result.bestDistance = distance;
-					result.bestCluster = cluster;
-					}
-				else if (distance <= result.secondBestDistance)
-					{
-					result.secondBestDistance = distance;
-					}
-				}
-			}
-
-		if (result.bestCluster == null)
-			{
-			throw new ClusterRuntimeException(
-					"None of the " + theClusters.size() + " clusters matched: " + p); // + ", last distance = " + temp);
-			}
-		if (result.bestDistance > unknownDistanceThreshold)
-			{
-			throw new NoGoodClusterException(
-					"Best distance " + result.bestDistance + " > threshold " + unknownDistanceThreshold);
-			}
-		return result;
-		}
 	}

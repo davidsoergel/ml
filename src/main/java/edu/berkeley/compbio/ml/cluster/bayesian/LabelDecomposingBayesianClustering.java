@@ -33,6 +33,7 @@
 
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
+import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
@@ -43,22 +44,28 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
+import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
+import edu.berkeley.compbio.ml.cluster.SampleInitializedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.kmeans.GrowableKmeansClustering;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Performs cluster classification with a naive bayesian classifier
+ * Performs a simple unsupervised clustering on all the samples with a given label in an attemp to decompose the
+ * label-level cluster into several smaller clusters.  This is an unusual case in that it both requires a prototype
+ * factory and is sample-initialized.
  *
  * @author David Tulga
  * @author David Soergel
  * @version $Id$
  */
-public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>> extends BayesianClustering<T>
+public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>> extends NearestNeighborClustering<T>
+		implements SampleInitializedOnlineClusteringMethod<T>
 	{
 	private static final Logger logger = Logger.getLogger(LabelDecomposingBayesianClustering.class);
 
@@ -74,27 +81,35 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		}
 
+
+	GenericFactory<T> prototypeFactory;
+
+	public void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
+		{
+		this.prototypeFactory = prototypeFactory;
+		}
+
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	protected void initializeWithRealData(Iterator<T> trainingIterator, GenericFactory<T> prototypeFactory)
-			throws ClusterException
+	public void initializeWithSamples(Iterator<T> trainingIterator,
+	                                  int initSamples) //GenericFactory<T> prototypeFactory)
+		//	throws ClusterException
 		{
 		Map<String, GrowableKmeansClustering<T>> theSubclusteringMap =
 				new HashMap<String, GrowableKmeansClustering<T>>();
 
 		try
 			{
-			// consume the entire iterator, ignoring initsamples
+			// BAD consume the entire iterator, ignoring initsamples
 			int i = 0;
-			Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
+			Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
 			while (trainingIterator.hasNext())
 				{
 				T point = trainingIterator.next();
 
 				String bestLabel = point.getWeightedLabels().getDominantKeyInSet(predictLabels);
-				//Cluster<T> cluster = theClusterMap.get(bestLabel);
+//Cluster<T> cluster = theClusterMap.get(bestLabel);
 
 
 				GrowableKmeansClustering<T> theIntraLabelClustering = theSubclusteringMap.get(bestLabel);
@@ -125,26 +140,26 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 							"Creating new subcluster (" + cm.bestDistance + " > " + unknownDistanceThreshold + ") for "
 									+ bestLabel);
 					cluster = new AdditiveCentroidCluster<T>(i++, prototypeFactory.create());
-					//cluster.setId(i++);
+//cluster.setId(i++);
 
-					// add the new cluster to the local per-label clustering...
+// add the new cluster to the local per-label clustering...
 					theIntraLabelClustering.addCluster(cluster);
 
-					// ... and also to the overall clustering
+// ... and also to the overall clustering
 					theClusters.add(cluster);
 
-					// REVIEW for now we make a uniform prior
+// REVIEW for now we make a uniform prior
 					priorsMult.put(cluster, 1);
 					}
 				cluster.add(point);
-				/*		if(cluster.getLabelCounts().uniqueSet().size() != 1)
-				{
-				throw new Error();
-				}*/
+/*		if(cluster.getLabelCounts().uniqueSet().size() != 1)
+			{
+			throw new Error();
+			}*/
 				}
 			priorsMult.normalize();
 			priors = priorsMult.getValueMap();
-			//theClusters = theSubclusteringMap.values();
+//theClusters = theSubclusteringMap.values();
 
 			for (Map.Entry<String, GrowableKmeansClustering<T>> entry : theSubclusteringMap.entrySet())
 				{
@@ -159,11 +174,26 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 			}
 		catch (DistributionException e)
 			{
-			throw new ClusterException(e);
+			throw new ClusterRuntimeException(e);
 			}
 		catch (GenericFactoryException e)
 			{
-			throw new ClusterException(e);
+			throw new ClusterRuntimeException(e);
 			}
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
+			throws IOException, ClusterException
+		{
+		//super.train(trainingCollectionIteratorFactory);
+
+		//limitToPopulatedClusters();
+
+		// after that, normalize the label probabilities
+
+		normalizeClusterLabelProbabilities();
 		}
 	}

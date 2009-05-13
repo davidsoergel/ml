@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
+import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
@@ -77,6 +78,12 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 		 }
  */ KohonenSOM2DSearchStrategy<T> fallbackStrategy = new CoarseGridSearchStrategy<T>();
 
+	@Override
+	public void setDistanceMeasure(DissimilarityMeasure<T> dissimilarityMeasure)
+		{
+		super.setDistanceMeasure(dissimilarityMeasure);
+		fallbackStrategy.setDistanceMeasure(dissimilarityMeasure);
+		}
 
 	/**
 	 * Copied from KmeansClustering
@@ -107,7 +114,7 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 		Set<CentroidCluster<T>> alreadyTested = new HashSet<CentroidCluster<T>>(10);
 
 		result.bestCluster = result.oldCluster;
-		result.bestDistance = measure.distanceFromTo(result.bestCluster.getCentroid(), p);
+		result.bestDistance = measure.distanceFromTo(p, result.bestCluster.getCentroid());
 		alreadyTested.add(result.bestCluster);
 		boolean changed = true;
 
@@ -121,7 +128,7 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 				if (!alreadyTested.contains(c))
 					{
 					alreadyTested.add(c);
-					double d = measure.distanceFromTo(c.getCentroid(), p);//c.distanceToCentroid(p);
+					double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 					if (d < result.bestDistance)
 						{
 						result.secondBestDistance = result.bestDistance;

@@ -155,8 +155,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *                                    not throw this exception, but instead simply return a Kcount based on the short
 	 *                                    sequence)
 	 */
-	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, int startPosition, SequenceReader in,
-	                        int desiredlength, @NotNull SequenceSpectrumScanner scanner)
+	public SequenceFragment(SequenceFragmentMetadata parent, String sequenceName, int startPosition,
+	                        @NotNull SequenceReader in, int desiredlength, @NotNull SequenceSpectrumScanner scanner)
 		{
 		this(parent, sequenceName, startPosition, UNKNOWN_LENGTH);// length = 0 because nothing is scanned so far
 		theReader = in;
@@ -620,6 +620,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		return getFirstWordProvider().getFirstWords(k);
 		}
 
+	@NotNull
 	public SequenceReader getReaderForSynchronizing()
 		{
 		return theReader;

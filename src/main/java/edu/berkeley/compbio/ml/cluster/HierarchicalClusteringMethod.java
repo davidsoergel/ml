@@ -55,7 +55,7 @@ import java.util.Set;
  */
 public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 		extends AbstractBatchClusteringMethod<T, CentroidCluster<T>>
-		implements CentroidClusteringMethod<T>, SemisupervisedClusteringMethod<T>
+		implements SemisupervisedClusteringMethod<T>, CentroidClusteringMethod<T>
 	{
 
 
