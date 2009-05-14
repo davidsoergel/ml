@@ -1,6 +1,8 @@
 package edu.berkeley.compbio.ml.cluster.svm;
 
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.stats.DissimilarityMeasure;
+import com.davidsoergel.stats.DistributionException;
 import com.google.common.base.Function;
 import com.google.common.base.Nullable;
 import com.google.common.collect.MapMaker;
@@ -14,8 +16,10 @@ import edu.berkeley.compbio.jlibsvm.multi.VotingResult;
 import edu.berkeley.compbio.jlibsvm.scaler.NoopScalingModel;
 import edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
+import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
+import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 import org.apache.log4j.Logger;
@@ -190,7 +194,15 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 			}
 		}
 
-// -------------------------- OTHER METHODS --------------------------
+	// -------------------------- OTHER METHODS --------------------------
+	@Override
+	public ClusteringTestResults test(Iterator<T> theTestIterator, DissimilarityMeasure<String> intraLabelDistances)
+			throws DistributionException, ClusterException
+		{
+		ClusteringTestResults result = super.test(theTestIterator, intraLabelDistances);
+		result.setInfo(model.getCrossValidationResults().param.toString());
+		return result;
+		}
 
 	public ClusterMove<T, BatchCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
 		{

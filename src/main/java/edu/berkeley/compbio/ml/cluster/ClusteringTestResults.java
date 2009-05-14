@@ -64,7 +64,17 @@ public class ClusteringTestResults
 	private double testingSeconds;
 	private double totalTrainingMass = 0;
 
+	private String info;
 
+	public String getInfo()
+		{
+		return info;
+		}
+
+	public void setInfo(String info)
+		{
+		this.info = info;
+		}
 // --------------------- GETTER / SETTER METHODS ---------------------
 
 	public int getNumClusters()
