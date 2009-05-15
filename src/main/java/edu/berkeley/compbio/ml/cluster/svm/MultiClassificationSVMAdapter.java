@@ -200,7 +200,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 			throws DistributionException, ClusterException
 		{
 		ClusteringTestResults result = super.test(theTestIterator, intraLabelDistances);
-		result.setInfo(model.getCrossValidationResults().param.toString());
+		result.setInfo(model.getInfo());
 		return result;
 		}
 
