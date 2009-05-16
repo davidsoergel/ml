@@ -1,9 +1,9 @@
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
-import com.davidsoergel.dsutils.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
+import com.davidsoergel.dsutils.concurrent.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;

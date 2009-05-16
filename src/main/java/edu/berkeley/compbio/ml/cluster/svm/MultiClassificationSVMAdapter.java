@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.ml.cluster.svm;
 
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.concurrent.DepthFirstThreadPoolExecutor;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.google.common.base.Function;
@@ -169,7 +170,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				                                              examples, exampleIds, new NoopScalingModel<T>());
 		//svm.setupQMatrix(problem);
 		logger.debug("Performing multiclass training");
-		model = svm.train(problem, param);
+		model = svm.train(problem, param, new DepthFirstThreadPoolExecutor());
 
 		if (leaveOneOutLabels != null)
 			{

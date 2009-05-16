@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.dsutils.collections.WeightedSet;
+import com.davidsoergel.dsutils.concurrent.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
