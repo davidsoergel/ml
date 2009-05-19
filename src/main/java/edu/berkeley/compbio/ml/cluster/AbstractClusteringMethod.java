@@ -41,17 +41,21 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	protected final Set<String> leaveOneOutLabels;
 	protected final Set<String> testLabels;
 
+	protected final int testThreads;
+
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	public AbstractClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels)
+	                                Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels,
+	                                int testThreads)
 		{
 		measure = dm;
 		this.potentialTrainingBins = potentialTrainingBins;
 		this.leaveOneOutLabels = leaveOneOutLabels;
 		this.predictLabels = predictLabels;
 		this.testLabels = testLabels;
+		this.testThreads = testThreads;
 		}
 
 // --------------------- GETTER / SETTER METHODS ---------------------
@@ -112,7 +116,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		// these are used for checking whether a sample should have been unknown or not
 		final Set<String> populatedTrainingLabels = findPopulatedTrainingLabels(tr);
 
-		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+		ProgressReportingThreadPoolExecutor execService =
+				new ProgressReportingThreadPoolExecutor(testThreads, testThreads * 2);
 
 		// classify the test samples
 		int i = 0;
