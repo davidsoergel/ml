@@ -2,6 +2,8 @@ package edu.berkeley.compbio.ml.cluster.svm;
 
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.concurrent.DepthFirstThreadPoolExecutor;
+import com.davidsoergel.dsutils.concurrent.ThreadPoolPerformanceStats;
+import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.google.common.base.Function;
@@ -61,6 +63,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	private BinaryClassificationSVM<BatchCluster<T>, T> binarySvm;
 
+	private int nrThreads;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -72,10 +75,11 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public MultiClassificationSVMAdapter(Set<String> potentialTrainingBins, Set<String> predictLabels,
 	                                     Set<String> leaveOneOutLabels, Set<String> testLabels,
-	                                     @NotNull ImmutableSvmParameter<BatchCluster<T>, T> param)
+	                                     @NotNull ImmutableSvmParameter<BatchCluster<T>, T> param, int nrThreads)
 		{
 		super(null, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
 		this.param = param;
+		this.nrThreads = nrThreads;
 		}
 
 // --------------------- GETTER / SETTER METHODS ---------------------
@@ -161,6 +165,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		train();
 		}*/
 
+	public ThreadPoolPerformanceStats trainingStats;
 
 	public void train()
 		{
@@ -170,7 +175,10 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				                                              examples, exampleIds, new NoopScalingModel<T>());
 		//svm.setupQMatrix(problem);
 		logger.debug("Performing multiclass training");
-		model = svm.train(problem, param, new DepthFirstThreadPoolExecutor());
+		DepthFirstThreadPoolExecutor execService = new DepthFirstThreadPoolExecutor(nrThreads, nrThreads);
+		model = svm.train(problem, param, execService);
+
+		trainingStats = execService.shutdown();
 
 		if (leaveOneOutLabels != null)
 			{
@@ -193,6 +201,15 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 						}
 					});
 			}
+		}
+
+	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode)
+		{
+		resultsNode.addChild("trainingCpuSeconds", trainingStats.getCpuSeconds());
+		resultsNode.addChild("trainingUserSeconds", trainingStats.getUserSeconds());
+		resultsNode.addChild("trainingSystemSeconds", trainingStats.getSystemSeconds());
+		resultsNode.addChild("trainingBlockedSeconds", trainingStats.getBlockedSeconds());
+		resultsNode.addChild("trainingWaitedSeconds", trainingStats.getWaitedSeconds());
 		}
 
 	// -------------------------- OTHER METHODS --------------------------
