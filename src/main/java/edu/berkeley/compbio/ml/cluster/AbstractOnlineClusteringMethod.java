@@ -61,9 +61,9 @@ public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C
 
 	public AbstractOnlineClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                      Set<String> predictLabels, Set<String> leaveOneOutLabels,
-	                                      Set<String> testLabels)
+	                                      Set<String> testLabels, int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

@@ -72,9 +72,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 	 */
 	public BayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
 	                          Set<String> potentialTrainingBins, Set<String> predictLabels,
-	                          Set<String> leaveOneOutLabels, Set<String> testLabels)
+	                          Set<String> leaveOneOutLabels, Set<String> testLabels, int testThreads)
 		{
-		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels,
+		      testThreads);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

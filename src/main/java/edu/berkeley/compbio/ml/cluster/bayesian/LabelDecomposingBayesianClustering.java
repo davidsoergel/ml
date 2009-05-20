@@ -83,9 +83,10 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	 */
 	public LabelDecomposingBayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
 	                                          Set<String> potentialTrainingBins, Set<String> predictLabels,
-	                                          Set<String> leaveOneOutLabels, Set<String> testLabels)
+	                                          Set<String> leaveOneOutLabels, Set<String> testLabels, int testThreads)
 		{
-		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels,
+		      testThreads);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -130,7 +131,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 					{
 					theIntraLabelClustering =
 							new GrowableKmeansClustering<T>(measure, potentialTrainingBins, predictLabels,
-							                                leaveOneOutLabels, testLabels);
+							                                leaveOneOutLabels, testLabels, testThreads);
 					theSubclusteringMap.put(bestLabel, theIntraLabelClustering);
 					}
 
@@ -150,7 +151,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 					{
 					logger.debug(
 							"Creating new subcluster (" + cm.bestDistance + " > " + unknownDistanceThreshold + ") for "
-									+ bestLabel);
+							+ bestLabel);
 					cluster = new AdditiveCentroidCluster<T>(i++, prototypeFactory.create());
 //cluster.setId(i++);
 
@@ -180,7 +181,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				if (logger.isInfoEnabled())
 					{
 					logger.info("Created " + theIntraLabelClustering.getClusters().size() + " clusters from "
-							+ theIntraLabelClustering.getN() + " points for " + label);
+					            + theIntraLabelClustering.getN() + " points for " + label);
 					}
 				}
 			}

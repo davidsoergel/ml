@@ -49,9 +49,9 @@ public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extend
 
 	protected BatchTreeClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                    Set<String> predictLabels, Set<String> leaveOneOutLabels,
-	                                    Set<String> testLabels)
+	                                    Set<String> testLabels, int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
 		}
 
 	/**

@@ -135,9 +135,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	                    Set<String> leaveOneOutLabels, Set<String> testLabels, @NotNull Integer[] cellsPerDimension,
 	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction, SimpleFunction weightFunction,
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap, double minRadius,
-	                    KohonenSOM2DSearchStrategy<T> searchStrategy)
+	                    KohonenSOM2DSearchStrategy<T> searchStrategy, int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
 
 		this.cellsPerDimension = DSArrayUtils.toPrimitive(cellsPerDimension);
 
@@ -951,7 +951,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 						realY = yCenter + deltaY[trav];
 
 						if (!edgesWrap && (realX < 0 || realX >= cellsPerDimension[0] || realY < 0
-								|| realY >= cellsPerDimension[1]))
+						                   || realY >= cellsPerDimension[1]))
 							{
 							// foundCell still false, try again
 							trav++;

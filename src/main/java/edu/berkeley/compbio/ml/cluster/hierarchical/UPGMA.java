@@ -75,9 +75,9 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	//	private SortedSet<ClusterPair<T>> theClusterPairs;
 
 	public UPGMA(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
-	             Set<String> leaveOneOutLabels, Set<String> testLabels)
+	             Set<String> leaveOneOutLabels, Set<String> testLabels, int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -175,7 +175,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 					continue;
 					}
 				distance = (a.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(a, node)
-						+ (b.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(b, node);
+				           + (b.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(b, node);
 				theActiveNodeDistanceMatrix.put(node, composite, distance);
 				}
 

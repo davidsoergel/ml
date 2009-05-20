@@ -72,9 +72,9 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	//private int k;
 
 	public KmeansClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
-	                        Set<String> leaveOneOutLabels, Set<String> testLabels)
+	                        Set<String> leaveOneOutLabels, Set<String> testLabels, int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

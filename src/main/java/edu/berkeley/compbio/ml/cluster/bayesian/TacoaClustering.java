@@ -38,10 +38,10 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 	public TacoaClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
 	                       Set<String> leaveOneOutLabels, Set<String> testLabels, int maxNeighbors,
-	                       double bestScoreRatioThreshold)
+	                       double bestScoreRatioThreshold, int testThreads)
 		{
 		super(dm, Double.POSITIVE_INFINITY, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels,
-		      maxNeighbors);
+		      maxNeighbors, testThreads);
 		this.bestScoreRatioThreshold = bestScoreRatioThreshold;
 		}
 

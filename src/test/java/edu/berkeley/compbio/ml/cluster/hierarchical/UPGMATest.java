@@ -67,48 +67,12 @@ public class UPGMATest
 	public void setUp()
 		{
 		MathUtils.initApproximateLog(-12, +12, 3, 100000);
-		points.add(new ClusterableDoubleArray("1", new double[]{
-				1,
-				2,
-				3,
-				4,
-				5
-		}));
-		points.add(new ClusterableDoubleArray("2", new double[]{
-				1,
-				2,
-				3,
-				4,
-				6
-		}));
-		points.add(new ClusterableDoubleArray("3", new double[]{
-				10,
-				20,
-				3,
-				4,
-				5
-		}));
-		points.add(new ClusterableDoubleArray("4", new double[]{
-				10,
-				20,
-				30,
-				4,
-				5
-		}));
-		points.add(new ClusterableDoubleArray("5", new double[]{
-				10,
-				20,
-				30,
-				40,
-				5
-		}));
-		points.add(new ClusterableDoubleArray("6", new double[]{
-				10,
-				20,
-				30,
-				40,
-				50
-		}));
+		points.add(new ClusterableDoubleArray("1", new double[]{1, 2, 3, 4, 5}));
+		points.add(new ClusterableDoubleArray("2", new double[]{1, 2, 3, 4, 6}));
+		points.add(new ClusterableDoubleArray("3", new double[]{10, 20, 3, 4, 5}));
+		points.add(new ClusterableDoubleArray("4", new double[]{10, 20, 30, 4, 5}));
+		points.add(new ClusterableDoubleArray("5", new double[]{10, 20, 30, 40, 5}));
+		points.add(new ClusterableDoubleArray("6", new double[]{10, 20, 30, 40, 50}));
 		}
 
 	@Test
@@ -119,7 +83,7 @@ public class UPGMATest
 		//ci = new MockClusterableIterator().init();
 
 		UPGMA<ClusterableDoubleArray> oc =
-				new UPGMA<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null, null, null, null);
+				new UPGMA<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null, null, null, null, 0);
 
 		oc.addAll(points.iterator());
 		oc.train();

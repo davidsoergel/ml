@@ -75,11 +75,12 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public MultiClassificationSVMAdapter(Set<String> potentialTrainingBins, Set<String> predictLabels,
 	                                     Set<String> leaveOneOutLabels, Set<String> testLabels,
-	                                     @NotNull ImmutableSvmParameter<BatchCluster<T>, T> param, int nrThreads)
+	                                     @NotNull ImmutableSvmParameter<BatchCluster<T>, T> param, int trainingThreads,
+	                                     int testThreads)
 		{
-		super(null, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		super(null, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
 		this.param = param;
-		this.nrThreads = nrThreads;
+		this.nrThreads = trainingThreads;
 		}
 
 // --------------------- GETTER / SETTER METHODS ---------------------

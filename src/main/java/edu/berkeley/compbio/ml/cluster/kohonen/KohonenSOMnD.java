@@ -123,9 +123,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 	public KohonenSOMnD(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
 	                    Set<String> leaveOneOutLabels, Set<String> testLabels, int[] cellsPerDimension,
 	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction,
-	                    boolean decrementLosingNeighborhood, boolean edgesWrap)
+	                    boolean decrementLosingNeighborhood, boolean edgesWrap, int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
 
 		this.cellsPerDimension = cellsPerDimension;
 
@@ -528,7 +528,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 				for (KohonenSOMCell<T> neighbor : immediateNeighbors)
 					{
 					if (neighbor != null && !prevShell.contains(neighbor) && !prevPrevShell.contains(neighbor)
-							&& isWithinCurrentRadius(neighbor))
+					    && isWithinCurrentRadius(neighbor))
 						{
 						shell.add(neighbor);
 						}
