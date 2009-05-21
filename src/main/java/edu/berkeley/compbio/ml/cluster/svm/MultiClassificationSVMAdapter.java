@@ -176,7 +176,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				                                              examples, exampleIds, new NoopScalingModel<T>());
 		//svm.setupQMatrix(problem);
 		logger.debug("Performing multiclass training");
-		DepthFirstThreadPoolExecutor execService = new DepthFirstThreadPoolExecutor(nrThreads, nrThreads);
+		DepthFirstThreadPoolExecutor execService = new DepthFirstThreadPoolExecutor(nrThreads, nrThreads * 2);
 		model = svm.train(problem, param, execService);
 
 		trainingStats = execService.shutdown();
