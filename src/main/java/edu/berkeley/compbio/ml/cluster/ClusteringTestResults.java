@@ -365,7 +365,7 @@ public class ClusteringTestResults
 		// cross-validation may only have been done if there was a grid search
 		if (crossValidationResults != null)
 			{
-			resultsNode.addChild("trainingAccuracy", crossValidationResults.accuracy());
+			resultsNode.addChild("trainingAccuracy", new Double(crossValidationResults.accuracy()));
 			resultsNode.addChild("trainingAccuracyGivenClassified", crossValidationResults.accuracyGivenClassified());
 			resultsNode.addChild("trainingSensitivity", crossValidationResults.classNormalizedSensitivity());
 			resultsNode.addChild("trainingSpecificity", crossValidationResults.classNormalizedSpecificity());
