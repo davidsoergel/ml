@@ -220,6 +220,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		{
 		ClusteringTestResults result = super.test(theTestIterator, intraLabelDistances);
 		result.setInfo(model.getInfo());
+		result.setCrossValidationResults(model.getCrossValidationResults());
 		return result;
 		}
 

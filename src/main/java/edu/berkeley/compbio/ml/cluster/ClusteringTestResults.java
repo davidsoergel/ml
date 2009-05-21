@@ -2,6 +2,8 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
+import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
+import edu.berkeley.compbio.jlibsvm.multi.MultiClassCrossValidationResults;
 import org.apache.commons.collections15.functors.EqualPredicate;
 
 import java.util.ArrayList;
@@ -65,6 +67,7 @@ public class ClusteringTestResults
 	private double totalTrainingMass = 0;
 
 	private String info;
+	private MultiClassCrossValidationResults crossValidationResults;
 
 	public String getInfo()
 		{
@@ -316,5 +319,54 @@ public class ClusteringTestResults
 	public synchronized void incrementUnknown()
 		{
 		unknown++;
+		}
+
+	public void setCrossValidationResults(MultiClassCrossValidationResults crossValidationResults)
+		{
+		this.crossValidationResults = crossValidationResults;
+		}
+
+	public void putResults(HierarchicalTypedPropertyNode<String, Object> resultsNode)
+		{
+		resultsNode.addChild("numClusters", getNumClusters());
+		resultsNode.addChild("unknown", getUnknown());
+		resultsNode.addChild("shouldHaveBeenUnknown", getShouldHaveBeenUnknown());
+		resultsNode.addChild("shouldNotHaveBeenUnknown", getShouldNotHaveBeenUnknown());
+
+		resultsNode.addChild("computedDistances", getComputedDistancesArray());
+		resultsNode.addChild("secondToBestDistanceRatios", getSecondToBestDistanceRatiosArray());
+		resultsNode.addChild("voteProportions", getBestVoteProportionsArray());
+		resultsNode.addChild("secondToBestVoteRatios", getSecondToBestVoteRatiosArray());
+		resultsNode.addChild("labelWithinClusterProbabilities", getLabelWithinClusterProbabilitiesArray());
+
+		resultsNode.addChild("accuracy", getAccuracy()); // (double) perfect / (double) tr.labelDistances.size());
+
+		resultsNode.addChild("trainingSeconds", getTrainingSeconds());
+		resultsNode.addChild("testingSecondsPerSample", getTestingSeconds() / getTestSamples());
+
+
+		/*		resultsNode.addChild("correctProbabilities", tr.correctPercentages);
+				resultsNode.addChild("wrongProbabilities", tr.wrongPercentages);
+
+
+				resultsNode.addChild("correctDistances", tr.correctDistanceHistogram);
+				resultsNode.addChild("wrongDistances", tr.wrongDistanceHistogram);
+
+
+				resultsNode.addChild("distanceBinCenters", tr.distanceBinCenters);*/
+		resultsNode.addChild("unknown", getUnknown());
+		resultsNode.addChild("totalTrainingMass", getTotalTrainingMass());
+
+		resultsNode.addChild("modelInfo", getInfo());
+
+
+		//crossValidationResults.putResults(resultsNode);
+
+		resultsNode.addChild("trainingAccuracy", crossValidationResults.accuracy());
+		resultsNode.addChild("trainingAccuracyGivenClassified", crossValidationResults.accuracyGivenClassified());
+		resultsNode.addChild("trainingSensitivity", crossValidationResults.classNormalizedSensitivity());
+		resultsNode.addChild("trainingSpecificity", crossValidationResults.classNormalizedSpecificity());
+		resultsNode.addChild("trainingPrecision", crossValidationResults.classNormalizedPrecision());
+		resultsNode.addChild("trainingUnknown", crossValidationResults.unknown());
 		}
 	}
