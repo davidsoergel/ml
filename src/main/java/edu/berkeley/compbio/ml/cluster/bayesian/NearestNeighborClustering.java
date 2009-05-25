@@ -46,10 +46,10 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	public NearestNeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
-	                                 Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                                 Set<String> potentialTrainingBins, Map<String, Set<String>> predictLabelSets,
 	                                 Set<String> leaveOneOutLabels, Set<String> testLabels, int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		}
 

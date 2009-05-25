@@ -82,10 +82,11 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
 	public LabelDecomposingBayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
-	                                          Set<String> potentialTrainingBins, Set<String> predictLabels,
-	                                          Set<String> leaveOneOutLabels, Set<String> testLabels, int testThreads)
+	                                          Set<String> potentialTrainingBins,
+	                                          Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
+	                                          Set<String> testLabels, int testThreads)
 		{
-		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels,
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels,
 		      testThreads);
 		}
 
@@ -112,6 +113,14 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 		Map<String, GrowableKmeansClustering<T>> theSubclusteringMap =
 				new HashMap<String, GrowableKmeansClustering<T>>();
 
+		if (predictLabelSets.size() > 1)
+			{
+			throw new ClusterRuntimeException(
+					"LabelDecomposingBayesianClustering can't yet handle more than one exclusive label set at a time: "
+					+ predictLabelSets.keySet());
+			}
+
+		Set<String> predictLabels = predictLabelSets.values().iterator().next();
 		try
 			{
 			// BAD consume the entire iterator, ignoring initsamples
@@ -130,7 +139,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				if (theIntraLabelClustering == null)
 					{
 					theIntraLabelClustering =
-							new GrowableKmeansClustering<T>(measure, potentialTrainingBins, predictLabels,
+							new GrowableKmeansClustering<T>(measure, potentialTrainingBins, predictLabelSets,
 							                                leaveOneOutLabels, testLabels, testThreads);
 					theSubclusteringMap.put(bestLabel, theIntraLabelClustering);
 					}

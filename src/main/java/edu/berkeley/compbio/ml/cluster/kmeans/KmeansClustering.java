@@ -51,6 +51,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -71,10 +72,11 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	//private DistanceMeasure<T> distanceMeasure;
 	//private int k;
 
-	public KmeansClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
-	                        Set<String> leaveOneOutLabels, Set<String> testLabels, int testThreads)
+	public KmeansClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                        Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
+	                        Set<String> testLabels, int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

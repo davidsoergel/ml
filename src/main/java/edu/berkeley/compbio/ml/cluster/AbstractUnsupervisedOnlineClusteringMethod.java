@@ -4,6 +4,7 @@ import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.log4j.Logger;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -21,10 +22,11 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	protected AbstractUnsupervisedOnlineClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                                     Set<String> predictLabels, Set<String> leaveOneOutLabels,
-	                                                     Set<String> testLabels, int testThreads)
+	                                                     Map<String, Set<String>> predictLabelSets,
+	                                                     Set<String> leaveOneOutLabels, Set<String> testLabels,
+	                                                     int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

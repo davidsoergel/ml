@@ -47,6 +47,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -71,10 +72,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
 	public BayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
-	                          Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                          Set<String> potentialTrainingBins, Map<String, Set<String>> predictLabelSets,
 	                          Set<String> leaveOneOutLabels, Set<String> testLabels, int testThreads)
 		{
-		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels,
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels,
 		      testThreads);
 		}
 

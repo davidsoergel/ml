@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
+import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
@@ -9,11 +10,13 @@ import com.google.common.collect.TreeMultimap;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
+import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,11 +39,11 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	 */
 
 
-	public TacoaClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
-	                       Set<String> leaveOneOutLabels, Set<String> testLabels, int maxNeighbors,
-	                       double bestScoreRatioThreshold, int testThreads)
+	public TacoaClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                       Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
+	                       Set<String> testLabels, int maxNeighbors, double bestScoreRatioThreshold, int testThreads)
 		{
-		super(dm, Double.POSITIVE_INFINITY, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels,
+		super(dm, Double.POSITIVE_INFINITY, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels,
 		      maxNeighbors, testThreads);
 		this.bestScoreRatioThreshold = bestScoreRatioThreshold;
 		}
@@ -50,9 +53,19 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	protected Set<String> findPopulatedTrainingLabels(ClusteringTestResults tr) throws DistributionException
 		{
 		Multiset<String> populatedTrainingLabels = new HashMultiset<String>();
+
+		if (predictLabelSets.size() > 1)
+			{
+			throw new ClusterRuntimeException(
+					"TacoaClustering can't yet handle more than one exclusive label set at a time: " + predictLabelSets
+							.keySet());
+			}
+
+		Set<String> predictLabels = predictLabelSets.values().iterator().next();
+
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
-			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.predictLabels);
+			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
 			populatedTrainingLabels.add(label);
 			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getWeightSum());
 			}
@@ -65,7 +78,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
 			final String label =
-					theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(this.predictLabels); // PERF redundant
+					theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels); // PERF redundant
 			priors.put(theCluster, labelPriors.get(label));
 			}
 		return populatedTrainingLabels.elementSet();
@@ -89,37 +102,37 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		return cm;
 		}
 
-	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
-	                             Set<String> populatedTrainingLabels, T frag)
+	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr, final T frag,
+	                                                  Set<String> populatedTrainingLabels)
 		{
+		//double secondToBestDistanceRatio = 0;
+
+		//double bestDistance;
+		//double bestVoteProportion;
+		double secondToBestVoteRatio = 0;
+
 		double voteProportion = 0;
-		double bestVotes;
-		double secondToBestVoteRatio;
-		double broadWrongness;
-		double detailedWrongness;
+		double bestVotes = 0;
 
-		// note the labels on the test set may be different from the training labels, as long as we can calculate wrongness.
-		// This supports a hierarchical classification scenario, where the "detailed" label is a leaf, and the "broad" label is a higher aggregate node.
-		// we want to measure wrongness _both_ at the broad level, matching where the prediction is made (so a perfect match is possible),
-		// _and_ at the detailed level, where even a perfect broad prediction incurs a cost due to lack of precision.
-
-		String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(predictLabels);
-		String detailedActualLabel = frag.getWeightedLabels().getDominantKeyInSet(testLabels);
+		WeightedSet<String> labelWeights = null;
+		//VotingResults votingResults = null;
 
 		try
 			{
+			// make the prediction
 			TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
 
 			// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
 			final VotingResults votingResults = addUpNeighborVotes(moves, populatedTrainingLabels);
+			labelWeights = votingResults.getLabelVotes();
 
 			// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
 
 			// now pick the best one
 			String predictedLabel = votingResults.getBestLabel();
-			bestVotes = votingResults.getVotes(predictedLabel);
+			bestVotes = labelWeights.get(predictedLabel);
 
-			voteProportion = votingResults.getProb(predictedLabel);
+			voteProportion = labelWeights.getNormalized(predictedLabel);
 
 			// In TACOA, distance == votes, so we don't deal with them separately
 
@@ -128,7 +141,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				{
 				String secondBestLabel = votingResults.getSecondBestLabel();
 
-				double secondBestVotes = votingResults.getVotes(secondBestLabel);
+				double secondBestVotes = labelWeights.get(secondBestLabel);
 				assert secondBestVotes <= bestVotes;
 
 				// if the top two scores are too similar...
@@ -143,93 +156,53 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				secondToBestVoteRatio =
 						1e308; // Double.MAX_VALUE; triggers MySQL bug # 21497  // infinity really, but that causes jdbc problems
 				}
-
-
-			// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
-			if (!populatedTrainingLabels.contains(broadActualLabel))
-				{
-				tr.incrementShouldHaveBeenUnknown();
-				}
-
-			// compute a measure of how badly the prediction missed the truth, at the broad level
-			broadWrongness = intraLabelDistances.distanceFromTo(broadActualLabel, predictedLabel);
-			logger.debug("Label distance broad wrongness = " + broadWrongness);
-
-			if (Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness))
-				{
-				logger.error("Broad Wrongness = " + broadWrongness);
-				}
-
-			// compute a measure of how badly the prediction missed the truth, at the broad level
-			detailedWrongness = intraLabelDistances.distanceFromTo(detailedActualLabel, predictedLabel);
-			logger.debug("Label distance detailed wrongness = " + detailedWrongness);
-
-			if (Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness))
-				{
-				logger.error("Detailed Wrongness = " + detailedWrongness);
-				}
-
-			/*		if (fragDominantLabel.equals(dominantExclusiveLabel))
-											   {
-											   tr.correctProbabilities.add(clusterProb);
-											   tr.correctDistances.add(cm.bestDistance);
-											   }
-										   else
-											   {
-											   tr.wrongProbabilities.add(clusterProb);
-											   tr.wrongDistances.add(cm.bestDistance);
-											   }*/
 			}
 		catch (NoGoodClusterException e)
 			{
-			broadWrongness = UNKNOWN_DISTANCE;
-			detailedWrongness = UNKNOWN_DISTANCE;
-			bestVotes = UNKNOWN_DISTANCE;
-			secondToBestVoteRatio = UNKNOWN_DISTANCE;
+
+			//bestDistance = UNKNOWN_DISTANCE;
+			//secondToBestDistanceRatio = 1.0;
+			voteProportion = 0;
+			secondToBestVoteRatio = 1.0;
 
 			tr.incrementUnknown();
-
-			// the fragment's best label does match a training label, it should not be unknown
-			if (populatedTrainingLabels.contains(broadActualLabel))
-				{
-				tr.incrementShouldNotHaveBeenUnknown();
-				}
 			}
 
 		// In TACOA, distance == inverse of votes, so we don't really need to record them separately
 		// ** hack: monotonic positive inversion to a distance-like metric (smaller better)
 		double bestDistance = 1.0 / bestVotes;
 		double secondToBestDistanceRatio = 1.0 / secondToBestVoteRatio;
+		tr.addClusterResult(bestDistance, secondToBestDistanceRatio, voteProportion, secondToBestVoteRatio);
 
-		tr.addResult(broadWrongness, detailedWrongness, bestDistance, secondToBestDistanceRatio, 0, voteProportion,
-		             secondToBestVoteRatio);
+		return labelWeights;
 		}
 
+
 /*
-	private VotingResults addUpNeighborVotes(TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves, Set<String> populatedTrainingLabels)
-		{
-		VotingResults result = new VotingResults();
+  private VotingResults addUpNeighborVotes(TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves, Set<String> populatedTrainingLabels)
+	  {
+	  VotingResults result = new VotingResults();
 
-		for (ClusterMove<T, CentroidCluster<T>> cm : moves.values())
-			{
-			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
+	  for (ClusterMove<T, CentroidCluster<T>> cm : moves.values())
+		  {
+		  WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
 
-			// in the usual case, labelsOnThisCluster contains a single label with weight 1.
-			// but it might have weights for all the ancestors too
+		  // in the usual case, labelsOnThisCluster contains a single label with weight 1.
+		  // but it might have weights for all the ancestors too
 
-			// we actually want the vote to count in proportion to the computed "distance", which is really a score (bigger better):
-			result.addVotes(labelsOnThisCluster, cm.bestDistance);
+		  // we actually want the vote to count in proportion to the computed "distance", which is really a score (bigger better):
+		  result.addVotes(labelsOnThisCluster, cm.bestDistance);
 
-			//** dunno if this makes any sense here... OK, it allows computing weighted distances per label later
-			for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
-				{
-				final String label = entry.getKey();
-				final Double labelProbability = entry.getValue();
+		  //** dunno if this makes any sense here... OK, it allows computing weighted distances per label later
+		  for (Map.Entry<String, Double> entry : labelsOnThisCluster.getItemNormalizedMap().entrySet())
+			  {
+			  final String label = entry.getKey();
+			  final Double labelProbability = entry.getValue();
 
-				result.addContribution(cm, label, labelProbability);
-				}
-			}
-		result.finish(populatedTrainingLabels);
-		return result;
-		}*/
+			  result.addContribution(cm, label, labelProbability);
+			  }
+		  }
+	  result.finish(populatedTrainingLabels);
+	  return result;
+	  }*/
 	}

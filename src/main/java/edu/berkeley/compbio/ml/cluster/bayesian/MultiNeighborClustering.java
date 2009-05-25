@@ -53,11 +53,11 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	public MultiNeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
-	                               Set<String> potentialTrainingBins, Set<String> predictLabels,
+	                               Set<String> potentialTrainingBins, Map<String, Set<String>> predictLabelSets,
 	                               Set<String> leaveOneOutLabels, Set<String> testLabels, int maxNeighbors,
 	                               int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
 		this.maxNeighbors = maxNeighbors;
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		}
@@ -452,19 +452,31 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			return weightedComputedDistance;
 			}
 
-		public double getProb(String bestLabel)
-			{
-			return labelVotes.getNormalized(bestLabel);
-			}
+		/*
+		  public double getProb(String bestLabel)
+			  {
+			  return labelVotes.getNormalized(bestLabel);
+			  }
 
-		public double getVotes(String label)
-			{
-			return labelVotes.get(label);
-			}
-
+		  public double getVotes(String label)
+			  {
+			  return labelVotes.get(label);
+			  }
+  */
 		public boolean hasSecondBestLabel()
 			{
 			return secondBestLabel != null;
+			}
+/*
+		public String getDominantKeyInSet(final Set<String> predictLabels)
+			{
+			return labelVotes.getDominantKeyInSet(predictLabels);
+			}
+			*/
+
+		public WeightedSet<String> getLabelVotes()
+			{
+			return labelVotes;
 			}
 		}
 	}

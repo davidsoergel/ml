@@ -131,13 +131,14 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public KohonenSOM2D(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
-	                    Set<String> leaveOneOutLabels, Set<String> testLabels, @NotNull Integer[] cellsPerDimension,
-	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction, SimpleFunction weightFunction,
+	public KohonenSOM2D(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                    Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
+	                    Set<String> testLabels, @NotNull Integer[] cellsPerDimension, SimpleFunction moveFactorFunction,
+	                    SimpleFunction radiusFunction, SimpleFunction weightFunction,
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap, double minRadius,
 	                    KohonenSOM2DSearchStrategy<T> searchStrategy, int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
 
 		this.cellsPerDimension = DSArrayUtils.toPrimitive(cellsPerDimension);
 

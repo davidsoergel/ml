@@ -3,11 +3,13 @@ package edu.berkeley.compbio.ml.cluster;
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
 import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
-import edu.berkeley.compbio.jlibsvm.multi.MultiClassCrossValidationResults;
-import org.apache.commons.collections15.functors.EqualPredicate;
+import com.google.common.base.Function;
+import com.google.common.base.Nullable;
+import com.google.common.collect.MapMaker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Encapsulates the probability histograms of test samples classified correctly, incorrectly, or not at all.
@@ -20,13 +22,6 @@ public class ClusteringTestResults
 // ------------------------------ FIELDS ------------------------------
 	//	public Histogram1D correctProbabilities = new FixedWidthHistogram1D(0., 1., .01);		//	public Histogram1D wrongProbabilities = new FixedWidthHistogram1D(0., 1., .01);
 	//public List<Double> correctDistances = new ArrayList<Double>();		//public List<Double> wrongDistances = new ArrayList<Double>();
-
-	/**
-	 * The real distance between the predicted label and the real label ("wrongness") according to a label distance
-	 * measure
-	 */
-	private List<Double> predictionDistances = new ArrayList<Double>();
-	private List<Double> predictionDistancesWithPrecisionCost = new ArrayList<Double>();
 
 	/**
 	 * The computed distance between the sample and the predicted bin
@@ -48,12 +43,6 @@ public class ClusteringTestResults
 	 */
 	private List<Double> secondToBestVoteRatios = new ArrayList<Double>();
 
-	/**
-	 * Probability of the best label, given the best cluster.  Used for unsupervised clustering where each cluster may
-	 * contain samples with multiple labels.
-	 */
-	private List<Double> labelWithinClusterProbabilities = new ArrayList<Double>();
-
 
 	//public double correct = 0;
 	//public double wrong = 0;
@@ -67,7 +56,7 @@ public class ClusteringTestResults
 	private double totalTrainingMass = 0;
 
 	private String info;
-	private MultiClassCrossValidationResults crossValidationResults;
+//	private MultiClassCrossValidationResults crossValidationResults;
 
 	public String getInfo()
 		{
@@ -90,15 +79,6 @@ public class ClusteringTestResults
 		this.numClusters = numClusters;
 		}
 
-	public List<Double> getPredictionDistances()
-		{
-		return predictionDistances;
-		}
-
-	public List<Double> getPredictionDistancesWithPrecisionCost()
-		{
-		return predictionDistancesWithPrecisionCost;
-		}
 
 	public int getShouldHaveBeenUnknown()
 		{
@@ -152,24 +132,40 @@ public class ClusteringTestResults
 
 // -------------------------- OTHER METHODS --------------------------
 
-	public synchronized void addResult(double broadWrongness, double detailedWrongness, double bestDistance,
-	                                   double secondToBestDistanceRatio, double clusterProb, double bestVoteProportion,
-	                                   double secondToBestVoteRatio)
+	public synchronized void addClusterResult(double bestDistance, double secondToBestDistanceRatio,
+	                                          double bestVoteProportion, double secondToBestVoteRatio)
 		{
-		assert !(Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness));
-		assert !(Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness));
 		assert !(Double.isNaN(bestDistance) || Double.isInfinite(bestDistance));
 		assert !(Double.isNaN(secondToBestDistanceRatio) || Double.isInfinite(secondToBestDistanceRatio));
 		assert !(Double.isNaN(secondToBestVoteRatio) || Double.isInfinite(secondToBestVoteRatio));
-		assert !(Double.isNaN(clusterProb) || Double.isInfinite(clusterProb));
 
-		predictionDistances.add(broadWrongness);
-		predictionDistancesWithPrecisionCost.add(detailedWrongness);
 		computedDistances.add(bestDistance);
 		secondToBestDistanceRatios.add(secondToBestDistanceRatio);
 		bestVoteProportions.add(bestVoteProportion);
 		secondToBestVoteRatios.add(secondToBestVoteRatio);
-		labelWithinClusterProbabilities.add(clusterProb);
+		}
+
+	Map<String, DistanceBasedMultiClassCrossValidationResults> cvResultMap =
+			new MapMaker().makeComputingMap(new Function<String, DistanceBasedMultiClassCrossValidationResults>()
+			{
+			public DistanceBasedMultiClassCrossValidationResults apply(@Nullable final String from)
+				{
+				return new DistanceBasedMultiClassCrossValidationResults();
+				}
+			});
+
+	public synchronized void addPredictionResult(String predictionSetName, String broadActualLabel,
+	                                             String predictedLabel, double clusterProb, double broadWrongness,
+	                                             double detailedWrongness)
+
+		{
+		assert !(Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness));
+		assert !(Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness));
+		assert !(Double.isNaN(clusterProb) || Double.isInfinite(clusterProb));
+
+		DistanceBasedMultiClassCrossValidationResults cvResults = cvResultMap.get(predictionSetName);
+
+		cvResults.addSample(broadActualLabel, predictedLabel, clusterProb, broadWrongness, detailedWrongness);
 		}
 
 	//public int perfect = 0;
@@ -194,10 +190,7 @@ public class ClusteringTestResults
 			{
 			computedDistances = null;
 			}
-		if (DSCollectionUtils.allElementsEqual(computedDistances, 1.0))
-			{
-			labelWithinClusterProbabilities = null;
-			}
+
 		if (DSCollectionUtils.allElementsEqual(secondToBestDistanceRatios, 0.0))
 			{
 			secondToBestDistanceRatios = null;
@@ -206,10 +199,16 @@ public class ClusteringTestResults
 			{
 			secondToBestVoteRatios = null;
 			}
-		if (DSCollectionUtils.allElementsEqual(labelWithinClusterProbabilities, 1.0))
+		if (DSCollectionUtils.allElementsEqual(computedDistances, 1.0))
 			{
-			labelWithinClusterProbabilities = null;
+			computedDistances = null;
 			}
+
+		for (DistanceBasedMultiClassCrossValidationResults cvResults : cvResultMap.values())
+			{
+			cvResults.finish();
+			}
+
 		/*		int[] correctCounts = correctProbabilities.getCounts();
 		int[] wrongCounts = wrongProbabilities.getCounts();
 
@@ -259,7 +258,7 @@ public class ClusteringTestResults
 		wrongDistanceHistogram = wHist.getCumulativeFractions();
 		*/
 		}
-
+/*
 	public double getAccuracy()
 		{
 		if (predictionDistances != null && predictionDistances.size() != 0)
@@ -271,7 +270,7 @@ public class ClusteringTestResults
 			{
 			return 0;
 			}
-		}
+		}*/
 
 	public Double[] getBestVoteProportionsArray()
 		{
@@ -283,22 +282,17 @@ public class ClusteringTestResults
 		return computedDistances == null ? null : computedDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
-	public Double[] getLabelWithinClusterProbabilitiesArray()
-		{
-		return labelWithinClusterProbabilities == null ? null :
-				labelWithinClusterProbabilities.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
-		}
 
 	public Double[] getSecondToBestDistanceRatiosArray()
 		{
 		return secondToBestDistanceRatios == null ? null :
-				secondToBestDistanceRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
+		       secondToBestDistanceRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
 	public Double[] getSecondToBestVoteRatiosArray()
 		{
 		return secondToBestVoteRatios == null ? null :
-				secondToBestVoteRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
+		       secondToBestVoteRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
 	public synchronized void incrementShouldHaveBeenUnknown()
@@ -321,13 +315,15 @@ public class ClusteringTestResults
 		unknown++;
 		}
 
-	public void setCrossValidationResults(MultiClassCrossValidationResults crossValidationResults)
+	/*	public void setCrossValidationResults(MultiClassCrossValidationResults crossValidationResults)
+		 {
+		 this.crossValidationResults = crossValidationResults;
+		 }
+ */
+	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode, String labelDistancesName)
 		{
-		this.crossValidationResults = crossValidationResults;
-		}
 
-	public void putResults(HierarchicalTypedPropertyNode<String, Object> resultsNode)
-		{
+
 		resultsNode.addChild("numClusters", getNumClusters());
 		resultsNode.addChild("unknown", getUnknown());
 		resultsNode.addChild("shouldHaveBeenUnknown", getShouldHaveBeenUnknown());
@@ -337,9 +333,9 @@ public class ClusteringTestResults
 		resultsNode.addChild("secondToBestDistanceRatios", getSecondToBestDistanceRatiosArray());
 		resultsNode.addChild("voteProportions", getBestVoteProportionsArray());
 		resultsNode.addChild("secondToBestVoteRatios", getSecondToBestVoteRatiosArray());
-		resultsNode.addChild("labelWithinClusterProbabilities", getLabelWithinClusterProbabilitiesArray());
+//		resultsNode.addChild("labelWithinClusterProbabilities", getLabelWithinClusterProbabilitiesArray());
 
-		resultsNode.addChild("accuracy", getAccuracy()); // (double) perfect / (double) tr.labelDistances.size());
+//		resultsNode.addChild("accuracy", getAccuracy()); // (double) perfect / (double) tr.labelDistances.size());
 
 		resultsNode.addChild("trainingSeconds", getTrainingSeconds());
 		resultsNode.addChild("testingSecondsPerSample", getTestingSeconds() / getTestSamples());
@@ -354,23 +350,18 @@ public class ClusteringTestResults
 
 
 				resultsNode.addChild("distanceBinCenters", tr.distanceBinCenters);*/
-		resultsNode.addChild("unknown", getUnknown());
+		resultsNode.addChild("unknownCluster", getUnknown());
 		resultsNode.addChild("totalTrainingMass", getTotalTrainingMass());
 
 		resultsNode.addChild("modelInfo", getInfo());
 
-
-		//crossValidationResults.putResults(resultsNode);
-
-		// cross-validation may only have been done if there was a grid search
-		if (crossValidationResults != null)
+		for (Map.Entry<String, DistanceBasedMultiClassCrossValidationResults> entry : cvResultMap.entrySet())
 			{
-			resultsNode.addChild("trainingAccuracy", new Double(crossValidationResults.accuracy()));
-			resultsNode.addChild("trainingAccuracyGivenClassified", crossValidationResults.accuracyGivenClassified());
-			resultsNode.addChild("trainingSensitivity", crossValidationResults.classNormalizedSensitivity());
-			resultsNode.addChild("trainingSpecificity", crossValidationResults.classNormalizedSpecificity());
-			resultsNode.addChild("trainingPrecision", crossValidationResults.classNormalizedPrecision());
-			resultsNode.addChild("trainingUnknown", crossValidationResults.unknown());
+			String predictionLabelsName = entry.getKey();
+			resultsNode.addChild(predictionLabelsName, predictionLabelsName);
+			HierarchicalTypedPropertyNode<String, Object> subResultsNode = resultsNode.getChild(predictionLabelsName);
+
+			entry.getValue().putResults(subResultsNode, labelDistancesName);
 			}
 		}
 	}

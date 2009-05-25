@@ -2,6 +2,7 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -14,9 +15,10 @@ public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Cluster
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	protected AbstractSupervisedOnlineClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                                   Set<String> predictLabels, Set<String> leaveOneOutLabels,
-	                                                   Set<String> testLabels, int testThreads)
+	                                                   Map<String, Set<String>> predictLabelSets,
+	                                                   Set<String> leaveOneOutLabels, Set<String> testLabels,
+	                                                   int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
 		}
 	}

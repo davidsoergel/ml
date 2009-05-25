@@ -55,6 +55,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -120,12 +121,13 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public KohonenSOMnD(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins, Set<String> predictLabels,
-	                    Set<String> leaveOneOutLabels, Set<String> testLabels, int[] cellsPerDimension,
-	                    SimpleFunction moveFactorFunction, SimpleFunction radiusFunction,
-	                    boolean decrementLosingNeighborhood, boolean edgesWrap, int testThreads)
+	public KohonenSOMnD(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
+	                    Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
+	                    Set<String> testLabels, int[] cellsPerDimension, SimpleFunction moveFactorFunction,
+	                    SimpleFunction radiusFunction, boolean decrementLosingNeighborhood, boolean edgesWrap,
+	                    int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
 
 		this.cellsPerDimension = cellsPerDimension;
 

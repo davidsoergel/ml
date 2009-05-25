@@ -38,6 +38,7 @@ import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -60,10 +61,10 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	protected HierarchicalClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                       Set<String> predictLabels, Set<String> leaveOneOutLabels,
+	                                       Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
 	                                       Set<String> testLabels, int testThreads)
 		{
-		super(dm, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

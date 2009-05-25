@@ -73,12 +73,12 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 	//	this.param = param;
 	//	}
 
-	public MultiClassificationSVMAdapter(Set<String> potentialTrainingBins, Set<String> predictLabels,
+	public MultiClassificationSVMAdapter(Set<String> potentialTrainingBins, Map<String, Set<String>> predictLabelSets,
 	                                     Set<String> leaveOneOutLabels, Set<String> testLabels,
 	                                     @NotNull ImmutableSvmParameter<BatchCluster<T>, T> param, int trainingThreads,
 	                                     int testThreads)
 		{
-		super(null, potentialTrainingBins, predictLabels, leaveOneOutLabels, testLabels, testThreads);
+		super(null, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
 		this.param = param;
 		this.nrThreads = trainingThreads;
 		}
@@ -220,7 +220,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		{
 		ClusteringTestResults result = super.test(theTestIterator, intraLabelDistances);
 		result.setInfo(model.getInfo());
-		result.setCrossValidationResults(model.getCrossValidationResults());
+		//result.setCrossValidationResults(model.getCrossValidationResults());
 		return result;
 		}
 

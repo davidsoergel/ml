@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
+
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
@@ -37,7 +38,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	protected int n = 0;
 
 	protected final Set<String> potentialTrainingBins;
-	protected final Set<String> predictLabels;
+	//protected final Set<String> predictLabels;
+	protected final Map<String, Set<String>> predictLabelSets;
 	protected final Set<String> leaveOneOutLabels;
 	protected final Set<String> testLabels;
 
@@ -47,13 +49,13 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	public AbstractClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                Set<String> predictLabels, Set<String> leaveOneOutLabels, Set<String> testLabels,
-	                                int testThreads)
+	                                Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
+	                                Set<String> testLabels, int testThreads)
 		{
 		measure = dm;
 		this.potentialTrainingBins = potentialTrainingBins;
 		this.leaveOneOutLabels = leaveOneOutLabels;
-		this.predictLabels = predictLabels;
+		this.predictLabelSets = predictLabelSets;
 		this.testLabels = testLabels;
 		this.testThreads = testThreads;
 		}
@@ -278,21 +280,102 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
 	                             Set<String> populatedTrainingLabels, T frag)
 		{
-		double clusterProb = 0;
-		double secondToBestDistanceRatio = 0;
-		double broadWrongness;
-		double detailedWrongness;
-		double bestDistance;
-		double bestVoteProportion;
-		double secondToBestVoteRatio = 0;
+		WeightedSet<String> labelWeights = predictLabelWeights(tr, frag, populatedTrainingLabels);
+		testAgainstPredictionLabels(intraLabelDistances, tr, populatedTrainingLabels, frag, labelWeights);
+		}
+
+	private void testAgainstPredictionLabels(final DissimilarityMeasure<String> intraLabelDistances,
+	                                         final ClusteringTestResults tr, final Set<String> populatedTrainingLabels,
+	                                         final T frag, final WeightedSet<String> labelWeights)
+		{
+
+		boolean unknown = labelWeights == null;
 
 		// note the labels on the test set may be different from the training labels, as long as we can calculate wrongness.
 		// This supports a hierarchical classification scenario, where the "detailed" label is a leaf, and the "broad" label is a higher aggregate node.
 		// we want to measure wrongness _both_ at the broad level, matching where the prediction is made (so a perfect match is possible),
 		// _and_ at the detailed level, where even a perfect broad prediction incurs a cost due to lack of precision.
 
-		String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(predictLabels);
 		String detailedActualLabel = frag.getWeightedLabels().getDominantKeyInSet(testLabels);
+
+		for (Map.Entry<String, Set<String>> entry : predictLabelSets.entrySet())
+			{
+			String predictionSetName = entry.getKey();
+			Set<String> predictLabels = entry.getValue();
+
+			//	MultiClassCrossValidationResults cvResults = getCvResults(predictionSetName);
+
+			double broadWrongness;
+			double detailedWrongness;
+			double clusterProb;
+
+			String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(predictLabels);
+			String predictedLabel;
+
+			if (unknown)
+				{
+				predictedLabel = null;
+				clusterProb = 0;
+
+				// the fragment's best label does match a training label, it should not be unknown
+				if (populatedTrainingLabels.contains(broadActualLabel))
+					{
+					tr.incrementShouldNotHaveBeenUnknown();
+					}
+
+				broadWrongness = UNKNOWN_DISTANCE;
+				detailedWrongness = UNKNOWN_DISTANCE;
+				}
+			else
+				{
+				// get the predicted label and its cluster-conditional probability
+
+				predictedLabel = labelWeights.getDominantKeyInSet(predictLabels);
+				clusterProb = labelWeights.getNormalized(predictedLabel);
+
+				// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
+				if (!populatedTrainingLabels.contains(broadActualLabel))
+					{
+					tr.incrementShouldHaveBeenUnknown();
+					}
+
+				// compute a measure of how badly the prediction missed the truth, at the broad level
+				broadWrongness = intraLabelDistances.distanceFromTo(broadActualLabel, predictedLabel);
+				logger.debug("Label distance broad wrongness = " + broadWrongness);
+
+				if (Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness))
+					{
+					logger.error("Broad Wrongness = " + broadWrongness);
+					}
+
+				// compute a measure of how badly the prediction missed the truth, at the detailed level
+				detailedWrongness = intraLabelDistances.distanceFromTo(detailedActualLabel, predictedLabel);
+				logger.debug("Label distance detailed wrongness = " + detailedWrongness);
+
+				if (Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness))
+					{
+					logger.error("Detailed Wrongness = " + detailedWrongness);
+					}
+				}
+
+			//	cvResults.addSample(broadActualLabel, predictedLabel);
+
+			tr.addPredictionResult(predictionSetName, broadActualLabel, predictedLabel, clusterProb, broadWrongness,
+			                       detailedWrongness);
+			}
+		}
+
+	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr, final T frag,
+	                                                  Set<String> populatedTrainingLabels)
+		{
+		double secondToBestDistanceRatio = 0;
+
+		double bestDistance;
+		double bestVoteProportion;
+		double secondToBestVoteRatio = 0;
+
+
+		WeightedSet<String> labelWeights = null;
 
 		try
 			{
@@ -309,56 +392,22 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				secondToBestVoteRatio = cm.secondBestVoteProportion / cm.voteProportion;
 				}
 
-			// get the predicted label and its cluster-conditional probability
-			WeightedSet<String> labelsOnThisCluster = cm.bestCluster.getDerivedLabelProbabilities();
-			String predictedLabel = labelsOnThisCluster.getDominantKeyInSet(predictLabels);
-			clusterProb = labelsOnThisCluster.getNormalized(predictedLabel);
 
-			// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
-			if (!populatedTrainingLabels.contains(broadActualLabel))
-				{
-				tr.incrementShouldHaveBeenUnknown();
-				}
-
-			// compute a measure of how badly the prediction missed the truth, at the broad level
-			broadWrongness = intraLabelDistances.distanceFromTo(broadActualLabel, predictedLabel);
-			logger.debug("Label distance broad wrongness = " + broadWrongness);
-
-			if (Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness))
-				{
-				logger.error("Broad Wrongness = " + broadWrongness);
-				}
-
-			// compute a measure of how badly the prediction missed the truth, at the detailed level
-			detailedWrongness = intraLabelDistances.distanceFromTo(detailedActualLabel, predictedLabel);
-			logger.debug("Label distance detailed wrongness = " + detailedWrongness);
-
-			if (Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness))
-				{
-				logger.error("Detailed Wrongness = " + detailedWrongness);
-				}
+			labelWeights = cm.bestCluster.getDerivedLabelProbabilities();
 			}
 		catch (NoGoodClusterException e)
 			{
-			broadWrongness = UNKNOWN_DISTANCE;
-			detailedWrongness = UNKNOWN_DISTANCE;
 			bestDistance = UNKNOWN_DISTANCE;
 			secondToBestDistanceRatio = 1.0;
 			bestVoteProportion = 0;
 			secondToBestVoteRatio = 1.0;
-			clusterProb = 0;
 
 			tr.incrementUnknown();
-
-			// the fragment's best label does match a training label, it should not be unknown
-			if (populatedTrainingLabels.contains(broadActualLabel))
-				{
-				tr.incrementShouldNotHaveBeenUnknown();
-				}
 			}
 
-		tr.addResult(broadWrongness, detailedWrongness, bestDistance, secondToBestDistanceRatio, clusterProb,
-		             bestVoteProportion, secondToBestVoteRatio);
+
+		tr.addClusterResult(bestDistance, secondToBestDistanceRatio, bestVoteProportion, secondToBestVoteRatio);
+		return labelWeights;
 		}
 
 	/**
