@@ -1,6 +1,5 @@
 package edu.berkeley.compbio.ml.cluster.svm;
 
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.concurrent.DepthFirstThreadPoolExecutor;
 import com.davidsoergel.dsutils.concurrent.ThreadPoolPerformanceStats;
 import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
@@ -150,10 +149,13 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				theClusterMap.put(label, cluster);
 
 				// ** consider how best to store the test labels
-				HashWeightedSet<String> derivedLabelProbabilities = new HashWeightedSet<String>();
+
+				// derive the label probabilities from the training weights later, as usual
+				/*	HashWeightedSet<String> derivedLabelProbabilities = new HashWeightedSet<String>();
 				derivedLabelProbabilities.add(label, 1.);
 				derivedLabelProbabilities.incrementItems();
 				cluster.setDerivedLabelProbabilities(derivedLabelProbabilities);
+				*/
 				}
 			}
 		theClusters = theClusterMap.values();
@@ -202,6 +204,8 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 						}
 					});
 			}
+
+		normalizeClusterLabelProbabilities();
 		}
 
 	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode)
@@ -249,8 +253,8 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		result.voteProportion = r.getBestVoteProportion();
 		result.secondBestVoteProportion = r.getSecondBestVoteProportion();
 
-		result.bestDistance = r.getBestProbability();
-		result.secondBestDistance = r.getSecondBestProbability();
+		result.bestDistance = r.getBestOneVsAllProbability();
+		result.secondBestDistance = r.getSecondBestOneVsAllProbability();
 
 
 		//**  just drop these for now

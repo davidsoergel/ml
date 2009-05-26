@@ -84,7 +84,7 @@ public class NeighborhoodCollectingLabelDiffuser<T extends AdditiveClusterable<T
 			WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 			Iterator<Set<C>> shells = theMap.getNeighborhoodShellIterator(cell);
 
-			while (weightedLabels.getWeightSum() < requiredLabels)
+			while (weightedLabels.getItemCount() < requiredLabels)
 				{
 				for (CentroidCluster<T> shellMember : shells.next())
 					{

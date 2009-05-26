@@ -67,7 +67,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			{
 			final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
 			populatedTrainingLabels.add(label);
-			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getWeightSum());
+			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getItemCount());
 			}
 
 		// we're going to hack the prior probabilities using the number of clusters per label

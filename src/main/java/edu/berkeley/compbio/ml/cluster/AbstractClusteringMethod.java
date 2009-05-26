@@ -116,7 +116,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		tr.setNumClusters(theClusters.size());
 
 		// these are used for checking whether a sample should have been unknown or not
-		final Set<String> populatedTrainingLabels = findPopulatedTrainingLabels(tr);
+		final Map<String, Set<String>> populatedPredictLabelSets = findPopulatedPredictLabelSets(tr);
 
 		ProgressReportingThreadPoolExecutor execService =
 				new ProgressReportingThreadPoolExecutor(testThreads, testThreads * 2);
@@ -131,7 +131,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			{
 			public void run()
 				{
-				testOneSample(intraLabelDistances, tr, populatedTrainingLabels, frag);
+				testOneSample(intraLabelDistances, tr, populatedPredictLabelSets, frag);
 				}
 			});
 
@@ -199,20 +199,31 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		}
 
 	/**
-	 * Figure out which of the potential training labels were actually populated (some got tossed to provide for unknown
+	 * Figure out which of the potential prediction labels were actually populated (some got tossed to provide for unknown
 	 * test samples) while we're at it, sum up the cluster masses
 	 */
-	protected Set<String> findPopulatedTrainingLabels(ClusteringTestResults tr) throws DistributionException
+	protected Map<String, Set<String>> findPopulatedPredictLabelSets(ClusteringTestResults tr)
+			throws DistributionException
 		{
-		Set<String> populatedTrainingLabels = new HashSet<String>();
-		for (C theCluster : theClusters)
+		Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+
+		for (Map.Entry<String, Set<String>> entry : predictLabelSets.entrySet())
 			{
-			// note this also insures that every cluster has a training label, otherwise it throws NoSuchElementException
-			String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(potentialTrainingBins);
-			populatedTrainingLabels.add(label);
-			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getWeightSum());
+			String predictionSetName = entry.getKey();
+			Set<String> predictLabels = entry.getValue();
+
+			Set<String> populatedPredictLabels = new HashSet<String>();
+
+			for (C theCluster : theClusters)
+				{
+				// note this also insures that every cluster has a training label, otherwise it throws NoSuchElementException
+				String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
+				populatedPredictLabels.add(label);
+				tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getItemCount());
+				}
+			result.put(predictionSetName, populatedPredictLabels);
 			}
-		return populatedTrainingLabels;
+		return result;
 		}
 
 	/**
@@ -278,15 +289,16 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		}
 
 	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
-	                             Set<String> populatedTrainingLabels, T frag)
+	                             final Map<String, Set<String>> populatedPredictLabelSets, T frag)
 		{
-		WeightedSet<String> labelWeights = predictLabelWeights(tr, frag, populatedTrainingLabels);
-		testAgainstPredictionLabels(intraLabelDistances, tr, populatedTrainingLabels, frag, labelWeights);
+		WeightedSet<String> labelWeights = predictLabelWeights(tr, frag);
+		testAgainstPredictionLabels(intraLabelDistances, tr, populatedPredictLabelSets, frag, labelWeights);
 		}
 
 	private void testAgainstPredictionLabels(final DissimilarityMeasure<String> intraLabelDistances,
-	                                         final ClusteringTestResults tr, final Set<String> populatedTrainingLabels,
-	                                         final T frag, final WeightedSet<String> labelWeights)
+	                                         final ClusteringTestResults tr,
+	                                         final Map<String, Set<String>> populatedPredictLabelSets, final T frag,
+	                                         final WeightedSet<String> labelWeights)
 		{
 
 		boolean unknown = labelWeights == null;
@@ -318,7 +330,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				clusterProb = 0;
 
 				// the fragment's best label does match a training label, it should not be unknown
-				if (populatedTrainingLabels.contains(broadActualLabel))
+				if (populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
 					{
 					tr.incrementShouldNotHaveBeenUnknown();
 					}
@@ -334,7 +346,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				clusterProb = labelWeights.getNormalized(predictedLabel);
 
 				// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
-				if (!populatedTrainingLabels.contains(broadActualLabel))
+				if (!populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
 					{
 					tr.incrementShouldHaveBeenUnknown();
 					}
@@ -365,8 +377,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			}
 		}
 
-	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr, final T frag,
-	                                                  Set<String> populatedTrainingLabels)
+	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr, final T frag)
 		{
 		double secondToBestDistanceRatio = 0;
 

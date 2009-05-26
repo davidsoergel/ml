@@ -370,8 +370,8 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 				contributionSet = new HashWeightedSet<ClusterMove<T, CentroidCluster<T>>>();
 				labelContributions.put(label, contributionSet);
 				}
-			contributionSet.add(cm, labelProbability);
-			contributionSet.incrementItems();
+			contributionSet.add(cm, labelProbability, 1);
+			//contributionSet.incrementItems();
 			}
 
 		public void addVotes(WeightedSet<String> labelsOnThisCluster)

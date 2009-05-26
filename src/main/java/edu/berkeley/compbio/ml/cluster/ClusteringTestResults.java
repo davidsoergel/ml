@@ -320,12 +320,11 @@ public class ClusteringTestResults
 		 this.crossValidationResults = crossValidationResults;
 		 }
  */
+	//@Transactional
 	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode, String labelDistancesName)
 		{
-
-
 		resultsNode.addChild("numClusters", getNumClusters());
-		resultsNode.addChild("unknown", getUnknown());
+		//resultsNode.addChild("unknown", getUnknown());
 		resultsNode.addChild("shouldHaveBeenUnknown", getShouldHaveBeenUnknown());
 		resultsNode.addChild("shouldNotHaveBeenUnknown", getShouldNotHaveBeenUnknown());
 
@@ -350,7 +349,8 @@ public class ClusteringTestResults
 
 
 				resultsNode.addChild("distanceBinCenters", tr.distanceBinCenters);*/
-		resultsNode.addChild("unknownCluster", getUnknown());
+
+		resultsNode.addChild("unknownCluster", getUnknown());  // as opposed to unknownLabel
 		resultsNode.addChild("totalTrainingMass", getTotalTrainingMass());
 
 		resultsNode.addChild("modelInfo", getInfo());
@@ -358,10 +358,12 @@ public class ClusteringTestResults
 		for (Map.Entry<String, DistanceBasedMultiClassCrossValidationResults> entry : cvResultMap.entrySet())
 			{
 			String predictionLabelsName = entry.getKey();
-			resultsNode.addChild(predictionLabelsName, predictionLabelsName);
-			HierarchicalTypedPropertyNode<String, Object> subResultsNode = resultsNode.getChild(predictionLabelsName);
 
-			entry.getValue().putResults(subResultsNode, labelDistancesName);
+			List<String> keyPath = new ArrayList<String>();
+			//keyPath.add("RESULTS");
+			keyPath.add(predictionLabelsName);
+
+			entry.getValue().putResults(resultsNode, keyPath, labelDistancesName);
 			}
 		}
 	}

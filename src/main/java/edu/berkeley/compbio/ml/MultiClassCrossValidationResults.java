@@ -114,6 +114,11 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		int notLabel = numExamples - hasLabel;
 		int notLabelRight = notLabel - notLabelWrong;   // true negatives
 
+		if (notLabel == 0)
+			{
+			return 1.0f;
+			}
+
 		float result = (float) notLabelRight / (float) notLabel;
 		return result;
 		}

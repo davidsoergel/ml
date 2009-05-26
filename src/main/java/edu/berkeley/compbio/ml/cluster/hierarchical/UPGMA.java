@@ -191,6 +191,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			}
 
 		theRoot = composite;//theActiveNodeDistanceMatrix.getActiveKeys().iterator().next();
+
+		normalizeClusterLabelProbabilities();
 		}
 
 // -------------------------- OTHER METHODS --------------------------

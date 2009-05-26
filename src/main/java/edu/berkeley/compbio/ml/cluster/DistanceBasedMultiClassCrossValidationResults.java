@@ -70,30 +70,34 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		}
 
 
-	public void putResults(HierarchicalTypedPropertyNode<String, Object> resultsNode, String labelDistancesName)
+	public void putResults(HierarchicalTypedPropertyNode<String, Object> resultsNode, List<String> keyPath,
+	                       String labelDistancesName)
 		{
 
-		resultsNode.addChild("numPopulatedRealLabels", numPopulatedRealLabels());
-		resultsNode.addChild("numPredictedLabels", numPredictedLabels());
+		resultsNode.addChild(keyPath, "numPopulatedRealLabels", numPopulatedRealLabels());
+		resultsNode.addChild(keyPath, "numPredictedLabels", numPredictedLabels());
 
-		resultsNode.addChild("labelWithinClusterProbabilities", getLabelWithinClusterProbabilitiesArray());
+		resultsNode.addChild(keyPath, "labelWithinClusterProbabilities", getLabelWithinClusterProbabilitiesArray());
 
-		resultsNode.addChild("accuracy", new Double(accuracy()));
-		resultsNode.addChild("accuracyGivenClassified", accuracyGivenClassified());
-		resultsNode.addChild("sensitivity", classNormalizedSensitivity());
-		resultsNode.addChild("specificity", classNormalizedSpecificity());
-		resultsNode.addChild("precision", classNormalizedPrecision());
-		resultsNode.addChild("unknownLabel", unknown());
+		resultsNode.addChild(keyPath, "accuracy", new Double(accuracy()));
+		resultsNode.addChild(keyPath, "accuracyGivenClassified", accuracyGivenClassified());
+		resultsNode.addChild(keyPath, "sensitivity", classNormalizedSensitivity());
+		resultsNode.addChild(keyPath, "specificity", classNormalizedSpecificity());
+		resultsNode.addChild(keyPath, "precision", classNormalizedPrecision());
+		resultsNode.addChild(keyPath, "unknownLabel", unknown());
 
-		storeLabelDistances(labelDistancesName, getPredictionDistances(), resultsNode);
-		storeLabelDistances(labelDistancesName + "ToSample", getPredictionDistancesWithPrecisionCost(), resultsNode);
+		storeLabelDistances(labelDistancesName, getPredictionDistances(), resultsNode, keyPath);
+		storeLabelDistances(labelDistancesName + "ToSample", getPredictionDistancesWithPrecisionCost(), resultsNode,
+		                    keyPath);
 		}
 
 
 	public static void storeLabelDistances(String labelDistanceName, List<Double> labelDistances,
-	                                       HierarchicalTypedPropertyNode<String, Object> resultsNode)
+	                                       HierarchicalTypedPropertyNode<String, Object> resultsNode,
+	                                       List<String> keyPath)
 		{
-		resultsNode.addChild(labelDistanceName, labelDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY));
+		resultsNode
+				.addChild(keyPath, labelDistanceName, labelDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY));
 
 		if (!labelDistances.isEmpty())
 			{
@@ -120,9 +124,9 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 
 			try
 				{
-				resultsNode.addChild(labelDistanceName + "90", h.topOfBin(89));
-				resultsNode.addChild(labelDistanceName + "95", h.topOfBin(94));
-				resultsNode.addChild(labelDistanceName + "99", h.topOfBin(98));
+				resultsNode.addChild(keyPath, labelDistanceName + "90", h.topOfBin(89));
+				resultsNode.addChild(keyPath, labelDistanceName + "95", h.topOfBin(94));
+				resultsNode.addChild(keyPath, labelDistanceName + "99", h.topOfBin(98));
 				// note the highest bin is #99, so the top of that bin is the 100th %ile
 				}
 			catch (StatsException e)
@@ -137,8 +141,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 				}
 			else
 				{
-				resultsNode.addChild(labelDistanceName + "Mean", mean);
-				resultsNode.addChild(labelDistanceName + "StdDev", DSArrayUtils.stddev(labelDistances, mean));
+				resultsNode.addChild(keyPath, labelDistanceName + "Mean", mean);
+				resultsNode.addChild(keyPath, labelDistanceName + "StdDev", DSArrayUtils.stddev(labelDistances, mean));
 				}
 			}
 		}
