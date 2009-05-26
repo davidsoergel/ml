@@ -372,8 +372,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 			//	cvResults.addSample(broadActualLabel, predictedLabel);
 
-			tr.addPredictionResult(predictionSetName, broadActualLabel, predictedLabel, clusterProb, broadWrongness,
-			                       detailedWrongness);
+			tr.addPredictionResult(predictionSetName, broadActualLabel, predictedLabel, 1.0 - clusterProb,
+			                       broadWrongness, detailedWrongness);
 			}
 		}
 
