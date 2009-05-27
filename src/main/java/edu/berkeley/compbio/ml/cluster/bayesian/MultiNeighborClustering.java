@@ -99,6 +99,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
 			throws ClusterException
 		{
+		removeEmptyClusters();
 		normalizeClusterLabelProbabilities();
 		// do nothing; we already consumed all the training samples with initializeWithSamples
 		}

@@ -53,6 +53,7 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 				break;
 				}
 			}
+		removeEmptyClusters();
 		normalizeClusterLabelProbabilities();
 		}
 	}

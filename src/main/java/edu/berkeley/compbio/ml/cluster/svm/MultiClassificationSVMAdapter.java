@@ -205,8 +205,10 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 					});
 			}
 
+		removeEmptyClusters();
 		normalizeClusterLabelProbabilities();
 		}
+
 
 	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode)
 		{

@@ -95,6 +95,7 @@ public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C
 			{
 			trainOneIteration(trainingCollectionIteratorFactory);
 			}
+		removeEmptyClusters();
 		normalizeClusterLabelProbabilities();
 		}
 

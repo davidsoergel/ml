@@ -218,6 +218,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 		// after that, normalize the label probabilities
 
+		removeEmptyClusters();
 		normalizeClusterLabelProbabilities();
 		}
 	}

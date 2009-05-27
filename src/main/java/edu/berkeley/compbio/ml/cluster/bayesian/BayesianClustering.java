@@ -215,6 +215,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 		// after that, normalize the label probabilities
 
+		removeEmptyClusters();
 		normalizeClusterLabelProbabilities();
 		}
 	}

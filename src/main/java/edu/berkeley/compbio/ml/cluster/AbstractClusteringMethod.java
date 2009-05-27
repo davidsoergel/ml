@@ -5,6 +5,7 @@ import com.davidsoergel.dsutils.concurrent.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
+import com.davidsoergel.stats.RequiresPreparationDistanceMetric;
 import org.apache.log4j.Logger;
 
 import java.io.OutputStream;
@@ -15,7 +16,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 
@@ -85,6 +89,18 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		return theClusters;
 		}
 
+	protected void removeEmptyClusters()
+		{
+		Iterator<C> iter = theClusters.iterator();
+		while (iter.hasNext())
+			{
+			C c = iter.next();
+			if (c.getN() == 0)
+				{
+				iter.remove();
+				}
+			}
+		}
 // --------------------- Interface ClusteringMethod ---------------------
 
 
@@ -118,33 +134,73 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		// these are used for checking whether a sample should have been unknown or not
 		final Map<String, Set<String>> populatedPredictLabelSets = findPopulatedPredictLabelSets(tr);
 
+		if (intraLabelDistances instanceof RequiresPreparationDistanceMetric
+		    && ((RequiresPreparationDistanceMetric) intraLabelDistances).reallyRequiresPreparation())
+			{
+			Set<String> allLabels = new HashSet<String>();
+			allLabels.addAll(testLabels);
+			for (Set<String> predictLabels : populatedPredictLabelSets.values())
+				{
+				allLabels.addAll(predictLabels);
+				}
+
+			((RequiresPreparationDistanceMetric) intraLabelDistances).prepare(allLabels);
+			}
+
+		// ** would be cleaner with DepthFirstThreadPoolExecutor
 		ProgressReportingThreadPoolExecutor execService =
 				new ProgressReportingThreadPoolExecutor(testThreads, testThreads * 2);
 
 		// classify the test samples
+
+		Set<Future<Void>> futures = new HashSet<Future<Void>>();
+
 		int i = 0;
 		while (theTestIterator.hasNext())
 			{
 			final T frag = theTestIterator.next();
 
-			Future fut = execService.submit(new Runnable()
+			Future<Void> fut = execService.submit(new Callable<Void>()
 			{
-			public void run()
+			public Void call()
 				{
 				testOneSample(intraLabelDistances, tr, populatedPredictLabelSets, frag);
+
+				return null;
 				}
 			});
-
+			futures.add(fut);
 			/*	if (i % 100 == 0)
 			   {
 			   logger.debug("Enqueued " + i + " samples.");
 			   }*/
 			i++;
 			}
+
+
 		logger.debug("Enqueued " + i + " samples.");
 		tr.setTestSamples(i);
 
 		execService.finish("Tested %d samples.", 30);
+
+		// get exceptions
+		try
+			{
+			for (Future<Void> future : futures)
+				{
+				future.get();
+				}
+			}
+		catch (ExecutionException e)
+			{
+			logger.error("Error", e);
+			throw new Error(e);
+			}
+		catch (InterruptedException e)
+			{
+			logger.error("Error", e);
+			throw new Error(e);
+			}
 
 		tr.finish();
 		return tr;
@@ -216,10 +272,17 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 			for (C theCluster : theClusters)
 				{
-				// note this also insures that every cluster has a training label, otherwise it throws NoSuchElementException
-				String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
-				populatedPredictLabels.add(label);
-				tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getItemCount());
+				try
+					{
+					// note this also insures that every cluster has a training label, otherwise it throws NoSuchElementException
+					String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
+					populatedPredictLabels.add(label);
+					tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getItemCount());
+					}
+				catch (NoSuchElementException e)
+					{
+					throw e;
+					}
 				}
 			result.put(predictionSetName, populatedPredictLabels);
 			}
