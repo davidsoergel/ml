@@ -21,6 +21,9 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	private int numExamples;
 	private final Map<L, Multiset<L>> confusionMatrix;
 
+	// BAD currently we don't include these in the computations...
+	private final Multiset<L> confusionRowNull = new HashMultiset<L>();
+
 	public MultiClassCrossValidationResults()
 		{
 		confusionMatrix = new MapMaker().makeComputingMap(new Function<L, Multiset<L>>()
@@ -45,7 +48,8 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 
 	public void addSample(final L realValue, final L predictedValue)
 		{
-		confusionMatrix.get(realValue).add(predictedValue);
+		Multiset<L> confusionRow = realValue == null ? confusionRowNull : confusionMatrix.get(realValue);
+		confusionRow.add(predictedValue);
 		numExamples++;
 		}
 

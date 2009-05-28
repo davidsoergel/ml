@@ -144,7 +144,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				allLabels.addAll(predictLabels);
 				}
 
-			((RequiresPreparationDistanceMetric) intraLabelDistances).prepare(allLabels);
+			((RequiresPreparationDistanceMetric<String>) intraLabelDistances).prepare(allLabels);
 			}
 
 		// ** would be cleaner with DepthFirstThreadPoolExecutor
@@ -354,24 +354,25 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
 	                             final Map<String, Set<String>> populatedPredictLabelSets, T frag)
 		{
-		WeightedSet<String> labelWeights = predictLabelWeights(tr, frag);
-		testAgainstPredictionLabels(intraLabelDistances, tr, populatedPredictLabelSets, frag, labelWeights);
+		WeightedSet<String> predictedLabelWeights = predictLabelWeights(tr, frag);
+		testAgainstPredictionLabels(intraLabelDistances, tr, populatedPredictLabelSets, frag, predictedLabelWeights);
 		}
 
 	private void testAgainstPredictionLabels(final DissimilarityMeasure<String> intraLabelDistances,
 	                                         final ClusteringTestResults tr,
 	                                         final Map<String, Set<String>> populatedPredictLabelSets, final T frag,
-	                                         final WeightedSet<String> labelWeights)
+	                                         final WeightedSet<String> predictedLabelWeights)
 		{
 
-		boolean unknown = labelWeights == null;
+		boolean unknown = predictedLabelWeights == null;
 
 		// note the labels on the test set may be different from the training labels, as long as we can calculate wrongness.
 		// This supports a hierarchical classification scenario, where the "detailed" label is a leaf, and the "broad" label is a higher aggregate node.
 		// we want to measure wrongness _both_ at the broad level, matching where the prediction is made (so a perfect match is possible),
 		// _and_ at the detailed level, where even a perfect broad prediction incurs a cost due to lack of precision.
 
-		String detailedActualLabel = frag.getWeightedLabels().getDominantKeyInSet(testLabels);
+		WeightedSet<String> fragmentActualLabels = frag.getWeightedLabels();
+		String detailedActualLabel = fragmentActualLabels.getDominantKeyInSet(testLabels);
 
 		for (Map.Entry<String, Set<String>> entry : predictLabelSets.entrySet())
 			{
@@ -384,7 +385,17 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			double detailedWrongness;
 			double clusterProb;
 
-			String broadActualLabel = frag.getWeightedLabels().getDominantKeyInSet(predictLabels);
+			String broadActualLabel = null;
+			try
+				{
+				broadActualLabel = fragmentActualLabels.getDominantKeyInSet(predictLabels);
+				}
+			catch (NoSuchElementException e)
+				{
+				// the fragment has none of the requested classifications; leave broadActualLabel = null then.
+				// this should produce MAXDISTANCE and ShouldHaveBeenUnknown
+				}
+
 			String predictedLabel;
 
 			if (unknown)
@@ -405,8 +416,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				{
 				// get the predicted label and its cluster-conditional probability
 
-				predictedLabel = labelWeights.getDominantKeyInSet(predictLabels);
-				clusterProb = labelWeights.getNormalized(predictedLabel);
+				predictedLabel = predictedLabelWeights.getDominantKeyInSet(predictLabels);
+				clusterProb = predictedLabelWeights.getNormalized(predictedLabel);
 
 				// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
 				if (!populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
