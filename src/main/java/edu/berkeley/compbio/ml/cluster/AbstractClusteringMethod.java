@@ -281,7 +281,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					}
 				catch (NoSuchElementException e)
 					{
-					throw e;
+					logger.warn("Cluster has no prediction label: " + theCluster);
 					}
 				}
 			result.put(predictionSetName, populatedPredictLabels);
