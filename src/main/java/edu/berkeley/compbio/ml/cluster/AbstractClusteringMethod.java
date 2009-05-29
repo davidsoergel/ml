@@ -420,31 +420,49 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				{
 				// get the predicted label and its cluster-conditional probability
 
-				predictedLabel = predictedLabelWeights.getDominantKeyInSet(predictLabels);
-				clusterProb = predictedLabelWeights.getNormalized(predictedLabel);
-
-				// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
-				if (!populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
+				try
 					{
-					tr.incrementShouldHaveBeenUnknown();
+					predictedLabel = predictedLabelWeights.getDominantKeyInSet(predictLabels);
+					clusterProb = predictedLabelWeights.getNormalized(predictedLabel);
+
+					// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
+					if (!populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
+						{
+						tr.incrementShouldHaveBeenUnknown();
+						}
+
+					// compute a measure of how badly the prediction missed the truth, at the broad level
+					broadWrongness = intraLabelDistances.distanceFromTo(broadActualLabel, predictedLabel);
+					logger.debug("Label distance broad wrongness = " + broadWrongness);
+
+					if (Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness))
+						{
+						logger.error("Broad Wrongness = " + broadWrongness);
+						}
+
+					// compute a measure of how badly the prediction missed the truth, at the detailed level
+					detailedWrongness = intraLabelDistances.distanceFromTo(detailedActualLabel, predictedLabel);
+					logger.debug("Label distance detailed wrongness = " + detailedWrongness);
+
+					if (Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness))
+						{
+						logger.error("Detailed Wrongness = " + detailedWrongness);
+						}
 					}
-
-				// compute a measure of how badly the prediction missed the truth, at the broad level
-				broadWrongness = intraLabelDistances.distanceFromTo(broadActualLabel, predictedLabel);
-				logger.debug("Label distance broad wrongness = " + broadWrongness);
-
-				if (Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness))
+				catch (NoSuchElementException e)
 					{
-					logger.error("Broad Wrongness = " + broadWrongness);
-					}
+					// a cluster was found, but it has no prediction label.  Note it's not "unknown" but "other".
+					predictedLabel = null;
+					clusterProb = 0;
 
-				// compute a measure of how badly the prediction missed the truth, at the detailed level
-				detailedWrongness = intraLabelDistances.distanceFromTo(detailedActualLabel, predictedLabel);
-				logger.debug("Label distance detailed wrongness = " + detailedWrongness);
+					// the fragment's best label does match a training label, it should not be unknown
+					if (populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
+						{
+						tr.incrementShouldNotHaveBeenOther();
+						}
 
-				if (Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness))
-					{
-					logger.error("Detailed Wrongness = " + detailedWrongness);
+					broadWrongness = UNKNOWN_DISTANCE;
+					detailedWrongness = UNKNOWN_DISTANCE;
 					}
 				}
 
