@@ -232,8 +232,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			//prefixValid = Math.min(PREFIX_LENGTH, s.getNumberOfSamples() + s.getK() - 1);
 			setBaseSpectrum(s);
 
-			// so far the weights were set per character
-			getWeightedLabels().multiplyBy(length);
+			// so far the weights were set per character, because we didn't necessarily know the length...??
+			// getWeightedLabels().multiplyBy(length);
 			}
 		catch (GenericFactoryException e)
 			{
@@ -496,7 +496,6 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			return;
 			}
-
 
 		// if we're reading the file anyway, we may as well remember the spectrum while we're at it.
 		rescan();

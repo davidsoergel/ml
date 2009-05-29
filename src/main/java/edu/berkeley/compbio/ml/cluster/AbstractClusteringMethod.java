@@ -269,15 +269,16 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			Set<String> predictLabels = entry.getValue();
 
 			Set<String> populatedPredictLabels = new HashSet<String>();
-
+			int clustersWithPredictionLabel = 0;
 			for (C theCluster : theClusters)
 				{
 				try
 					{
-					// note this also insures that every cluster has a training label, otherwise it throws NoSuchElementException
+					// note this also insures that every cluster has a prediction label, otherwise it throws NoSuchElementException
 					String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
 					populatedPredictLabels.add(label);
 					tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getItemCount());
+					clustersWithPredictionLabel++;
 					}
 				catch (NoSuchElementException e)
 					{
@@ -285,6 +286,9 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					}
 				}
 			result.put(predictionSetName, populatedPredictLabels);
+			logger.info(predictionSetName + ": " + clustersWithPredictionLabel + " of " + theClusters.size()
+			            + " clusters have a prediction label; " + populatedPredictLabels.size()
+			            + " labels can be predicted");
 			}
 		return result;
 		}
