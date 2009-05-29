@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -50,7 +51,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 // -------------------------- OTHER METHODS --------------------------
 
-	protected Set<String> findPopulatedTrainingLabels(ClusteringTestResults tr) throws DistributionException
+
+/*	protected Map<String, Set<String>> findPopulatedPredictLabelSets(ClusteringTestResults tr) throws DistributionException
 		{
 		Multiset<String> populatedTrainingLabels = new HashMultiset<String>();
 
@@ -70,19 +72,83 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getItemCount());
 			}
 
-		// we're going to hack the prior probabilities using the number of clusters per label
+		// ** we're going to hack the prior probabilities using the number of clusters per label
 		// TacoaDistanceMeasure takes the prior to be per label, not per cluster
+		// so, the "distance" between a sample and a cluster depends on the label set we're trying to predict
+		// this is why we can deal with only one label set at a time
 
-		priors = new HashMap<CentroidCluster<T>, Double>();
+		clusterPriors = new HashMap<CentroidCluster<T>, Double>();
 		Multinomial<String> labelPriors = new Multinomial<String>(populatedTrainingLabels);
 		for (CentroidCluster<T> theCluster : theClusters)
 			{
 			final String label =
 					theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels); // PERF redundant
-			priors.put(theCluster, labelPriors.get(label));
+			clusterPriors.put(theCluster, labelPriors.get(label));
 			}
-		return populatedTrainingLabels.elementSet();
+		Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+		result.put(predictLabelSets.keySet().iterator().next(), populatedTrainingLabels.elementSet());
+		return result;
 		}
+*/
+
+	/**
+	 * Hack the prior probabilities using the number of clusters per training label.  TacoaDistanceMeasure takes the prior
+	 * to be per label, not per cluster.   So, the "distance" between a sample and a cluster depends on how many clusters
+	 * share the same training label.
+	 */
+	protected void preparePriors() //throws DistributionException
+		{
+		//normalizeClusterLabelProbabilities();
+		try
+			{
+			Multiset<String> populatedTrainingLabels = new HashMultiset<String>();
+			int clustersWithTrainingLabel = 0;
+			for (CentroidCluster<T> theCluster : theClusters)
+				{
+				try
+					{
+					// note this also insures that every cluster has a training label, otherwise it throws NoSuchElementException
+					String label = theCluster.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+					// could use theCluster.getDerivedLabelProbabilities() there except they're not normalized yet, and there's no need
+
+					populatedTrainingLabels.add(label);
+					clustersWithTrainingLabel++;
+					}
+				catch (NoSuchElementException e)
+					{
+					logger.warn("Cluster has no training label: " + theCluster);
+					}
+				}
+
+			logger.info(
+					"" + clustersWithTrainingLabel + " of " + theClusters.size() + " clusters have a training label; "
+					+ populatedTrainingLabels.size() + " labels were trained");
+
+
+			clusterPriors = new HashMap<CentroidCluster<T>, Double>();
+			Multinomial<String> labelPriors = new Multinomial<String>(populatedTrainingLabels);
+			for (CentroidCluster<T> theCluster : theClusters)
+				{
+				final String label =
+						theCluster.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins); // PERF redundant
+				clusterPriors.put(theCluster, labelPriors.get(label));
+				}
+			}
+		catch (DistributionException e)
+			{
+			logger.error("Error", e);
+			throw new ClusterRuntimeException(e);
+			}
+		}
+
+
+	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
+	                             final Map<String, Set<String>> populatedPredictLabelSets, T frag)
+		{
+		WeightedSet<String> predictedLabelWeights = predictLabelWeights(tr, frag);
+		testAgainstPredictionLabels(intraLabelDistances, tr, populatedPredictLabelSets, frag, predictedLabelWeights);
+		}
+
 
 	/**
 	 * allow an overriding clustering method to tweak the distances, set vote weights, etc.
@@ -102,8 +168,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		return cm;
 		}
 
-	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr, final T frag,
-	                                                  Set<String> populatedTrainingLabels)
+	private WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr,
+	                                                final T frag) //, Set<String> populatedTrainingLabels)
 		{
 		//double secondToBestDistanceRatio = 0;
 
@@ -123,13 +189,15 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
 
 			// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
-			final VotingResults votingResults = addUpNeighborVotes(moves, populatedTrainingLabels);
+			final VotingResults votingResults = addUpNeighborVotes(moves); //, populatedTrainingLabels);
 			labelWeights = votingResults.getLabelVotes();
+
+			BestLabelPair votingWinners = votingResults.getSubResults(potentialTrainingBins);
 
 			// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
 
 			// now pick the best one
-			String predictedLabel = votingResults.getBestLabel();
+			String predictedLabel = votingWinners.getBestLabel();
 			bestVotes = labelWeights.get(predictedLabel);
 
 			voteProportion = labelWeights.getNormalized(predictedLabel);
@@ -137,9 +205,9 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			// In TACOA, distance == votes, so we don't deal with them separately
 
 			// check that there's not a (near) tie
-			if (votingResults.hasSecondBestLabel())
+			if (votingWinners.hasSecondBestLabel())
 				{
-				String secondBestLabel = votingResults.getSecondBestLabel();
+				String secondBestLabel = votingWinners.getSecondBestLabel();
 
 				double secondBestVotes = labelWeights.get(secondBestLabel);
 				assert secondBestVotes <= bestVotes;

@@ -205,8 +205,8 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			 }
 		 }
  */
-	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr, final T frag,
-	                                                  Set<String> populatedTrainingLabels)
+	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr, final T frag)
+		//                    Set<String> populatedTrainingLabels)
 		{
 		//double secondToBestDistanceRatio = 0;
 
@@ -229,13 +229,15 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
 
 			// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
-			final VotingResults votingResults = addUpNeighborVotes(moves, populatedTrainingLabels);
+			final VotingResults votingResults = addUpNeighborVotes(moves); //, populatedTrainingLabels);
 			labelWeights = votingResults.getLabelVotes();
+
+			BestLabelPair votingWinners = votingResults.getSubResults(potentialTrainingBins);
 
 			// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
 
 			// now pick the best one
-			String predictedLabel = votingResults.getBestLabel();
+			String predictedLabel = votingWinners.getBestLabel();
 			bestWeightedDistance = votingResults.computeWeightedDistance(predictedLabel);
 
 			voteProportion = labelWeights.getNormalized(predictedLabel);
@@ -247,9 +249,9 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				}
 
 			// check that there's not a (near) tie
-			if (votingResults.hasSecondBestLabel())
+			if (votingWinners.hasSecondBestLabel())
 				{
-				String secondBestLabel = votingResults.getSecondBestLabel();
+				String secondBestLabel = votingWinners.getSecondBestLabel();
 
 				double bestVotes = labelWeights.get(predictedLabel);
 				double secondBestVotes = labelWeights.get(secondBestLabel);

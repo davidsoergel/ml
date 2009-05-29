@@ -120,7 +120,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 // -------------------------- OTHER METHODS --------------------------
 
-	//BAD just initialize all clusters, then delete the empty ones
+	//** just initialize all clusters, then delete the empty ones
 /*	public void initializeWithSamples(Iterator<T> trainingIterator, int initSamples,
 	                                  final GenericFactory<T> prototypeFactory)
 		//	throws ClusterException

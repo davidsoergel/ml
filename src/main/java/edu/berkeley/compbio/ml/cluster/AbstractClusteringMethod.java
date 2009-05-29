@@ -131,6 +131,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 		tr.setNumClusters(theClusters.size());
 
+		computeTrainingMass(tr);
+
 		// these are used for checking whether a sample should have been unknown or not
 		final Map<String, Set<String>> populatedPredictLabelSets = findPopulatedPredictLabelSets(tr);
 
@@ -218,10 +220,11 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		{
 		Cluster<T> c = bestClusterMove(sample).bestCluster;
 		return c.getWeightedLabels().getDominantKeyInSet(predictLabels);
-/*		c.updateDerivedWeightedLabelsFromLocal();
-		WeightedSet<String> probs = c.getDerivedLabelProbabilities();
-		String label = probs.getDominantKey();*/
+//		c.updateDerivedWeightedLabelsFromLocal();
+//		WeightedSet<String> probs = c.getDerivedLabelProbabilities();
+//		String label = probs.getDominantKey();
 		}
+
 
 // -------------------------- OTHER METHODS --------------------------
 
@@ -256,7 +259,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 	/**
 	 * Figure out which of the potential prediction labels were actually populated (some got tossed to provide for unknown
-	 * test samples) while we're at it, sum up the cluster masses
+	 * test samples)
 	 */
 	protected Map<String, Set<String>> findPopulatedPredictLabelSets(ClusteringTestResults tr)
 			throws DistributionException
@@ -277,7 +280,6 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					// note this also insures that every cluster has a prediction label, otherwise it throws NoSuchElementException
 					String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
 					populatedPredictLabels.add(label);
-					tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getItemCount());
 					clustersWithPredictionLabel++;
 					}
 				catch (NoSuchElementException e)
@@ -291,6 +293,14 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			            + " labels can be predicted");
 			}
 		return result;
+		}
+
+	public void computeTrainingMass(ClusteringTestResults tr)
+		{
+		for (C theCluster : theClusters)
+			{
+			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getItemCount());
+			}
 		}
 
 	/**
@@ -362,10 +372,10 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		testAgainstPredictionLabels(intraLabelDistances, tr, populatedPredictLabelSets, frag, predictedLabelWeights);
 		}
 
-	private void testAgainstPredictionLabels(final DissimilarityMeasure<String> intraLabelDistances,
-	                                         final ClusteringTestResults tr,
-	                                         final Map<String, Set<String>> populatedPredictLabelSets, final T frag,
-	                                         final WeightedSet<String> predictedLabelWeights)
+	protected void testAgainstPredictionLabels(final DissimilarityMeasure<String> intraLabelDistances,
+	                                           final ClusteringTestResults tr,
+	                                           final Map<String, Set<String>> populatedPredictLabelSets, final T frag,
+	                                           final WeightedSet<String> predictedLabelWeights)
 		{
 
 		boolean unknown = predictedLabelWeights == null;
@@ -475,7 +485,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			}
 		}
 
-	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr, final T frag)
+	private WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr,
+	                                                final T frag) //, Set<String> populatedTrainingLabels)
 		{
 		double secondToBestDistanceRatio = 0;
 
@@ -501,7 +512,6 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				secondToBestVoteRatio = cm.secondBestVoteProportion / cm.voteProportion;
 				}
 
-
 			labelWeights = cm.bestCluster.getDerivedLabelProbabilities();
 			}
 		catch (NoGoodClusterException e)
@@ -513,7 +523,6 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 			tr.incrementUnknown();
 			}
-
 
 		tr.addClusterResult(bestDistance, secondToBestDistanceRatio, bestVoteProportion, secondToBestVoteRatio);
 		return labelWeights;

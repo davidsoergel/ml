@@ -239,6 +239,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 			{
 			try
 				{
+				//BAD LOO doesn't work??
 				String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
 				leaveOneOutModel = leaveOneOutModels.get(disallowedLabel);
 				}
@@ -263,9 +264,6 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 		//**  just drop these for now
 		/*
-		r.getBestOneVsAllProbability();
-		r.getSecondBestOneVsAllProbability();
-
 		r.getBestOneClassProbability();
 		r.getSecondBestOneClassProbability();
 		*/

@@ -47,7 +47,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 
 	protected double unknownDistanceThreshold;
 
-	protected Map<CentroidCluster<T>, Double> priors;
+	protected Map<CentroidCluster<T>, Double> clusterPriors;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -72,12 +72,12 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(sample);
 
 		// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
-		final VotingResults votingResults = addUpNeighborVotes(moves, predictLabels);
+		final VotingResults votingResults = addUpNeighborVotes(moves);
 
 		// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
 
 		// now pick the best one
-		String predictedLabel = votingResults.getBestLabel();
+		String predictedLabel = votingResults.getSubResults(predictLabels).getBestLabel();
 
 		return predictedLabel;
 		}
@@ -117,51 +117,54 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		{
 		theClusters = new HashSet<CentroidCluster<T>>();
 
-		final Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
+		// BAD consume the entire iterator, ignoring initsamples
+		int i = 0;
+
+
+		//	ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+
+
+		while (trainingIterator.hasNext())
+			{
+			final T point = trainingIterator.next();
+			final int clusterId = i++;
+			//		execService.submit(new Runnable()
+			//		{
+			//		public void run()
+			//			{
+
+			// generate one "cluster" per training sample.
+			CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
+			theClusters.add(cluster);
+			}
+		//	});
+		//	}
+
+		//execService.finish("Processed %d training samples", 30);
+
+		preparePriors();
+		}
+
+	/**
+	 * for now we make a uniform prior
+	 */
+	protected void preparePriors()
+		{
 		try
 			{
-			// BAD consume the entire iterator, ignoring initsamples
-			int i = 0;
+			final Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
 
-
-			//	ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
-
-
-			while (trainingIterator.hasNext())
+			for (CentroidCluster<T> cluster : theClusters)
 				{
-				final T point = trainingIterator.next();
-				final int clusterId = i++;
-				//		execService.submit(new Runnable()
-				//		{
-				//		public void run()
-				//			{
-				try
-					{
-					// generate one "cluster" per training sample.
-					CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
-
-					//** for now we make a uniform prior
-					priorsMult.put(cluster, 1);
-					theClusters.add(cluster);
-					}
-				catch (DistributionException e)
-					{
-					logger.error("Error", e);
-					throw new ClusterRuntimeException(e);
-					}
+				priorsMult.put(cluster, 1);
 				}
-			//	});
-			//	}
-
-			//execService.finish("Processed %d training samples", 30);
-
-
 			priorsMult.normalize();
-			priors = priorsMult.getValueMap();
+			clusterPriors = priorsMult.getValueMap();
 			}
 		catch (DistributionException e)
 			{
-			throw new Error(e);
+			logger.error("Error", e);
+			throw new ClusterRuntimeException(e);
 			}
 		}
 
@@ -190,8 +193,8 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			}
 		execService.finish("Normalized %d training probabilities", 30);
 		}*/
-	protected VotingResults addUpNeighborVotes(TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves,
-	                                           Set<String> populatedTrainingLabels)
+	protected VotingResults addUpNeighborVotes(
+			TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves)//,  Set<String> populatedTrainingLabels)
 		{
 		VotingResults result = new VotingResults();
 
@@ -222,7 +225,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 
 			neighborsCounted++;
 			}
-		result.finish(populatedTrainingLabels);
+		//result.finish(populatedTrainingLabels);
 		return result;
 		}
 
@@ -281,7 +284,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 					if (measure instanceof ProbabilisticDissimilarityMeasure)
 						{
 						distance = ((ProbabilisticDissimilarityMeasure) measure)
-								.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
+								.distanceFromTo(p, cluster.getCentroid(), clusterPriors.get(cluster));
 						}
 					else
 						{
@@ -343,24 +346,24 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		private final Map<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>> labelContributions =
 				new HashMap<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>>();
 
-		private String bestLabel;
-		private String secondBestLabel;
+		//	private String bestLabel;
+		//	private String secondBestLabel;
 
 		private WeightedSet<String> labelVotes = new HashWeightedSet<String>();
 
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
-		public String getBestLabel()
-			{
-			return bestLabel;
-			}
+		/*	public String getBestLabel()
+			  {
+			  return bestLabel;
+			  }
 
-		public String getSecondBestLabel()
-			{
-			return secondBestLabel;
-			}
-
+		  public String getSecondBestLabel()
+			  {
+			  return secondBestLabel;
+			  }
+  */
 // -------------------------- OTHER METHODS --------------------------
 
 		public void addContribution(ClusterMove<T, CentroidCluster<T>> cm, String label, Double labelProbability)
@@ -395,7 +398,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			return computeWeightedDistance(labelContributions.get(label));
 			}
 
-		public void finish(Set<String> predictionLabels)
+		public BestLabelPair getSubResults(Set<String> populatedTrainingLabels)
 			{
 			// primary sort the labels by votes, secondary by weighted distance
 			// even if there is a unique label with the most votes, the second place one may still matter depending on the unknown thresholds
@@ -421,10 +424,11 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 				}
 			};
 
-			labelVotes.retainKeys(predictionLabels);
+			labelVotes.retainKeys(populatedTrainingLabels);
 			Iterator<String> vi = labelVotes.keysInDecreasingWeightOrder(weightedDistanceSort).iterator();
 
-			bestLabel = vi.next();
+			String bestLabel = vi.next();
+			String secondBestLabel = null;
 			try
 				{
 				secondBestLabel = vi.next();
@@ -433,6 +437,8 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 				{
 				//no problem
 				}
+
+			return new BestLabelPair(bestLabel, secondBestLabel);
 			}
 
 		/**
@@ -464,10 +470,11 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			  return labelVotes.get(label);
 			  }
   */
-		public boolean hasSecondBestLabel()
+/*		public boolean hasSecondBestLabel()
 			{
 			return secondBestLabel != null;
 			}
+			*/
 /*
 		public String getDominantKeyInSet(final Set<String> predictLabels)
 			{
@@ -478,6 +485,33 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		public WeightedSet<String> getLabelVotes()
 			{
 			return labelVotes;
+			}
+		}
+
+	public class BestLabelPair
+		{
+		String bestLabel;
+		String secondBestLabel;
+
+		private BestLabelPair(final String bestLabel, final String secondBestLabel)
+			{
+			this.bestLabel = bestLabel;
+			this.secondBestLabel = secondBestLabel;
+			}
+
+		public String getBestLabel()
+			{
+			return bestLabel;
+			}
+
+		public String getSecondBestLabel()
+			{
+			return secondBestLabel;
+			}
+
+		public boolean hasSecondBestLabel()
+			{
+			return secondBestLabel != null;
 			}
 		}
 	}
