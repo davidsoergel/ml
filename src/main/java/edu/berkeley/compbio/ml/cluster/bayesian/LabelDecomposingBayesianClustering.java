@@ -180,7 +180,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 			}*/
 				}
 			priorsMult.normalize();
-			priors = priorsMult.getValueMap();
+			clusterPriors = priorsMult.getValueMap();
 //theClusters = theSubclusteringMap.values();
 
 			for (Map.Entry<String, GrowableKmeansClustering<T>> entry : theSubclusteringMap.entrySet())

@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -40,7 +39,7 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 	private static final Logger logger = Logger.getLogger(NearestNeighborClustering.class);
 	protected double unknownDistanceThreshold;
 
-	protected Map<CentroidCluster<T>, Double> priors;
+	protected Map<CentroidCluster<T>, Double> clusterPriors;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -109,7 +108,8 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 			throws ClusterException
 		{
 		super.train(trainingCollectionIteratorFactory, trainingEpochs);
-		limitToPopulatedClusters();
+		//removeEmptyClusters();  // already done
+		preparePriors();
 		}
 
 // -------------------------- OTHER METHODS --------------------------
@@ -154,7 +154,7 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 				if (measure instanceof ProbabilisticDissimilarityMeasure)
 					{
 					distance = ((ProbabilisticDissimilarityMeasure) measure)
-							.distanceFromTo(p, cluster.getCentroid(), priors.get(cluster));
+							.distanceFromTo(p, cluster.getCentroid(), clusterPriors.get(cluster));
 					}
 				else
 					{
@@ -187,30 +187,22 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 		return result;
 		}
 
-	private void limitToPopulatedClusters()
+
+	/**
+	 * for now we make a uniform prior
+	 */
+	protected void preparePriors()
 		{
 		try
 			{
-			// remove any clusters for which there were no training samples, to avoid any later confusion
-
-			// while we're at it, make a uniform prior for the populated bins
 			final Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
 
-			for (Iterator<CentroidCluster<T>> i = theClusters.iterator(); i.hasNext();)
+			for (CentroidCluster<T> cluster : theClusters)
 				{
-				CentroidCluster<T> c = i.next();
-				if (c.getN() == 0)
-					{
-					priors.remove(c);
-					i.remove();
-					}
-				else
-					{
-					priorsMult.put(c, 1);
-					}
+				priorsMult.put(cluster, 1);
 				}
 			priorsMult.normalize();
-			priors = priorsMult.getValueMap();
+			clusterPriors = priorsMult.getValueMap();
 			}
 		catch (DistributionException e)
 			{

@@ -104,7 +104,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 				priorsMult.put(cluster, 1);
 				}
 			priorsMult.normalize();
-			priors = priorsMult.getValueMap();
+			clusterPriors = priorsMult.getValueMap();
 			}
 		catch (DistributionException e)
 			{
@@ -215,7 +215,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 		// after that, normalize the label probabilities
 
-		removeEmptyClusters();
-		normalizeClusterLabelProbabilities();
+		//removeEmptyClusters();   // already done
+		//normalizeClusterLabelProbabilities(); // already done
 		}
 	}
