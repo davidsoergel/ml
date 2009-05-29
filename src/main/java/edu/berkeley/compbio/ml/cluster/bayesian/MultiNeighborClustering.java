@@ -424,8 +424,9 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 				}
 			};
 
-			labelVotes.retainKeys(populatedTrainingLabels);
-			Iterator<String> vi = labelVotes.keysInDecreasingWeightOrder(weightedDistanceSort).iterator();
+			WeightedSet<String> subVotes = labelVotes.extractWithKeys(populatedTrainingLabels);
+			//subVotes.retainKeys(populatedTrainingLabels);
+			Iterator<String> vi = subVotes.keysInDecreasingWeightOrder(weightedDistanceSort).iterator();
 
 			String bestLabel = vi.next();
 			String secondBestLabel = null;

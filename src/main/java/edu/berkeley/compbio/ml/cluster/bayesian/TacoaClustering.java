@@ -102,7 +102,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		try
 			{
 			Multiset<String> populatedTrainingLabels = new HashMultiset<String>();
-			int clustersWithTrainingLabel = 0;
+			//int clustersWithTrainingLabel = 0;
 			for (CentroidCluster<T> theCluster : theClusters)
 				{
 				try
@@ -112,7 +112,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 					// could use theCluster.getDerivedLabelProbabilities() there except they're not normalized yet, and there's no need
 
 					populatedTrainingLabels.add(label);
-					clustersWithTrainingLabel++;
+					//clustersWithTrainingLabel++;
 					}
 				catch (NoSuchElementException e)
 					{
@@ -120,9 +120,9 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 					}
 				}
 
-			logger.info(
-					"" + clustersWithTrainingLabel + " of " + theClusters.size() + " clusters have a training label; "
-					+ populatedTrainingLabels.size() + " labels were trained");
+			logger.info("" + populatedTrainingLabels.size() + " of " + theClusters.size()
+			            + " clusters have a training label; " + populatedTrainingLabels.entrySet().size()
+			            + " labels were trained");
 
 
 			clusterPriors = new HashMap<CentroidCluster<T>, Double>();
