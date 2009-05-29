@@ -3,7 +3,6 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
-import com.davidsoergel.dsutils.concurrent.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
@@ -260,7 +259,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
 			}
 
-		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+		//ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
 
 		for (final CentroidCluster<T> cluster : theClusters)
 			{
@@ -271,44 +270,44 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 				}
 			else
 				{
-				execService.submit(new Runnable()
-				{
-				public void run()
+				//	execService.submit(new Runnable()
+				//	{
+				//	public void run()
+				//		{
+				// Note that different distance measures may need to deal with the priors differently:
+				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
+				// so, just pass the priors in and let the distance measure decide what to do with them
+
+				double distance;
+
+				if (measure instanceof ProbabilisticDissimilarityMeasure)
 					{
-					// Note that different distance measures may need to deal with the priors differently:
-					// if it's probability, multiply; if log probability, add; for other distance types, who knows?
-					// so, just pass the priors in and let the distance measure decide what to do with them
+					distance = ((ProbabilisticDissimilarityMeasure) measure)
+							.distanceFromTo(p, cluster.getCentroid(), clusterPriors.get(cluster));
+					}
+				else
+					{
+					distance = measure.distanceFromTo(p, cluster.getCentroid());
+					}
 
-					double distance;
+				ClusterMove<T, CentroidCluster<T>> cm = makeClusterMove(cluster, distance);
 
-					if (measure instanceof ProbabilisticDissimilarityMeasure)
+				// ignore the secondBestDistance, we don't need it here
+
+				//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy
+				if (cm.bestDistance < unknownDistanceThreshold)
+					{
+					synchronized (result)
 						{
-						distance = ((ProbabilisticDissimilarityMeasure) measure)
-								.distanceFromTo(p, cluster.getCentroid(), clusterPriors.get(cluster));
-						}
-					else
-						{
-						distance = measure.distanceFromTo(p, cluster.getCentroid());
-						}
-
-					ClusterMove<T, CentroidCluster<T>> cm = makeClusterMove(cluster, distance);
-
-					// ignore the secondBestDistance, we don't need it here
-
-					//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy
-					if (cm.bestDistance < unknownDistanceThreshold)
-						{
-						synchronized (result)
-							{
-							result.put(cm.bestDistance, cm);
-							}
+						result.put(cm.bestDistance, cm);
 						}
 					}
-				});
+				//	}
+				//	});
 				}
 			}
 
-		execService.finish("Tested sample against %d clusters", 30);
+		//	execService.finish("Tested sample against %d clusters", 30);
 
 		//result = result.headMap(unknownDistanceThreshold);
 

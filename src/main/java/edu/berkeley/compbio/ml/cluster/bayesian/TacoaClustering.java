@@ -230,6 +230,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 			//bestDistance = UNKNOWN_DISTANCE;
 			//secondToBestDistanceRatio = 1.0;
+			bestVotes = 1e-9;
 			voteProportion = 0;
 			secondToBestVoteRatio = 1.0;
 
