@@ -50,7 +50,6 @@ public class ClusteringTestResults
 	private int numClusters = 0;
 	private int shouldHaveBeenUnknown = 0;
 	private int shouldNotHaveBeenUnknown = 0;
-	private int shouldNotHaveBeenOther = 0;
 	private int testSamples;
 	private double trainingSeconds;
 	private double testingSeconds;
@@ -91,10 +90,6 @@ public class ClusteringTestResults
 		return shouldNotHaveBeenUnknown;
 		}
 
-	public int getShouldNotHaveBeenOther()
-		{
-		return shouldNotHaveBeenOther;
-		}
 
 	public int getTestSamples()
 		{
@@ -311,10 +306,6 @@ public class ClusteringTestResults
 		shouldNotHaveBeenUnknown++;
 		}
 
-	public synchronized void incrementShouldNotHaveBeenOther()
-		{
-		shouldNotHaveBeenOther++;
-		}
 
 	public synchronized void incrementTotalTrainingMass(double weightSum)
 		{
@@ -338,7 +329,6 @@ public class ClusteringTestResults
 		//resultsNode.addChild("unknown", getUnknown());
 		resultsNode.addChild("shouldHaveBeenUnknown", getShouldHaveBeenUnknown());
 		resultsNode.addChild("shouldNotHaveBeenUnknown", getShouldNotHaveBeenUnknown());
-		resultsNode.addChild("shouldNotHaveBeenOther", getShouldNotHaveBeenOther());
 
 		resultsNode.addChild("computedDistances", getComputedDistancesArray());
 		resultsNode.addChild("secondToBestDistanceRatios", getSecondToBestDistanceRatiosArray());

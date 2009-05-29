@@ -104,6 +104,8 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 		//Multimap<String, T> examples = new HashMultimap<String, T>();
 
+		//PERF multithread
+
 		int c = 0;
 		while (trainingIterator.hasNext())
 			{
@@ -122,7 +124,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				logger.debug("Prepared " + c + " training samples");
 				}
 			}
-		logger.debug("Prepared " + c + " training samples");
+		logger.info("Prepared " + c + " training samples");
 		}
 
 //	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,

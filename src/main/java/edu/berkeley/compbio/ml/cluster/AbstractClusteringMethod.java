@@ -451,14 +451,16 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					}
 				catch (NoSuchElementException e)
 					{
-					// a cluster was found, but it has no prediction label.  Note it's not "unknown" but "other".
+					// a cluster was found, but it has no prediction label.
+					// BAD treat this as "unknown" for now
+					// Note it's not "unknown" but "other".
 					predictedLabel = null;
 					clusterProb = 0;
 
 					// the fragment's best label does match a training label, it should not be unknown
 					if (populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
 						{
-						tr.incrementShouldNotHaveBeenOther();
+						tr.incrementShouldNotHaveBeenUnknown();
 						}
 
 					broadWrongness = UNKNOWN_DISTANCE;
