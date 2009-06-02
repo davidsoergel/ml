@@ -205,6 +205,13 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			 }
 		 }
  */
+
+/*	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
+							   final Map<String, Set<String>> populatedPredictLabelSets, T frag)
+	  {
+	  WeightedSet<String> predictedLabelWeights = predictLabelWeights(tr, frag);
+	  testAgainstPredictionLabels(intraLabelDistances, tr, populatedPredictLabelSets, frag, predictedLabelWeights);
+	  }*/
 	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr, final T frag)
 		//                    Set<String> populatedTrainingLabels)
 		{

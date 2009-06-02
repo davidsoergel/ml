@@ -9,7 +9,6 @@ import edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
-import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
@@ -81,14 +80,14 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean add(T p) throws ClusterException, NoGoodClusterException //, List<Double> secondBestDistances
+/*	public boolean add(T p) throws ClusterException, NoGoodClusterException //, List<Double> secondBestDistances
 		{
 		ClusterMove best = bestClusterMove(p);
 		//secondBestDistances.add(best.secondBestDistance);
 		best.bestCluster.add(p);
 		return true;
 		}
-
+*/
 
 // --------------------- Interface SampleInitializedOnlineClusteringMethod ---------------------
 

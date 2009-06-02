@@ -143,13 +143,13 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		}
 
 
-	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
+/*	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
 	                             final Map<String, Set<String>> populatedPredictLabelSets, T frag)
 		{
 		WeightedSet<String> predictedLabelWeights = predictLabelWeights(tr, frag);
 		testAgainstPredictionLabels(intraLabelDistances, tr, populatedPredictLabelSets, frag, predictedLabelWeights);
 		}
-
+*/
 
 	/**
 	 * allow an overriding clustering method to tweak the distances, set vote weights, etc.
@@ -169,8 +169,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		return cm;
 		}
 
-	private WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr,
-	                                                final T frag) //, Set<String> populatedTrainingLabels)
+	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr,
+	                                                  final T frag) //, Set<String> populatedTrainingLabels)
 		{
 		//double secondToBestDistanceRatio = 0;
 

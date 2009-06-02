@@ -485,8 +485,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			}
 		}
 
-	private WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr,
-	                                                final T frag) //, Set<String> populatedTrainingLabels)
+	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr,
+	                                                  final T frag) //, Set<String> populatedTrainingLabels)
 		{
 		double secondToBestDistanceRatio = 0;
 

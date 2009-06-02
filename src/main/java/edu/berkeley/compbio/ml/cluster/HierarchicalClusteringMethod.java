@@ -38,6 +38,7 @@ import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -107,4 +108,12 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 	 *         procedure has not been performed yet.
 	 */
 	public abstract LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree();
+
+
+	/**
+	 * Add the given samples to the set to be clustered, and remember the mapping from sample to cluster
+	 *
+	 * @param testIterator
+	 */
+	public abstract void addAllAndRemember(Iterator<T> testIterator);
 	}
