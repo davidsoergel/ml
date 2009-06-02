@@ -9,7 +9,8 @@ import java.util.Iterator;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface SampleInitializedOnlineClusteringMethod<T extends Clusterable<T>> extends OnlineClusteringMethod<T>
+public interface SampleInitializedOnlineClusteringMethod<T extends Clusterable<T>>
+		extends OnlineClusteringMethod<T>, UnsupervisedClusteringMethod<T>
 	{
 // -------------------------- OTHER METHODS --------------------------
 

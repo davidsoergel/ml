@@ -35,7 +35,7 @@ package edu.berkeley.compbio.ml.cluster.kmeans;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AbstractCentroidCluster;
-import edu.berkeley.compbio.ml.cluster.AbstractOnlineClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.AbstractUnsupervisedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -58,7 +58,7 @@ import java.util.Set;
  * @version 1.0
  */
 public class KmeansClustering<T extends AdditiveClusterable<T>>
-		extends AbstractOnlineClusteringMethod<T, CentroidCluster<T>>
+		extends AbstractUnsupervisedOnlineClusteringMethod<T, CentroidCluster<T>>
 		implements SemisupervisedClusteringMethod<T>, CentroidClusteringMethod<T>,
 		           SampleInitializedOnlineClusteringMethod<T>
 	{

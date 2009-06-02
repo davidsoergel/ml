@@ -33,20 +33,17 @@
 
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
-import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
-import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
-import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -84,13 +81,15 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 // --------------------- Interface PrototypeBasedCentroidClusteringMethod ---------------------
 
+
+	final Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
+
 	public void createClusters(final GenericFactory<T> prototypeFactory)
 		{
 		assert theClusters.isEmpty();
 
 		try
 			{
-			final Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
 			int i = 0;
 			for (String potentialTrainingBin : potentialTrainingBins)
 				{
@@ -100,16 +99,8 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 				CentroidCluster<T> cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
 				theClusters.add(cluster);
 
-				//** for now we make a uniform prior
-				priorsMult.put(cluster, 1);
+				theClusterMap.put(potentialTrainingBin, cluster);
 				}
-			priorsMult.normalize();
-			clusterPriors = priorsMult.getValueMap();
-			}
-		catch (DistributionException e)
-			{
-			logger.error("Error", e);
-			throw new ClusterRuntimeException(e);
 			}
 		catch (GenericFactoryException e)
 			{
@@ -120,102 +111,36 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 // -------------------------- OTHER METHODS --------------------------
 
-	//** just initialize all clusters, then delete the empty ones
-/*	public void initializeWithSamples(Iterator<T> trainingIterator, int initSamples,
-	                                  final GenericFactory<T> prototypeFactory)
-		//	throws ClusterException
-		//	throws GenericFactoryException, ClusterException
+	protected void trainWithKnownTrainingLabels(Iterator<T> trainingIterator)
 		{
-		final Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
 
-		// The reason this stuff is here, rather than in train(), is that train() expects that the clusters are already defined.
-		// but because of the way labelling works now, we have to consume the entire training iterator in order to know what the clusters should be.
-		// we are provided with the list of potential training bins, but some of those may not actually have training samples.
+		int i = 0;
 
-		final Multinomial<CentroidCluster> priorsMult = new Multinomial<CentroidCluster>();
-		try
+		//		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+
+		// the execService approach caches all the points.  In that the reason for the memory problem?
+
+		while (trainingIterator.hasNext())
 			{
-			// consume the entire iterator, ignoring initsamples
-			int i = 0;
+			final T point = trainingIterator.next();
+			final int clusterId = i++;
+			// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
+			// the training samples must already be labelled with a bin ID.
 
-			//		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+			String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+			CentroidCluster<T> cluster = theClusterMap.get(clusterBinId);
 
-			// the execService approach caches all the points.  In that the reason for the memory problem?
-
-			while (trainingIterator.hasNext())
+			if (cluster == null)
 				{
-				final T point = trainingIterator.next();
-				final int clusterId = i++;
-				//		execService.submit(new Runnable()
-				//		{
-				//		public void run()
-				//			{
-				try
-					{
-					// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
-					// the training samples must already be labelled with a bin ID.
-
-					String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
-					CentroidCluster<T> cluster = theClusterMap.get(clusterBinId);
-
-					if (cluster == null)
-						{
-						final T centroid = prototypeFactory.create(point.getId());
-
-						cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
-
-						theClusterMap.put(clusterBinId, cluster);
-
-						//** for now we make a uniform prior
-						priorsMult.put(cluster, 1);
-						}
-
-					// note this updates the cluster labels as well.
-					// In particular, the point should already be labelled with a Training Label (not just a bin ID),
-					// so that the cluster will know what label it predicts.
-					cluster.add(point);
-					}
-				catch (DistributionException e)
-					{
-					logger.error("Error", e);
-					throw new ClusterRuntimeException(e);
-					}
-				catch (GenericFactoryException e)
-					{
-					logger.error("Error", e);
-					throw new ClusterRuntimeException(e);
-					}
+				throw new ClusterRuntimeException("The clusters were not all created prior to training");
 				}
-			//	});
-			//	}
 
-			//execService.finish("Processed %d training samples", 30);
-
-			priorsMult.normalize();
-			priors = priorsMult.getValueMap();
-			}
-		catch (DistributionException e)
-			{
-			throw new Error(e);
+			// note this updates the cluster labels as well.
+			// In particular, the point should already be labelled with a Training Label (not just a bin ID),
+			// so that the cluster will know what labels it predicts.
+			cluster.add(point);
 			}
 
 		theClusters = theClusterMap.values();
-		}
-*/
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
-			throws IOException, ClusterException
-		{
-		super.train(trainingCollectionIteratorFactory, 1);
-
-		//limitToPopulatedClusters();
-
-		// after that, normalize the label probabilities
-
-		//removeEmptyClusters();   // already done
-		//normalizeClusterLabelProbabilities(); // already done
 		}
 	}

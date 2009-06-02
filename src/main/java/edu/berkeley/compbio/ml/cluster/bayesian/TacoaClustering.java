@@ -9,6 +9,7 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultimap;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
+import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
@@ -125,7 +126,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			            + " labels were trained");
 
 
-			clusterPriors = new HashMap<CentroidCluster<T>, Double>();
+			clusterPriors = new HashMap<Cluster<T>, Double>();
 			Multinomial<String> labelPriors = new Multinomial<String>(populatedTrainingLabels);
 			for (CentroidCluster<T> theCluster : theClusters)
 				{

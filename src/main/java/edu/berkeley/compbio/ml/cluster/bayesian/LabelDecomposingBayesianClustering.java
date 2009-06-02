@@ -33,7 +33,6 @@
 
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
-import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
@@ -42,30 +41,28 @@ import com.davidsoergel.stats.Multinomial;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
-import edu.berkeley.compbio.ml.cluster.ClusterException;
+import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
-import edu.berkeley.compbio.ml.cluster.SampleInitializedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.kmeans.GrowableKmeansClustering;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Performs a simple unsupervised clustering on all the samples with a given label in an attemp to decompose the
+ * Performs a simple unsupervised clustering on all the samples with a given label in an attempt to decompose the
  * label-level cluster into several smaller clusters.  This is an unusual case in that it both requires a prototype
  * factory and is sample-initialized.
  *
- * @author David Tulga
  * @author David Soergel
  * @version $Id$
  */
 public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>> extends NearestNeighborClustering<T>
-		implements SampleInitializedOnlineClusteringMethod<T>
+		//	implements SampleInitializedOnlineClusteringMethod<T>
 	{
 // ------------------------------ FIELDS ------------------------------
 
@@ -102,6 +99,10 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 // --------------------- Interface SampleInitializedOnlineClusteringMethod ---------------------
 
+	protected void trainWithKnownTrainingLabels(final Iterator<T> trainingIterator)
+		{
+		throw new NotImplementedException();
+		}
 
 	/**
 	 * {@inheritDoc}
@@ -125,7 +126,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 			{
 			// BAD consume the entire iterator, ignoring initsamples
 			int i = 0;
-			Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
+			Multinomial<Cluster<T>> priorsMult = new Multinomial<Cluster<T>>();
 			while (trainingIterator.hasNext())
 				{
 				T point = trainingIterator.next();
@@ -209,7 +210,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
+/*	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
 			throws IOException, ClusterException
 		{
 		//super.train(trainingCollectionIteratorFactory);
@@ -220,5 +221,5 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 		removeEmptyClusters();
 		normalizeClusterLabelProbabilities();
-		}
+		}*/
 	}

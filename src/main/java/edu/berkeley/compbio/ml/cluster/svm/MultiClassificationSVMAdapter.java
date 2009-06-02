@@ -137,7 +137,6 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public void createClusters()
 		{
-		// by analogy with BayesianClustering, take this opportunity to initialize the clusters
 
 		theClusterMap = new HashMap<String, BatchCluster<T>>(potentialTrainingBins.size());
 		int i = 0;

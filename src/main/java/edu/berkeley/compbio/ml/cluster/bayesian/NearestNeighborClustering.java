@@ -1,9 +1,6 @@
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
-import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.stats.DissimilarityMeasure;
-import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.Multinomial;
 import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
@@ -38,8 +35,6 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 
 	private static final Logger logger = Logger.getLogger(NearestNeighborClustering.class);
 	protected double unknownDistanceThreshold;
-
-	protected Map<CentroidCluster<T>, Double> clusterPriors;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -103,14 +98,14 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 		best.bestCluster.add(p);
 		return true;
 		}
-
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
+/*
+	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory) //, int trainingEpochs)
 			throws ClusterException
 		{
-		super.train(trainingCollectionIteratorFactory, trainingEpochs);
+		super.train(trainingCollectionIteratorFactory);
 		//removeEmptyClusters();  // already done
 		preparePriors();
-		}
+		}*/
 
 // -------------------------- OTHER METHODS --------------------------
 
@@ -185,29 +180,5 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 					"Best distance " + result.bestDistance + " > threshold " + unknownDistanceThreshold);
 			}
 		return result;
-		}
-
-
-	/**
-	 * for now we make a uniform prior
-	 */
-	protected void preparePriors()
-		{
-		try
-			{
-			final Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
-
-			for (CentroidCluster<T> cluster : theClusters)
-				{
-				priorsMult.put(cluster, 1);
-				}
-			priorsMult.normalize();
-			clusterPriors = priorsMult.getValueMap();
-			}
-		catch (DistributionException e)
-			{
-			logger.error("Error", e);
-			throw new ClusterRuntimeException(e);
-			}
 		}
 	}

@@ -1,11 +1,8 @@
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
-import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.stats.DissimilarityMeasure;
-import com.davidsoergel.stats.DistributionException;
-import com.davidsoergel.stats.Multinomial;
 import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
 import com.google.common.collect.TreeMultimap;
 import edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod;
@@ -16,7 +13,6 @@ import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
-import edu.berkeley.compbio.ml.cluster.SampleInitializedOnlineClusteringMethod;
 import org.apache.log4j.Logger;
 
 import java.util.Comparator;
@@ -36,7 +32,7 @@ import java.util.Set;
  */
 public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		extends AbstractSupervisedOnlineClusteringMethod<T, CentroidCluster<T>>
-		implements SampleInitializedOnlineClusteringMethod<T>
+		//implements SampleInitializedOnlineClusteringMethod<T>
 		//, CentroidClusteringMethod<T>
 	{
 // ------------------------------ FIELDS ------------------------------
@@ -45,8 +41,6 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 	protected final int maxNeighbors;
 
 	protected double unknownDistanceThreshold;
-
-	protected Map<CentroidCluster<T>, Double> clusterPriors;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -95,13 +89,6 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		return true;
 		}
 
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
-			throws ClusterException
-		{
-		removeEmptyClusters();
-		normalizeClusterLabelProbabilities();
-		// do nothing; we already consumed all the training samples with initializeWithSamples
-		}
 
 // --------------------- Interface SampleInitializedOnlineClusteringMethod ---------------------
 
@@ -110,15 +97,13 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 	 * Unlike situations where we make a cluster per label, here we make a whole "cluster" per training sample
 	 */
 	//@Override
-	public void initializeWithSamples(Iterator<T> trainingIterator, int initSamples)
+	public void trainWithKnownTrainingLabels(Iterator<T> trainingIterator)
 		//,                             GenericFactory<T> prototypeFactory)
 //			throws GenericFactoryException, ClusterException
 		{
 		theClusters = new HashSet<CentroidCluster<T>>();
 
-		// BAD consume the entire iterator, ignoring initsamples
 		int i = 0;
-
 
 		//	ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
 
@@ -141,31 +126,9 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 
 		//execService.finish("Processed %d training samples", 30);
 
-		preparePriors();
+		//preparePriors();
 		}
 
-	/**
-	 * for now we make a uniform prior
-	 */
-	protected void preparePriors()
-		{
-		try
-			{
-			final Multinomial<CentroidCluster<T>> priorsMult = new Multinomial<CentroidCluster<T>>();
-
-			for (CentroidCluster<T> cluster : theClusters)
-				{
-				priorsMult.put(cluster, 1);
-				}
-			priorsMult.normalize();
-			clusterPriors = priorsMult.getValueMap();
-			}
-		catch (DistributionException e)
-			{
-			logger.error("Error", e);
-			throw new ClusterRuntimeException(e);
-			}
-		}
 
 // -------------------------- OTHER METHODS --------------------------
 

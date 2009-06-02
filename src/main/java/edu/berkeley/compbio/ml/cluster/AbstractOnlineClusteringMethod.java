@@ -33,13 +33,10 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.log4j.Logger;
 
-import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -67,6 +64,7 @@ public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C
 		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
 		}
 
+
 // ------------------------ INTERFACE METHODS ------------------------
 
 
@@ -76,86 +74,6 @@ public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C
 	//public static <T extends AdditiveClusterable<T>> Cluster<T> bestCluster(List<Cluster<T>> theClusters, T p)
 	/*
 	   */
-
-
-	//public abstract void addAndRecenter(T v);
-	//public abstract void reassign(T v);
-
-	/**
-	 * adjust the centroids by considering each of the incoming data points exactly once per iteration
-	 */
-	/*	public void run(ClusterableIterator<T> theDataPointProvider, int iterations) throws IOException
-	   {
-	   run(theDataPointProvider, iterations, Integer.MAX_VALUE);
-	   }*/
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
-			throws ClusterException
-		{
-		for (int i = 0; i < trainingEpochs; i++)
-			{
-			trainOneIteration(trainingCollectionIteratorFactory);
-			}
-		removeEmptyClusters();
-		normalizeClusterLabelProbabilities();
-		}
-
-// -------------------------- OTHER METHODS --------------------------
-
-	protected boolean trainOneIteration(
-			CollectionIteratorFactory<T> trainingCollectionIteratorFactory) //, List<Double> secondBestDistances
-			throws ClusterException
-		{
-		int changed = 0;
-		Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
-		//normalizeClusters();
-		int c = 0;
-		Date starttime = new Date();
-		//secondBestDistances.clear();
-		while (trainingIterator.hasNext())
-			{
-			try
-				{
-				if (add(trainingIterator.next()))
-					{
-					changed++;
-					}
-				}
-			catch (NoGoodClusterException e)
-				{
-				// too bad, just ignore this unclassifiable point.
-				// it may be classifiable in a future iteration.
-				// if no other points get changed, then this one will stay unclassified.
-				}
-
-			c++;
-			/*	if (logger.isDebugEnabled() && c % 1000 == 0)
-			   {
-			   Date endtime = new Date();
-			   double realtime = (endtime.getTime() - starttime.getTime()) / (double) 1000;
-
-			   logger.debug(
-					   new Formatter().format("%d p/%d sec = %d p/sec; specificity = %.3f; %s", c, (int) realtime,
-											  (int) (c / realtime),
-											  (DSCollectionUtils.sum(secondBestDistances) / (double) c),
-											  shortClusteringStats()));
-			   //					logger.info("" + c + " p/" + (int) realtime + " sec = " + (int) (c / realtime)
-			   //							+ " p/sec; specificity = " + (ArrayUtils.sum(secondBestDistances) / (double) c) + " " + shortClusteringStats());
-			   }*/
-			/*	if (c >= maxpoints)
-			   {
-			   break;
-			   }*/
-			}
-		int changedProportion = changed == 0 ? 0 : (int) (100.0 * changed / c);
-		logger.debug("Changed cluster assignment of " + changed + " points (" + changedProportion + "%)\n");
-		// computeClusterStdDevs(theDataPointProvider);  // PERF cluster stddev is slow, should be optional.  Also, only works for sequential DPP
-		if (logger.isDebugEnabled())
-			{
-			logger.debug("\n" + clusteringStats());
-			}
-
-		return changed == 0;
-		}
 
 	/*public OnlineClustering(Iterator<T> vp)
 		 {
