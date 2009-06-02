@@ -191,6 +191,13 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		this.labeler = labeler;
 		}
 
+	/**
+	 * empty clusters are essential in the SOM context, so override the removal
+	 */
+	protected void removeEmptyClusters()
+		{
+
+		}
 // ------------------------ INTERFACE METHODS ------------------------
 
 
