@@ -88,24 +88,26 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 		{
 		assert theClusters.isEmpty();
 
-		try
+		int i = 0;
+		for (String potentialTrainingBin : potentialTrainingBins)
 			{
-			int i = 0;
-			for (String potentialTrainingBin : potentialTrainingBins)
+			try
 				{
 				final T centroid = prototypeFactory.create(potentialTrainingBin);
-
 				final int clusterId = i++;
 				CentroidCluster<T> cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
 				theClusters.add(cluster);
 
 				theClusterMap.put(potentialTrainingBin, cluster);
 				}
-			}
-		catch (GenericFactoryException e)
-			{
-			logger.error("Error", e);
-			throw new ClusterRuntimeException(e);
+			catch (GenericFactoryException e)
+				{
+				//logger.error("Error", e);
+				//throw new ClusterRuntimeException(e);
+
+				// ** there may be legitimate reasons why a cluster can't be created, e.g. it doesn't match a leave-one-out label
+				// just ignore it
+				}
 			}
 		}
 
