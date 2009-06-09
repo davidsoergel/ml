@@ -49,7 +49,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 	protected final int testThreads;
 
-
+	//private final Map<String, String> friendlyLabelMap;
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	public AbstractClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
@@ -61,6 +61,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		this.leaveOneOutLabels = leaveOneOutLabels;
 		this.predictLabelSets = predictLabelSets;
 		this.testLabels = testLabels;
+		//this.friendlyLabelMap =friendlyLabelMap;
 		this.testThreads = testThreads;
 		}
 

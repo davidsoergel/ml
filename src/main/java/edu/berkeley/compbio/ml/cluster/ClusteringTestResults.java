@@ -58,6 +58,18 @@ public class ClusteringTestResults
 	private String info;
 //	private MultiClassCrossValidationResults crossValidationResults;
 
+//	private  Map<String,String> friendlyLabelMap;
+
+	public ClusteringTestResults() //final Map<String, String> friendlyLabelMap)
+		{
+		//this.friendlyLabelMap = friendlyLabelMap;
+		}
+
+/*	public void setFriendlyLabelMap(final Map<String, String> friendlyLabelMap)
+		{
+		this.friendlyLabelMap = friendlyLabelMap;
+		}*/
+
 	public String getInfo()
 		{
 		return info;
@@ -152,6 +164,10 @@ public class ClusteringTestResults
 			public DistanceBasedMultiClassCrossValidationResults apply(@Nullable final String from)
 				{
 				return new DistanceBasedMultiClassCrossValidationResults();
+				/*
+				DistanceBasedMultiClassCrossValidationResults result = new DistanceBasedMultiClassCrossValidationResults();
+				result.setFriendlyLabelMap(friendlyLabelMap);
+				return result;*/
 				}
 			});
 
@@ -324,6 +340,7 @@ public class ClusteringTestResults
  */
 	//@Transactional
 	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode, String labelDistancesName)
+		//, Map<String, String> friendlyLabelMap)
 		{
 		resultsNode.addChild("numClusters", getNumClusters());
 		//resultsNode.addChild("unknown", getUnknown());
@@ -365,7 +382,7 @@ public class ClusteringTestResults
 			//keyPath.add("RESULTS");
 			keyPath.add(predictionLabelsName);
 
-			entry.getValue().putResults(resultsNode, keyPath, labelDistancesName);
+			entry.getValue().putResults(resultsNode, keyPath, labelDistancesName); //,friendlyLabelMap);
 			}
 		}
 	}

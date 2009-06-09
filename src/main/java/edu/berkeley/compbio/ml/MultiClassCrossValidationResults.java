@@ -29,7 +29,9 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	// samples that had no actual label, and so should be predicted "unknown"
 	private final Multiset<L> confusionRowNull = new HashMultiset<L>();
 
-	public MultiClassCrossValidationResults()
+	//private Map<L, String> friendlyLabelMap;
+
+	public MultiClassCrossValidationResults()//Map<L, String> friendlyLabelMap)
 		{
 		confusionMatrix = new MapMaker().makeComputingMap(new Function<L, Multiset<L>>()
 		{
@@ -38,13 +40,30 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 			return new HashMultiset<L>();
 			}
 		});
+		//this.friendlyLabelMap = friendlyLabelMap;
 		}
+
 
 	public SortedSet<L> getLabels()
 		{
 		return new TreeSet<L>(confusionMatrix.keySet());
 		}
 
+	/*
+	 public List<String> getFriendlyLabels(Map<L, String> friendlyLabelMap)
+		 {
+		 if (friendlyLabelMap == null)
+			 {
+			 return null;
+			 }
+		 List<String> result = new ArrayList<String>(confusionMatrix.size());
+		 for (L l : getLabels())
+			 {
+			 result.add(friendlyLabelMap.get(l));
+			 }
+		 return result;
+		 }
+ */
 	public void sanityCheck()
 		{
 		int predictionCount = 0;

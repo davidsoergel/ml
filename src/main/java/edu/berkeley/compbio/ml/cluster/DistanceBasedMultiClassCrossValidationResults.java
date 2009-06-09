@@ -33,6 +33,10 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 	 */
 	private List<Double> labelWithinClusterProbabilities = new ArrayList<Double>();
 
+	public DistanceBasedMultiClassCrossValidationResults() //final Map<L, String> friendlyLabelMap)
+		{
+		super();
+		}
 
 	public void addSample(final L realLabel, final L predictedLabel, final double clusterProb,
 	                      final double broadWrongness, final double detailedWrongness)
@@ -71,7 +75,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 
 
 	public void putResults(HierarchicalTypedPropertyNode<String, Object> resultsNode, List<String> keyPath,
-	                       String labelDistancesName)
+	                       String labelDistancesName)//, Map<L, String> friendlyLabelMap)
 		{
 
 		resultsNode.addChild(keyPath, "numPopulatedRealLabels", numPopulatedRealLabels());
@@ -91,6 +95,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		                    keyPath);
 
 		resultsNode.addChild(keyPath, "classLabels", getLabels().toArray(DSArrayUtils.EMPTY_STRING_ARRAY));
+		//	resultsNode.addChild(keyPath, "friendlyLabels", getFriendlyLabels(friendlyLabelMap).toArray(DSArrayUtils.EMPTY_STRING_ARRAY));
 		resultsNode.addChild(keyPath, "sensitivity", DSArrayUtils.castToDouble(getSensitivities()));
 		resultsNode.addChild(keyPath, "specificity", DSArrayUtils.castToDouble(getSpecificities()));
 		resultsNode.addChild(keyPath, "precision", DSArrayUtils.castToDouble(getPrecisions()));
