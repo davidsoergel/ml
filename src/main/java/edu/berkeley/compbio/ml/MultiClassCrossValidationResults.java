@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -21,7 +23,10 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	private int numExamples;
 	private final Map<L, Multiset<L>> confusionMatrix;
 
+	// BAD test this class
+
 	// BAD currently we don't include these in the computations...
+	// samples that had no actual label, and so should be predicted "unknown"
 	private final Multiset<L> confusionRowNull = new HashMultiset<L>();
 
 	public MultiClassCrossValidationResults()
@@ -33,6 +38,11 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 			return new HashMultiset<L>();
 			}
 		});
+		}
+
+	public SortedSet<L> getLabels()
+		{
+		return new TreeSet<L>(confusionMatrix.keySet());
 		}
 
 	public void sanityCheck()
@@ -85,7 +95,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		return (float) correct / ((float) numExamples - (float) unknown);
 		}
 
-	float sensitivity(L label)
+	public float sensitivity(L label)
 		{
 		Multiset<L> predictionsForLabel = confusionMatrix.get(label);
 		int totalWithRealLabel = predictionsForLabel.size();
@@ -94,16 +104,78 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		return result;
 		}
 
-	float precision(L label)
+	public float precision(L label)
 		{
 		Multiset<L> predictionsForLabel = confusionMatrix.get(label);
 
 		int truePositives = predictionsForLabel.count(label);
-		float result = (float) truePositives / (float) getTotalPredicted(label);
+		float total = (float) getTotalPredicted(label);
+		float result = total == 0 ? 1f : (float) truePositives / total;
 		return result;
 		}
 
-	float specificity(L label)
+	public float[] getSpecificities()
+		{
+		float[] result = new float[confusionMatrix.size()];
+		int i = 0;
+		for (L label : getLabels())
+			{
+			result[i] = specificity(label);
+			i++;
+			}
+		return result;
+		}
+
+	public float[] getSensitivities()
+		{
+		float[] result = new float[confusionMatrix.size()];
+		int i = 0;
+		for (L label : getLabels())
+			{
+			result[i] = sensitivity(label);
+			i++;
+			}
+		return result;
+		}
+
+	public float[] getPrecisions()
+		{
+		float[] result = new float[confusionMatrix.size()];
+		int i = 0;
+		for (L label : getLabels())
+			{
+			result[i] = precision(label);
+			i++;
+			}
+		return result;
+		}
+
+	public float[] getPredictedCounts()
+		{
+		float[] result = new float[confusionMatrix.size()];
+		int i = 0;
+		for (L label : getLabels())
+			{
+			result[i] = getTotalPredicted(label);
+			i++;
+			}
+		return result;
+		}
+
+	public float[] getActualCounts()
+		{
+		float[] result = new float[confusionMatrix.size()];
+		int i = 0;
+		for (L label : getLabels())
+			{
+			result[i] = getTotalActual(label);
+			i++;
+			}
+		return result;
+		}
+
+
+	public float specificity(L label)
 		{
 		// == sensitivity( not label )
 		// note "unknown" counts as a negative
@@ -127,7 +199,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		return result;
 		}
 
-	int getTotalPredicted(L label)
+	public int getTotalPredicted(L label)
 
 		{
 		int totalWithPredictedLabel = 0;
@@ -138,6 +210,18 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 			totalWithPredictedLabel += entry.getValue().count(label);
 			}
 		return totalWithPredictedLabel;
+		}
+
+	public int getTotalActual(L label)
+		{
+		if (label == null)
+			{
+			return confusionRowNull.size();
+			}
+		else
+			{
+			return confusionMatrix.get(label).size();
+			}
 		}
 
 	public float classNormalizedSpecificity()

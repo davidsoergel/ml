@@ -81,14 +81,26 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 
 		resultsNode.addChild(keyPath, "accuracy", new Double(accuracy()));
 		resultsNode.addChild(keyPath, "accuracyGivenClassified", accuracyGivenClassified());
-		resultsNode.addChild(keyPath, "sensitivity", classNormalizedSensitivity());
-		resultsNode.addChild(keyPath, "specificity", classNormalizedSpecificity());
-		resultsNode.addChild(keyPath, "precision", classNormalizedPrecision());
+		resultsNode.addChild(keyPath, "classNormalizedSensitivity", classNormalizedSensitivity());
+		resultsNode.addChild(keyPath, "classNormalizedSpecificity", classNormalizedSpecificity());
+		resultsNode.addChild(keyPath, "classNormalizedPrecision", classNormalizedPrecision());
 		resultsNode.addChild(keyPath, "unknownLabel", unknown());
 
 		storeLabelDistances(labelDistancesName, getPredictionDistances(), resultsNode, keyPath);
 		storeLabelDistances(labelDistancesName + "ToSample", getPredictionDistancesWithPrecisionCost(), resultsNode,
 		                    keyPath);
+
+		resultsNode.addChild(keyPath, "classLabels", getLabels().toArray(DSArrayUtils.EMPTY_STRING_ARRAY));
+		resultsNode.addChild(keyPath, "sensitivity", DSArrayUtils.castToDouble(getSensitivities()));
+		resultsNode.addChild(keyPath, "specificity", DSArrayUtils.castToDouble(getSpecificities()));
+		resultsNode.addChild(keyPath, "precision", DSArrayUtils.castToDouble(getPrecisions()));
+		resultsNode.addChild(keyPath, "predictedCounts", DSArrayUtils.castToDouble(getPredictedCounts()));
+		resultsNode.addChild(keyPath, "actualCounts", DSArrayUtils.castToDouble(getActualCounts()));
+
+		/*	for(L label : getLabels())
+		   {
+		   asdf
+		   }*/
 		}
 
 
