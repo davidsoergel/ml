@@ -6,7 +6,9 @@ import com.google.common.collect.MapMaker;
 import com.google.common.collect.Multiset;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -49,21 +51,21 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		return new TreeSet<L>(confusionMatrix.keySet());
 		}
 
-	/*
-	 public List<String> getFriendlyLabels(Map<L, String> friendlyLabelMap)
-		 {
-		 if (friendlyLabelMap == null)
-			 {
-			 return null;
-			 }
-		 List<String> result = new ArrayList<String>(confusionMatrix.size());
-		 for (L l : getLabels())
-			 {
-			 result.add(friendlyLabelMap.get(l));
-			 }
-		 return result;
-		 }
- */
+
+	public List<String> getFriendlyLabels(Map<L, String> friendlyLabelMap)
+		{
+		if (friendlyLabelMap == null)
+			{
+			return null;
+			}
+		List<String> result = new ArrayList<String>(confusionMatrix.size());
+		for (L l : getLabels())
+			{
+			result.add(friendlyLabelMap.get(l));
+			}
+		return result;
+		}
+
 	public void sanityCheck()
 		{
 		int predictionCount = 0;

@@ -17,7 +17,7 @@ import java.util.Map;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class ClusteringTestResults
+public class ClusteringTestResults<L extends Comparable>
 	{
 // ------------------------------ FIELDS ------------------------------
 	//	public Histogram1D correctProbabilities = new FixedWidthHistogram1D(0., 1., .01);		//	public Histogram1D wrongProbabilities = new FixedWidthHistogram1D(0., 1., .01);
@@ -58,17 +58,17 @@ public class ClusteringTestResults
 	private String info;
 //	private MultiClassCrossValidationResults crossValidationResults;
 
-//	private  Map<String,String> friendlyLabelMap;
+	private Map<L, String> friendlyLabelMap;
 
 	public ClusteringTestResults() //final Map<String, String> friendlyLabelMap)
 		{
 		//this.friendlyLabelMap = friendlyLabelMap;
 		}
 
-/*	public void setFriendlyLabelMap(final Map<String, String> friendlyLabelMap)
+	public void setFriendlyLabelMap(final Map<L, String> friendlyLabelMap)
 		{
 		this.friendlyLabelMap = friendlyLabelMap;
-		}*/
+		}
 
 	public String getInfo()
 		{
@@ -158,8 +158,8 @@ public class ClusteringTestResults
 		secondToBestVoteRatios.add(secondToBestVoteRatio);
 		}
 
-	Map<String, DistanceBasedMultiClassCrossValidationResults> cvResultMap =
-			new MapMaker().makeComputingMap(new Function<String, DistanceBasedMultiClassCrossValidationResults>()
+	Map<String, DistanceBasedMultiClassCrossValidationResults<L>> cvResultMap =
+			new MapMaker().makeComputingMap(new Function<String, DistanceBasedMultiClassCrossValidationResults<L>>()
 			{
 			public DistanceBasedMultiClassCrossValidationResults apply(@Nullable final String from)
 				{
@@ -374,7 +374,7 @@ public class ClusteringTestResults
 
 		resultsNode.addChild("modelInfo", getInfo());
 
-		for (Map.Entry<String, DistanceBasedMultiClassCrossValidationResults> entry : cvResultMap.entrySet())
+		for (Map.Entry<String, DistanceBasedMultiClassCrossValidationResults<L>> entry : cvResultMap.entrySet())
 			{
 			String predictionLabelsName = entry.getKey();
 
@@ -382,7 +382,7 @@ public class ClusteringTestResults
 			//keyPath.add("RESULTS");
 			keyPath.add(predictionLabelsName);
 
-			entry.getValue().putResults(resultsNode, keyPath, labelDistancesName); //,friendlyLabelMap);
+			entry.getValue().putResults(resultsNode, keyPath, labelDistancesName, friendlyLabelMap);
 			}
 		}
 	}
