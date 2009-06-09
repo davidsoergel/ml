@@ -14,5 +14,5 @@ public interface PrototypeBasedCentroidClusteringMethod<T extends Clusterable<T>
 	{
 // -------------------------- OTHER METHODS --------------------------
 
-	void createClusters(final GenericFactory<T> prototypeFactory) throws GenericFactoryException;
+	void setPrototypeFactory(final GenericFactory<T> prototypeFactory) throws GenericFactoryException;
 	}

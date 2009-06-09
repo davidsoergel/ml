@@ -297,7 +297,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 
 // --------------------- Interface PrototypeBasedCentroidClusteringMethod ---------------------
 
-	public void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
+	public void setPrototypeFactory(GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
 		int[] zeroCell = new int[dimensions];
 		Arrays.fill(zeroCell, 0);

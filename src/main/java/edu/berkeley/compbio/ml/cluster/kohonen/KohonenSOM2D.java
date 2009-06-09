@@ -377,7 +377,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		 }
  */
 
-	public void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
+	public void setPrototypeFactory(GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
 		int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
 		createClusters(totalCells, prototypeFactory);

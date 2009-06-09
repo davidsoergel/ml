@@ -92,7 +92,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 // --------------------- Interface PrototypeBasedCentroidClusteringMethod ---------------------
 
-	public void createClusters(GenericFactory<T> prototypeFactory) throws GenericFactoryException
+	public void setPrototypeFactory(GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
 		this.prototypeFactory = prototypeFactory;
 		}

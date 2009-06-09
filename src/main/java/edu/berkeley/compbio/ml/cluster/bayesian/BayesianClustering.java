@@ -84,11 +84,17 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 	final Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
 
-	public void createClusters(final GenericFactory<T> prototypeFactory)
+	GenericFactory<T> prototypeFactory;
+
+	public void setPrototypeFactory(final GenericFactory<T> prototypeFactory)
 		{
 		assert theClusters.isEmpty();
 
-		int i = 0;
+		// ** just store the factory for now so we can use it during training
+
+		this.prototypeFactory = prototypeFactory;
+
+/*		int i = 0;
 		for (String potentialTrainingBin : potentialTrainingBins)
 			{
 			try
@@ -108,7 +114,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 				// ** there may be legitimate reasons why a cluster can't be created, e.g. it doesn't match a leave-one-out label
 				// just ignore it
 				}
-			}
+			}*/
 		}
 
 // -------------------------- OTHER METHODS --------------------------
@@ -125,7 +131,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 		while (trainingIterator.hasNext())
 			{
 			final T point = trainingIterator.next();
-			final int clusterId = i++;
+
 			// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
 			// the training samples must already be labelled with a bin ID.
 
@@ -134,7 +140,24 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 			if (cluster == null)
 				{
-				throw new ClusterRuntimeException("The clusters were not all created prior to training");
+				try
+					{
+					final T centroid = prototypeFactory.create(clusterBinId);
+					final int clusterId = i++;
+					cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
+					theClusters.add(cluster);
+
+					theClusterMap.put(clusterBinId, cluster);
+					}
+				catch (GenericFactoryException e)
+					{
+					logger.error("Error", e);
+					throw new ClusterRuntimeException(e);
+
+					// ** there may be legitimate reasons why a cluster can't be created, e.g. it doesn't match a leave-one-out label
+
+					}
+				//throw new ClusterRuntimeException("The clusters were not all created prior to training");
 				}
 
 			// note this updates the cluster labels as well.

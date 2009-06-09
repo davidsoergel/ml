@@ -201,7 +201,7 @@ public class KohonenSOM2DTest
 					   som.clusterAt(x, y).setCentroid(zeroArray);
 					   }
 				   }*/
-		som.createClusters(prototypeFactory);
+		som.setPrototypeFactory(prototypeFactory);
 
 		som.clusterAt(2, 2).setCentroid(new ClusterableDoubleArray("test1", new double[]{1, 1, 1, 1, 1}));
 
@@ -232,7 +232,7 @@ public class KohonenSOM2DTest
 				                                         moveFactorFunction, radiusFunction, weightFunction, false,
 				                                         true, 1, bruteForceStrategy, 0);
 
-		som.createClusters(prototypeFactory);
+		som.setPrototypeFactory(prototypeFactory);
 		som.add(new ClusterableDoubleArray("test1", new double[]{1, 2, 3, 4, 5}));
 
 		for (CentroidCluster<ClusterableDoubleArray> cell : som.getClusters())
@@ -251,7 +251,7 @@ public class KohonenSOM2DTest
 				                                         moveFactorFunction, radiusFunction, weightFunction, false,
 				                                         true, 1, bruteForceStrategy, 0);
 
-		som.createClusters(prototypeFactory);
+		som.setPrototypeFactory(prototypeFactory);
 		som.add(new ClusterableDoubleArray("test1", new double[]{1, 2, 3, 4, 5}));
 
 		assert som.bestClusterMove(new ClusterableDoubleArray("test1", new double[]{0, 0, 0, 0, 0})).bestCluster != som
