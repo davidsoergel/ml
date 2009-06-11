@@ -44,13 +44,14 @@ import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
+import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.kmeans.GrowableKmeansClustering;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -99,7 +100,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 // --------------------- Interface SampleInitializedOnlineClusteringMethod ---------------------
 
-	protected void trainWithKnownTrainingLabels(final Iterator<T> trainingIterator)
+	protected void trainWithKnownTrainingLabels(final ClusterableIterator<T> trainingIterator)
 		{
 		throw new NotImplementedException();
 		}
@@ -107,7 +108,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void initializeWithSamples(Iterator<T> trainingIterator,
+	public void initializeWithSamples(ClusterableIterator<T> trainingIterator,
 	                                  int initSamples) //GenericFactory<T> prototypeFactory)
 		//	throws ClusterException
 		{
@@ -127,58 +128,66 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 			// BAD consume the entire iterator, ignoring initsamples
 			int i = 0;
 			Multinomial<Cluster<T>> priorsMult = new Multinomial<Cluster<T>>();
-			while (trainingIterator.hasNext())
+			try
 				{
-				T point = trainingIterator.next();
+				while (true)
+					{
 
-				String bestLabel = point.getWeightedLabels().getDominantKeyInSet(predictLabels);
+					T point = trainingIterator.next();
+
+					String bestLabel = point.getWeightedLabels().getDominantKeyInSet(predictLabels);
 //Cluster<T> cluster = theClusterMap.get(bestLabel);
 
 
-				GrowableKmeansClustering<T> theIntraLabelClustering = theSubclusteringMap.get(bestLabel);
+					GrowableKmeansClustering<T> theIntraLabelClustering = theSubclusteringMap.get(bestLabel);
 
-				if (theIntraLabelClustering == null)
-					{
-					theIntraLabelClustering =
-							new GrowableKmeansClustering<T>(measure, potentialTrainingBins, predictLabelSets,
-							                                leaveOneOutLabels, testLabels, testThreads);
-					theSubclusteringMap.put(bestLabel, theIntraLabelClustering);
-					}
+					if (theIntraLabelClustering == null)
+						{
+						theIntraLabelClustering =
+								new GrowableKmeansClustering<T>(measure, potentialTrainingBins, predictLabelSets,
+								                                leaveOneOutLabels, testLabels, testThreads);
+						theSubclusteringMap.put(bestLabel, theIntraLabelClustering);
+						}
 
-				// naive online agglomerative clustering:
-				// add points to clusters in the order they arrive, one pass only, create new clusters as needed
+					// naive online agglomerative clustering:
+					// add points to clusters in the order they arrive, one pass only, create new clusters as needed
 
-				// the resulting clustering may suck, but it should still more or less span the space of the inputs,
-				// so it may work well enough for this purpose.
+					// the resulting clustering may suck, but it should still more or less span the space of the inputs,
+					// so it may work well enough for this purpose.
 
-				// doing proper k-means would be nicer, but then we'd have to store all the training points, or re-iterate them somehow.
+					// doing proper k-means would be nicer, but then we'd have to store all the training points, or re-iterate them somehow.
 
-				ClusterMove<T, CentroidCluster<T>> cm = theIntraLabelClustering.bestClusterMove(point);
+					ClusterMove<T, CentroidCluster<T>> cm = theIntraLabelClustering.bestClusterMove(point);
 
-				CentroidCluster<T> cluster = cm.bestCluster;
+					CentroidCluster<T> cluster = cm.bestCluster;
 
-				if (cm.bestDistance > unknownDistanceThreshold)
-					{
-					logger.debug(
-							"Creating new subcluster (" + cm.bestDistance + " > " + unknownDistanceThreshold + ") for "
-							+ bestLabel);
-					cluster = new AdditiveCentroidCluster<T>(i++, prototypeFactory.create());
+					if (cm.bestDistance > unknownDistanceThreshold)
+						{
+						logger.debug("Creating new subcluster (" + cm.bestDistance + " > " + unknownDistanceThreshold
+						             + ") for " + bestLabel);
+						cluster = new AdditiveCentroidCluster<T>(i++, prototypeFactory.create());
 //cluster.setId(i++);
 
 // add the new cluster to the local per-label clustering...
-					theIntraLabelClustering.addCluster(cluster);
+						theIntraLabelClustering.addCluster(cluster);
 
 // ... and also to the overall clustering
-					theClusters.add(cluster);
+						theClusters.add(cluster);
 
 // REVIEW for now we make a uniform prior
-					priorsMult.put(cluster, 1);
-					}
-				cluster.add(point);
+						priorsMult.put(cluster, 1);
+						}
+					cluster.add(point);
 /*		if(cluster.getLabelCounts().uniqueSet().size() != 1)
 			{
 			throw new Error();
 			}*/
+
+					}
+				}
+			catch (NoSuchElementException e)
+				{
+				// iterator exhausted
 				}
 			priorsMult.normalize();
 			clusterPriors = priorsMult.getValueMap();

@@ -50,7 +50,6 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -145,7 +144,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void initializeWithSamples(Iterator<T> trainingIterator,
+	public void initializeWithSamples(ClusterableIterator<T> trainingIterator,
 	                                  int initsamples) //, GenericFactory<T> prototypeFactory)
 		//	throws GenericFactoryException
 		{

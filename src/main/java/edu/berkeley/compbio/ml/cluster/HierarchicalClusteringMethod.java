@@ -38,7 +38,6 @@ import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -115,5 +114,5 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 	 *
 	 * @param testIterator
 	 */
-	public abstract void addAllAndRemember(Iterator<T> testIterator);
+//	public abstract void addAllAndRemember(Iterator<T> testIterator);
 	}

@@ -5,7 +5,6 @@ import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.log4j.Logger;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +38,7 @@ public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Cluster
 		normalizeClusterLabelProbabilities();
 		}*/
 
-	public void train(Iterator<T> trainingIterator) throws ClusterException
+	public void train(ClusterableIterator<T> trainingIterator) throws ClusterException
 		{
 		trainWithKnownTrainingLabels(trainingIterator);
 		removeEmptyClusters();
@@ -47,7 +46,7 @@ public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Cluster
 		preparePriors();
 		}
 
-	protected abstract void trainWithKnownTrainingLabels(final Iterator<T> trainingIterator);
+	protected abstract void trainWithKnownTrainingLabels(final ClusterableIterator<T> trainingIterator);
 
 
 	protected Map<Cluster<T>, Double> clusterPriors;

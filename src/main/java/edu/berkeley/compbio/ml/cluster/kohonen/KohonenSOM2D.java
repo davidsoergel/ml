@@ -32,7 +32,6 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
@@ -46,6 +45,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
+import edu.berkeley.compbio.ml.cluster.ClusterableIteratorFactory;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
@@ -361,7 +361,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 			  logger.debug("initialized " + k + " clusters");*/
 	//		}
 	@Override
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
+	public void train(ClusterableIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
 			throws ClusterException
 		{
 		super.train(trainingCollectionIteratorFactory, iterations);
@@ -391,7 +391,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void initializeWithSamples(Iterator<T> initIterator, int initSamples)
+	public void initializeWithSamples(ClusterableIterator<T> initIterator, int initSamples)
 		{
 		//createClusters(prototypeFactory);
 
@@ -640,7 +640,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		changed = 0;
 		}
 
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
+	public void train(ClusterableIteratorFactory<T> trainingCollectionIteratorFactory,
 	                  GenericFactory<T> prototypeFactory, int trainingEpochs) throws IOException, ClusterException
 		{
 		train(trainingCollectionIteratorFactory, trainingEpochs);

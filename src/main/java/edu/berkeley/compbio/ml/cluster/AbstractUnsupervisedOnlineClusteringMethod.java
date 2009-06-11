@@ -1,12 +1,11 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.CollectionIteratorFactory;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.log4j.Logger;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -39,7 +38,7 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 	/**
 	 * adjust the centroids by considering each of the incoming data points exactly once per iteration.
 	 */
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
+	public void train(ClusterableIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
 			throws ClusterException//, int maxpoints) throws IOException
 		{
 		// if initializeWithRealData is required, override this and then call super.train() as appropriate
@@ -66,53 +65,61 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 // -------------------------- OTHER METHODS --------------------------
 
 	protected boolean trainOneIteration(
-			CollectionIteratorFactory<T> trainingCollectionIteratorFactory) //, List<Double> secondBestDistances
+			ClusterableIteratorFactory<T> trainingCollectionIteratorFactory) //, List<Double> secondBestDistances
 			throws ClusterException
 		{
 		int changed = 0;
-		Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
+		ClusterableIterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
 		//normalizeClusters();
 		int c = 0;
 		Date starttime = new Date();
 		//secondBestDistances.clear();
-		while (trainingIterator.hasNext())
+		try
 			{
-			try
+			while (true)
 				{
-				// why on earth are we 'choosing best clusters" in training ???
-				// okay, that's assuming an unsupervised clustering method, where things just get clustered by proximity and we look at the labels later.
-				// but for a supervised method, the clusters are defined by the labels in the first place.
 
-				if (add(trainingIterator.next()))
+				try
 					{
-					changed++;
+					// why on earth are we 'choosing best clusters" in training ???
+					// okay, that's assuming an unsupervised clustering method, where things just get clustered by proximity and we look at the labels later.
+					// but for a supervised method, the clusters are defined by the labels in the first place.
+
+					if (add(trainingIterator.next()))
+						{
+						changed++;
+						}
 					}
-				}
-			catch (NoGoodClusterException e)
-				{
-				// too bad, just ignore this unclassifiable point.
-				// it may be classifiable in a future iteration.
-				// if no other points get changed, then this one will stay unclassified.
-				}
+				catch (NoGoodClusterException e)
+					{
+					// too bad, just ignore this unclassifiable point.
+					// it may be classifiable in a future iteration.
+					// if no other points get changed, then this one will stay unclassified.
+					}
 
-			c++;
-			/*	if (logger.isDebugEnabled() && c % 1000 == 0)
-			   {
-			   Date endtime = new Date();
-			   double realtime = (endtime.getTime() - starttime.getTime()) / (double) 1000;
+				c++;
+				/*	if (logger.isDebugEnabled() && c % 1000 == 0)
+												   {
+												   Date endtime = new Date();
+												   double realtime = (endtime.getTime() - starttime.getTime()) / (double) 1000;
 
-			   logger.debug(
-					   new Formatter().format("%d p/%d sec = %d p/sec; specificity = %.3f; %s", c, (int) realtime,
-											  (int) (c / realtime),
-											  (DSCollectionUtils.sum(secondBestDistances) / (double) c),
-											  shortClusteringStats()));
-			   //					logger.info("" + c + " p/" + (int) realtime + " sec = " + (int) (c / realtime)
-			   //							+ " p/sec; specificity = " + (ArrayUtils.sum(secondBestDistances) / (double) c) + " " + shortClusteringStats());
-			   }*/
-			/*	if (c >= maxpoints)
-			   {
-			   break;
-			   }*/
+												   logger.debug(
+														   new Formatter().format("%d p/%d sec = %d p/sec; specificity = %.3f; %s", c, (int) realtime,
+																				  (int) (c / realtime),
+																				  (DSCollectionUtils.sum(secondBestDistances) / (double) c),
+																				  shortClusteringStats()));
+												   //					logger.info("" + c + " p/" + (int) realtime + " sec = " + (int) (c / realtime)
+												   //							+ " p/sec; specificity = " + (ArrayUtils.sum(secondBestDistances) / (double) c) + " " + shortClusteringStats());
+												   }*/
+				/*	if (c >= maxpoints)
+												   {
+												   break;
+												   }*/
+				}
+			}
+		catch (NoSuchElementException e)
+			{
+			// iterator exhausted
 			}
 		int changedProportion = changed == 0 ? 0 : (int) (100.0 * changed / c);
 		logger.debug("Changed cluster assignment of " + changed + " points (" + changedProportion + "%)\n");

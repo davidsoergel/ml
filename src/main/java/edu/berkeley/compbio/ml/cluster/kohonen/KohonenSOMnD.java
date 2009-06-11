@@ -307,7 +307,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 // --------------------- Interface SampleInitializedOnlineClusteringMethod ---------------------
 
 
-	public void initializeWithSamples(Iterator<T> initIterator, int initSamples
+	public void initializeWithSamples(ClusterableIterator<T> initIterator, int initSamples
 	                                  // ,GenericFactory<T> prototypeFactory
 	) //throws GenericFactoryException
 		//	, GenericFactory<T> prototypeFactory) throws GenericFactoryException

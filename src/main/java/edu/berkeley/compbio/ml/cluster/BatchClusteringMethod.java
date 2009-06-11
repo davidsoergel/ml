@@ -32,8 +32,6 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import java.util.Iterator;
-
 /**
  * A clustering method that needs the complete set of samples on hand in order to operate.
  *
@@ -52,7 +50,9 @@ public interface BatchClusteringMethod<T extends Clusterable<T>> extends Cluster
 	 *
 	 * @param samples a Collection of Clusterable objects.
 	 */
-	void addAll(Iterator<T> samples);  //? extends Clusterable<T>
+	void addAll(ClusterableIterator<T> samples);  //? extends Clusterable<T>
+
+	void add(T sample);
 
 	/**
 	 * Add the given samples to the set to be clustered, and remember the mapping from sample to cluster

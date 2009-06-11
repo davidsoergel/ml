@@ -40,11 +40,12 @@ import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
+import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -119,7 +120,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 // -------------------------- OTHER METHODS --------------------------
 
-	protected void trainWithKnownTrainingLabels(Iterator<T> trainingIterator)
+	protected void trainWithKnownTrainingLabels(ClusterableIterator<T> trainingIterator)
 		{
 
 		int i = 0;
@@ -128,42 +129,50 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 		// the execService approach caches all the points.  In that the reason for the memory problem?
 
-		while (trainingIterator.hasNext())
+
+		try
 			{
-			final T point = trainingIterator.next();
-
-			// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
-			// the training samples must already be labelled with a bin ID.
-
-			String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
-			CentroidCluster<T> cluster = theClusterMap.get(clusterBinId);
-
-			if (cluster == null)
+			while (true)
 				{
-				try
+				final T point = trainingIterator.next();
+
+				// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
+				// the training samples must already be labelled with a bin ID.
+
+				String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+				CentroidCluster<T> cluster = theClusterMap.get(clusterBinId);
+
+				if (cluster == null)
 					{
-					final T centroid = prototypeFactory.create(clusterBinId);
-					final int clusterId = i++;
-					cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
-					theClusters.add(cluster);
+					try
+						{
+						final T centroid = prototypeFactory.create(clusterBinId);
+						final int clusterId = i++;
+						cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
+						theClusters.add(cluster);
 
-					theClusterMap.put(clusterBinId, cluster);
+						theClusterMap.put(clusterBinId, cluster);
+						}
+					catch (GenericFactoryException e)
+						{
+						logger.error("Error", e);
+						throw new ClusterRuntimeException(e);
+
+						// ** there may be legitimate reasons why a cluster can't be created, e.g. it doesn't match a leave-one-out label
+
+						}
+					//throw new ClusterRuntimeException("The clusters were not all created prior to training");
 					}
-				catch (GenericFactoryException e)
-					{
-					logger.error("Error", e);
-					throw new ClusterRuntimeException(e);
 
-					// ** there may be legitimate reasons why a cluster can't be created, e.g. it doesn't match a leave-one-out label
-
-					}
-				//throw new ClusterRuntimeException("The clusters were not all created prior to training");
+				// note this updates the cluster labels as well.
+				// In particular, the point should already be labelled with a Training Label (not just a bin ID),
+				// so that the cluster will know what labels it predicts.
+				cluster.add(point);
 				}
-
-			// note this updates the cluster labels as well.
-			// In particular, the point should already be labelled with a Training Label (not just a bin ID),
-			// so that the cluster will know what labels it predicts.
-			cluster.add(point);
+			}
+		catch (NoSuchElementException e)
+			{
+			// iterator exhausted
 			}
 
 		theClusters = theClusterMap.values();

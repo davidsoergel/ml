@@ -1,7 +1,5 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import java.util.Iterator;
-
 /**
  * Some online clustering methods (e.g. Kohonen SOM, K-means) need their clusters initialized with some real data before
  * the training proper begins
@@ -24,5 +22,5 @@ public interface SampleInitializedOnlineClusteringMethod<T extends Clusterable<T
 	 * @param sequenceFragmentIterator
 	 * @param initSamples
 	 */
-	void initializeWithSamples(Iterator<T> sequenceFragmentIterator, int initSamples);
+	void initializeWithSamples(ClusterableIterator<T> sequenceFragmentIterator, int initSamples);
 	}

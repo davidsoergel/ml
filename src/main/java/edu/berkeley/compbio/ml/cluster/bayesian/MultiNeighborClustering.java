@@ -11,6 +11,7 @@ import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
+import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
@@ -96,7 +97,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 	 * Unlike situations where we make a cluster per label, here we make a whole "cluster" per training sample
 	 */
 	//@Override
-	public void trainWithKnownTrainingLabels(Iterator<T> trainingIterator)
+	public void trainWithKnownTrainingLabels(ClusterableIterator<T> trainingIterator)
 		//,                             GenericFactory<T> prototypeFactory)
 //			throws GenericFactoryException, ClusterException
 		{
@@ -107,18 +108,26 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		//	ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
 
 
-		while (trainingIterator.hasNext())
+		try
 			{
-			final T point = trainingIterator.next();
-			final int clusterId = i++;
-			//		execService.submit(new Runnable()
-			//		{
-			//		public void run()
-			//			{
+			while (true)
+				{
+				final T point = trainingIterator.next();
+				final int clusterId = i++;
+				//		execService.submit(new Runnable()
+				//		{
+				//		public void run()
+				//			{
 
-			// generate one "cluster" per training sample.
-			CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
-			theClusters.add(cluster);
+				// generate one "cluster" per training sample.
+				CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
+				theClusters.add(cluster);
+				}
+			}
+
+		catch (NoSuchElementException e)
+			{
+			// iterator exhausted
 			}
 		//	});
 		//	}

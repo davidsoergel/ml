@@ -38,14 +38,15 @@ import edu.berkeley.compbio.ml.cluster.BatchTreeClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
+import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.HierarchicalCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 
@@ -90,34 +91,47 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	/**
 	 * {@inheritDoc}
 	 */
-	public void addAll(Iterator<T> samples)
+	public void addAll(ClusterableIterator<T> samples)
 		{
 		//theClusters.addAll(samples);
 		//Iterator<? extends Clusterable<T>> i = samples.iterator();
 
-		if (theActiveNodeDistanceMatrix.numKeys() == 0)
-			{
-			HierarchicalCentroidCluster a = new HierarchicalCentroidCluster(idCount++, samples.next());
-			HierarchicalCentroidCluster b = new HierarchicalCentroidCluster(idCount++, samples.next());
-			//a.setN(1);
-			//b.setN(1);
+		/*	if (theActiveNodeDistanceMatrix.numKeys() == 0)
+		   {
+		   HierarchicalCentroidCluster a = new HierarchicalCentroidCluster(idCount++, samples.next());
+		   HierarchicalCentroidCluster b = new HierarchicalCentroidCluster(idCount++, samples.next());
+		   //a.setN(1);
+		   //b.setN(1);
 
-			addInitialPair(a, b);
-			}
+		   addInitialPair(a, b);
+		   }*/
 
-		while (samples.hasNext())
+
+		try
 			{
-			Clusterable<T> sample = samples.next();
-			HierarchicalCentroidCluster c = new HierarchicalCentroidCluster(idCount++, sample);
-			//c.setN(1);
-			addAndComputeDistances(c);
+			while (true)
+				{
+				T sample = samples.next();
+				add(sample);
+				}
 			}
+		catch (NoSuchElementException e)
+			{
+			// iterator exhausted
+			}
+		}
+
+	public void add(final T sample)
+		{
+		HierarchicalCentroidCluster c = new HierarchicalCentroidCluster(idCount++, sample);
+		//c.setN(1);
+		addAndComputeDistances(c);
 		}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void addAllAndRemember(Iterator<T> samples)
+/*	public void addAllAndRemember(Iterator<T> samples)
 		{
 		//theClusters.addAll(samples);
 		//Iterator<? extends Clusterable<T>> i = samples.iterator();
@@ -145,8 +159,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			//c.setN(1);
 			addAndComputeDistances(c);
 			}
-		}
-
+		}*/
 	public void createClusters()
 		{
 		// do nothing
@@ -231,7 +244,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 // -------------------------- OTHER METHODS --------------------------
 
-
+/*
 	private void addInitialPair(HierarchicalCentroidCluster<T> node1, HierarchicalCentroidCluster<T> node2)
 		{
 		theClusters.add(node1);
@@ -240,6 +253,9 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		Double d = measure.distanceFromTo(node1.getValue().getCentroid(), node2.getValue().getCentroid());
 		theActiveNodeDistanceMatrix.put(node1, node2, d);
 		}
+*/
+
+	HierarchicalCentroidCluster<T> saveNode;
 
 	/**
 	 * We can't add a single node when the matrix is empty, since it won't make any pairs and thus won't retain the node at
@@ -247,23 +263,46 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	 *
 	 * @param node
 	 */
-	private void addAndComputeDistances(HierarchicalCentroidCluster<T> node)
+	public synchronized void addAndComputeDistances(HierarchicalCentroidCluster<T> node)
 		{
+		//PERF better synchronization
+		int s;
+		//synchronized (theClusters)
+		//	{
 		theClusters.add(node);
+		s = theClusters.size();
 		Set<HierarchicalCentroidCluster<T>> activeNodes =
 				new HashSet(theActiveNodeDistanceMatrix.getActiveKeys());// avoid ConcurrentModificationException
+		//	}
 
-		/*	Double d = distanceMeasure.distanceFromTo(node.getValue().getCentroid(),
-																 node.getValue().getCentroid());// probably 0, but you never know
-					   NodePair<T> pair = getOrCreateNodePair(node, node);
-
-					   distanceToPair.put(d, pair);
-					   pairToDistance.put(pair, d);
-		   */
-		for (HierarchicalCentroidCluster<T> theActiveNode : activeNodes)
+		if (s == 1)
 			{
-			Double d = measure.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
-			theActiveNodeDistanceMatrix.put(node, theActiveNode, d);
+			saveNode = node;
+			}
+		if (s == 2)
+			{
+			Double d = measure.distanceFromTo(saveNode.getValue().getCentroid(), node.getValue().getCentroid());
+			theActiveNodeDistanceMatrix.put(saveNode, node, d);
+			saveNode = null;
+			}
+		else
+			{
+
+			/*	Double d = distanceMeasure.distanceFromTo(node.getValue().getCentroid(),
+																			 node.getValue().getCentroid());// probably 0, but you never know
+								   NodePair<T> pair = getOrCreateNodePair(node, node);
+
+								   distanceToPair.put(d, pair);
+								   pairToDistance.put(pair, d);
+					   */
+
+
+			for (HierarchicalCentroidCluster<T> theActiveNode : activeNodes)
+				{
+				Double d =
+						measure.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
+				theActiveNodeDistanceMatrix.put(node, theActiveNode, d);
+				}
 			}
 		}
 

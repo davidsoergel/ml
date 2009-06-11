@@ -38,6 +38,7 @@ import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
+import edu.berkeley.compbio.ml.cluster.ClusterableIteratorFactory;
 import edu.berkeley.compbio.ml.distancemeasure.EuclideanDistance;
 import org.apache.log4j.Logger;
 import org.testng.annotations.BeforeSuite;
@@ -85,7 +86,9 @@ public class UPGMATest
 		UPGMA<ClusterableDoubleArray> oc =
 				new UPGMA<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null, null, null, null, 0);
 
-		oc.addAll(points.iterator());
+		oc.addAll(new ClusterableIteratorFactory<ClusterableDoubleArray>(points).next());
+
+
 		oc.train();
 
 		Collection<? extends CentroidCluster<ClusterableDoubleArray>> theClusters = oc.getClusters();

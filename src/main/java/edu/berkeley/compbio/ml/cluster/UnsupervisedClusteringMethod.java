@@ -1,7 +1,5 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.CollectionIteratorFactory;
-
 import java.io.IOException;
 
 /**
@@ -14,7 +12,7 @@ public interface UnsupervisedClusteringMethod<T extends Clusterable<T>> extends 
 	 * consider each of the incoming data points exactly once per iteration.  Note iterations > 1 only makes sense for
 	 * unsupervised clustering.
 	 */
-	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
+	public void train(ClusterableIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
 			throws IOException, ClusterException;
 	/*	{
 		if (iterations > 1)

@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -85,17 +86,25 @@ public final class CentroidClusteringUtils //<T extends Clusterable<T>>
 			Map<String, ? extends CentroidCluster<T>> assignments,
 			ClusterableIterator<T> theDataPointProvider) //throws IOException
 		{
-		theDataPointProvider.reset();
+		//theDataPointProvider.reset();
 		for (CentroidCluster<T> c : theClusters)
 			{
 			c.setSumOfSquareDistances(0);
 			}
-		while (theDataPointProvider.hasNext())
+
+		try
 			{
-			T p = theDataPointProvider.next();
-			CentroidCluster<T> c = assignments.get(p.getId());
-			double dist = measure.distanceFromTo(p, c.getCentroid());// c.distanceToCentroid(p);
-			c.addToSumOfSquareDistances(dist * dist);
+			while (true) //(theDataPointProvider.hasNext())
+				{
+				T p = theDataPointProvider.next();
+				CentroidCluster<T> c = assignments.get(p.getId());
+				double dist = measure.distanceFromTo(p, c.getCentroid());// c.distanceToCentroid(p);
+				c.addToSumOfSquareDistances(dist * dist);
+				}
+			}
+		catch (NoSuchElementException e)
+			{
+			// iterator exhausted
 			}
 		}
 

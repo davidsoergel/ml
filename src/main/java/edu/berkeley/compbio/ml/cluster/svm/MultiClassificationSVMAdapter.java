@@ -21,6 +21,7 @@ import edu.berkeley.compbio.ml.cluster.BatchCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterException;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
+import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
@@ -29,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -94,7 +94,10 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 // --------------------- Interface BatchClusteringMethod ---------------------
 
-	public void addAll(Iterator<T> trainingIterator) //CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
+	Integer c = 0;
+
+	public void addAll(
+			ClusterableIterator<T> trainingIterator) //CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
 		{
 		//	Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
 
@@ -106,16 +109,33 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 		//PERF multithread
 
-		int c = 0;
-		while (trainingIterator.hasNext())
+
+		try
 			{
-			T sample = trainingIterator.next();
-			String label = sample.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+			while (true)
+				{
+				T sample = trainingIterator.next();
+				add(sample);
+				}
+			}
+		catch (NoSuchElementException e)
+			{
+			// iterator exhausted
+			}
 
-			BatchCluster<T> cluster = theClusterMap.get(label);
-			cluster.add(sample);
+		logger.info("Prepared " + c + " training samples");
+		}
 
-			examples.put(sample, cluster);
+	public void add(final T sample)
+		{
+		String label = sample.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+
+		BatchCluster<T> cluster = theClusterMap.get(label);
+		cluster.add(sample);
+
+		examples.put(sample, cluster);
+		synchronized (c)
+			{
 			exampleIds.put(sample, c);
 			c++;
 
@@ -124,7 +144,6 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				logger.debug("Prepared " + c + " training samples");
 				}
 			}
-		logger.info("Prepared " + c + " training samples");
 		}
 
 //	public void initializeWithRealData(Iterator<T> trainingIterator, int initSamples,
@@ -222,7 +241,8 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	// -------------------------- OTHER METHODS --------------------------
 	@Override
-	public ClusteringTestResults test(Iterator<T> theTestIterator, DissimilarityMeasure<String> intraLabelDistances)
+	public ClusteringTestResults test(ClusterableIterator<T> theTestIterator,
+	                                  DissimilarityMeasure<String> intraLabelDistances)
 			throws DistributionException, ClusterException
 		{
 		ClusteringTestResults result = super.test(theTestIterator, intraLabelDistances);

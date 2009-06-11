@@ -124,7 +124,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	 *          when something goes wrong in computing the label probabilities
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public ClusteringTestResults test(Iterator<T> theTestIterator,
+	public ClusteringTestResults test(ClusterableIterator<T> theTestIterator,
 	                                  final DissimilarityMeasure<String> intraLabelDistances)
 			throws DistributionException, ClusterException
 		{
@@ -159,27 +159,34 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		Set<Future<Void>> futures = new HashSet<Future<Void>>();
 
 		int i = 0;
-		while (theTestIterator.hasNext())
+		try
 			{
-			final T frag = theTestIterator.next();
-
-			Future<Void> fut = execService.submit(new Callable<Void>()
-			{
-			public Void call()
+			while (true)
 				{
-				testOneSample(intraLabelDistances, tr, populatedPredictLabelSets, frag);
 
-				return null;
+				final T frag = theTestIterator.next();
+
+				Future<Void> fut = execService.submit(new Callable<Void>()
+				{
+				public Void call()
+					{
+					testOneSample(intraLabelDistances, tr, populatedPredictLabelSets, frag);
+
+					return null;
+					}
+				});
+				futures.add(fut);
+				/*	if (i % 100 == 0)
+												   {
+												   logger.debug("Enqueued " + i + " samples.");
+												   }*/
+				i++;
 				}
-			});
-			futures.add(fut);
-			/*	if (i % 100 == 0)
-			   {
-			   logger.debug("Enqueued " + i + " samples.");
-			   }*/
-			i++;
 			}
-
+		catch (NoSuchElementException e)
+			{
+			// iterator exhausted
+			}
 
 		logger.debug("Enqueued " + i + " samples.");
 		tr.setTestSamples(i);

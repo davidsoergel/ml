@@ -30,49 +30,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 package edu.berkeley.compbio.ml.cluster;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.Collections;
+import java.util.List;
 
-import java.io.IOException;
-import java.util.NoSuchElementException;
 
 /**
- * Interface for resettable iterators over Clusterable objects.  This is useful because many clustering algorithms need
- * to consider the entire set of samples repeatedly, but don't want to store the samples explicitly.  In that case we
- * can just reset the iterator and run through it again.
- * <p/>
- * We don't extend Iterator in order to avoid thread synchronization issues resulting from the use of hasNext().  It's
- * better to just call next() and rely on NoSuchElementException.
+ * A Factory for new Iterators based on a List, where each new Iterator provides the contents in a random order.  The
+ * shuffling is done in place on the underlying collection.
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
- * @version $Id$
+ * @version $Id: PermutingCollectionIteratorFactory.java 283 2008-10-13 20:51:20Z soergel $
  */
-public interface ClusterableIterator<T extends Clusterable<T>>
-		//	extends Iterator<T>, Iterable<T>//, Comparable<ClusterableIterator<T>>
+
+public class PermutingClusterableIteratorFactory<T extends Clusterable<T>> extends ClusterableIteratorFactory<T>
 	{
-// ------------------------ INTERFACE METHODS ------------------------
+
+	public PermutingClusterableIteratorFactory(List<T> underlyingList)
+		{
+		super(underlyingList);
+		}
 
 
-// --------------------- Interface Iterator ---------------------
-
-	/**
-	 * Returns the next object from the iterator.  Must be thread-safe, i.e. multiple threads should be able to poll
-	 * simultaneously
-	 */
-	@NotNull
-	T next() throws NoSuchElementException;
-
-
-// -------------------------- OTHER METHODS --------------------------
-
-	//public abstract ClusterableIterator<T> clone() throws CloneNotSupportedException;
-
-	/**
-	 * Resets the iterator to the beginning, so that the next call to next() will return the first element.
-	 *
-	 * @throws IOException when something goes wrong
-	 */
-//	void reset(); //throws IOException;
+	public ClusterableIterator<T> next()
+		{
+		Collections.shuffle((List<T>) underlyingCollection);
+		return super.next();
+		}
 	}
