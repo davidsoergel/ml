@@ -82,10 +82,9 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	public LabelDecomposingBayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
 	                                          Set<String> potentialTrainingBins,
 	                                          Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
-	                                          Set<String> testLabels, int testThreads)
+	                                          Set<String> testLabels)
 		{
-		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels,
-		      testThreads);
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -145,7 +144,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 						{
 						theIntraLabelClustering =
 								new GrowableKmeansClustering<T>(measure, potentialTrainingBins, predictLabelSets,
-								                                leaveOneOutLabels, testLabels, testThreads);
+								                                leaveOneOutLabels, testLabels);
 						theSubclusteringMap.put(bestLabel, theIntraLabelClustering);
 						}
 

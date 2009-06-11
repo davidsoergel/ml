@@ -76,10 +76,9 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	//	private SortedSet<ClusterPair<T>> theClusterPairs;
 
 	public UPGMA(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	             Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels, Set<String> testLabels,
-	             int testThreads)
+	             Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels, Set<String> testLabels)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

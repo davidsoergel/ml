@@ -1,11 +1,14 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.collections.WeightedSet;
+import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.dsutils.concurrent.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.RequiresPreparationDistanceMetric;
+import com.google.common.base.Function;
+import com.google.common.base.Nullable;
 import org.apache.log4j.Logger;
 
 import java.io.OutputStream;
@@ -18,9 +21,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -47,14 +48,14 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	protected final Set<String> leaveOneOutLabels;
 	protected final Set<String> testLabels;
 
-	protected final int testThreads;
+//	protected final int testThreads;
 
 	//private final Map<String, String> friendlyLabelMap;
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	public AbstractClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
-	                                Set<String> testLabels, int testThreads)
+	                                Set<String> testLabels)
 		{
 		measure = dm;
 		this.potentialTrainingBins = potentialTrainingBins;
@@ -62,7 +63,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		this.predictLabelSets = predictLabelSets;
 		this.testLabels = testLabels;
 		//this.friendlyLabelMap =friendlyLabelMap;
-		this.testThreads = testThreads;
+//		this.testThreads = testThreads;
 		}
 
 // --------------------- GETTER / SETTER METHODS ---------------------
@@ -124,7 +125,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	 *          when something goes wrong in computing the label probabilities
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public ClusteringTestResults test(ClusterableIterator<T> theTestIterator,
+	public ClusteringTestResults test(final ClusterableIterator<T> theTestIterator,
 	                                  final DissimilarityMeasure<String> intraLabelDistances)
 			throws DistributionException, ClusterException
 		{
@@ -150,67 +151,22 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			((RequiresPreparationDistanceMetric<String>) intraLabelDistances).prepare(allLabels);
 			}
 
-		// ** would be cleaner with DepthFirstThreadPoolExecutor
-		ProgressReportingThreadPoolExecutor execService =
-				new ProgressReportingThreadPoolExecutor(testThreads, testThreads * 2);
-
 		// classify the test samples
 
-		Set<Future<Void>> futures = new HashSet<Future<Void>>();
+		final AtomicInteger i = new AtomicInteger(0);
 
-		int i = 0;
-		try
+		Parallel.forEach(theTestIterator, new Function<T, Void>()
+		{
+		public Void apply(@Nullable final T frag)
 			{
-			while (true)
-				{
-
-				final T frag = theTestIterator.next();
-
-				Future<Void> fut = execService.submit(new Callable<Void>()
-				{
-				public Void call()
-					{
-					testOneSample(intraLabelDistances, tr, populatedPredictLabelSets, frag);
-
-					return null;
-					}
-				});
-				futures.add(fut);
-				/*	if (i % 100 == 0)
-												   {
-												   logger.debug("Enqueued " + i + " samples.");
-												   }*/
-				i++;
-				}
+			i.incrementAndGet();
+			testOneSample(intraLabelDistances, tr, populatedPredictLabelSets, frag);
+			return null;
 			}
-		catch (NoSuchElementException e)
-			{
-			// iterator exhausted
-			}
+		});
 
 		logger.debug("Enqueued " + i + " samples.");
-		tr.setTestSamples(i);
-
-		execService.finish("Tested %d samples.", 30);
-
-		// get exceptions
-		try
-			{
-			for (Future<Void> future : futures)
-				{
-				future.get();
-				}
-			}
-		catch (ExecutionException e)
-			{
-			logger.error("Error", e);
-			throw new Error(e);
-			}
-		catch (InterruptedException e)
-			{
-			logger.error("Error", e);
-			throw new Error(e);
-			}
+		tr.setTestSamples(i.intValue());
 
 		tr.finish();
 		return tr;

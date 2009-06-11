@@ -47,10 +47,9 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 
 	public MultiNeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
 	                               Set<String> potentialTrainingBins, Map<String, Set<String>> predictLabelSets,
-	                               Set<String> leaveOneOutLabels, Set<String> testLabels, int maxNeighbors,
-	                               int testThreads)
+	                               Set<String> leaveOneOutLabels, Set<String> testLabels, int maxNeighbors)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		this.maxNeighbors = maxNeighbors;
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		}

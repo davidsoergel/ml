@@ -136,9 +136,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	                    Set<String> testLabels, @NotNull Integer[] cellsPerDimension, SimpleFunction moveFactorFunction,
 	                    SimpleFunction radiusFunction, SimpleFunction weightFunction,
 	                    boolean decrementLosingNeighborhood, boolean edgesWrap, double minRadius,
-	                    KohonenSOM2DSearchStrategy<T> searchStrategy, int testThreads)
+	                    KohonenSOM2DSearchStrategy<T> searchStrategy)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 
 		this.cellsPerDimension = DSArrayUtils.toPrimitive(cellsPerDimension);
 

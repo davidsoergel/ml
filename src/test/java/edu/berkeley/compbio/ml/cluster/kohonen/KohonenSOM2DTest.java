@@ -106,7 +106,7 @@ public class KohonenSOM2DTest
 		{
 		KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{100, 100}, null, null, null, false, false, 0,
-				                 bruteForceStrategy, 0);
+				                 bruteForceStrategy);
 
 		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(20);
 
@@ -124,7 +124,7 @@ public class KohonenSOM2DTest
 		{
 		KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{10, 10}, null, null, null, false, false, 0,
-				                 bruteForceStrategy, 0);
+				                 bruteForceStrategy);
 
 		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(1);
 
@@ -136,7 +136,7 @@ public class KohonenSOM2DTest
 		{
 		KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{100, 100}, null, null, null, false, false, 0,
-				                 bruteForceStrategy, 0);
+				                 bruteForceStrategy);
 
 		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(10);
 
@@ -148,7 +148,7 @@ public class KohonenSOM2DTest
 		{
 		KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{10, 10}, null, null, null, false, false, 0,
-				                 bruteForceStrategy, 0);
+				                 bruteForceStrategy);
 
 		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(20);
 
@@ -160,7 +160,7 @@ public class KohonenSOM2DTest
 		{
 		KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{10, 10}, null, null, null, false, false, 0,
-				                 bruteForceStrategy, 0);
+				                 bruteForceStrategy);
 
 		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(2);
 
@@ -172,7 +172,7 @@ public class KohonenSOM2DTest
 		{
 		KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{10, 10}, null, null, null, false, false, 0,
-				                 bruteForceStrategy, 0);
+				                 bruteForceStrategy);
 
 		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(0);
 
@@ -184,7 +184,7 @@ public class KohonenSOM2DTest
 		{
 		KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{5, 5}, null, null, null, false, false, 0,
-				                 bruteForceStrategy, 0);
+				                 bruteForceStrategy);
 
 
 		/*ClusterableDoubleArray zeroArray = new ClusterableDoubleArray("test1", new double[]{
@@ -230,7 +230,7 @@ public class KohonenSOM2DTest
 		KohonenSOM2D<ClusterableDoubleArray> som =
 				new KohonenSOM2D<ClusterableDoubleArray>(dm, null, null, null, null, new Integer[]{10, 10},
 				                                         moveFactorFunction, radiusFunction, weightFunction, false,
-				                                         true, 1, bruteForceStrategy, 0);
+				                                         true, 1, bruteForceStrategy);
 
 		som.setPrototypeFactory(prototypeFactory);
 		som.add(new ClusterableDoubleArray("test1", new double[]{1, 2, 3, 4, 5}));
@@ -249,7 +249,7 @@ public class KohonenSOM2DTest
 		KohonenSOM2D<ClusterableDoubleArray> som =
 				new KohonenSOM2D<ClusterableDoubleArray>(dm, null, null, null, null, new Integer[]{10, 10},
 				                                         moveFactorFunction, radiusFunction, weightFunction, false,
-				                                         true, 1, bruteForceStrategy, 0);
+				                                         true, 1, bruteForceStrategy);
 
 		som.setPrototypeFactory(prototypeFactory);
 		som.add(new ClusterableDoubleArray("test1", new double[]{1, 2, 3, 4, 5}));

@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.ml.cluster.svm;
 
 import com.davidsoergel.dsutils.concurrent.DepthFirstThreadPoolExecutor;
-import com.davidsoergel.dsutils.concurrent.ThreadPoolPerformanceStats;
+import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
@@ -30,10 +30,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -63,7 +63,6 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	private BinaryClassificationSVM<BatchCluster<T>, T> binarySvm;
 
-	private int nrThreads;
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -75,12 +74,10 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public MultiClassificationSVMAdapter(Set<String> potentialTrainingBins, Map<String, Set<String>> predictLabelSets,
 	                                     Set<String> leaveOneOutLabels, Set<String> testLabels,
-	                                     @NotNull ImmutableSvmParameter<BatchCluster<T>, T> param, int trainingThreads,
-	                                     int testThreads)
+	                                     @NotNull ImmutableSvmParameter<BatchCluster<T>, T> param)
 		{
-		super(null, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
+		super(null, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		this.param = param;
-		this.nrThreads = trainingThreads;
 		}
 
 // --------------------- GETTER / SETTER METHODS ---------------------
@@ -95,7 +92,8 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 // --------------------- Interface BatchClusteringMethod ---------------------
 
-	Integer c = 0;
+
+	AtomicInteger trainingCount = new AtomicInteger(0);
 
 	public void addAll(
 			final ClusterableIterator<T> trainingIterator) //CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
@@ -108,45 +106,16 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 		//Multimap<String, T> examples = new HashMultimap<String, T>();
 
-		DepthFirstThreadPoolExecutor execService = new DepthFirstThreadPoolExecutor(nrThreads, nrThreads * 2);
-
-		execService.submitAndWaitForAll(new Iterator<Runnable>()
+		Parallel.forEach(trainingIterator, new Function<T, Void>()
 		{
-		boolean hasnext = true;
-
-		public boolean hasNext()
+		public Void apply(@Nullable final T sample)
 			{
-			return hasnext;
-			}
-
-		public Runnable next()
-			{
-			return new Runnable()
-			{
-			public void run()
-				{
-				try
-					{
-					T sample = trainingIterator.next();
-					add(sample);
-					}
-				catch (NoSuchElementException e)
-					{
-					// iterator exhausted
-					hasnext = false;
-					}
-				}
-			};
-			}
-
-		public void remove()
-			{
+			add(sample);
+			return null;
 			}
 		});
 
-		execService.shutdown();
-
-		logger.info("Prepared " + c + " training samples");
+		logger.info("Prepared " + trainingCount + " training samples");
 		}
 
 	public void add(final T sample)
@@ -156,16 +125,16 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		BatchCluster<T> cluster = theClusterMap.get(label);
 		cluster.add(sample);
 
-		synchronized (c)
+		synchronized (trainingCount)
 			{
 			examples.put(sample, cluster);
-			exampleIds.put(sample, c);
-			c++;
+			exampleIds.put(sample, trainingCount.intValue());
+			trainingCount.incrementAndGet();
 
-			if (c % 1000 == 0)
+/*			if (trainingCount.intValue() % 1000 == 0)
 				{
-				logger.debug("Prepared " + c + " training samples");
-				}
+				logger.debug("Prepared " + trainingCount + " training samples");
+				}*/
 			}
 		}
 
@@ -211,7 +180,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		train();
 		}*/
 
-	public ThreadPoolPerformanceStats trainingStats;
+	//public ThreadPoolPerformanceStats trainingStats;
 
 	public void train()
 		{
@@ -221,10 +190,13 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				                                              examples, exampleIds, new NoopScalingModel<T>());
 		//svm.setupQMatrix(problem);
 		logger.debug("Performing multiclass training");
-		DepthFirstThreadPoolExecutor execService = new DepthFirstThreadPoolExecutor(nrThreads, nrThreads * 2);
+
+		DepthFirstThreadPoolExecutor execService = DepthFirstThreadPoolExecutor.getInstance();
+
+		//	DepthFirstThreadPoolExecutor execService = new DepthFirstThreadPoolExecutor(nrThreads, nrThreads * 2);
 		model = svm.train(problem, param, execService);
 
-		trainingStats = execService.shutdown();
+		//trainingStats = execService.shutdown();
 
 		if (leaveOneOutLabels != null)
 			{
@@ -255,11 +227,12 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode)
 		{
-		resultsNode.addChild("trainingCpuSeconds", trainingStats.getCpuSeconds());
+		/*	resultsNode.addChild("trainingCpuSeconds", trainingStats.getCpuSeconds());
 		resultsNode.addChild("trainingUserSeconds", trainingStats.getUserSeconds());
 		resultsNode.addChild("trainingSystemSeconds", trainingStats.getSystemSeconds());
 		resultsNode.addChild("trainingBlockedSeconds", trainingStats.getBlockedSeconds());
 		resultsNode.addChild("trainingWaitedSeconds", trainingStats.getWaitedSeconds());
+		*/
 		}
 
 	// -------------------------- OTHER METHODS --------------------------

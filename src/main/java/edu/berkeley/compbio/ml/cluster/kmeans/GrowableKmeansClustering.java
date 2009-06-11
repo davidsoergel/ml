@@ -51,9 +51,9 @@ public class GrowableKmeansClustering<T extends AdditiveClusterable<T>> extends 
 
 	public GrowableKmeansClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                                Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
-	                                Set<String> testLabels, int testThreads)
+	                                Set<String> testLabels)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		}
 
 // -------------------------- OTHER METHODS --------------------------

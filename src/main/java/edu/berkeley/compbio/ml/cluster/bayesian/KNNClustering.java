@@ -78,12 +78,12 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	public KNNClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, Set<String> potentialTrainingBins,
 	                     Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
 	                     Set<String> testLabels, int maxNeighbors, double voteProportionThreshold,
-	                     double voteTieThresholdRatio, double distanceTieThresholdRatio, SimpleFunction function,
-	                     int testThreads) //, double decompositionDistanceThreshold)
+	                     double voteTieThresholdRatio, double distanceTieThresholdRatio,
+	                     SimpleFunction function) //, double decompositionDistanceThreshold)
 		{
 		//	super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels, maxNeighbors);
 		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels,
-		      maxNeighbors, testThreads);
+		      maxNeighbors);
 
 		//		this.decompositionDistanceThreshold = decompositionDistanceThreshold;
 		this.voteProportionThreshold = voteProportionThreshold;

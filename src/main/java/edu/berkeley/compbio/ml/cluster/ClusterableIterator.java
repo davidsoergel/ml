@@ -33,10 +33,9 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import org.jetbrains.annotations.NotNull;
+import com.davidsoergel.dsutils.collections.NextOnlyIterator;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
 
 /**
  * Interface for resettable iterators over Clusterable objects.  This is useful because many clustering algorithms need
@@ -49,20 +48,13 @@ import java.util.NoSuchElementException;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface ClusterableIterator<T extends Clusterable<T>>
+public interface ClusterableIterator<T extends Clusterable<T>> extends NextOnlyIterator<T>
 		//	extends Iterator<T>, Iterable<T>//, Comparable<ClusterableIterator<T>>
 	{
 // ------------------------ INTERFACE METHODS ------------------------
 
 
 // --------------------- Interface Iterator ---------------------
-
-	/**
-	 * Returns the next object from the iterator.  Must be thread-safe, i.e. multiple threads should be able to poll
-	 * simultaneously
-	 */
-	@NotNull
-	T next() throws NoSuchElementException;
 
 
 // -------------------------- OTHER METHODS --------------------------

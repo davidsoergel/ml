@@ -124,10 +124,9 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 	public KohonenSOMnD(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
 	                    Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
 	                    Set<String> testLabels, int[] cellsPerDimension, SimpleFunction moveFactorFunction,
-	                    SimpleFunction radiusFunction, boolean decrementLosingNeighborhood, boolean edgesWrap,
-	                    int testThreads)
+	                    SimpleFunction radiusFunction, boolean decrementLosingNeighborhood, boolean edgesWrap)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels, testThreads);
+		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 
 		this.cellsPerDimension = cellsPerDimension;
 
