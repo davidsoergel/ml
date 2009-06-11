@@ -43,7 +43,7 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean add(T point)
+	public synchronized boolean add(T point)
 		{
 		if (thePoints.add(point))
 			{
@@ -57,7 +57,7 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean addAll(Cluster<T> otherCluster)
+	public synchronized boolean addAll(Cluster<T> otherCluster)
 		{
 		if (thePoints.addAll(((BatchCluster<T>) otherCluster).getPoints()))
 			{
@@ -71,7 +71,7 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean remove(T point)
+	public synchronized boolean remove(T point)
 		{
 		if (thePoints.remove(point))
 			{
@@ -85,7 +85,7 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean removeAll(Cluster<T> otherCluster)
+	public synchronized boolean removeAll(Cluster<T> otherCluster)
 		{
 		if (thePoints.removeAll(((BatchCluster<T>) otherCluster).getPoints()))
 			{

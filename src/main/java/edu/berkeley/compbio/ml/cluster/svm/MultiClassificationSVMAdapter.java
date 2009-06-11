@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -97,7 +98,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 	Integer c = 0;
 
 	public void addAll(
-			ClusterableIterator<T> trainingIterator) //CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
+			final ClusterableIterator<T> trainingIterator) //CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
 		{
 		//	Iterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
 
@@ -107,21 +108,43 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 		//Multimap<String, T> examples = new HashMultimap<String, T>();
 
-		//PERF multithread
+		DepthFirstThreadPoolExecutor execService = new DepthFirstThreadPoolExecutor(nrThreads, nrThreads * 2);
 
+		execService.submitAndWaitForAll(new Iterator<Runnable>()
+		{
+		boolean hasnext = true;
 
-		try
+		public boolean hasNext()
 			{
-			while (true)
+			return hasnext;
+			}
+
+		public Runnable next()
+			{
+			return new Runnable()
+			{
+			public void run()
 				{
-				T sample = trainingIterator.next();
-				add(sample);
+				try
+					{
+					T sample = trainingIterator.next();
+					add(sample);
+					}
+				catch (NoSuchElementException e)
+					{
+					// iterator exhausted
+					hasnext = false;
+					}
 				}
+			};
 			}
-		catch (NoSuchElementException e)
+
+		public void remove()
 			{
-			// iterator exhausted
 			}
+		});
+
+		execService.shutdown();
 
 		logger.info("Prepared " + c + " training samples");
 		}
@@ -133,9 +156,9 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		BatchCluster<T> cluster = theClusterMap.get(label);
 		cluster.add(sample);
 
-		examples.put(sample, cluster);
 		synchronized (c)
 			{
+			examples.put(sample, cluster);
 			exampleIds.put(sample, c);
 			c++;
 
