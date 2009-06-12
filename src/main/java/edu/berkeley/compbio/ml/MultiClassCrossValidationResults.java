@@ -29,7 +29,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 
 	// BAD currently we don't include these in the computations...
 	// samples that had no actual label, and so should be predicted "unknown"
-	private final Multiset<L> confusionRowNull = new HashMultiset<L>();
+	private final Multiset<L> confusionRowNull = HashMultiset.create();
 
 	//private Map<L, String> friendlyLabelMap;
 
@@ -39,7 +39,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		{
 		public Multiset<L> apply(L key)
 			{
-			return new HashMultiset<L>();
+			return HashMultiset.create();
 			}
 		});
 		//this.friendlyLabelMap = friendlyLabelMap;

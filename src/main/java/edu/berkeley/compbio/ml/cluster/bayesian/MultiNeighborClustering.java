@@ -221,7 +221,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			throws NoGoodClusterException
 		{
 		final TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> result =
-				new TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>>();
+				TreeMultimap.create(); //<Double, ClusterMove<T, CentroidCluster<T>>>();
 
 		String disallowedLabel = null;
 		if (leaveOneOutLabels != null)

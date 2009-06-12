@@ -6,7 +6,6 @@ import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.google.common.base.Function;
-import com.google.common.base.Nullable;
 import com.google.common.collect.MapMaker;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
@@ -27,6 +26,7 @@ import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.HashSet;

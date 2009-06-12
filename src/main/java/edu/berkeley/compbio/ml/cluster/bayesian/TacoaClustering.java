@@ -102,7 +102,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		//normalizeClusterLabelProbabilities();
 		try
 			{
-			Multiset<String> populatedTrainingLabels = new HashMultiset<String>();
+			Multiset<String> populatedTrainingLabels = HashMultiset.create();
 			//int clustersWithTrainingLabel = 0;
 			for (CentroidCluster<T> theCluster : theClusters)
 				{

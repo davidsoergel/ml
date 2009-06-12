@@ -8,8 +8,8 @@ import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.RequiresPreparationDistanceMetric;
 import com.google.common.base.Function;
-import com.google.common.base.Nullable;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
