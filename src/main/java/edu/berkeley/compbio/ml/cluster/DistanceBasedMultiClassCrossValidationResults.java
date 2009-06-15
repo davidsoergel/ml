@@ -26,8 +26,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 	 * The real distance between the predicted label and the real label ("wrongness") according to a label distance
 	 * measure
 	 */
-	private List<Double> predictionDistances = new ArrayList<Double>();
-	private List<Double> predictionDistancesWithPrecisionCost = new ArrayList<Double>();
+	private final List<Double> predictionDistances = new ArrayList<Double>();
+	private final List<Double> predictionDistancesWithPrecisionCost = new ArrayList<Double>();
 	/**
 	 * Probability of the best label, given the best cluster.  Used for unsupervised clustering where each cluster may
 	 * contain samples with multiple labels.
@@ -77,8 +77,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		this.friendlyLabelMap = friendlyLabelMap;
 		}*/
 
-	public void putResults(HierarchicalTypedPropertyNode<String, Object> resultsNode, List<String> keyPath,
-	                       String labelDistancesName, Map<L, String> friendlyLabelMap)
+	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode, final List<String> keyPath,
+	                       final String labelDistancesName, final Map<L, String> friendlyLabelMap)
 		{
 
 		resultsNode.addChild(keyPath, "numPopulatedRealLabels", numPopulatedRealLabels());
@@ -113,9 +113,9 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		}
 
 
-	public static void storeLabelDistances(String labelDistanceName, List<Double> labelDistances,
-	                                       HierarchicalTypedPropertyNode<String, Object> resultsNode,
-	                                       List<String> keyPath)
+	public static void storeLabelDistances(final String labelDistanceName, final List<Double> labelDistances,
+	                                       final HierarchicalTypedPropertyNode<String, Object> resultsNode,
+	                                       final List<String> keyPath)
 		{
 		resultsNode
 				.addChild(keyPath, labelDistanceName, labelDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY));
@@ -124,8 +124,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 			{
 			// we used "-0.1" to indicate a strain-perfect match, better than a match at distance 0.
 			// but for the mean and stddev, we should just consider those to be 0.
-			List<Double> d = new ArrayList<Double>(labelDistances.size());
-			for (Double labelDistance : labelDistances)
+			final List<Double> d = new ArrayList<Double>(labelDistances.size());
+			for (final Double labelDistance : labelDistances)
 				{
 				if (labelDistance < 0)
 					{
@@ -137,10 +137,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 					}
 				}
 
-			Histogram1D h = null;
-
-			h = new EqualWeightHistogram1D(100,
-			                               DSArrayUtils.toPrimitive((Double[]) labelDistances.toArray(new Double[]{})));
+			final Histogram1D h = new EqualWeightHistogram1D(100, DSArrayUtils.toPrimitive(
+					labelDistances.toArray(new Double[labelDistances.size()])));
 
 
 			try

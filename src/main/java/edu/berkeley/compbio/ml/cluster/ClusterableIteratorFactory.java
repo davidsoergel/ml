@@ -48,9 +48,9 @@ import java.util.Iterator;
 
 public class ClusterableIteratorFactory<T extends Clusterable<T>> implements Iterator<ClusterableIterator<T>>
 	{
-	protected Collection<T> underlyingCollection;
+	protected final Collection<T> underlyingCollection;
 
-	public ClusterableIteratorFactory(Collection<? extends T> underlyingCollection)
+	public ClusterableIteratorFactory(final Collection<? extends T> underlyingCollection)
 		{
 		this.underlyingCollection = (Collection<T>) underlyingCollection;
 		}

@@ -51,17 +51,17 @@ public class SequenceSpectrumException extends ChainedException
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public SequenceSpectrumException(String s)
+	public SequenceSpectrumException(final String s)
 		{
 		super(s);
 		}
 
-	public SequenceSpectrumException(Exception e)
+	public SequenceSpectrumException(final Exception e)
 		{
 		super(e);
 		}
 
-	public SequenceSpectrumException(Exception e, String s)
+	public SequenceSpectrumException(final Exception e, final String s)
 		{
 		super(e, s);
 		}

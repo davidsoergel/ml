@@ -47,12 +47,12 @@ public class DoubleKcountAbstractTest<T extends DoubleKcount>
 	{
 // ------------------------------ FIELDS ------------------------------
 
-	protected TestInstanceFactory<T> tif;
+	protected final TestInstanceFactory<T> tif;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public DoubleKcountAbstractTest(TestInstanceFactory<T> tif)
+	public DoubleKcountAbstractTest(final TestInstanceFactory<T> tif)
 		{
 		this.tif = tif;
 		}
@@ -63,7 +63,7 @@ public class DoubleKcountAbstractTest<T extends DoubleKcount>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void addContractTestsToQueue(Queue<ContractTest> theContractTests)
+	public void addContractTestsToQueue(final Queue<ContractTest> theContractTests)
 		{
 		theContractTests.add(new KcountAbstractTest<T>(tif));
 		}

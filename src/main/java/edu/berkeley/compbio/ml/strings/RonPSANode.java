@@ -68,7 +68,7 @@ public class RonPSANode extends MarkovTreeNode
 	 *
 	 * @param id the sequence of symbols leading to this node
 	 */
-	public RonPSANode(byte[] id, byte[] alphabet)
+	public RonPSANode(final byte[] id, final byte[] alphabet)
 		{
 		super(id, alphabet);
 		}
@@ -100,10 +100,10 @@ public class RonPSANode extends MarkovTreeNode
 	 * @return the node at the other end of the transition
 	 */
 	@Override
-	public RonPSANode addChild(byte sigma)//throws SequenceSpectrumException
+	public RonPSANode addChild(final byte sigma)//throws SequenceSpectrumException
 		{
 		leaf = false;
-		int index = DSArrayUtils.indexOf(alphabet, sigma);
+		final int index = DSArrayUtils.indexOf(alphabet, sigma);
 		RonPSANode result = (RonPSANode) children[index];
 		if (result == null)
 			{
@@ -115,16 +115,16 @@ public class RonPSANode extends MarkovTreeNode
 		}
 
 	@Override
-	public void appendString(Formatter formatter, String indent)
+	public void appendString(final Formatter formatter, final String indent)
 		{
 		for (int i = 0; i < alphabet.length; i++)
 			{
-			byte b = alphabet[i];
+			final byte b = alphabet[i];
 			try
 				{
 				formatter.format("%s %3.3g -> %c\n", indent, probs.get(b), b);
 				//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
-				MarkovTreeNode child = nextNodes[i];
+				final MarkovTreeNode child = nextNodes[i];
 				if (child != null && child.getId().length() > getId().length())
 					{
 					child.appendString(formatter, indent + "     | ");
@@ -145,7 +145,7 @@ public class RonPSANode extends MarkovTreeNode
 	 * @return the node at the end of the chain of transitions, or null if that leaf does not exist
 	 */
 	@Override
-	public MarkovTreeNode get(byte[] seq) throws SequenceSpectrumException
+	public MarkovTreeNode get(final byte[] seq) throws SequenceSpectrumException
 		{
 		if (seq.length == 0)
 			{
@@ -153,7 +153,7 @@ public class RonPSANode extends MarkovTreeNode
 			return this;
 			}
 
-		MarkovTreeNode nextChild = nextNodes[DSArrayUtils.indexOf(alphabet, seq[0])];
+		final MarkovTreeNode nextChild = nextNodes[DSArrayUtils.indexOf(alphabet, seq[0])];
 
 		if (nextChild == null)
 			{
@@ -177,18 +177,18 @@ public class RonPSANode extends MarkovTreeNode
 		 }
  */
 	@Override
-	public RonPSANode getChild(byte sigma)//throws SequenceSpectrumException
+	public RonPSANode getChild(final byte sigma)//throws SequenceSpectrumException
 		{
 		return (RonPSANode) (super.getChild(sigma));
 		}
 
 	@Override
-	public RonPSANode getDescendant(byte[] descendantId)//throws SequenceSpectrumException
+	public RonPSANode getDescendant(final byte[] descendantId)//throws SequenceSpectrumException
 		{
 		return (RonPSANode) super.getDescendant(descendantId);
 		}
 
-	public RonPSANode nextNodeByAlphabetIndex(int c)
+	public RonPSANode nextNodeByAlphabetIndex(final int c)
 		{
 		return nextNodes[c];
 		}
@@ -199,15 +199,15 @@ public class RonPSANode extends MarkovTreeNode
 		}
 
 	@Override
-	public void setAlphabet(byte[] alphabet)
+	public void setAlphabet(final byte[] alphabet)
 		{
 		super.setAlphabet(alphabet);
 		nextNodes = new RonPSANode[alphabet.length];
 		}
 
-	public void setBacklinksUsingRoot(RonPSANode rootNode, Queue<RonPSANode> breadthFirstQueue)
+	public void setBacklinksUsingRoot(final RonPSANode rootNode, final Queue<RonPSANode> breadthFirstQueue)
 		{
-		for (MarkovTreeNode child : children)//.values())
+		for (final MarkovTreeNode child : children)//.values())
 			{
 			if (child != null)
 				{
@@ -241,7 +241,7 @@ public class RonPSANode extends MarkovTreeNode
 	 *
 	 * @param backoffPrior
 	 */
-	public void setBackoffPrior(RonPSANode backoffPrior)
+	public void setBackoffPrior(final RonPSANode backoffPrior)
 		{
 		this.backoffPrior = backoffPrior;
 		/*	if (children.isEmpty())
@@ -263,11 +263,11 @@ public class RonPSANode extends MarkovTreeNode
 	 * @param suffix the sequence to walk
 	 * @return the MarkovTreeNode
 	 */
-	public RonPSANode getLongestSuffix(byte[] suffix) throws SequenceSpectrumException
+	public RonPSANode getLongestSuffix(final byte[] suffix) throws SequenceSpectrumException
 		{
 		// simply walk the sequence to the end
 		RonPSANode currentNode = this;
-		for (byte b : suffix)
+		for (final byte b : suffix)
 			{
 			currentNode = currentNode.nextNode(b);
 			}
@@ -280,7 +280,7 @@ public class RonPSANode extends MarkovTreeNode
 	 * @param sigma the symbol to follow from this node
 	 * @return the node pointed to, or null if that leaf does not exist
 	 */
-	public RonPSANode nextNode(byte sigma) throws SequenceSpectrumException
+	public RonPSANode nextNode(final byte sigma)
 		{
 		return nextNodes[DSArrayUtils.indexOf(alphabet, sigma)];
 		}

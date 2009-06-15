@@ -22,9 +22,11 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	protected AbstractUnsupervisedOnlineClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                                     Map<String, Set<String>> predictLabelSets,
-	                                                     Set<String> leaveOneOutLabels, Set<String> testLabels)
+	protected AbstractUnsupervisedOnlineClusteringMethod(final DissimilarityMeasure<T> dm,
+	                                                     final Set<String> potentialTrainingBins,
+	                                                     final Map<String, Set<String>> predictLabelSets,
+	                                                     final Set<String> leaveOneOutLabels,
+	                                                     final Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		}
@@ -37,7 +39,7 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 	/**
 	 * adjust the centroids by considering each of the incoming data points exactly once per iteration.
 	 */
-	public void train(ClusterableIteratorFactory<T> trainingCollectionIteratorFactory, int trainingEpochs)
+	public void train(final ClusterableIteratorFactory<T> trainingCollectionIteratorFactory, final int trainingEpochs)
 			throws ClusterException//, int maxpoints) throws IOException
 		{
 		// if initializeWithRealData is required, override this and then call super.train() as appropriate
@@ -64,14 +66,14 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 // -------------------------- OTHER METHODS --------------------------
 
 	protected boolean trainOneIteration(
-			ClusterableIteratorFactory<T> trainingCollectionIteratorFactory) //, List<Double> secondBestDistances
+			final ClusterableIteratorFactory<T> trainingCollectionIteratorFactory) //, List<Double> secondBestDistances
 			throws ClusterException
 		{
 		int changed = 0;
-		ClusterableIterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
+		final ClusterableIterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
 		//normalizeClusters();
 		int c = 0;
-		Date starttime = new Date();
+		final Date starttime = new Date();
 		//secondBestDistances.clear();
 		try
 			{
@@ -120,7 +122,7 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 			{
 			// iterator exhausted
 			}
-		int changedProportion = changed == 0 ? 0 : (int) (100.0 * changed / c);
+		final int changedProportion = changed == 0 ? 0 : (int) (100.0 * changed / c);
 		logger.debug("Changed cluster assignment of " + changed + " points (" + changedProportion + "%)\n");
 		// computeClusterStdDevs(theDataPointProvider);  // PERF cluster stddev is slow, should be optional.  Also, only works for sequential DPP
 		if (logger.isDebugEnabled())

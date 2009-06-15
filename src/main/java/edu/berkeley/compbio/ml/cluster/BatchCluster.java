@@ -21,14 +21,14 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public BatchCluster(int id)
+	public BatchCluster(final int id)
 		{
 		super(id);
 		}
 
 // ------------------------ CANONICAL METHODS ------------------------
 
-	public String toString()
+	public synchronized String toString()
 		{
 		return "BatchCluster containing " + thePoints.size() + " points";
 		}
@@ -43,7 +43,7 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean add(T point)
+	public synchronized boolean add(final T point)
 		{
 		if (thePoints.add(point))
 			{
@@ -57,7 +57,7 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean addAll(Cluster<T> otherCluster)
+	public synchronized boolean addAll(final Cluster<T> otherCluster)
 		{
 		if (thePoints.addAll(((BatchCluster<T>) otherCluster).getPoints()))
 			{
@@ -71,7 +71,7 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean remove(T point)
+	public synchronized boolean remove(final T point)
 		{
 		if (thePoints.remove(point))
 			{
@@ -85,7 +85,7 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 	 * {@inheritDoc}
 	 */
 	@Override
-	public synchronized boolean removeAll(Cluster<T> otherCluster)
+	public synchronized boolean removeAll(final Cluster<T> otherCluster)
 		{
 		if (thePoints.removeAll(((BatchCluster<T>) otherCluster).getPoints()))
 			{
@@ -97,7 +97,7 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 
 // --------------------- Interface Comparable ---------------------
 
-	public int compareTo(BatchCluster<T> o)
+	public int compareTo(final BatchCluster<T> o)
 		{
 		return id - o.getId();
 		}
@@ -107,12 +107,12 @@ public class BatchCluster<T extends Clusterable<T>> extends AbstractCluster<T> i
 	/**
 	 * drop the references to the training examples, but don't forget the label distribution
 	 */
-	public void forgetExamples()
+	public synchronized void forgetExamples()
 		{
 		thePoints = new HashSet<T>();
 		}
 
-	public Set<T> getPoints()
+	public synchronized Set<T> getPoints()
 		{
 		return thePoints;
 		}

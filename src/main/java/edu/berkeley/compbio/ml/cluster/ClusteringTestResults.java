@@ -36,7 +36,7 @@ public class ClusteringTestResults<L extends Comparable>
 	/**
 	 * For voting-based classifiers, the proportion of votes that the best label got
 	 */
-	private List<Double> bestVoteProportions = new ArrayList<Double>();
+	private final List<Double> bestVoteProportions = new ArrayList<Double>();
 
 	/**
 	 * For voting-based classifiers, the second-best number of votes as a proportion of the best votes; 1.0 = tie
@@ -75,7 +75,7 @@ public class ClusteringTestResults<L extends Comparable>
 		return info;
 		}
 
-	public void setInfo(String info)
+	public void setInfo(final String info)
 		{
 		this.info = info;
 		}
@@ -86,7 +86,7 @@ public class ClusteringTestResults<L extends Comparable>
 		return numClusters;
 		}
 
-	public synchronized void setNumClusters(int numClusters)
+	public synchronized void setNumClusters(final int numClusters)
 		{
 		this.numClusters = numClusters;
 		}
@@ -108,7 +108,7 @@ public class ClusteringTestResults<L extends Comparable>
 		return testSamples;
 		}
 
-	public synchronized void setTestSamples(int i)
+	public synchronized void setTestSamples(final int i)
 		{
 		testSamples = i;
 		}
@@ -118,7 +118,7 @@ public class ClusteringTestResults<L extends Comparable>
 		return testingSeconds;
 		}
 
-	public void setTestingSeconds(double testingSeconds)
+	public void setTestingSeconds(final double testingSeconds)
 		{
 		this.testingSeconds = testingSeconds;
 		}
@@ -133,7 +133,7 @@ public class ClusteringTestResults<L extends Comparable>
 		return trainingSeconds;
 		}
 
-	public void setTrainingSeconds(double trainingSeconds)
+	public void setTrainingSeconds(final double trainingSeconds)
 		{
 		this.trainingSeconds = trainingSeconds;
 		}
@@ -145,8 +145,8 @@ public class ClusteringTestResults<L extends Comparable>
 
 // -------------------------- OTHER METHODS --------------------------
 
-	public synchronized void addClusterResult(double bestDistance, double secondToBestDistanceRatio,
-	                                          double bestVoteProportion, double secondToBestVoteRatio)
+	public synchronized void addClusterResult(final double bestDistance, final double secondToBestDistanceRatio,
+	                                          final double bestVoteProportion, final double secondToBestVoteRatio)
 		{
 		assert !(Double.isNaN(bestDistance) || Double.isInfinite(bestDistance));
 		assert !(Double.isNaN(secondToBestDistanceRatio) || Double.isInfinite(secondToBestDistanceRatio));
@@ -158,7 +158,7 @@ public class ClusteringTestResults<L extends Comparable>
 		secondToBestVoteRatios.add(secondToBestVoteRatio);
 		}
 
-	Map<String, DistanceBasedMultiClassCrossValidationResults<L>> cvResultMap =
+	private final Map<String, DistanceBasedMultiClassCrossValidationResults<L>> cvResultMap =
 			new MapMaker().makeComputingMap(new Function<String, DistanceBasedMultiClassCrossValidationResults<L>>()
 			{
 			public DistanceBasedMultiClassCrossValidationResults apply(@Nullable final String from)
@@ -171,16 +171,16 @@ public class ClusteringTestResults<L extends Comparable>
 				}
 			});
 
-	public synchronized void addPredictionResult(String predictionSetName, String broadActualLabel,
-	                                             String predictedLabel, double clusterProb, double broadWrongness,
-	                                             double detailedWrongness)
+	public synchronized void addPredictionResult(final String predictionSetName, final String broadActualLabel,
+	                                             final String predictedLabel, final double clusterProb,
+	                                             final double broadWrongness, final double detailedWrongness)
 
 		{
 		assert !(Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness));
 		assert !(Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness));
 		assert !(Double.isNaN(clusterProb) || Double.isInfinite(clusterProb));
 
-		DistanceBasedMultiClassCrossValidationResults cvResults = cvResultMap.get(predictionSetName);
+		final DistanceBasedMultiClassCrossValidationResults cvResults = cvResultMap.get(predictionSetName);
 
 		cvResults.addSample(broadActualLabel, predictedLabel, clusterProb, broadWrongness, detailedWrongness);
 		}
@@ -200,7 +200,7 @@ public class ClusteringTestResults<L extends Comparable>
 	//	public double[] correctPercentages;		//	public double[] wrongPercentages;
 
 	//	public double[] correctDistanceHistogram;		//	public double[] wrongDistanceHistogram;		//	public double[] distanceBinCenters;
-	public void finish()
+	public synchronized void finish()
 		{
 		// keep track of whether any good predictions are ever made
 		if (DSCollectionUtils.allElementsEqual(computedDistances, AbstractClusteringMethod.UNKNOWN_DISTANCE))
@@ -221,7 +221,7 @@ public class ClusteringTestResults<L extends Comparable>
 			computedDistances = null;
 			}
 
-		for (DistanceBasedMultiClassCrossValidationResults cvResults : cvResultMap.values())
+		for (final DistanceBasedMultiClassCrossValidationResults cvResults : cvResultMap.values())
 			{
 			cvResults.finish();
 			}
@@ -323,7 +323,7 @@ public class ClusteringTestResults<L extends Comparable>
 		}
 
 
-	public synchronized void incrementTotalTrainingMass(double weightSum)
+	public synchronized void incrementTotalTrainingMass(final double weightSum)
 		{
 		totalTrainingMass += weightSum;
 		}
@@ -339,7 +339,8 @@ public class ClusteringTestResults<L extends Comparable>
 		 }
  */
 	//@Transactional
-	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode, String labelDistancesName)
+	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode,
+	                       final String labelDistancesName)
 		//, Map<String, String> friendlyLabelMap)
 		{
 		resultsNode.addChild("numClusters", getNumClusters());
@@ -374,11 +375,11 @@ public class ClusteringTestResults<L extends Comparable>
 
 		resultsNode.addChild("modelInfo", getInfo());
 
-		for (Map.Entry<String, DistanceBasedMultiClassCrossValidationResults<L>> entry : cvResultMap.entrySet())
+		for (final Map.Entry<String, DistanceBasedMultiClassCrossValidationResults<L>> entry : cvResultMap.entrySet())
 			{
-			String predictionLabelsName = entry.getKey();
+			final String predictionLabelsName = entry.getKey();
 
-			List<String> keyPath = new ArrayList<String>();
+			final List<String> keyPath = new ArrayList<String>();
 			//keyPath.add("RESULTS");
 			keyPath.add(predictionLabelsName);
 

@@ -56,7 +56,7 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public MetropolisCoupledSwapMove(ChainList cl)
+	public MetropolisCoupledSwapMove(final ChainList cl)
 		{
 		chains = cl;
 
@@ -67,7 +67,7 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void propose()
+	public final void propose()
 		{
 		// REVIEW is it OK to swap only adjacent temperatures?
 		// Yes!
@@ -92,17 +92,17 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 	/**
 	 * {@inheritDoc}
 	 */
-	public ChainList doMove(double temperature)
+	public ChainList doMove(final double temperature)
 		{
 		if (isAccepted())
 			{
-			MonteCarlo mc1 = chains.get(swap1);
-			MonteCarlo mc2 = chains.get(swap2);
+			final MonteCarlo mc1 = chains.get(swap1);
+			final MonteCarlo mc2 = chains.get(swap2);
 
 			logger.debug(
 					"SWAPPING CHAINS " + swap1 + " (" + mc1.getHeatFactor() + ") " + swap2 + " (" + mc2.getHeatFactor()
-							+ ") ");
-			double temp = mc1.getHeatFactor();
+					+ ") ");
+			final double temp = mc1.getHeatFactor();
 			mc1.setHeatFactor(mc2.getHeatFactor());
 			mc2.setHeatFactor(temp);
 
@@ -118,7 +118,7 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 				}
 
 			// hack to make the mcmc realize that the move was accepted
-			ChainList newChains = new ChainList();
+			final ChainList newChains = new ChainList();
 			newChains.addAll(chains);
 			chains = newChains;
 			}
@@ -129,8 +129,8 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 
 	private boolean isAccepted()
 		{
-		MonteCarlo mc1 = chains.get(swap1);
-		MonteCarlo mc2 = chains.get(swap2);
+		final MonteCarlo mc1 = chains.get(swap1);
+		final MonteCarlo mc2 = chains.get(swap2);
 
 		//		double stateProbabilityRatio = (mc1.unnormalizedLikelihood(mc2.getCurrentState()) * mc2.unnormalizedLikelihood(mc1.getCurrentState()))
 		//				/ (mc1.unnormalizedLikelihood(mc1.getCurrentState()) * mc2.unnormalizedLikelihood(mc2.getCurrentState()));
@@ -138,7 +138,7 @@ public class MetropolisCoupledSwapMove extends Move implements ProbabilityMove
 		//double totalProbability = stateProbabilityRatio * proposalProbabilityRatio;
 		// all proposals are equally likely; no need for the Hastings term
 
-		double swapLogLikelihoodRatio = (mc1.unnormalizedLogLikelihood(mc2.getCurrentState()) + mc2
+		final double swapLogLikelihoodRatio = (mc1.unnormalizedLogLikelihood(mc2.getCurrentState()) + mc2
 				.unnormalizedLogLikelihood(mc1.getCurrentState())) - (
 				mc1.unnormalizedLogLikelihood(mc1.getCurrentState()) + mc2
 						.unnormalizedLogLikelihood(mc2.getCurrentState()));

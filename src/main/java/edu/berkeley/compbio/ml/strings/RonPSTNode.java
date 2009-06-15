@@ -66,7 +66,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 
 	private byte[] id;
 	private double[] logProbs;
-	private Multinomial<Byte> probs = new Multinomial<Byte>();
+	private final Multinomial<Byte> probs = new Multinomial<Byte>();
 
 	private boolean leaf = true;
 
@@ -89,7 +89,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 * @param id       the suffix associated with this node
 	 * @param alphabet the array of valid symbols
 	 */
-	public RonPSTNode(byte[] id, byte[] alphabet)
+	public RonPSTNode(final byte[] id, final byte[] alphabet)
 		{
 		this.id = id;
 		setAlphabet(alphabet);
@@ -101,7 +101,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 *
 	 * @param alphabet
 	 */
-	public void setAlphabet(byte[] alphabet)
+	public final void setAlphabet(final byte[] alphabet)
 		{
 		this.alphabet = alphabet;
 		logProbs = new double[alphabet.length];
@@ -149,7 +149,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 *
 	 * @param id
 	 */
-	public void setId(byte[] id)
+	public void setId(final byte[] id)
 		{
 		this.id = id;
 		}
@@ -163,7 +163,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 * @param suffix the sequence of symbols to follow from this node
 	 * @return the node at the end of the chain of transitions
 	 */
-	public RonPSTNode addUpstreamNode(byte[] suffix) throws SequenceSpectrumException
+	public RonPSTNode addUpstreamNode(final byte[] suffix) throws SequenceSpectrumException
 		{
 		if (suffix.length == 0)
 			{
@@ -188,10 +188,10 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 * @param sigma the transition to follow from this node
 	 * @return the node at the other end of the transition
 	 */
-	public RonPSTNode addUpstreamNode(byte sigma) throws SequenceSpectrumException
+	public RonPSTNode addUpstreamNode(final byte sigma)
 		{
 		leaf = false;
-		int index = DSArrayUtils.indexOf(alphabet, sigma);
+		final int index = DSArrayUtils.indexOf(alphabet, sigma);
 		RonPSTNode result = upstreamNodes[index];
 		if (result == null)
 			{
@@ -209,12 +209,12 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 * @param indent    a String to use to indent this node and its children.  This will get longer as the recursion
 	 *                  proceeds towards the leaves of the tree.
 	 */
-	public void appendString(Formatter formatter, String indent)
+	public void appendString(final Formatter formatter, final String indent)
 		{
 		formatter.format("[");
 		for (int i = 0; i < alphabet.length; i++)
 			{
-			byte b = alphabet[i];
+			final byte b = alphabet[i];
 			try
 				{
 				formatter.format("%3.3g ", probs.get(b));
@@ -229,11 +229,11 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 
 		for (int i = 0; i < alphabet.length; i++)
 			{
-			byte b = alphabet[i];
+			final byte b = alphabet[i];
 
 			formatter.format("\n%s %c ", indent, b);
 			//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
-			RonPSTNode child = upstreamNodes[i];
+			final RonPSTNode child = upstreamNodes[i];
 			if (child != null && child.getIdBytes().length > getIdBytes().length)
 				{
 				child.appendString(formatter, indent + "     | ");
@@ -256,10 +256,10 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 * that there is a probability for each symbol in the alphabet.  There may or may not be a child node for each symbol,
 	 * though.
 	 */
-	public void copyProbsFrom(SequenceSpectrum spectrum)
+	public void copyProbsFrom(final SequenceSpectrum spectrum)
 		//throws SequenceSpectrumException//DistributionException,
 		{
-		for (byte sigma : alphabet)
+		for (final byte sigma : alphabet)
 			{
 			// copy the probabilities regardless
 			double prob = 0;
@@ -305,7 +305,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 			}
 
 		// okay, but we still need to recurse to the children that do exist
-		for (RonPSTNode upstream : upstreamNodes)//.values())
+		for (final RonPSTNode upstream : upstreamNodes)//.values())
 			{
 			if (upstream != null)
 				{
@@ -322,7 +322,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 * @param prob the probability
 	 * @throws DistributionException if something bad happens, like a negative probability
 	 */
-	private void setProb(byte b, double prob) throws DistributionException
+	private void setProb(final byte b, final double prob) throws DistributionException
 		{
 		probs.put(b, prob);
 		}
@@ -336,7 +336,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	public int countUpstreamNodes()
 		{
 		int result = 0;
-		for (RonPSTNode n : upstreamNodes)
+		for (final RonPSTNode n : upstreamNodes)
 			{
 			if (n != null)
 				{
@@ -353,7 +353,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 */
 	public List<RonPSTNode> getAllUpstreamNodes()
 		{
-		List<RonPSTNode> result = new ArrayList<RonPSTNode>();
+		final List<RonPSTNode> result = new ArrayList<RonPSTNode>();
 
 		collectUpstreamNodes(result);
 		return result;
@@ -364,10 +364,10 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 *
 	 * @param nodeList a List to which to add this node and its children
 	 */
-	private void collectUpstreamNodes(List<RonPSTNode> nodeList)
+	private void collectUpstreamNodes(final List<RonPSTNode> nodeList)
 		{
 		nodeList.add(this);
-		for (RonPSTNode n : upstreamNodes)
+		for (final RonPSTNode n : upstreamNodes)
 			{
 			if (n != null)
 				{
@@ -388,11 +388,11 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	public int getMaxDepth()
 		{
 		int result = 1;
-		for (RonPSTNode n : upstreamNodes)
+		for (final RonPSTNode n : upstreamNodes)
 			{
 			if (n != null)
 				{
-				int i = n.getMaxDepth() + 1;
+				final int i = n.getMaxDepth() + 1;
 				if (i > result)
 					{
 					result = i;
@@ -415,7 +415,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	 * @return the node found by following the requested transition, or null if the node does not exist.
 	 * @throws SequenceSpectrumException if the requested symbol is not part of the alphabet
 	 */
-	public RonPSTNode getUpstreamNode(byte b) throws SequenceSpectrumException
+	public RonPSTNode getUpstreamNode(final byte b) throws SequenceSpectrumException
 		{
 		try
 			{
@@ -444,7 +444,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 	public void updateLogProbsRecursive()
 		{
 		updateLogProbs();
-		for (RonPSTNode upstream : upstreamNodes)//.values())
+		for (final RonPSTNode upstream : upstreamNodes)//.values())
 			{
 			if (upstream != null)
 				{

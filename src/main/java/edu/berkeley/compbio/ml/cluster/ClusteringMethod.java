@@ -9,7 +9,7 @@ import java.util.Set;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface ClusteringMethod<T extends Clusterable<T>> extends ClusterSet<T>  // Generify String -> L
+public interface ClusteringMethod<T extends Clusterable<T>> extends ClusterList<T>  // Generify String -> L
 	{
 // -------------------------- OTHER METHODS --------------------------
 

@@ -1,7 +1,5 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import java.io.IOException;
-
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
@@ -13,7 +11,7 @@ public interface UnsupervisedClusteringMethod<T extends Clusterable<T>> extends 
 	 * unsupervised clustering.
 	 */
 	public void train(ClusterableIteratorFactory<T> trainingCollectionIteratorFactory, int iterations)
-			throws IOException, ClusterException;
+			throws ClusterException;
 	/*	{
 		if (iterations > 1)
 			{
@@ -39,5 +37,5 @@ public interface UnsupervisedClusteringMethod<T extends Clusterable<T>> extends 
 	 * @throws ClusterException
 	 * @throws NoGoodClusterException
 	 */
-	boolean add(T p) throws ClusterException, NoGoodClusterException;  //, List<Double> secondBestDistances
+	boolean add(T p) throws NoGoodClusterException;  //, List<Double> secondBestDistances
 	}

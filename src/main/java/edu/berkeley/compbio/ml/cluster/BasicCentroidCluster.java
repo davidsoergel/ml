@@ -50,7 +50,7 @@ public class BasicCentroidCluster<T extends Clusterable<T>> extends AbstractCent
 	 * @param id       an int uniquely identifying this cluster
 	 * @param centroid the T
 	 */
-	public BasicCentroidCluster(int id, T centroid)
+	public BasicCentroidCluster(final int id, final T centroid)
 		{
 		super(id, centroid);
 		}
@@ -65,7 +65,7 @@ public class BasicCentroidCluster<T extends Clusterable<T>> extends AbstractCent
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean add(T point)
+	public boolean add(final T point)
 		{
 		throw new NotImplementedException();
 		//return false;
@@ -74,7 +74,7 @@ public class BasicCentroidCluster<T extends Clusterable<T>> extends AbstractCent
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean remove(T point)
+	public boolean remove(final T point)
 		{
 		throw new NotImplementedException();
 		}
@@ -84,7 +84,7 @@ public class BasicCentroidCluster<T extends Clusterable<T>> extends AbstractCent
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean addAll(CentroidCluster<T> point)
+	public boolean addAll(final CentroidCluster<T> point)
 		{
 		throw new NotImplementedException();
 		}
@@ -92,7 +92,7 @@ public class BasicCentroidCluster<T extends Clusterable<T>> extends AbstractCent
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean removeAll(CentroidCluster<T> point)
+	public boolean removeAll(final CentroidCluster<T> point)
 		{
 		throw new NotImplementedException();
 		}

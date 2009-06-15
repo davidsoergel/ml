@@ -65,9 +65,9 @@ public class IntPseudocountAdder implements DistributionProcessor<IntArrayContai
 
 // --------------------- Interface DistributionProcessor ---------------------
 
-	public void process(IntArrayContainer c)
+	public void process(final IntArrayContainer c)
 		{
-		int[] counts = c.getArray();
+		final int[] counts = c.getArray();
 
 		for (int i = 0; i < counts.length; i++)
 			{

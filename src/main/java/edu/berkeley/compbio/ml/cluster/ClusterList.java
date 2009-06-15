@@ -32,16 +32,17 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import java.util.Collection;
+import java.util.List;
 
 
 /**
- * Interface for objects that contain a set of Clusters.
+ * Interface for objects that contain a list of Clusters.  These are maintained as a List rather than a Set for ease of
+ * identification by index.
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface ClusterSet<T extends Clusterable<T>>
+public interface ClusterList<T extends Clusterable<T>>
 	{
 // -------------------------- OTHER METHODS --------------------------
 
@@ -50,5 +51,5 @@ public interface ClusterSet<T extends Clusterable<T>>
 	 *
 	 * @return the contained Collection of Clusters.
 	 */
-	Collection<? extends Cluster<? extends T>> getClusters();
+	List<? extends Cluster<? extends T>> getClusters();
 	}

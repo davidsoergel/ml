@@ -54,7 +54,7 @@ public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> exte
 	/**
 	 * The set of samples contained in this cluster.
 	 */
-	private Set<T> thePoints = new HashSet<T>();
+	private final Set<T> thePoints = new HashSet<T>();
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -66,7 +66,7 @@ public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> exte
 	 *
 	 * @param centroid the T
 	 */
-	public BatchAdditiveCentroidCluster(int id, T centroid) throws CloneNotSupportedException
+	public BatchAdditiveCentroidCluster(final int id, final T centroid) throws CloneNotSupportedException
 		{
 		super(id, centroid);
 		}
@@ -79,9 +79,9 @@ public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> exte
 	@Override
 	public String toString()
 		{
-		StringBuffer sb = new StringBuffer("\nCluster:");
+		final StringBuffer sb = new StringBuffer("\nCluster:");
 		sb.append(" ").append(centroid).append("\n");
-		for (T t : thePoints)
+		for (final T t : thePoints)
 			{
 			sb.append(" ").append(t).append("\n");
 			}
@@ -118,7 +118,7 @@ public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> exte
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean add(T point)
+	public synchronized boolean add(final T point)
 		{
 		if (thePoints.add(point))
 			{
@@ -132,7 +132,7 @@ public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> exte
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean addAll(Cluster<T> otherCluster)
+	public boolean addAll(final Cluster<T> otherCluster)
 		{
 		if (thePoints.addAll(((BatchAdditiveCentroidCluster<T>) otherCluster).getPoints()))
 			{
@@ -146,7 +146,7 @@ public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> exte
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean remove(T point)
+	public boolean remove(final T point)
 		{
 		if (thePoints.remove(point))
 			{
@@ -160,7 +160,7 @@ public class BatchAdditiveCentroidCluster<T extends AdditiveClusterable<T>> exte
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean removeAll(Cluster<T> otherCluster)
+	public boolean removeAll(final Cluster<T> otherCluster)
 		{
 		if (thePoints.removeAll(((BatchAdditiveCentroidCluster<T>) otherCluster).getPoints()))
 			{

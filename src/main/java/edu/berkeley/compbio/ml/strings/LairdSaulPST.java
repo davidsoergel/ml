@@ -45,7 +45,7 @@ public class LairdSaulPST
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public LairdSaulPST(Reader in)
+	public LairdSaulPST(final Reader in)
 		{
 
 		}

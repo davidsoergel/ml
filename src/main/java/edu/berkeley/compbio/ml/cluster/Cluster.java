@@ -92,7 +92,7 @@ public interface Cluster<T extends Clusterable<T>>// extends Comparable<? extend
 	 *
 	 * @param id the integer id of this cluster.
 	 */
-	void setId(int id);
+//	void setId(int id);
 
 	/**
 	 * Copy the local label weights into the derived label weights.

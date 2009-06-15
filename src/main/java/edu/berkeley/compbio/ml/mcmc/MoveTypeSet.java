@@ -70,7 +70,7 @@ public class MoveTypeSet//<T extends MonteCarloState>
 	//	@PluginMap
 	//	Map<Class<Move>, Double> moveProbabilities;// = new PluginMap;
 
-	private Multinomial<GenericFactory<Move>> types = new Multinomial<GenericFactory<Move>>();
+	private final Multinomial<GenericFactory<Move>> types = new Multinomial<GenericFactory<Move>>();
 
 
 // -------------------------- OTHER METHODS --------------------------
@@ -125,7 +125,7 @@ public class MoveTypeSet//<T extends MonteCarloState>
 
 			//Double prob;
 			//for(Class<Move> movetype : PluginManager.getPlugins(Move.class))
-			for (Class movetype : pluginMap.getAvailablePlugins())//SubclassFinder.find(packageName, Move.class))
+			for (final Class movetype : pluginMap.getAvailablePlugins())//SubclassFinder.find(packageName, Move.class))
 				{
 				/*	if (Modifier.isAbstract(movetype.getModifiers()))
 								{
@@ -135,7 +135,7 @@ public class MoveTypeSet//<T extends MonteCarloState>
 				String shortname = movetype.getName();
 				shortname = shortname.substring(shortname.lastIndexOf(".") + 1);
 
-				Double prob = pluginMap.getValue(movetype);
+				final Double prob = pluginMap.getValue(movetype);
 
 				if (prob == null || Double.isNaN(prob))
 					{
@@ -191,17 +191,16 @@ public class MoveTypeSet//<T extends MonteCarloState>
 	   return (theNames.get(i));
 	   }*/
 
-	public Move newMove(MonteCarloState currentMonteCarloState)
+	public Move newMove(final MonteCarloState currentMonteCarloState)
 		{
 		//	Class[] argTypes = {currentMonteCarloState.getClass()};
 		try
 			{
-			GenericFactory<Move> c = types.sample();
-			Object[] args = {currentMonteCarloState};
+			final GenericFactory<Move> c = types.sample();
+			final Object[] args = {currentMonteCarloState};
 			//logger.debug("New Move: " + c.getName());
-			Move theMove = c.create(args);//getConstructor(argTypes)
 			//logger.debug("...Move created.");
-			return theMove;
+			return c.create(args);
 			}
 		catch (Exception e)
 			{

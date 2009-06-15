@@ -45,6 +45,7 @@ import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Factory;
 import org.testng.annotations.Test;
@@ -72,7 +73,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void addContractTestsToQueue(Queue<ContractTest> theContractTests)
+	public void addContractTestsToQueue(final Queue<ContractTest> theContractTests)
 		{
 		theContractTests.add(new SequenceSpectrumInterfaceTest(this));
 		}
@@ -81,9 +82,9 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 	public void afterCompleteEveryNodeHasTransitionsForEverySymbolOrNone()
 			throws SequenceSpectrumException, DistributionException
 		{
-		RonPST pst = createInstance();
+		final RonPST pst = createInstance();
 
-		byte[] alphabet = pst.getAlphabet();
+		final byte[] alphabet = pst.getAlphabet();
 		assert allNodesAreCompleteOrEmpty(pst, alphabet.length);
 		}
 
@@ -92,19 +93,18 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 	 */
 	public RonPST createInstance() throws SequenceSpectrumException
 		{
-		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
-		RonPST pst = new RonPST(0.0001, 0.01, 1.1, 4, ss);
+		final SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
 		//pst.copyProbsFrom(ss);
-		return pst;
+		return new RonPST(0.0001, 0.01, 1.1, 4, ss);
 		}
 
-	private boolean allNodesAreCompleteOrEmpty(RonPSTNode node, int maxWidth)
+	private boolean allNodesAreCompleteOrEmpty(final RonPSTNode node, final int maxWidth)
 		{
 		if (!nodeIsCompleteOrEmpty(node, maxWidth))
 			{
 			return false;
 			}
-		for (RonPSTNode child : node.getUpstreamNodes())//.values())
+		for (final RonPSTNode child : node.getUpstreamNodes())//.values())
 			{
 			if (child != null && !allNodesAreCompleteOrEmpty(child, maxWidth))
 				{
@@ -114,9 +114,9 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		return true;
 		}
 
-	private boolean nodeIsCompleteOrEmpty(RonPSTNode node, int maxWidth)
+	private boolean nodeIsCompleteOrEmpty(final RonPSTNode node, final int maxWidth)
 		{
-		int width = node.countUpstreamNodes();//.size();
+		final int width = node.countUpstreamNodes();//.size();
 		if (width != 0 && width != maxWidth)
 			{
 			return false;
@@ -127,43 +127,31 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 	@Test
 	public void conditionalProbabilitiesAreGivenBasedOnLongestAvailableSuffix() throws SequenceSpectrumException
 		{
-		RonPST pst = createInstance();
+		final RonPST pst = createInstance();
 
 		// really should use a 3-level pst for this
 
-		assert pst.conditionalProbability((byte) 'a', new byte[]{
-				'd',
-				'a',
-				'b',
-				'a',
-				'b'
-		}) == pst.conditionalProbability((byte) 'a', new byte[]{
-				'a',
-				'b'
-		});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{
-				'a',
-				'b'
-		}) == pst.conditionalProbability((byte) 'a', new byte[]{'b'});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'d', 'a', 'b', 'a', 'b'}) == pst
+				.conditionalProbability((byte) 'a', new byte[]{'a', 'b'});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) == pst
+				.conditionalProbability((byte) 'a', new byte[]{'b'});
 		assert pst.conditionalProbability((byte) 'a', new byte[]{'b'}) != pst
 				.conditionalProbability((byte) 'a', new byte[]{});
-		assert pst.conditionalProbability((byte) 'a', new byte[]{
-				'a',
-				'b'
-		}) != pst.conditionalProbability((byte) 'a', new byte[]{'a'});
+		assert pst.conditionalProbability((byte) 'a', new byte[]{'a', 'b'}) != pst
+				.conditionalProbability((byte) 'a', new byte[]{'a'});
 		}
 
 	@Test
 	public void highRatioThresholdProducesShallowTree() throws SequenceSpectrumException
 		{
-		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
-		RonPST pst = new RonPST(0.0001, 0.01, 500, 4, ss);
+		final SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
+		final RonPST pst = new RonPST(0.0001, 0.01, 500, 4, ss);
 		//	pst.copyProbsFrom(ss);
 
 		assert pst.getMaxDepth() == 1;
 		}
 
-	public static SequenceSpectrum createStubSimpleSequenceSpectrum() throws SequenceSpectrumException
+	public static SequenceSpectrum createStubSimpleSequenceSpectrum()
 		{
 		return new StubSequenceSpectrum();
 		/*SequenceSpectrum ss = createMock(SequenceSpectrum.class);
@@ -211,8 +199,8 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		{
 		// ** improve by making a deeper tree to test
 
-		SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
-		RonPST pst = new RonPST(0.0001, 0.01, 1, 4, ss);
+		final SequenceSpectrum ss = createStubSimpleSequenceSpectrum();
+		final RonPST pst = new RonPST(0.0001, 0.01, 1, 4, ss);
 		//		pst.copyProbsFrom(ss);
 
 		// note the stub spectrum uses a backoff 1-mer prior for the 3rd level
@@ -222,7 +210,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 	@Test
 	public void maxDepthIsCalculated() throws SequenceSpectrumException
 		{
-		RonPST pst = createInstance();
+		final RonPST pst = createInstance();
 		assert pst.getMaxDepth() == 2;
 		}
 
@@ -259,17 +247,17 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		{
 // ------------------------------ FIELDS ------------------------------
 
-		Map<Byte, Double> counts = new HashMap<Byte, Double>();
-		Map<Byte, Map<Byte, Double>> counts2 = new HashMap<Byte, Map<Byte, Double>>();
+		final Map<Byte, Double> counts = new HashMap<Byte, Double>();
+		final Map<Byte, Map<Byte, Double>> counts2 = new HashMap<Byte, Map<Byte, Double>>();
 
-		private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+		private final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
 		public StubSequenceSpectrum()
 			{
-			Map<Byte, Double> aCounts = new HashMap<Byte, Double>();
+			final Map<Byte, Double> aCounts = new HashMap<Byte, Double>();
 			aCounts.put((byte) 'a', 1.);
 			aCounts.put((byte) 'b', 2.);
 			aCounts.put((byte) 'c', 3.);
@@ -277,7 +265,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			counts2.put((byte) 'a', aCounts);
 			counts.put((byte) 'a', DSCollectionUtils.sum(aCounts.values()));
 
-			Map<Byte, Double> bCounts = new HashMap<Byte, Double>();
+			final Map<Byte, Double> bCounts = new HashMap<Byte, Double>();
 			bCounts.put((byte) 'a', 3.);
 			bCounts.put((byte) 'b', 3.);
 			bCounts.put((byte) 'c', 3.);
@@ -285,7 +273,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			counts2.put((byte) 'b', bCounts);
 			counts.put((byte) 'b', DSCollectionUtils.sum(bCounts.values()));
 
-			Map<Byte, Double> cCounts = new HashMap<Byte, Double>();
+			final Map<Byte, Double> cCounts = new HashMap<Byte, Double>();
 			cCounts.put((byte) 'a', 2.);
 			cCounts.put((byte) 'b', 4.);
 			cCounts.put((byte) 'c', 6.);
@@ -293,7 +281,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			counts2.put((byte) 'c', cCounts);
 			counts.put((byte) 'c', DSCollectionUtils.sum(cCounts.values()));
 
-			Map<Byte, Double> dCounts = new HashMap<Byte, Double>();
+			final Map<Byte, Double> dCounts = new HashMap<Byte, Double>();
 			dCounts.put((byte) 'a', 4.);
 			dCounts.put((byte) 'b', 3.);
 			dCounts.put((byte) 'c', 2.);
@@ -304,6 +292,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
+		@NotNull
 		public WeightedSet<String> getWeightedLabels()
 			{
 			return weightedLabels;
@@ -331,7 +320,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		 *
 		 * @param object the object to subtract from this one
 		 */
-		public void decrementBy(StubSequenceSpectrum object)
+		public void decrementBy(final StubSequenceSpectrum object)
 			{
 			throw new NotImplementedException();
 			}
@@ -339,7 +328,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public void decrementByWeighted(StubSequenceSpectrum object, double weight)
+		public void decrementByWeighted(final StubSequenceSpectrum object, final double weight)
 			{
 			throw new NotImplementedException();
 			}
@@ -349,7 +338,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		 *
 		 * @param object the object to add to this one
 		 */
-		public void incrementBy(StubSequenceSpectrum object)
+		public void incrementBy(final StubSequenceSpectrum object)
 			{
 			throw new NotImplementedException();
 			}
@@ -357,7 +346,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public void incrementByWeighted(StubSequenceSpectrum object, double weight)
+		public void incrementByWeighted(final StubSequenceSpectrum object, final double weight)
 			{
 			throw new NotImplementedException();
 			}
@@ -368,7 +357,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		 * @param object the object to be subtracted from this one
 		 * @return the difference between this object and the argument
 		 */
-		public StubSequenceSpectrum minus(StubSequenceSpectrum object)
+		public StubSequenceSpectrum minus(final StubSequenceSpectrum object)
 			{
 			throw new NotImplementedException();
 			}
@@ -376,7 +365,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public void multiplyBy(double v)
+		public void multiplyBy(final double v)
 			{
 			throw new NotImplementedException();
 			}
@@ -387,7 +376,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		 * @param object the object to be added to this one
 		 * @return the sum of this object and the argument
 		 */
-		public StubSequenceSpectrum plus(StubSequenceSpectrum object)
+		public StubSequenceSpectrum plus(final StubSequenceSpectrum object)
 			{
 			throw new NotImplementedException();
 			}
@@ -395,7 +384,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public StubSequenceSpectrum times(double v)
+		public StubSequenceSpectrum times(final double v)
 			{
 			throw new NotImplementedException();
 			}
@@ -411,7 +400,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		 * @param other The clusterable object to compare against
 		 * @return True if they are equivalent, false otherwise
 		 */
-		public boolean equalValue(StubSequenceSpectrum other)
+		public boolean equalValue(final StubSequenceSpectrum other)
 			{
 			throw new NotImplementedException();
 			}
@@ -430,7 +419,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public double conditionalProbability(byte sigma, byte[] prefix) throws SequenceSpectrumException
+		public double conditionalProbability(final byte sigma, final byte[] prefix) throws SequenceSpectrumException
 			{
 			if (prefix.length == 0)
 				{
@@ -448,7 +437,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
+		public Multinomial<Byte> conditionalsFrom(final byte[] prefix) throws SequenceSpectrumException
 			{
 			try
 				{
@@ -471,7 +460,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public double fragmentLogProbability(SequenceFragment sequenceFragment, boolean perSample)
+		public double fragmentLogProbability(final SequenceFragment sequenceFragment, final boolean perSample)
 			{
 			throw new NotImplementedException();
 			}
@@ -481,12 +470,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		 */
 		public byte[] getAlphabet()
 			{
-			return new byte[]{
-					'a',
-					'b',
-					'c',
-					'd'
-			};
+			return new byte[]{'a', 'b', 'c', 'd'};
 			}
 
 		/**
@@ -518,7 +502,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public byte sample(byte[] prefix) throws SequenceSpectrumException
+		public byte sample(final byte[] prefix) throws SequenceSpectrumException
 			{
 			try
 				{
@@ -542,7 +526,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public byte[] sample(int length) throws SequenceSpectrumException
+		public byte[] sample(final int length) throws SequenceSpectrumException
 			{
 			throw new NotImplementedException();
 			}
@@ -550,7 +534,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public void setIgnoreEdges(boolean ignoreEdges)
+		public void setIgnoreEdges(final boolean ignoreEdges)
 			{
 			// not relevant here...
 			}
@@ -566,7 +550,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public boolean spectrumEquals(SequenceSpectrum spectrum)
+		public boolean spectrumEquals(final SequenceSpectrum spectrum)
 			{
 			return spectrum == this;
 			}
@@ -574,7 +558,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public double totalProbability(byte[] s) throws SequenceSpectrumException
+		public double totalProbability(final byte[] s) throws SequenceSpectrumException
 			{
 			if (s.length == 0)
 				{
@@ -618,7 +602,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			}
 */
 
-		public List<byte[]> getFirstWords(int k)
+		public List<byte[]> getFirstWords(final int k)
 			{
 			throw new NotImplementedException();
 			}

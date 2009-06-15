@@ -83,7 +83,7 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> impleme
 	/**
 	 * The distance of the point under consideration to the source cluster centroid
 	 */
-	double oldDistance;
+	public double oldDistance;
 
 
 // ------------------------ CANONICAL METHODS ------------------------
@@ -107,7 +107,7 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> impleme
 	public String toString()
 		{
 		return "bestDistance = " + bestDistance + ", bestCluster = " + bestCluster + ", oldCluster = " + oldCluster
-				+ ", oldDistance = " + oldDistance;
+		       + ", oldDistance = " + oldDistance;
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -115,7 +115,7 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> impleme
 
 // --------------------- Interface Comparable ---------------------
 
-	public int compareTo(ClusterMove<T, C> o)
+	public int compareTo(final ClusterMove<T, C> o)
 		{
 		return bestCluster.getId() - o.bestCluster.getId();
 		}

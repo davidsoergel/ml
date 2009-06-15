@@ -19,9 +19,11 @@ public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Cluster
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	protected AbstractSupervisedOnlineClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                                   Map<String, Set<String>> predictLabelSets,
-	                                                   Set<String> leaveOneOutLabels, Set<String> testLabels)
+	protected AbstractSupervisedOnlineClusteringMethod(final DissimilarityMeasure<T> dm,
+	                                                   final Set<String> potentialTrainingBins,
+	                                                   final Map<String, Set<String>> predictLabelSets,
+	                                                   final Set<String> leaveOneOutLabels,
+	                                                   final Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		}
@@ -37,7 +39,7 @@ public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Cluster
 		normalizeClusterLabelProbabilities();
 		}*/
 
-	public void train(ClusterableIterator<T> trainingIterator) throws ClusterException
+	public synchronized void train(final ClusterableIterator<T> trainingIterator)
 		{
 		trainWithKnownTrainingLabels(trainingIterator);
 		removeEmptyClusters();
@@ -53,13 +55,13 @@ public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Cluster
 	/**
 	 * for now we make a uniform prior
 	 */
-	protected void preparePriors()
+	protected synchronized void preparePriors()
 		{
 		try
 			{
 			final Multinomial<Cluster<T>> priorsMult = new Multinomial<Cluster<T>>();
 
-			for (Cluster<T> cluster : theClusters)
+			for (final Cluster<T> cluster : getClusters())
 				{
 				priorsMult.put(cluster, 1);
 				}

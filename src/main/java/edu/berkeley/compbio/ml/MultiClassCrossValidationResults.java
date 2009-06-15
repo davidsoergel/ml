@@ -37,7 +37,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		{
 		confusionMatrix = new MapMaker().makeComputingMap(new Function<L, Multiset<L>>()
 		{
-		public Multiset<L> apply(L key)
+		public Multiset<L> apply(final L key)
 			{
 			return HashMultiset.create();
 			}
@@ -52,14 +52,14 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		}
 
 
-	public List<String> getFriendlyLabels(Map<L, String> friendlyLabelMap)
+	public List<String> getFriendlyLabels(final Map<L, String> friendlyLabelMap)
 		{
 		if (friendlyLabelMap == null)
 			{
 			return null;
 			}
-		List<String> result = new ArrayList<String>(confusionMatrix.size());
-		for (L l : getLabels())
+		final List<String> result = new ArrayList<String>(confusionMatrix.size());
+		for (final L l : getLabels())
 			{
 			result.add(friendlyLabelMap.get(l));
 			}
@@ -69,7 +69,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	public void sanityCheck()
 		{
 		int predictionCount = 0;
-		for (Multiset<L> ls : confusionMatrix.values())
+		for (final Multiset<L> ls : confusionMatrix.values())
 			{
 			predictionCount += ls.size();
 			}
@@ -79,7 +79,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 
 	public void addSample(final L realValue, final L predictedValue)
 		{
-		Multiset<L> confusionRow = realValue == null ? confusionRowNull : confusionMatrix.get(realValue);
+		final Multiset<L> confusionRow = realValue == null ? confusionRowNull : confusionMatrix.get(realValue);
 		confusionRow.add(predictedValue);
 		numExamples++;
 		}
@@ -87,7 +87,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	public float accuracy()
 		{
 		int correct = 0;
-		for (Map.Entry<L, Multiset<L>> entry : confusionMatrix.entrySet())
+		for (final Map.Entry<L, Multiset<L>> entry : confusionMatrix.entrySet())
 			{
 			correct += entry.getValue().count(entry.getKey());
 			}
@@ -97,7 +97,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	public float unknown()
 		{
 		int unknown = 0;
-		for (Map.Entry<L, Multiset<L>> entry : confusionMatrix.entrySet())
+		for (final Map.Entry<L, Multiset<L>> entry : confusionMatrix.entrySet())
 			{
 			unknown += entry.getValue().count(null);
 			}
@@ -108,7 +108,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		{
 		int correct = 0;
 		int unknown = 0;
-		for (Map.Entry<L, Multiset<L>> entry : confusionMatrix.entrySet())
+		for (final Map.Entry<L, Multiset<L>> entry : confusionMatrix.entrySet())
 			{
 			correct += entry.getValue().count(entry.getKey());
 			unknown += entry.getValue().count(null);
@@ -116,30 +116,28 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		return (float) correct / ((float) numExamples - (float) unknown);
 		}
 
-	public float sensitivity(L label)
+	public float sensitivity(final L label)
 		{
-		Multiset<L> predictionsForLabel = confusionMatrix.get(label);
-		int totalWithRealLabel = predictionsForLabel.size();
-		int truePositives = predictionsForLabel.count(label);
-		float result = (float) truePositives / (float) totalWithRealLabel;
-		return result;
+		final Multiset<L> predictionsForLabel = confusionMatrix.get(label);
+		final int totalWithRealLabel = predictionsForLabel.size();
+		final int truePositives = predictionsForLabel.count(label);
+		return (float) truePositives / (float) totalWithRealLabel;
 		}
 
-	public float precision(L label)
+	public float precision(final L label)
 		{
-		Multiset<L> predictionsForLabel = confusionMatrix.get(label);
+		final Multiset<L> predictionsForLabel = confusionMatrix.get(label);
 
-		int truePositives = predictionsForLabel.count(label);
-		float total = (float) getTotalPredicted(label);
-		float result = total == 0 ? 1f : (float) truePositives / total;
-		return result;
+		final int truePositives = predictionsForLabel.count(label);
+		final float total = (float) getTotalPredicted(label);
+		return total == 0 ? 1f : (float) truePositives / total;
 		}
 
 	public float[] getSpecificities()
 		{
-		float[] result = new float[confusionMatrix.size()];
+		final float[] result = new float[confusionMatrix.size()];
 		int i = 0;
-		for (L label : getLabels())
+		for (final L label : getLabels())
 			{
 			result[i] = specificity(label);
 			i++;
@@ -149,9 +147,9 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 
 	public float[] getSensitivities()
 		{
-		float[] result = new float[confusionMatrix.size()];
+		final float[] result = new float[confusionMatrix.size()];
 		int i = 0;
-		for (L label : getLabels())
+		for (final L label : getLabels())
 			{
 			result[i] = sensitivity(label);
 			i++;
@@ -161,9 +159,9 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 
 	public float[] getPrecisions()
 		{
-		float[] result = new float[confusionMatrix.size()];
+		final float[] result = new float[confusionMatrix.size()];
 		int i = 0;
-		for (L label : getLabels())
+		for (final L label : getLabels())
 			{
 			result[i] = precision(label);
 			i++;
@@ -173,9 +171,9 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 
 	public float[] getPredictedCounts()
 		{
-		float[] result = new float[confusionMatrix.size()];
+		final float[] result = new float[confusionMatrix.size()];
 		int i = 0;
-		for (L label : getLabels())
+		for (final L label : getLabels())
 			{
 			result[i] = getTotalPredicted(label);
 			i++;
@@ -185,9 +183,9 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 
 	public float[] getActualCounts()
 		{
-		float[] result = new float[confusionMatrix.size()];
+		final float[] result = new float[confusionMatrix.size()];
 		int i = 0;
-		for (L label : getLabels())
+		for (final L label : getLabels())
 			{
 			result[i] = getTotalActual(label);
 			i++;
@@ -196,44 +194,43 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		}
 
 
-	public float specificity(L label)
+	public float specificity(final L label)
 		{
 		// == sensitivity( not label )
 		// note "unknown" counts as a negative
 
-		Multiset<L> predictionsForLabel = confusionMatrix.get(label);
+		final Multiset<L> predictionsForLabel = confusionMatrix.get(label);
 
-		int hasLabel = predictionsForLabel.size();
-		int hasLabelRight = predictionsForLabel.count(label);  // true positives
+		final int hasLabel = predictionsForLabel.size();
+		final int hasLabelRight = predictionsForLabel.count(label);  // true positives
 
 
-		int notLabelWrong = getTotalPredicted(label) - hasLabelRight;  // false negatives
-		int notLabel = numExamples - hasLabel;
-		int notLabelRight = notLabel - notLabelWrong;   // true negatives
+		final int notLabelWrong = getTotalPredicted(label) - hasLabelRight;  // false negatives
+		final int notLabel = numExamples - hasLabel;
+		final int notLabelRight = notLabel - notLabelWrong;   // true negatives
 
 		if (notLabel == 0)
 			{
 			return 1.0f;
 			}
 
-		float result = (float) notLabelRight / (float) notLabel;
-		return result;
+		return (float) notLabelRight / (float) notLabel;
 		}
 
-	public int getTotalPredicted(L label)
+	public int getTotalPredicted(final L label)
 
 		{
 		int totalWithPredictedLabel = 0;
 
 		// PERF if we want precisions for all the labels, it's inefficient to iterate this n times; in practice it doesn't matter though since there are few enough labels
-		for (Map.Entry<L, Multiset<L>> entry : confusionMatrix.entrySet())
+		for (final Map.Entry<L, Multiset<L>> entry : confusionMatrix.entrySet())
 			{
 			totalWithPredictedLabel += entry.getValue().count(label);
 			}
 		return totalWithPredictedLabel;
 		}
 
-	public int getTotalActual(L label)
+	public int getTotalActual(final L label)
 		{
 		if (label == null)
 			{
@@ -248,7 +245,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	public float classNormalizedSpecificity()
 		{
 		float sum = 0;
-		for (L label : confusionMatrix.keySet())
+		for (final L label : confusionMatrix.keySet())
 			{
 			sum += specificity(label);
 			}
@@ -258,7 +255,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	public float classNormalizedSensitivity()
 		{
 		float sum = 0;
-		for (L label : confusionMatrix.keySet())
+		for (final L label : confusionMatrix.keySet())
 			{
 			sum += sensitivity(label);
 			}
@@ -268,9 +265,9 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	public float classNormalizedPrecision()
 		{
 		float sum = 0;
-		for (L label : confusionMatrix.keySet())
+		for (final L label : confusionMatrix.keySet())
 			{
-			float v = precision(label);
+			final float v = precision(label);
 			if (!Double.isNaN(v))
 				{
 				sum += v;
@@ -291,8 +288,8 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 
 	public int numPredictedLabels()
 		{
-		Set<L> predictedLabels = new HashSet<L>();
-		for (Multiset<L> ls : confusionMatrix.values())
+		final Set<L> predictedLabels = new HashSet<L>();
+		for (final Multiset<L> ls : confusionMatrix.values())
 			{
 			predictedLabels.addAll(ls.elementSet());
 			}

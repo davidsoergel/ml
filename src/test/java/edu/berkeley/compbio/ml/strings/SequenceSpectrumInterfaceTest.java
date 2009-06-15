@@ -52,12 +52,12 @@ public class SequenceSpectrumInterfaceTest extends AtomicContractTest
 	private static final Logger logger = Logger.getLogger(SequenceSpectrumInterfaceTest.class);
 	//public abstract SequenceSpectrum createInstance() throws Exception;
 
-	private TestInstanceFactory<SequenceSpectrum> tif;
+	private final TestInstanceFactory<SequenceSpectrum> tif;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public SequenceSpectrumInterfaceTest(TestInstanceFactory<SequenceSpectrum> tif)
+	public SequenceSpectrumInterfaceTest(final TestInstanceFactory<SequenceSpectrum> tif)
 		{
 		this.tif = tif;
 		}
@@ -67,11 +67,11 @@ public class SequenceSpectrumInterfaceTest extends AtomicContractTest
 	@Test
 	public void getRandomReturnsAlphabetSymbols() throws Exception
 		{
-		SequenceSpectrum ss = tif.createInstance();
-		byte[] alphabet = ss.getAlphabet();
+		final SequenceSpectrum ss = tif.createInstance();
+		final byte[] alphabet = ss.getAlphabet();
 		for (int count = 0; count < 100; count++)
 			{
-			byte b = ss.sample(new byte[0]);
+			final byte b = ss.sample(new byte[0]);
 			assert DSArrayUtils.contains(alphabet, b);
 			}
 		}
@@ -79,15 +79,15 @@ public class SequenceSpectrumInterfaceTest extends AtomicContractTest
 	@Test
 	public void variousProbabilitiesAreConsistent() throws Exception
 		{
-		SequenceSpectrum ss = tif.createInstance();
+		final SequenceSpectrum ss = tif.createInstance();
 		int multipliedConditionals = 0;
 		for (int count = 0; count < 100; count++)
 			{
-			byte b = ss.sample(new byte[0]);
-			byte c = ss.sample(new byte[]{b});
+			final byte b = ss.sample(new byte[0]);
+			final byte c = ss.sample(new byte[]{b});
 			assert ss.conditionalProbability(b, new byte[0]) == ss.conditionalsFrom(new byte[0]).get(b);
 
-			double d1, d2;
+			double d1;
 
 			try
 				{
@@ -101,6 +101,7 @@ public class SequenceSpectrumInterfaceTest extends AtomicContractTest
 				{
 				d1 = -1;// just a marker
 				}
+			double d2;
 			try
 				{
 				d2 = ss.conditionalsFrom(new byte[]{b}).get(c);
@@ -117,16 +118,13 @@ public class SequenceSpectrumInterfaceTest extends AtomicContractTest
 
 			try
 				{
-				double total = ss.totalProbability(new byte[]{
-						b,
-						c
-				});
-				double cond1 = ss.conditionalProbability(b, new byte[0]);
-				double cond2 = ss.conditionalProbability(c, new byte[]{b});
-				double mult = cond1 * cond2;
+				final double total = ss.totalProbability(new byte[]{b, c});
+				final double cond1 = ss.conditionalProbability(b, new byte[0]);
+				final double cond2 = ss.conditionalProbability(c, new byte[]{b});
+				final double mult = cond1 * cond2;
 				if (!MathUtils.equalWithinFPError(total, mult))
 					{
-					logger.error("" + cond1 + "  *  " + cond2);
+					logger.error(String.valueOf(cond1) + "  *  " + cond2);
 					logger.error("Total prob = " + total + "; Multiplied conditionals = " + mult);
 					}
 				assert MathUtils.equalWithinFPError(total, mult);

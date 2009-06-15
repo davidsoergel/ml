@@ -16,7 +16,7 @@ public class BatchClusterLabelInverter<T extends Clusterable<T>> implements Labe
 // ------------------------------ FIELDS ------------------------------
 
 	// cache the inversions so as not to always create new ones
-	Map<BatchCluster<T>, BatchCluster<T>> inversions = new HashMap<BatchCluster<T>, BatchCluster<T>>();
+	private final Map<BatchCluster<T>, BatchCluster<T>> inversions = new HashMap<BatchCluster<T>, BatchCluster<T>>();
 
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -24,7 +24,7 @@ public class BatchClusterLabelInverter<T extends Clusterable<T>> implements Labe
 
 // --------------------- Interface LabelInverter ---------------------
 
-	public BatchCluster<T> invert(BatchCluster<T> label)
+	public BatchCluster<T> invert(final BatchCluster<T> label)
 		{
 		BatchCluster<T> result = inversions.get(label);
 		if (result == null)

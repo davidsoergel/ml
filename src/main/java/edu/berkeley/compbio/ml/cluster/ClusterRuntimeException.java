@@ -51,17 +51,17 @@ public class ClusterRuntimeException extends ChainedRuntimeException
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public ClusterRuntimeException(String s)
+	public ClusterRuntimeException(final String s)
 		{
 		super(s);
 		}
 
-	public ClusterRuntimeException(Exception e)
+	public ClusterRuntimeException(final Exception e)
 		{
 		super(e);
 		}
 
-	public ClusterRuntimeException(Exception e, String s)
+	public ClusterRuntimeException(final Exception e, final String s)
 		{
 		super(e, s);
 		}

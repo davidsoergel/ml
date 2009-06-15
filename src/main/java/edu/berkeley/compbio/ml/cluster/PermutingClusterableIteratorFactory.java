@@ -47,7 +47,7 @@ import java.util.List;
 public class PermutingClusterableIteratorFactory<T extends Clusterable<T>> extends ClusterableIteratorFactory<T>
 	{
 
-	public PermutingClusterableIteratorFactory(List<T> underlyingList)
+	public PermutingClusterableIteratorFactory(final List<T> underlyingList)
 		{
 		super(underlyingList);
 		}

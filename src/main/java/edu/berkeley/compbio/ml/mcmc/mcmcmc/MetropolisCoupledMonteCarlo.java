@@ -80,7 +80,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public MetropolisCoupledMonteCarlo() throws IOException
+	public MetropolisCoupledMonteCarlo()
 		{
 		super();
 		}
@@ -118,21 +118,21 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	public void run() throws IOException, GenericFactoryException
 		{
 		assert heatFactors[0] == 1;
-		ChainList chains = new ChainList();
+		final ChainList chains = new ChainList();
 		//	Object subChainSharedState = null;
-		for (double hf : heatFactors)
+		for (final double hf : heatFactors)
 			{
-			MonteCarlo subChain = chainFactory.create();
+			final MonteCarlo subChain = chainFactory.create();
 			subChain.setHeatFactor(hf);
-			subChain.setId("" + hf);
-			subChain.setDataCollector(dataCollector.newSubCollector("" + hf));
+			subChain.setId(String.valueOf(hf));
+			subChain.setDataCollector(dataCollector.newSubCollector(String.valueOf(hf)));
 			subChain.setColdest(false);
 			//	subChain.setChainSharedState(subChainSharedState);
 			//	subChainSharedState = subChain.getChainSharedState();  // should be unchanged after the first
 			chains.add(subChain);//mcf.newChain(hf));
 			}
 
-		MonteCarlo mc = chains.get(0);
+		final MonteCarlo mc = chains.get(0);
 		mc.setColdest(true);
 
 		//MetropolisCoupledMonteCarlo couplingChain = new MetropolisCoupledMonteCarlo();
@@ -156,7 +156,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 			}
 		}
 
-	public void setCurrentChainList(ChainList currentChainList)
+	public void setCurrentChainList(final ChainList currentChainList)
 		{
 		this.currentState = currentChainList;
 		}
@@ -165,7 +165,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		{
 		// run each chain independently for a while
 		// PERF parallelizable
-		for (MonteCarlo chain : getCurrentChainList())
+		for (final MonteCarlo chain : getCurrentChainList())
 			{
 			chain.burnIn();
 			/*	int maxStep = step + swapInterval;
@@ -182,7 +182,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 
 	public ChainList getCurrentChainList()
 		{
-		return (ChainList) currentState;
+		return currentState;
 		}
 
 	/**
@@ -193,7 +193,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 		{
 		// run each chain independently for a while
 		// PERF parallelizable
-		for (MonteCarlo chain : getCurrentChainList())
+		for (final MonteCarlo chain : getCurrentChainList())
 			{
 			chain.runNoBurnIn();
 			/*	int maxStep = step + swapInterval;
@@ -211,7 +211,7 @@ public class MetropolisCoupledMonteCarlo extends MonteCarlo
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setCurrentState(MonteCarloState currentState)
+	public void setCurrentState(final MonteCarloState currentState)
 		{
 		this.currentState = (ChainList) currentState;
 		}

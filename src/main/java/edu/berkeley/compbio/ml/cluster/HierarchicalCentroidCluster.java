@@ -52,7 +52,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public HierarchicalCentroidCluster(int id, Clusterable<T> sample)
+	public HierarchicalCentroidCluster(final int id, final Clusterable<T> sample)
 		{
 		super(new BasicCentroidCluster(id, sample));
 		setWeight(1.);
@@ -83,7 +83,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	@Override
 	public String toString()
 		{
-		Formatter f = new Formatter();
+		final Formatter f = new Formatter();
 		f.format("l=%.2f w=%.2f %s", length, weight, value);//%[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
 
 		return f.out().toString();
@@ -98,7 +98,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public void addToSumOfSquareDistances(double v)
+	public void addToSumOfSquareDistances(final double v)
 		{
 		throw new NotImplementedException();
 		}
@@ -122,15 +122,15 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setCentroid(T centroid)
-		{
-		getValue().setCentroid(centroid);
-		}
-
+	/*	public void setCentroid(final T centroid)
+		 {
+		 getValue().setCentroid(centroid);
+		 }
+ */
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setSumOfSquareDistances(double i)
+	public void setSumOfSquareDistances(final double i)
 		{
 		throw new NotImplementedException();
 		}
@@ -141,7 +141,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean add(T point)
+	public boolean add(final T point)
 		{
 		throw new NotImplementedException();
 		}
@@ -149,7 +149,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean addAll(Cluster<T> point)
+	public boolean addAll(final Cluster<T> point)
 		{
 		return getValue().addAll(point);
 		//throw new NotImplementedException();
@@ -195,7 +195,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean remove(T point)
+	public boolean remove(final T point)
 		{
 		throw new NotImplementedException();
 		}
@@ -203,7 +203,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean removeAll(Cluster<T> point)
+	public boolean removeAll(final Cluster<T> point)
 		{
 		throw new NotImplementedException();
 		}
@@ -214,7 +214,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 *
 	 * @param derivedLabelProbabilities a WeightedSet giving the probabilities of mutually exclusive String labels.
 	 */
-	public void setDerivedLabelProbabilities(WeightedSet<String> derivedLabelProbabilities)
+	public void setDerivedLabelProbabilities(final WeightedSet<String> derivedLabelProbabilities)
 		{
 		throw new NotImplementedException();
 		}
@@ -222,10 +222,10 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setId(int id)
+/*	public void setId(final int id)
 		{
 		getValue().setId(id);
-		}
+		}*/
 
 	/**
 	 * Copy the local label weights into the derived label weights.
@@ -247,7 +247,8 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		{
 		throw new NotImplementedException();
 		}*/
-	public void toNewick(StringBuffer sb, String prefix, String tab, int minClusterSize, double minLabelProb)
+	public void toNewick(final StringBuffer sb, String prefix, final String tab, final int minClusterSize,
+	                     final double minLabelProb)
 		{
 		// (children)name:length
 
@@ -260,7 +261,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 			{
 			prefix = prefix == null ? null : prefix + tab;
 			sb.append("(");
-			Iterator<BasicPhylogenyNode<CentroidCluster<T>>> i = children.iterator();
+			final Iterator<BasicPhylogenyNode<CentroidCluster<T>>> i = children.iterator();
 			while (i.hasNext())
 				{
 				final BasicPhylogenyNode<CentroidCluster<T>> child = i.next();
@@ -278,11 +279,11 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 
 		sb.append(getN());
 
-		WeightedSet<String> labels = getDerivedLabelProbabilities();
+		final WeightedSet<String> labels = getDerivedLabelProbabilities();
 
-		for (String label : labels.keysInDecreasingWeightOrder())
+		for (final String label : labels.keysInDecreasingWeightOrder())
 			{
-			double labelProb = labels.getNormalized(label);
+			final double labelProb = labels.getNormalized(label);
 			if (labelProb < minLabelProb)
 				{
 				break;

@@ -79,10 +79,10 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public LabelDecomposingBayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
-	                                          Set<String> potentialTrainingBins,
-	                                          Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
-	                                          Set<String> testLabels)
+	public LabelDecomposingBayesianClustering(final DissimilarityMeasure<T> dm, final double unknownDistanceThreshold,
+	                                          final Set<String> potentialTrainingBins,
+	                                          final Map<String, Set<String>> predictLabelSets,
+	                                          final Set<String> leaveOneOutLabels, final Set<String> testLabels)
 		{
 		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		}
@@ -92,7 +92,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 // --------------------- Interface PrototypeBasedCentroidClusteringMethod ---------------------
 
-	public void setPrototypeFactory(GenericFactory<T> prototypeFactory) throws GenericFactoryException
+	public void setPrototypeFactory(final GenericFactory<T> prototypeFactory) throws GenericFactoryException
 		{
 		this.prototypeFactory = prototypeFactory;
 		}
@@ -107,11 +107,11 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void initializeWithSamples(ClusterableIterator<T> trainingIterator,
-	                                  int initSamples) //GenericFactory<T> prototypeFactory)
+	public void initializeWithSamples(final ClusterableIterator<T> trainingIterator,
+	                                  final int initSamples) //GenericFactory<T> prototypeFactory)
 		//	throws ClusterException
 		{
-		Map<String, GrowableKmeansClustering<T>> theSubclusteringMap =
+		final Map<String, GrowableKmeansClustering<T>> theSubclusteringMap =
 				new HashMap<String, GrowableKmeansClustering<T>>();
 
 		if (predictLabelSets.size() > 1)
@@ -121,20 +121,20 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 					+ predictLabelSets.keySet());
 			}
 
-		Set<String> predictLabels = predictLabelSets.values().iterator().next();
+		final Set<String> predictLabels = predictLabelSets.values().iterator().next();
 		try
 			{
 			// BAD consume the entire iterator, ignoring initsamples
-			int i = 0;
-			Multinomial<Cluster<T>> priorsMult = new Multinomial<Cluster<T>>();
+			final Multinomial<Cluster<T>> priorsMult = new Multinomial<Cluster<T>>();
 			try
 				{
+				int i = 0;
 				while (true)
 					{
 
-					T point = trainingIterator.next();
+					final T point = trainingIterator.next();
 
-					String bestLabel = point.getWeightedLabels().getDominantKeyInSet(predictLabels);
+					final String bestLabel = point.getWeightedLabels().getDominantKeyInSet(predictLabels);
 //Cluster<T> cluster = theClusterMap.get(bestLabel);
 
 
@@ -156,7 +156,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 
 					// doing proper k-means would be nicer, but then we'd have to store all the training points, or re-iterate them somehow.
 
-					ClusterMove<T, CentroidCluster<T>> cm = theIntraLabelClustering.bestClusterMove(point);
+					final ClusterMove<T, CentroidCluster<T>> cm = theIntraLabelClustering.bestClusterMove(point);
 
 					CentroidCluster<T> cluster = cm.bestCluster;
 
@@ -171,7 +171,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 						theIntraLabelClustering.addCluster(cluster);
 
 // ... and also to the overall clustering
-						theClusters.add(cluster);
+						addCluster(cluster);
 
 // REVIEW for now we make a uniform prior
 						priorsMult.put(cluster, 1);
@@ -192,10 +192,10 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 			clusterPriors = priorsMult.getValueMap();
 //theClusters = theSubclusteringMap.values();
 
-			for (Map.Entry<String, GrowableKmeansClustering<T>> entry : theSubclusteringMap.entrySet())
+			for (final Map.Entry<String, GrowableKmeansClustering<T>> entry : theSubclusteringMap.entrySet())
 				{
-				String label = entry.getKey();
-				GrowableKmeansClustering<T> theIntraLabelClustering = entry.getValue();
+				final String label = entry.getKey();
+				final GrowableKmeansClustering<T> theIntraLabelClustering = entry.getValue();
 				if (logger.isInfoEnabled())
 					{
 					logger.info("Created " + theIntraLabelClustering.getClusters().size() + " clusters from "

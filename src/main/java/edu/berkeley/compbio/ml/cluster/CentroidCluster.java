@@ -82,7 +82,7 @@ public interface CentroidCluster<T extends Clusterable<T>> extends Cluster<T>
 	 *
 	 * @param centroid the centroid
 	 */
-	void setCentroid(T centroid);
+//	void setCentroid(T centroid);
 
 	/**
 	 * Sets the number of samples in thie cluster

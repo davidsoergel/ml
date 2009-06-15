@@ -57,12 +57,12 @@ public class NeighborhoodCollectingLabelDiffuser<T extends AdditiveClusterable<T
 // ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(NeighborhoodCollectingLabelDiffuser.class);
-	int requiredLabels;
+	final int requiredLabels;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public NeighborhoodCollectingLabelDiffuser(int requiredLabels) //, double labelRetainThreshold)
+	public NeighborhoodCollectingLabelDiffuser(final int requiredLabels) //, double labelRetainThreshold)
 		{
 		this.requiredLabels = requiredLabels;
 //		this.labelRetainThreshold = labelRetainThreshold;
@@ -76,17 +76,17 @@ public class NeighborhoodCollectingLabelDiffuser<T extends AdditiveClusterable<T
 	/**
 	 * {@inheritDoc}
 	 */
-	public void propagateLabels(DiffusableLabelClusteringMethod<T, C> theMap)
+	public void propagateLabels(final DiffusableLabelClusteringMethod<T, C> theMap)
 		{
 		int i = 0;
-		for (C cell : theMap.getClusters())
+		for (final C cell : theMap.getClusters())
 			{
-			WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
-			Iterator<Set<C>> shells = theMap.getNeighborhoodShellIterator(cell);
+			final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+			final Iterator<Set<C>> shells = theMap.getNeighborhoodShellIterator(cell);
 
 			while (weightedLabels.getItemCount() < requiredLabels)
 				{
-				for (CentroidCluster<T> shellMember : shells.next())
+				for (final CentroidCluster<T> shellMember : shells.next())
 					{
 					weightedLabels.addAll(shellMember.getWeightedLabels());
 					}

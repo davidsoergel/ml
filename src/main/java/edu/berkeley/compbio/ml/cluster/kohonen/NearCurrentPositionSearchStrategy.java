@@ -56,7 +56,7 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 		 {
 		 searchRadius = i;
 		 }
- */ KohonenSOM2DSearchStrategy<T> fallbackStrategy = new CoarseGridSearchStrategy<T>();
+ */ final KohonenSOM2DSearchStrategy<T> fallbackStrategy = new CoarseGridSearchStrategy<T>();
 
 
 // -------------------------- OTHER METHODS --------------------------
@@ -68,11 +68,11 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 	 * @return
 	 */
 	@Override
-	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(final T p) throws NoGoodClusterException
 		{
-		ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
+		final ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
 
-		String id = p.getId();
+		final String id = p.getId();
 		result.oldCluster = som.getAssignment(id);
 
 		if (result.oldCluster == null)
@@ -86,11 +86,10 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 			}
 
 		for (Iterator<KohonenSOM2D<T>.WeightedCell> i =
-				som.getWeightedMask((int) getSearchRadius()).iterator((KohonenSOMCell<T>) result.oldCluster);
-		     i.hasNext();)
+				som.getWeightedMask((int) getSearchRadius()).iterator(result.oldCluster); i.hasNext();)
 			{
-			KohonenSOMCell<T> c = i.next().theCell;
-			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
+			final KohonenSOMCell<T> c = i.next().theCell;
+			final double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{
 				result.secondBestDistance = result.bestDistance;
@@ -121,7 +120,7 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 		}
 
 	@Override
-	public void setDistanceMeasure(DissimilarityMeasure<T> dissimilarityMeasure)
+	public void setDistanceMeasure(final DissimilarityMeasure<T> dissimilarityMeasure)
 		{
 		super.setDistanceMeasure(dissimilarityMeasure);
 		fallbackStrategy.setDistanceMeasure(dissimilarityMeasure);
@@ -137,7 +136,7 @@ public class NearCurrentPositionSearchStrategy<T extends AdditiveClusterable<T>>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setSOM(KohonenSOM2D<T> som)
+	public void setSOM(final KohonenSOM2D<T> som)
 		{
 		super.setSOM(som);
 

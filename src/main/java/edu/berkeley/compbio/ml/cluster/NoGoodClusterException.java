@@ -56,17 +56,17 @@ public class NoGoodClusterException extends ChainedException
 		super();
 		}
 
-	public NoGoodClusterException(String s)
+	public NoGoodClusterException(final String s)
 		{
 		super(s);
 		}
 
-	public NoGoodClusterException(Exception e)
+	public NoGoodClusterException(final Exception e)
 		{
 		super(e);
 		}
 
-	public NoGoodClusterException(Exception e, String s)
+	public NoGoodClusterException(final Exception e, final String s)
 		{
 		super(e, s);
 		}

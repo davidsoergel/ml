@@ -65,13 +65,13 @@ public class DoublePseudocountAdder implements DistributionProcessor<DoubleArray
 
 // --------------------- Interface DistributionProcessor ---------------------
 
-	public void process(DoubleArrayContainer c)
+	public void process(final DoubleArrayContainer c)
 		{
 		if (uniformPseudoCount == 0)
 			{
 			return;
 			}
-		double[] counts = c.getArray();
+		final double[] counts = c.getArray();
 
 		for (int i = 0; i < counts.length; i++)
 			{

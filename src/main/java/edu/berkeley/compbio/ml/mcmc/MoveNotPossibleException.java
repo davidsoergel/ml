@@ -10,17 +10,17 @@ public class MoveNotPossibleException extends ChainedException
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public MoveNotPossibleException(String s)
+	public MoveNotPossibleException(final String s)
 		{
 		super(s);
 		}
 
-	public MoveNotPossibleException(Throwable e)
+	public MoveNotPossibleException(final Throwable e)
 		{
 		super(e);
 		}
 
-	public MoveNotPossibleException(Throwable e, String s)
+	public MoveNotPossibleException(final Throwable e, final String s)
 		{
 		super(e, s);
 		}

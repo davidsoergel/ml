@@ -1,6 +1,5 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import java.io.IOException;
 import java.io.OutputStream;
 
 /**
@@ -16,7 +15,7 @@ public interface CentroidClusteringMethod<T extends Clusterable<T>> extends Clus
 
 	String clusteringStats();
 
-	void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException;
+	void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider);
 
 //	List<T> getCentroids();
 

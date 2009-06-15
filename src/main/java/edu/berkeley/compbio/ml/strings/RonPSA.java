@@ -98,13 +98,13 @@ public class RonPSA extends RonPSANode
 	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
 	 */
 	@Override
-	public double fragmentLogProbability(SequenceFragment sequenceFragment, boolean perSample)
+	public double fragmentLogProbability(final SequenceFragment sequenceFragment, final boolean perSample)
 			throws SequenceSpectrumException
 		{
 		synchronized (sequenceFragment.getReaderForSynchronizing())
 			{
 			// simply follow the MarkovTreeNode as a state machine, using backlinks
-			SequenceReader in;
+			final SequenceReader in;
 			try
 				{
 				in = sequenceFragment.getResetReader();
@@ -118,13 +118,13 @@ public class RonPSA extends RonPSANode
 			RonPSANode currentNode = this;
 			int count = 0;
 			int samples = 0;
-			int desiredLength = sequenceFragment.getDesiredLength();
+			final int desiredLength = sequenceFragment.getDesiredLength();
 			while (count < desiredLength)
 				{
 				try
 					{
-					int c = in.readTranslated();
-					double logConditionalProbability = currentNode.logConditionalProbabilityByAlphabetIndex(c);
+					final int c = in.readTranslated();
+					final double logConditionalProbability = currentNode.logConditionalProbabilityByAlphabetIndex(c);
 
 					/*	logger.debug(
 				  "Conditional at " + new String(currentNode.getIdBytes()) + " " + (char) getAlphabet()[c] + " = "
@@ -175,11 +175,11 @@ public class RonPSA extends RonPSANode
 
 // -------------------------- OTHER METHODS --------------------------
 
-	public void learn(double branchAbsoluteMin, double branchConditionalMin, double pRatioMinMax, int l_max,
-	                  SequenceSpectrum fromSpectrum, DistributionProcessor<RonPSA> completionProcessor)
-			throws DistributionProcessorException
+	public void learn(final double branchAbsoluteMin, final double branchConditionalMin, final double pRatioMinMax,
+	                  final int l_max, final SequenceSpectrum fromSpectrum,
+	                  final DistributionProcessor<RonPSA> completionProcessor) throws DistributionProcessorException
 		{
-		RonPST pst = new RonPST(branchAbsoluteMin, branchConditionalMin, pRatioMinMax, l_max, fromSpectrum);
+		final RonPST pst = new RonPST(branchAbsoluteMin, branchConditionalMin, pRatioMinMax, l_max, fromSpectrum);
 		convertFrom(pst);
 		if (completionProcessor != null)
 			{
@@ -198,10 +198,10 @@ public class RonPSA extends RonPSANode
 	 *
 	 * @param pst
 	 */
-	private void convertFrom(RonPST pst)
+	private void convertFrom(final RonPST pst)
 		{
 		setAlphabet(pst.getAlphabet());
-		setId(new byte[0]);
+		setId(DSArrayUtils.EMPTY_BYTE_ARRAY);
 		copyProbsFromSpectrumRecursively(pst);
 		buildPSARecursivelyFromPSTNode(pst, pst);
 		updateLogProbsRecursive();
@@ -212,11 +212,11 @@ public class RonPSA extends RonPSANode
 		setBacklinks();
 		}
 
-	private void buildPSARecursivelyFromPSTNode(RonPSTNode pstNode, SequenceSpectrum spectrum)
+	private void buildPSARecursivelyFromPSTNode(final RonPSTNode pstNode, final SequenceSpectrum spectrum)
 		{
 		getOrAddNodeAndIntermediates(pstNode.getIdBytes(), spectrum);
 
-		for (RonPSTNode pstUpstream : pstNode.getUpstreamNodes())
+		for (final RonPSTNode pstUpstream : pstNode.getUpstreamNodes())
 			{
 			if (pstUpstream != null)
 				{
@@ -225,13 +225,13 @@ public class RonPSA extends RonPSANode
 			}
 		}
 
-	private RonPSANode getOrAddNodeAndIntermediates(byte[] id, SequenceSpectrum spectrum)
+	private RonPSANode getOrAddNodeAndIntermediates(final byte[] id, final SequenceSpectrum spectrum)
 		{
 		//RonPSANode psaNode = new RonPSANode(id, alphabet);
 		RonPSANode result = getDescendant(id);
 		if (result == null)
 			{
-			RonPSANode parent = getOrAddNodeAndIntermediates(DSArrayUtils.prefix(id, id.length - 1), spectrum);
+			final RonPSANode parent = getOrAddNodeAndIntermediates(DSArrayUtils.prefix(id, id.length - 1), spectrum);
 			result = parent.addChild(id[id.length - 1]);
 			result.copyProbsFromSpectrumRecursively(spectrum);
 			}
@@ -240,12 +240,12 @@ public class RonPSA extends RonPSANode
 
 	private List<RonPSANode> setBacklinks()
 		{
-		List<RonPSANode> result = new LinkedList();
-		Queue<RonPSANode> breadthFirstQueue = new LinkedList<RonPSANode>();
+		final List<RonPSANode> result = new LinkedList();
+		final Queue<RonPSANode> breadthFirstQueue = new LinkedList<RonPSANode>();
 		breadthFirstQueue.add(this);
 		while (!breadthFirstQueue.isEmpty())
 			{
-			RonPSANode next = breadthFirstQueue.remove();
+			final RonPSANode next = breadthFirstQueue.remove();
 			next.setBacklinksUsingRoot(this, breadthFirstQueue);
 			result.add(next);
 			}

@@ -92,7 +92,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 // --------------------- Interface AdditiveClusterable ---------------------
 
 
-	public synchronized void multiplyBy(double v)
+	public synchronized void multiplyBy(final double v)
 		{
 		DSArrayUtils.multiplyBy(counts, v);
 		dataSum = null;
@@ -108,7 +108,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	 * @param other The Kcount to compare against
 	 * @return True if they are equivalent, false otherwise
 	 */
-	public synchronized boolean equalValue(T other)
+	public synchronized boolean equalValue(final T other)
 		{
 		return Arrays.equals(counts, other.counts);
 		}
@@ -135,7 +135,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	 * @param spectrum the SequenceSpectrum
 	 * @return the boolean
 	 */
-	public boolean spectrumEquals(SequenceSpectrum spectrum)
+	public boolean spectrumEquals(final SequenceSpectrum spectrum)
 		{
 		return equalValue((T) spectrum);
 		}

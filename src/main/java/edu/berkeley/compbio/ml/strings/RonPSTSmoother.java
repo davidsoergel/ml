@@ -70,21 +70,21 @@ public class RonPSTSmoother implements DistributionProcessor<RonPST>
 
 // --------------------- Interface DistributionProcessor ---------------------
 
-	public void process(RonPST ronPST)
+	public void process(final RonPST ronPST)
 		{
 		try
 			{
 			// breadth first  (for no reason, just symmetry with the KneserNeyPSTSmoother where it is important)
 
-			List<RonPSTNode> nodesRemaining = new LinkedList<RonPSTNode>();
+			final List<RonPSTNode> nodesRemaining = new LinkedList<RonPSTNode>();
 			nodesRemaining.add(ronPST);
 
 			while (!nodesRemaining.isEmpty())
 				{
-				RonPSTNode node = nodesRemaining.remove(0);
+				final RonPSTNode node = nodesRemaining.remove(0);
 				node.getProbs().redistributeWithMinimum(smoothFactor);
 
-				for (RonPSTNode n : node.getUpstreamNodes())
+				for (final RonPSTNode n : node.getUpstreamNodes())
 					{
 					if (n != null)
 						{

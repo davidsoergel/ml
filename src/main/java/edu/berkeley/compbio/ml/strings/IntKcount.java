@@ -96,7 +96,7 @@ public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implement
 	 * @param other The Kcount to compare against
 	 * @return True if they are equivalent, false otherwise
 	 */
-	public boolean equalValue(T other)
+	public boolean equalValue(final T other)
 		{
 		return Arrays.equals(counts, other.counts);
 		}
@@ -135,7 +135,7 @@ public abstract class IntKcount<T extends IntKcount> extends Kcount<T> implement
 	 * @param spectrum the SequenceSpectrum
 	 * @return the boolean
 	 */
-	public boolean spectrumEquals(SequenceSpectrum spectrum)
+	public boolean spectrumEquals(final SequenceSpectrum spectrum)
 		{
 		return equalValue((T) spectrum);
 		}

@@ -3,8 +3,8 @@ package edu.berkeley.compbio.ml.cluster.kohonen;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,7 +15,7 @@ public interface DiffusableLabelClusteringMethod<T extends AdditiveClusterable<T
 	{
 // -------------------------- OTHER METHODS --------------------------
 
-	Collection<? extends C> getClusters();
+	List<? extends C> getClusters();
 
 	/**
 	 * Gets an iterator over cells in the neighborhood of the given cell.  The definition of "neighborhood" is

@@ -70,21 +70,21 @@ public class RonPSASmoother implements DistributionProcessor<RonPSA>
 
 // --------------------- Interface DistributionProcessor ---------------------
 
-	public void process(RonPSA ronPSA)
+	public void process(final RonPSA ronPSA)
 		{
 		try
 			{
 			// breadth first  (for no reason, just symmetry with the KneserNeyPSTSmoother where it is important)
 
-			List<MarkovTreeNode> nodesRemaining = new LinkedList<MarkovTreeNode>();
+			final List<MarkovTreeNode> nodesRemaining = new LinkedList<MarkovTreeNode>();
 			nodesRemaining.add(ronPSA);
 
 			while (!nodesRemaining.isEmpty())
 				{
-				MarkovTreeNode node = nodesRemaining.remove(0);
+				final MarkovTreeNode node = nodesRemaining.remove(0);
 				node.getProbs().redistributeWithMinimum(smoothFactor);
 
-				for (MarkovTreeNode n : node.getChildren())
+				for (final MarkovTreeNode n : node.getChildren())
 					{
 					if (n != null)
 						{

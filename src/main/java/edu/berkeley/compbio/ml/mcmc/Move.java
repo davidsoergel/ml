@@ -45,7 +45,7 @@ public abstract class Move//<T extends MonteCarloState>
 
 // -------------------------- STATIC METHODS --------------------------
 
-	public static void setType(int t)
+	public static void setType(final int t)
 		{
 		type_tl = new ThreadLocal();
 		type_tl.set(Integer.valueOf(t));

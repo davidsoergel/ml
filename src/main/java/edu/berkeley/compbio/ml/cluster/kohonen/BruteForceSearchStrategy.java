@@ -58,20 +58,20 @@ public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends 
 	 * @return
 	 */
 	@Override
-	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p)
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(final T p)
 		{
-		ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
+		final ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
 		//double bestDistance = Double.MAX_VALUE;
 		//Cluster<T> bestCluster = null;
 
-		String id = p.getId();
+		final String id = p.getId();
 		result.oldCluster = som.getAssignment(id);
 
 		if (logger.isTraceEnabled())
 			{
 			logger.trace("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (KohonenSOMCell<T> c : som.getClusters())
+		for (final KohonenSOMCell<T> c : som.getClusters())
 			{
 			// grid already initialized with prototype, never mind all this stuff
 
@@ -89,7 +89,7 @@ public class BruteForceSearchStrategy<T extends AdditiveClusterable<T>> extends 
 					  }
 	  */
 			// otherwise find the nearest cluster
-			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
+			final double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			/*	if (logger.isDebugEnabled())
 			   {
 			   logger.debug("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);

@@ -51,12 +51,12 @@ public class KcountAbstractTest<T extends Kcount> extends AtomicContractTest
 // ------------------------------ FIELDS ------------------------------
 
 	//public abstract Kcount createInstance() throws Exception;
-	private TestInstanceFactory<T> tif;
+	private final TestInstanceFactory<T> tif;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public KcountAbstractTest(TestInstanceFactory<T> tif)
+	public KcountAbstractTest(final TestInstanceFactory<T> tif)
 		{
 		this.tif = tif;
 		}
@@ -66,8 +66,8 @@ public class KcountAbstractTest<T extends Kcount> extends AtomicContractTest
 	@Test
 	public void addUnknownIncrementsLength() throws Exception
 		{
-		Kcount kc = (Kcount) tif.createInstance();
-		int l = kc.getOriginalSequenceLength();
+		final Kcount kc = tif.createInstance();
+		final int l = kc.getOriginalSequenceLength();
 		kc.addUnknown();
 		assert kc.getOriginalSequenceLength() == l + 1;
 		}
@@ -75,24 +75,19 @@ public class KcountAbstractTest<T extends Kcount> extends AtomicContractTest
 	@Test
 	public void idForSequenceIdAndSequenceForIdAreInverses() throws Exception
 		{
-		Kcount kc = (Kcount) tif.createInstance();
-		int id1 = kc.idForSequence(new byte[]{
-				'a',
-				'c',
-				'g',
-				't'
-		});
-		byte[] a1 = kc.sequenceForId(id1);
+		final Kcount kc = tif.createInstance();
+		final int id1 = kc.idForSequence(new byte[]{'a', 'c', 'g', 't'});
+		final byte[] a1 = kc.sequenceForId(id1);
 		for (int rep = 0; rep < 10; rep++)
 			{
-			byte[] seq = new byte[kc.getK()];
+			final byte[] seq = new byte[kc.getK()];
 			for (int i = 0; i < kc.getK(); i++)
 				{
-				int r = MersenneTwisterFast.randomInt(4);
+				final int r = MersenneTwisterFast.randomInt(4);
 				seq[i] = kc.getAlphabet()[r];//kc.sample(new byte[0]);
 				}
-			int id = kc.idForSequence(seq);
-			byte[] a = kc.sequenceForId(id);
+			final int id = kc.idForSequence(seq);
+			final byte[] a = kc.sequenceForId(id);
 			assert Arrays.equals(a, seq);
 			}
 		}

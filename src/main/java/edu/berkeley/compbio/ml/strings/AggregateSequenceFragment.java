@@ -21,7 +21,7 @@ public class AggregateSequenceFragment extends SequenceFragment
 
 	private static final Logger logger = Logger.getLogger(AggregateSequenceFragment.class);
 
-	private Collection<SequenceFragment> theSFs = new HashSet<SequenceFragment>();
+	private final Collection<SequenceFragment> theSFs = new HashSet<SequenceFragment>();
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -34,26 +34,27 @@ public class AggregateSequenceFragment extends SequenceFragment
 	 * @param parent       the SequenceFragmentMetadata representing a larger sequence in which this one is contained
 	 * @param sequenceName a String identifier for this sequence
 	 */
-	public AggregateSequenceFragment(SequenceFragmentMetadata parent, String sequenceName,
-	                                 Collection<SequenceFragment> sequenceFragments)
+	public AggregateSequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName,
+	                                 final Collection<SequenceFragment> sequenceFragments)
 		{
-		super(parent, sequenceName, 0, UNKNOWN_LENGTH);
+		super(parent, sequenceName, 0, UNKNOWN_LENGTH, sequenceFragments.iterator().next().getScanner());
 		theSFs.addAll(sequenceFragments);
-		theScanner = theSFs.iterator().next().getScanner();
+		//	theScanner = theSFs.iterator().next().getScanner();
 		//	theAggregateReader = new AggregateReader();
 		}
 
-	public AggregateSequenceFragment(SequenceFragmentMetadata parent, String sequenceName, SequenceFragment initialSF)
+	public AggregateSequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName,
+	                                 final SequenceFragment initialSF)
 		{
-		super(parent, sequenceName, 0, UNKNOWN_LENGTH);
+		super(parent, sequenceName, 0, UNKNOWN_LENGTH, initialSF.getScanner());
 		theSFs.add(initialSF);
-		theScanner = initialSF.getScanner();
+		//theScanner = initialSF.getScanner();
 		//	theAggregateReader = new AggregateReader();
 		}
 
 // -------------------------- OTHER METHODS --------------------------
 
-	public void add(SequenceFragment sf)
+	public void add(final SequenceFragment sf)
 		{
 		theSFs.add(sf);
 		}
@@ -64,7 +65,7 @@ public class AggregateSequenceFragment extends SequenceFragment
 		throw new NotImplementedException("Can't get a reader on an aggregate");
 		}
 
-	public SequenceReader getResetReader() throws NotEnoughSequenceException
+	public synchronized SequenceReader getResetReader() throws NotEnoughSequenceException
 		{
 		throw new NotImplementedException("Can't get a reader on an aggregate");
 		//	theAggregateReader.reset();
@@ -83,23 +84,23 @@ public class AggregateSequenceFragment extends SequenceFragment
 	   }*/
 
 
-	public boolean overlaps(SequenceFragmentMetadata other) throws SequenceException
+	public boolean overlaps(final SequenceFragmentMetadata other) throws SequenceException
 		{
 		throw new NotImplementedException();
 		}
 
-	protected void rescan()
+	protected synchronized void rescan()
 		{
 /*		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		if (baseSpectrum != null && baseSpectrum.getOriginalSequenceLength() != UNKNOWN_LENGTH)
 			{
 			return;
 			}*/
-		SequenceSpectrum baseSpectrum = theScanner.getEmpty();
+		final SequenceSpectrum baseSpectrum = theScanner.getEmpty();
 		length = 0;
 
 		// PERF sort the fragments?
-		for (SequenceFragment sf : theSFs)
+		for (final SequenceFragment sf : theSFs)
 			{
 			try
 				{
@@ -115,8 +116,8 @@ public class AggregateSequenceFragment extends SequenceFragment
 		fireUpdated(baseSpectrum);
 		}
 
-	public void setScanner(@NotNull SequenceSpectrumScanner scanner)
+/*	public void setScanner(@NotNull final SequenceSpectrumScanner scanner)
 		{
 		theScanner = scanner;
-		}
+		}*/
 	}

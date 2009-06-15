@@ -117,9 +117,9 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	 * @param object the object to be subtracted from this one
 	 * @return the difference between this object and the argument
 	 */
-	public T minus(T object)
+	public T minus(final T object)
 		{
-		T result = clone();
+		final T result = clone();
 		result.decrementBy(object);
 		//result.getMetadata().setSequenceName("minus result");
 		return result;
@@ -131,9 +131,9 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	 * @param object the object to be added to this one
 	 * @return the sum of this object and the argument
 	 */
-	public T plus(T object)
+	public T plus(final T object)
 		{
-		T result = clone();
+		final T result = clone();
 		result.incrementBy(object);
 		//result.getMetadata().setSequenceName("plus result");
 		return result;

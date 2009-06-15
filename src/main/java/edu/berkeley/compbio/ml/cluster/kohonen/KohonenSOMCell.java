@@ -47,7 +47,7 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCe
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public KohonenSOMCell(int id, T centroid)//DistanceMeasure<T> dm,
+	public KohonenSOMCell(final int id, final T centroid)//DistanceMeasure<T> dm,
 		{
 		super(id, centroid);//dm
 		}
@@ -61,7 +61,7 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCe
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean add(T point)
+	public boolean add(final T point)
 		{
 		// we don't increment n here, because moving the centroid and actually assigning a sample to this cell are two different things
 		centroid.incrementBy(point);
@@ -72,7 +72,7 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCe
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean addAll(Cluster<T> otherCluster)
+	public boolean addAll(final Cluster<T> otherCluster)
 		{
 		throw new NotImplementedException();
 		}
@@ -81,7 +81,7 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCe
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean remove(T point)
+	public boolean remove(final T point)
 		{
 		centroid.decrementBy(point);
 
@@ -94,14 +94,14 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCe
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean removeAll(Cluster<T> otherCluster)
+	public boolean removeAll(final Cluster<T> otherCluster)
 		{
 		throw new NotImplementedException();
 		}
 
 // -------------------------- OTHER METHODS --------------------------
 
-	public void recenterByAddingWeighted(T point, double motionFactor)
+	public void recenterByAddingWeighted(final T point, final double motionFactor)
 		{
 		// REVIEW Note assumption of an additive statistical model for the centroids
 		/*		if (!additiveModel)
@@ -115,7 +115,7 @@ public class KohonenSOMCell<T extends AdditiveClusterable<T>> extends AbstractCe
 		centroid.incrementByWeighted(point, motionFactor);
 		}
 
-	public void recenterByRemovingWeighted(T point, double motionFactor)
+	public void recenterByRemovingWeighted(final T point, final double motionFactor)
 		{
 		// REVIEW Note assumption of an additive statistical model for the centroids
 		/*		if (!additiveModel)

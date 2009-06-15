@@ -16,6 +16,7 @@ import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -31,7 +32,7 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 	private static final Logger logger = Logger.getLogger(TacoaClustering.class);
 
-	private double bestScoreRatioThreshold;
+	private final double bestScoreRatioThreshold;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -41,9 +42,9 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	 */
 
 
-	public TacoaClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                       Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
-	                       Set<String> testLabels, int maxNeighbors, double bestScoreRatioThreshold)
+	public TacoaClustering(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
+	                       final Map<String, Set<String>> predictLabelSets, final Set<String> leaveOneOutLabels,
+	                       final Set<String> testLabels, final int maxNeighbors, final double bestScoreRatioThreshold)
 		{
 		super(dm, Double.POSITIVE_INFINITY, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels,
 		      maxNeighbors);
@@ -97,19 +98,20 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	 * to be per label, not per cluster.   So, the "distance" between a sample and a cluster depends on how many clusters
 	 * share the same training label.
 	 */
-	protected void preparePriors() //throws DistributionException
+	protected synchronized void preparePriors() //throws DistributionException
 		{
 		//normalizeClusterLabelProbabilities();
 		try
 			{
-			Multiset<String> populatedTrainingLabels = HashMultiset.create();
+			final Multiset<String> populatedTrainingLabels = HashMultiset.create();
 			//int clustersWithTrainingLabel = 0;
-			for (CentroidCluster<T> theCluster : theClusters)
+			final Collection<? extends CentroidCluster<T>> immutableClusters = getClusters();
+			for (final CentroidCluster<T> theCluster : immutableClusters)
 				{
 				try
 					{
 					// note this also insures that every cluster has a training label, otherwise it throws NoSuchElementException
-					String label = theCluster.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+					final String label = theCluster.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
 					// could use theCluster.getDerivedLabelProbabilities() there except they're not normalized yet, and there's no need
 
 					populatedTrainingLabels.add(label);
@@ -121,14 +123,14 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 					}
 				}
 
-			logger.info("" + populatedTrainingLabels.size() + " of " + theClusters.size()
+			logger.info(String.valueOf(populatedTrainingLabels.size()) + " of " + getNumClusters()
 			            + " clusters have a training label; " + populatedTrainingLabels.entrySet().size()
 			            + " labels were trained");
 
 
 			clusterPriors = new HashMap<Cluster<T>, Double>();
-			Multinomial<String> labelPriors = new Multinomial<String>(populatedTrainingLabels);
-			for (CentroidCluster<T> theCluster : theClusters)
+			final Multinomial<String> labelPriors = new Multinomial<String>(populatedTrainingLabels);
+			for (final CentroidCluster<T> theCluster : immutableClusters)
 				{
 				final String label =
 						theCluster.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins); // PERF redundant
@@ -158,9 +160,10 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 	 * @param distance
 	 * @return
 	 */
-	protected ClusterMove<T, CentroidCluster<T>> makeClusterMove(CentroidCluster<T> cluster, double distance)
+	protected ClusterMove<T, CentroidCluster<T>> makeClusterMove(final CentroidCluster<T> cluster,
+	                                                             final double distance)
 		{
-		ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
+		final ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
 		cm.bestCluster = cluster;
 		cm.voteWeight = distance;
 
@@ -187,18 +190,18 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 		try
 			{
 			// make the prediction
-			TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
+			final TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
 
 			// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
 			final VotingResults votingResults = addUpNeighborVotes(moves); //, populatedTrainingLabels);
 			labelWeights = votingResults.getLabelVotes();
 
-			BestLabelPair votingWinners = votingResults.getSubResults(potentialTrainingBins);
+			final BestLabelPair votingWinners = votingResults.getSubResults(potentialTrainingBins);
 
 			// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
 
 			// now pick the best one
-			String predictedLabel = votingWinners.getBestLabel();
+			final String predictedLabel = votingWinners.getBestLabel();
 			bestVotes = labelWeights.get(predictedLabel);
 
 			voteProportion = labelWeights.getNormalized(predictedLabel);
@@ -208,9 +211,9 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			// check that there's not a (near) tie
 			if (votingWinners.hasSecondBestLabel())
 				{
-				String secondBestLabel = votingWinners.getSecondBestLabel();
+				final String secondBestLabel = votingWinners.getSecondBestLabel();
 
-				double secondBestVotes = labelWeights.get(secondBestLabel);
+				final double secondBestVotes = labelWeights.get(secondBestLabel);
 				assert secondBestVotes <= bestVotes;
 
 				// if the top two scores are too similar...
@@ -240,8 +243,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 		// In TACOA, distance == inverse of votes, so we don't really need to record them separately
 		// ** hack: monotonic positive inversion to a distance-like metric (smaller better)
-		double bestDistance = 1.0 / bestVotes;
-		double secondToBestDistanceRatio = 1.0 / secondToBestVoteRatio;
+		final double bestDistance = 1.0 / bestVotes;
+		final double secondToBestDistanceRatio = 1.0 / secondToBestVoteRatio;
 		tr.addClusterResult(bestDistance, secondToBestDistanceRatio, voteProportion, secondToBestVoteRatio);
 
 		return labelWeights;

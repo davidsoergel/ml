@@ -65,11 +65,9 @@ public class TextFileDataCollector implements DataCollector
 
 	@Property(defaultvalue = "ensemble")
 	public String ensembleFilename;
-	private HashMap<String, DoubleTimecourse> timecourses = new HashMap<String, DoubleTimecourse>();
+	private final HashMap<String, DoubleTimecourse> timecourses = new HashMap<String, DoubleTimecourse>();
 
 	private int lastStep;
-
-	private File outputDirectory;
 
 	//@ComputedProperty("runId")
 	//public String runId;
@@ -83,11 +81,11 @@ public class TextFileDataCollector implements DataCollector
 	@Override
 	public String toString()
 		{
-		StringBuffer sb = new StringBuffer();
-		Formatter formatter = new Formatter(sb, Locale.US);
+		final StringBuffer sb = new StringBuffer();
+		final Formatter formatter = new Formatter(sb, Locale.US);
 
 		//sb.append(getStep()).append("\n");
-		for (DoubleTimecourse t : timecourses.values())
+		for (final DoubleTimecourse t : timecourses.values())
 			{
 			formatter.format("%1$20s = %2$10s, %3$10s\n", t.name(), t.last(), t.runningaverage());
 			}
@@ -119,13 +117,13 @@ public class TextFileDataCollector implements DataCollector
 
 	public void init()
 		{
-		outputDirectory = new File(outputDirectoryName);// + File.separator + runId);
+		final File outputDirectory = new File(outputDirectoryName);
 		logger.debug("Writing outputs to " + outputDirectoryName);
 		logger.debug("Found directory: " + outputDirectory);
 
 		try
 			{
-			String trajectoryFilename = outputDirectory.getCanonicalPath() + File.separator + "trajectory";
+			final String trajectoryFilename = outputDirectory.getCanonicalPath() + File.separator + "trajectory";
 			ensembleFilename = outputDirectory.getCanonicalPath() + File.separator + "sampleEnsemble";
 
 			trajectoryWriter = new FileWriter(trajectoryFilename);
@@ -137,14 +135,14 @@ public class TextFileDataCollector implements DataCollector
 			}
 		}
 
-	public DataCollector newSubCollector(String name)
+	public DataCollector newSubCollector(final String name)
 		{
 		throw new NotImplementedException();
 		}
 
-	public void setTimecourseValue(String name, double val)
+	public void setTimecourseValue(final String name, final double val)
 		{
-		DoubleTimecourse t = timecourses.get(name);
+		final DoubleTimecourse t = timecourses.get(name);
 		t.set(val);
 
 		//		if (chainTo != null)
@@ -153,7 +151,7 @@ public class TextFileDataCollector implements DataCollector
 		//			}
 		}
 
-	public void writeSample(String s)
+	public void writeSample(final String s)
 		{
 		try
 			{
@@ -179,7 +177,7 @@ public class TextFileDataCollector implements DataCollector
 		return lastStep;
 		}
 
-	public void setStep(int lastStep)
+	public void setStep(final int lastStep)
 		{
 		this.lastStep = lastStep;
 		}
@@ -190,10 +188,10 @@ public class TextFileDataCollector implements DataCollector
 	 */
 	public void writeLatestTrajectoryValues()
 		{
-		StringBuffer sb = new StringBuffer();
+		final StringBuffer sb = new StringBuffer();
 
 		sb.append(getStep()).append(", ");
-		for (DoubleTimecourse t : timecourses.values())
+		for (final DoubleTimecourse t : timecourses.values())
 			{
 			sb.append(t.last());
 			sb.append(", ");

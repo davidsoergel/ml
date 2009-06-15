@@ -72,13 +72,13 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 
 // --------------------- Interface DistributionProcessor ---------------------
 
-	public void process(RonPSA ronPSA)
+	public void process(final RonPSA ronPSA)
 		{
 		// mix the root with the uniform distribution
-		Multinomial<Byte> uniform = new Multinomial<Byte>();
+		final Multinomial<Byte> uniform = new Multinomial<Byte>();
 		try
 			{
-			for (byte b : ronPSA.getAlphabet())
+			for (final byte b : ronPSA.getAlphabet())
 				{
 				uniform.put(b, 1);
 				}
@@ -88,8 +88,8 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 
 			// do the rest of the tree, breadth first
 
-			List<RonPSANode> nodesRemaining = new LinkedList<RonPSANode>();
-			for (MarkovTreeNode n : ronPSA.getChildren())
+			final List<RonPSANode> nodesRemaining = new LinkedList<RonPSANode>();
+			for (final MarkovTreeNode n : ronPSA.getChildren())
 				{
 				if (n != null)
 					{
@@ -99,10 +99,10 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 
 			while (!nodesRemaining.isEmpty())
 				{
-				RonPSANode node = nodesRemaining.remove(0);
+				final RonPSANode node = nodesRemaining.remove(0);
 				smooth(node);//, ronPST);
 				//	nodesRemaining.addAll(node.getChildren());//.values());
-				for (MarkovTreeNode n : node.getChildren())
+				for (final MarkovTreeNode n : node.getChildren())
 					{
 					if (n != null)
 						{
@@ -125,7 +125,7 @@ public class KneserNeyPSASmoother implements DistributionProcessor<RonPSA>
 		smoothFactorTimesFour = smoothFactor * 4;
 		}
 
-	private void smooth(RonPSANode node) throws DistributionException
+	private void smooth(final RonPSANode node) throws DistributionException
 		{
 		node.getProbs().mixIn(node.getBackoffPrior().getProbs(), smoothFactorTimesFour);
 

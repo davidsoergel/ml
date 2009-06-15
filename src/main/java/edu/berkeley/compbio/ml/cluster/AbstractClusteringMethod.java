@@ -14,10 +14,11 @@ import org.jetbrains.annotations.Nullable;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -37,10 +38,10 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 	protected static final Double UNKNOWN_DISTANCE = 1e308; // Double.MAX_VALUE; triggers MySQL bug # 21497
 
-	protected DissimilarityMeasure<T> measure;
-	protected Collection<C> theClusters = new ArrayList<C>();
-	protected Map<String, C> assignments = new HashMap<String, C>();// see whether anything changed
-	protected int n = 0;
+	protected final DissimilarityMeasure<T> measure;
+	private final ArrayList<C> theClusters = new ArrayList<C>(); //Collections.synchronizedList(new ArrayList<C>());
+	private final Map<String, C> assignments = new HashMap<String, C>();// see whether anything changed
+	private int n = 0;
 
 	protected final Set<String> potentialTrainingBins;
 	//protected final Set<String> predictLabels;
@@ -53,9 +54,15 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	//private final Map<String, String> friendlyLabelMap;
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public AbstractClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
-	                                Set<String> testLabels)
+
+	public void setN(final int n)
+		{
+		this.n = n;
+		}
+
+	public AbstractClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
+	                                final Map<String, Set<String>> predictLabelSets,
+	                                final Set<String> leaveOneOutLabels, final Set<String> testLabels)
 		{
 		measure = dm;
 		this.potentialTrainingBins = potentialTrainingBins;
@@ -78,6 +85,14 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		return n;
 		}
 
+	public int getNumClusters()
+		{
+		synchronized (theClusters)
+			{
+			return theClusters.size();
+			}
+		}
+
 // ------------------------ INTERFACE METHODS ------------------------
 
 
@@ -86,20 +101,82 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	/**
 	 * {@inheritDoc}
 	 */
-	public Collection<? extends C> getClusters()
+	public List<? extends C> getClusters()
 		{
-		return theClusters;
+		synchronized (theClusters)
+			{
+			return Collections.unmodifiableList(theClusters);
+			}
+		}
+
+	public void setNumClusters(final int numClusters)
+		{
+		synchronized (theClusters)
+			{
+			theClusters.ensureCapacity(numClusters);
+			}
+		}
+
+	public void addCluster(final C c)
+		{
+		synchronized (theClusters)
+			{
+			theClusters.add(c);
+			}
+		}
+
+	public void setCluster(final int index, final C c)
+		{
+		synchronized (theClusters)
+			{
+			theClusters.set(index, c);
+			}
+		}
+
+	public int getClusterIndexOf(final C c)
+		{
+		synchronized (theClusters)
+			{
+			return theClusters.indexOf(c);
+			}
+		}
+
+	public C getCluster(final int index)
+		{
+		synchronized (theClusters)
+			{
+			return theClusters.get(index);
+			}
+		}
+
+	public Map<String, C> getAssignments()
+		{
+		synchronized (assignments)
+			{
+			return Collections.unmodifiableMap(assignments);
+			}
+		}
+
+	public void putAssignment(final String pointId, final C cluster)
+		{
+		synchronized (assignments)
+			{
+			assignments.put(pointId, cluster);
+			}
 		}
 
 	protected void removeEmptyClusters()
 		{
-		Iterator<C> iter = theClusters.iterator();
-		while (iter.hasNext())
+		synchronized (theClusters)
 			{
-			C c = iter.next();
-			if (c.getN() == 0)
+			final Iterator<C> iter = theClusters.iterator();
+			while (iter.hasNext())
 				{
-				iter.remove();
+				final C c = iter.next();
+				if (c.getN() == 0)
+					{
+					iter.remove();
+					}
 				}
 			}
 		}
@@ -125,25 +202,25 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	 *          when something goes wrong in computing the label probabilities
 	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
-	public ClusteringTestResults test(final ClusterableIterator<T> theTestIterator,
-	                                  final DissimilarityMeasure<String> intraLabelDistances)
+	public synchronized ClusteringTestResults test(final ClusterableIterator<T> theTestIterator,
+	                                               final DissimilarityMeasure<String> intraLabelDistances)
 			throws DistributionException, ClusterException
 		{
 		final ClusteringTestResults tr = new ClusteringTestResults();
 
-		tr.setNumClusters(theClusters.size());
+		tr.setNumClusters(getNumClusters());
 
 		computeTrainingMass(tr);
 
 		// these are used for checking whether a sample should have been unknown or not
-		final Map<String, Set<String>> populatedPredictLabelSets = findPopulatedPredictLabelSets(tr);
+		final Map<String, Set<String>> populatedPredictLabelSets = findPopulatedPredictLabelSets();
 
 		if (intraLabelDistances instanceof RequiresPreparationDistanceMetric
 		    && ((RequiresPreparationDistanceMetric) intraLabelDistances).reallyRequiresPreparation())
 			{
-			Set<String> allLabels = new HashSet<String>();
+			final Set<String> allLabels = new HashSet<String>();
 			allLabels.addAll(testLabels);
-			for (Set<String> predictLabels : populatedPredictLabelSets.values())
+			for (final Set<String> predictLabels : populatedPredictLabelSets.values())
 				{
 				allLabels.addAll(predictLabels);
 				}
@@ -180,9 +257,9 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	 * @return
 	 * @throws NoGoodClusterException
 	 */
-	public String bestLabel(T sample, Set<String> predictLabels) throws NoGoodClusterException
+	public String bestLabel(final T sample, final Set<String> predictLabels) throws NoGoodClusterException
 		{
-		Cluster<T> c = bestClusterMove(sample).bestCluster;
+		final Cluster<T> c = bestClusterMove(sample).bestCluster;
 		return c.getWeightedLabels().getDominantKeyInSet(predictLabels);
 //		c.updateDerivedWeightedLabelsFromLocal();
 //		WeightedSet<String> probs = c.getDerivedLabelProbabilities();
@@ -198,17 +275,21 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	 * @return a randomly selected cluster.
 	 */
 	protected Cluster<T> chooseRandomCluster()
-		{		// PERF slow, but rarely used		// we have to iterate since we don't know the underlying Collection type.
-		int index = MersenneTwisterFast.randomInt(theClusters.size());
-		Iterator<? extends Cluster<T>> iter = theClusters.iterator();
+		{
+/*		// PERF slow, but rarely used
+		final int index = MersenneTwisterFast.randomInt(theClusters.size());
+
+
+		// we have to iterate since we don't know the underlying Collection type.
+		final Iterator<? extends Cluster<T>> iter = theClusters.iterator();
 		Cluster<T> result = iter.next();
 		for (int i = 0; i < index; result = iter.next())
 			{
 			i++;
 			}
-		return result;
+		return result;*/
 
-		//return theClusters.get(MersenneTwisterFast.randomInt(theClusters.size()));
+		return getCluster(MersenneTwisterFast.randomInt(getNumClusters()));
 		}
 
 	/**
@@ -225,24 +306,23 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	 * Figure out which of the potential prediction labels were actually populated (some got tossed to provide for unknown
 	 * test samples)
 	 */
-	protected Map<String, Set<String>> findPopulatedPredictLabelSets(ClusteringTestResults tr)
-			throws DistributionException
+	protected Map<String, Set<String>> findPopulatedPredictLabelSets()
 		{
-		Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+		final Map<String, Set<String>> result = new HashMap<String, Set<String>>();
 
-		for (Map.Entry<String, Set<String>> entry : predictLabelSets.entrySet())
+		for (final Map.Entry<String, Set<String>> entry : predictLabelSets.entrySet())
 			{
-			String predictionSetName = entry.getKey();
-			Set<String> predictLabels = entry.getValue();
+			final String predictionSetName = entry.getKey();
+			final Set<String> predictLabels = entry.getValue();
 
-			Set<String> populatedPredictLabels = new HashSet<String>();
+			final Set<String> populatedPredictLabels = new HashSet<String>();
 			int clustersWithPredictionLabel = 0;
-			for (C theCluster : theClusters)
+			for (final C theCluster : getClusters())
 				{
 				try
 					{
 					// note this also insures that every cluster has a prediction label, otherwise it throws NoSuchElementException
-					String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
+					final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
 					populatedPredictLabels.add(label);
 					clustersWithPredictionLabel++;
 					}
@@ -252,16 +332,16 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					}
 				}
 			result.put(predictionSetName, populatedPredictLabels);
-			logger.info(predictionSetName + ": " + clustersWithPredictionLabel + " of " + theClusters.size()
+			logger.info(predictionSetName + ": " + clustersWithPredictionLabel + " of " + getNumClusters()
 			            + " clusters have a prediction label; " + populatedPredictLabels.size()
 			            + " labels can be predicted");
 			}
 		return result;
 		}
 
-	public void computeTrainingMass(ClusteringTestResults tr)
+	public void computeTrainingMass(final ClusteringTestResults tr)
 		{
-		for (C theCluster : theClusters)
+		for (final C theCluster : getClusters())
 			{
 			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getItemCount());
 			}
@@ -297,15 +377,18 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	 * @param id the unique String identifier of the sample
 	 * @return the Cluster to which the sample belongs
 	 */
-	public C getAssignment(String id)
+	public C getAssignment(final String id)
 		{
-		return assignments.get(id);
+		synchronized (assignments)
+			{
+			return assignments.get(id);
+			}
 		}
 
 	protected void normalizeClusterLabelProbabilities()
 		{
-		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
-		for (final Cluster<T> c : theClusters)
+		final ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
+		for (final Cluster<T> c : getClusters())
 			{
 			execService.submit(new Runnable()
 			{
@@ -329,10 +412,10 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		return "No clustering stats available";
 		}
 
-	protected void testOneSample(DissimilarityMeasure<String> intraLabelDistances, ClusteringTestResults tr,
-	                             final Map<String, Set<String>> populatedPredictLabelSets, T frag)
+	protected void testOneSample(final DissimilarityMeasure<String> intraLabelDistances, final ClusteringTestResults tr,
+	                             final Map<String, Set<String>> populatedPredictLabelSets, final T frag)
 		{
-		WeightedSet<String> predictedLabelWeights = predictLabelWeights(tr, frag);
+		final WeightedSet<String> predictedLabelWeights = predictLabelWeights(tr, frag);
 		testAgainstPredictionLabels(intraLabelDistances, tr, populatedPredictLabelSets, frag, predictedLabelWeights);
 		}
 
@@ -342,26 +425,22 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	                                           final WeightedSet<String> predictedLabelWeights)
 		{
 
-		boolean unknown = predictedLabelWeights == null;
+		final boolean unknown = predictedLabelWeights == null;
 
 		// note the labels on the test set may be different from the training labels, as long as we can calculate wrongness.
 		// This supports a hierarchical classification scenario, where the "detailed" label is a leaf, and the "broad" label is a higher aggregate node.
 		// we want to measure wrongness _both_ at the broad level, matching where the prediction is made (so a perfect match is possible),
 		// _and_ at the detailed level, where even a perfect broad prediction incurs a cost due to lack of precision.
 
-		WeightedSet<String> fragmentActualLabels = frag.getWeightedLabels();
-		String detailedActualLabel = fragmentActualLabels.getDominantKeyInSet(testLabels);
+		final WeightedSet<String> fragmentActualLabels = frag.getWeightedLabels();
+		final String detailedActualLabel = fragmentActualLabels.getDominantKeyInSet(testLabels);
 
-		for (Map.Entry<String, Set<String>> entry : predictLabelSets.entrySet())
+		for (final Map.Entry<String, Set<String>> entry : predictLabelSets.entrySet())
 			{
-			String predictionSetName = entry.getKey();
-			Set<String> predictLabels = entry.getValue();
+			final String predictionSetName = entry.getKey();
+			final Set<String> predictLabels = entry.getValue();
 
 			//	MultiClassCrossValidationResults cvResults = getCvResults(predictionSetName);
-
-			double broadWrongness;
-			double detailedWrongness;
-			double clusterProb;
 
 			String broadActualLabel = null;
 			try
@@ -376,6 +455,9 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 			String predictedLabel;
 
+			double broadWrongness;
+			double detailedWrongness;
+			double clusterProb;
 			if (unknown)
 				{
 				predictedLabel = null;
@@ -464,7 +546,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		try
 			{
 			// make the prediction
-			ClusterMove<T, C> cm = bestClusterMove(frag);   // throws NoGoodClusterException
+			final ClusterMove<T, C> cm = bestClusterMove(frag);   // throws NoGoodClusterException
 			bestDistance = cm.bestDistance;
 			if (cm.bestDistance != 0)
 				{
@@ -503,13 +585,16 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	/**
 	 * choose the best cluster for each incoming data point and report it
 	 */
-	public void writeAssignmentsAsTextToStream(OutputStream outf)
+	public void writeAssignmentsAsTextToStream(final OutputStream outf)
 		{
-		int c = 0;
-		PrintWriter p = new PrintWriter(outf);
-		for (String s : assignments.keySet())
+		final int c = 0;
+		final PrintWriter p = new PrintWriter(outf);
+		synchronized (assignments)
 			{
-			p.println(s + " " + assignments.get(s).getId());
+			for (final Map.Entry<String, C> stringCEntry : assignments.entrySet())
+				{
+				p.println(stringCEntry.getKey() + " " + stringCEntry.getValue().getId());
+				}
 			}
 		p.flush();
 		}

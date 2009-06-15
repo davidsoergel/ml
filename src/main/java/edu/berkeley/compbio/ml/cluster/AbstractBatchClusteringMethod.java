@@ -14,9 +14,9 @@ public abstract class AbstractBatchClusteringMethod<T extends Clusterable<T>, C 
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public AbstractBatchClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                     Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
-	                                     Set<String> testLabels)
+	public AbstractBatchClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
+	                                     final Map<String, Set<String>> predictLabelSets,
+	                                     final Set<String> leaveOneOutLabels, final Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		}

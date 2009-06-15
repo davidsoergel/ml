@@ -36,6 +36,7 @@ import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 	protected String label;
 
 
-	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+	private final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
 
 // --------------------- GETTER / SETTER METHODS ---------------------
@@ -96,12 +97,13 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 	 */
 	protected abstract void newParent() throws SequenceSpectrumException;//throws SequenceSpectrumException;
 
+	@NotNull
 	public WeightedSet<String> getWeightedLabels()
 		{
 		return weightedLabels;
 		}
 
-	public void setLabel(String label)
+	public void setLabel(final String label)
 		{
 		this.label = label;
 		}
@@ -128,7 +130,7 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 	 */
 	protected void ensureAllParentsExist() throws SequenceSpectrumException
 		{
-		T kc = getParent();
+		final T kc = getParent();
 		if (kc != null)
 			{
 			kc.ensureAllParentsExist();
@@ -137,7 +139,7 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 
 	public List<HierarchicalSpectrum<T>> getAncestryList()
 		{
-		List<HierarchicalSpectrum<T>> result;
+		final List<HierarchicalSpectrum<T>> result;
 		if (parent == null)
 			{
 			result = new ArrayList<HierarchicalSpectrum<T>>();

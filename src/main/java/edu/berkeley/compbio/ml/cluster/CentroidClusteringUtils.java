@@ -82,12 +82,12 @@ public final class CentroidClusteringUtils //<T extends Clusterable<T>>
 	 * @param theDataPointProvider
 	 */
 	public static <T extends Clusterable<T>> void computeClusterStdDevs(
-			Collection<? extends CentroidCluster<T>> theClusters, DissimilarityMeasure<T> measure,
-			Map<String, ? extends CentroidCluster<T>> assignments,
-			ClusterableIterator<T> theDataPointProvider) //throws IOException
+			final Collection<? extends CentroidCluster<T>> theClusters, final DissimilarityMeasure<T> measure,
+			final Map<String, ? extends CentroidCluster<T>> assignments,
+			final ClusterableIterator<T> theDataPointProvider) //throws IOException
 		{
 		//theDataPointProvider.reset();
-		for (CentroidCluster<T> c : theClusters)
+		for (final CentroidCluster<T> c : theClusters)
 			{
 			c.setSumOfSquareDistances(0);
 			}
@@ -96,9 +96,9 @@ public final class CentroidClusteringUtils //<T extends Clusterable<T>>
 			{
 			while (true) //(theDataPointProvider.hasNext())
 				{
-				T p = theDataPointProvider.next();
-				CentroidCluster<T> c = assignments.get(p.getId());
-				double dist = measure.distanceFromTo(p, c.getCentroid());// c.distanceToCentroid(p);
+				final T p = theDataPointProvider.next();
+				final CentroidCluster<T> c = assignments.get(p.getId());
+				final double dist = measure.distanceFromTo(p, c.getCentroid());// c.distanceToCentroid(p);
 				c.addToSumOfSquareDistances(dist * dist);
 				}
 			}
@@ -141,16 +141,16 @@ public final class CentroidClusteringUtils //<T extends Clusterable<T>>
 	 */
 
 	public static <T extends Clusterable<T>> String shortClusteringStats(
-			Collection<? extends CentroidCluster<T>> theClusters, DissimilarityMeasure<T> measure)
+			final Collection<? extends CentroidCluster<T>> theClusters, final DissimilarityMeasure<T> measure)
 		{
-		List<Double> distances = new ArrayList<Double>();
-		int numDistances = 0;
-		for (CentroidCluster<T> c : theClusters)
+		final List<Double> distances = new ArrayList<Double>();
+		final int numDistances = 0;
+		for (final CentroidCluster<T> c : theClusters)
 			{
-			for (CentroidCluster<T> d : theClusters)
+			for (final CentroidCluster<T> d : theClusters)
 				{
-				double distance = measure.distanceFromTo(c.getCentroid(),
-				                                         d.getCentroid());// c.distanceToCentroid(d.getCentroid());
+				final double distance = measure.distanceFromTo(c.getCentroid(),
+				                                               d.getCentroid());// c.distanceToCentroid(d.getCentroid());
 				if (c == d && !MathUtils.equalWithinFPError(distance, 0))
 					{
 					logger.warn("Floating point trouble: self distance = " + distance + " " + c);
@@ -163,9 +163,9 @@ public final class CentroidClusteringUtils //<T extends Clusterable<T>>
 					}
 				}
 			}
-		double avg = DSCollectionUtils.sum(distances) / (double) distances.size();
+		final double avg = DSCollectionUtils.sum(distances) / (double) distances.size();
 		double sd = 0;
-		for (double d : distances)
+		for (final double d : distances)
 			{
 			sd += d * d;
 			}
@@ -195,25 +195,26 @@ public final class CentroidClusteringUtils //<T extends Clusterable<T>>
 	 * @return a long String describing statistics about the clustering.
 	 */
 	public static <T extends Clusterable<T>> void writeClusteringStatsToStream(
-			Collection<? extends CentroidCluster<T>> theClusters, DissimilarityMeasure<T> measure, OutputStream outf)
+			final Collection<? extends CentroidCluster<T>> theClusters, final DissimilarityMeasure<T> measure,
+			final OutputStream outf)
 		{
-		PrintWriter p = new PrintWriter(outf);
-		for (CentroidCluster<T> c : theClusters)
+		final PrintWriter p = new PrintWriter(outf);
+		for (final CentroidCluster<T> c : theClusters)
 			{
 			p.println(c);
-			double stddev1 = c.getStdDev();
-			for (CentroidCluster<T> d : theClusters)
+			final double stddev1 = c.getStdDev();
+			for (final CentroidCluster<T> d : theClusters)
 				{
-				double distance = measure.distanceFromTo(c.getCentroid(),
-				                                         d.getCentroid());// c.distanceToCentroid(d.getCentroid());
+				final double distance = measure.distanceFromTo(c.getCentroid(),
+				                                               d.getCentroid());// c.distanceToCentroid(d.getCentroid());
 				if (c == d && !MathUtils.equalWithinFPError(distance, 0))
 					{
 					logger.warn("Floating point trouble: self distance = " + distance + " " + c);
 					assert false;
 					}
-				double stddev2 = d.getStdDev();
-				double margin1 = distance - (stddev1 + stddev2);
-				double margin2 = distance - 2 * (stddev1 + stddev2);
+				final double stddev2 = d.getStdDev();
+				final double margin1 = distance - (stddev1 + stddev2);
+				final double margin2 = distance - 2 * (stddev1 + stddev2);
 
 				p.printf("\t%.2f (%.2f)", distance, margin1);//,  margin2);
 				}

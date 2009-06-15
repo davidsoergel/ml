@@ -47,17 +47,16 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 	private static final Logger logger = Logger.getLogger(MultiClassificationSVMAdapter.class);
 
 
-	ImmutableSvmParameter<BatchCluster<T>, T> param;
+	final ImmutableSvmParameter<BatchCluster<T>, T> param;
 
-	Map<T, BatchCluster<T>> examples = new HashMap<T, BatchCluster<T>>();
-	Map<T, Integer> exampleIds = new HashMap<T, Integer>();
+	final Map<T, BatchCluster<T>> examples = new HashMap<T, BatchCluster<T>>();
+	final Map<T, Integer> exampleIds = new HashMap<T, Integer>();
 
 
 	Map<String, BatchCluster<T>> theClusterMap;
 
 	Map<String, MultiClassModel<BatchCluster<T>, T>> leaveOneOutModels;
 
-	private MultiClassificationSVM<BatchCluster<T>, T> svm;
 	private MultiClassModel<BatchCluster<T>, T> model;
 
 
@@ -72,9 +71,10 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 	//	this.param = param;
 	//	}
 
-	public MultiClassificationSVMAdapter(Set<String> potentialTrainingBins, Map<String, Set<String>> predictLabelSets,
-	                                     Set<String> leaveOneOutLabels, Set<String> testLabels,
-	                                     @NotNull ImmutableSvmParameter<BatchCluster<T>, T> param)
+	public MultiClassificationSVMAdapter(final Set<String> potentialTrainingBins,
+	                                     final Map<String, Set<String>> predictLabelSets,
+	                                     final Set<String> leaveOneOutLabels, final Set<String> testLabels,
+	                                     @NotNull final ImmutableSvmParameter<BatchCluster<T>, T> param)
 		{
 		super(null, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		this.param = param;
@@ -82,7 +82,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 // --------------------- GETTER / SETTER METHODS ---------------------
 
-	public void setBinarySvm(BinaryClassificationSVM<BatchCluster<T>, T> binarySvm)
+	public void setBinarySvm(final BinaryClassificationSVM<BatchCluster<T>, T> binarySvm)
 		{
 		this.binarySvm = binarySvm;
 		}
@@ -93,7 +93,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 // --------------------- Interface BatchClusteringMethod ---------------------
 
 
-	AtomicInteger trainingCount = new AtomicInteger(0);
+	final AtomicInteger trainingCount = new AtomicInteger(0);
 
 	public void addAll(
 			final ClusterableIterator<T> trainingIterator) //CollectionIteratorFactory<T> trainingCollectionIteratorFactory)
@@ -120,9 +120,9 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public void add(final T sample)
 		{
-		String label = sample.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+		final String label = sample.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
 
-		BatchCluster<T> cluster = theClusterMap.get(label);
+		final BatchCluster<T> cluster = theClusterMap.get(label);
 		cluster.add(sample);
 
 		synchronized (trainingCount)
@@ -151,14 +151,15 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 		theClusterMap = new HashMap<String, BatchCluster<T>>(potentialTrainingBins.size());
 		int i = 0;
-		for (String label : potentialTrainingBins)
+		for (final String label : potentialTrainingBins)
 			{
-			BatchCluster<T> cluster = theClusterMap.get(label);
+			final BatchCluster<T> cluster = theClusterMap.get(label);
 
 			if (cluster == null)
 				{
-				cluster = new BatchCluster<T>(i++);
-				theClusterMap.put(label, cluster);
+				final BatchCluster<T> cluster1 = new BatchCluster<T>(i++);
+				theClusterMap.put(label, cluster1);
+				addCluster(cluster1);
 
 				// ** consider how best to store the test labels
 
@@ -170,7 +171,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 				*/
 				}
 			}
-		theClusters = theClusterMap.values();
+		//theClusters = theClusterMap.values();
 		}
 
 /*	public void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory,
@@ -184,14 +185,15 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public void train()
 		{
-		svm = new MultiClassificationSVM<BatchCluster<T>, T>(binarySvm);
-		MultiClassProblem<BatchCluster<T>, T> problem =
+		final MultiClassificationSVM<BatchCluster<T>, T> svm =
+				new MultiClassificationSVM<BatchCluster<T>, T>(binarySvm);
+		final MultiClassProblem<BatchCluster<T>, T> problem =
 				new MultiClassProblemImpl<BatchCluster<T>, T>(BatchCluster.class, new BatchClusterLabelInverter<T>(),
 				                                              examples, exampleIds, new NoopScalingModel<T>());
 		//svm.setupQMatrix(problem);
 		logger.debug("Performing multiclass training");
 
-		DepthFirstThreadPoolExecutor execService = DepthFirstThreadPoolExecutor.getInstance();
+		final DepthFirstThreadPoolExecutor execService = DepthFirstThreadPoolExecutor.getInstance();
 
 		//	DepthFirstThreadPoolExecutor execService = new DepthFirstThreadPoolExecutor(nrThreads, nrThreads * 2);
 		model = svm.train(problem, param, execService);
@@ -203,11 +205,11 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 			leaveOneOutModels =
 					new MapMaker().makeComputingMap(new Function<String, MultiClassModel<BatchCluster<T>, T>>()
 					{
-					public MultiClassModel<BatchCluster<T>, T> apply(@Nullable String disallowedLabel)
+					public MultiClassModel<BatchCluster<T>, T> apply(@Nullable final String disallowedLabel)
 						{
-						Set<BatchCluster<T>> disallowedClusters = new HashSet<BatchCluster<T>>();
+						final Set<BatchCluster<T>> disallowedClusters = new HashSet<BatchCluster<T>>();
 
-						for (BatchCluster<T> cluster : model.getLabels())
+						for (final BatchCluster<T> cluster : model.getLabels())
 							{
 							if (cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)
 									.equals(disallowedLabel))
@@ -237,17 +239,17 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	// -------------------------- OTHER METHODS --------------------------
 	@Override
-	public ClusteringTestResults test(ClusterableIterator<T> theTestIterator,
-	                                  DissimilarityMeasure<String> intraLabelDistances)
+	public synchronized ClusteringTestResults test(final ClusterableIterator<T> theTestIterator,
+	                                               final DissimilarityMeasure<String> intraLabelDistances)
 			throws DistributionException, ClusterException
 		{
-		ClusteringTestResults result = super.test(theTestIterator, intraLabelDistances);
+		final ClusteringTestResults result = super.test(theTestIterator, intraLabelDistances);
 		result.setInfo(model.getInfo());
 		//result.setCrossValidationResults(model.getCrossValidationResults());
 		return result;
 		}
 
-	public ClusterMove<T, BatchCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, BatchCluster<T>> bestClusterMove(final T p) throws NoGoodClusterException
 		{
 		MultiClassModel<BatchCluster<T>, T> leaveOneOutModel = model;
 		if (leaveOneOutLabels != null)
@@ -255,7 +257,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 			try
 				{
 				//BAD LOO doesn't work??
-				String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+				final String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
 				leaveOneOutModel = leaveOneOutModels.get(disallowedLabel);
 				}
 			catch (NoSuchElementException e)
@@ -266,8 +268,8 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 			}
 
 
-		VotingResult<BatchCluster<T>> r = leaveOneOutModel.predictLabelWithQuality(p);
-		ClusterMove<T, BatchCluster<T>> result = new ClusterMove<T, BatchCluster<T>>();
+		final VotingResult<BatchCluster<T>> r = leaveOneOutModel.predictLabelWithQuality(p);
+		final ClusterMove<T, BatchCluster<T>> result = new ClusterMove<T, BatchCluster<T>>();
 		result.bestCluster = r.getBestLabel();
 
 		result.voteProportion = r.getBestVoteProportion();

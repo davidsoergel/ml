@@ -46,9 +46,9 @@ import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -72,9 +72,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public BayesianClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
-	                          Set<String> potentialTrainingBins, Map<String, Set<String>> predictLabelSets,
-	                          Set<String> leaveOneOutLabels, Set<String> testLabels)
+	public BayesianClustering(final DissimilarityMeasure<T> dm, final double unknownDistanceThreshold,
+	                          final Set<String> potentialTrainingBins, final Map<String, Set<String>> predictLabelSets,
+	                          final Set<String> leaveOneOutLabels, final Set<String> testLabels)
 		{
 		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		}
@@ -85,13 +85,11 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 // --------------------- Interface PrototypeBasedCentroidClusteringMethod ---------------------
 
 
-	final Map<String, CentroidCluster<T>> theClusterMap = new HashMap<String, CentroidCluster<T>>();
-
-	GenericFactory<T> prototypeFactory;
+	private GenericFactory<T> prototypeFactory;
 
 	public void setPrototypeFactory(final GenericFactory<T> prototypeFactory)
 		{
-		assert theClusters.isEmpty();
+		assert getNumClusters() == 0;
 
 		// ** just store the factory for now so we can use it during training
 
@@ -122,9 +120,10 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 
 // -------------------------- OTHER METHODS --------------------------
 
-	protected void trainWithKnownTrainingLabels(final ClusterableIterator<T> trainingIterator)
+	protected synchronized void trainWithKnownTrainingLabels(final ClusterableIterator<T> trainingIterator)
 		{
 
+		final Map<String, CentroidCluster<T>> theClusterMap = new ConcurrentHashMap<String, CentroidCluster<T>>();
 
 		//		ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
 
@@ -141,11 +140,11 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 			// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
 			// the training samples must already be labelled with a bin ID.
 
-			String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+			final String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
 
-			synchronized (BayesianClustering.this)
+			// nearly defeats the purpose of the foreach, except that trainingIterator.next() may be expensive
+			synchronized (theClusterMap)
 				{
-
 				CentroidCluster<T> cluster = theClusterMap.get(clusterBinId);
 
 				if (cluster == null)
@@ -155,7 +154,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 						final T centroid = prototypeFactory.create(clusterBinId);
 						final int clusterId = i.incrementAndGet();
 						cluster = new AdditiveCentroidCluster<T>(clusterId, centroid);
-						theClusters.add(cluster);
+						addCluster(cluster);
 
 						theClusterMap.put(clusterBinId, cluster);
 						}
@@ -227,6 +226,6 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 		   // iterator exhausted
 		   }*/
 
-		theClusters = theClusterMap.values();
+		//	theClusters = theClusterMap.values();
 		}
 	}

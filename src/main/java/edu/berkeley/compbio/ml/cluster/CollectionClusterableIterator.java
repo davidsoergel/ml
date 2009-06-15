@@ -13,9 +13,9 @@ import java.util.NoSuchElementException;
 public class CollectionClusterableIterator<T extends Clusterable<T>> implements ClusterableIterator<T>
 	{
 	Iterator<T> it;
-	Collection<T> underlyingCollection;
+	final Collection<T> underlyingCollection;
 
-	public CollectionClusterableIterator(Collection<T> coll)
+	public CollectionClusterableIterator(final Collection<T> coll)
 		{
 		underlyingCollection = coll;
 		it = underlyingCollection.iterator();

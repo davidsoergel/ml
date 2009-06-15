@@ -64,8 +64,8 @@ public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<R
 	 * containing a multinomial to which the currentNode should be compared; //                    typically the backoff
 	 * prior in our case.
 	 */
-	public SimplexVectorTargetAndProportion(Multinomial<T> fromDist,
-	                                        Multinomial<T> toDist)//MarkovTreeNode currentNode, MarkovTreeNode backoffParent)
+	public SimplexVectorTargetAndProportion(final Multinomial<T> fromDist,
+	                                        final Multinomial<T> toDist)//MarkovTreeNode currentNode, MarkovTreeNode backoffParent)
 		{
 		//	this.backoffParent = backoffParent;
 		//	Multinomial<Byte> childProbs = currentNode.getProbs();
@@ -77,9 +77,9 @@ public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<R
 		try
 			{
 			// see which symbol probability would hit zero first if we keep going in the same direction
-			for (T b : toDist.getElements())
+			for (final T b : toDist.getElements())
 				{
-				double alpha = 1 - (toDist.get(b) / fromDist.get(b));
+				final double alpha = 1 - (toDist.get(b) / fromDist.get(b));
 
 				if (mixingProportion < alpha && alpha <= 1)
 					{
@@ -97,9 +97,8 @@ public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<R
 				}
 			else
 				{
-				for (T b : toDist.getElements())
+				for (final T b : toDist.getElements())
 					{
-					double targetVal;
 					/*	if (b == zeroSymbol)
 					   {
 
@@ -107,7 +106,8 @@ public class SimplexVectorTargetAndProportion<T>// implements SequenceSpectrum<R
 					   }
 				   else
 					   {*/
-					targetVal = (1 / mixingProportion) * toDist.get(b) + (1 - (1 / mixingProportion)) * fromDist.get(b);
+					double targetVal =
+							(1 / mixingProportion) * toDist.get(b) + (1 - (1 / mixingProportion)) * fromDist.get(b);
 					//	}
 					// avoid infinitesimal negative values due to numerical imprecision
 					if (MathUtils.equalWithinFPError(targetVal, 0))

@@ -59,7 +59,7 @@ public class UPGMATest
 
 	private static final Logger logger = Logger.getLogger(UPGMATest.class);
 
-	List<ClusterableDoubleArray> points = new ArrayList<ClusterableDoubleArray>();
+	final List<ClusterableDoubleArray> points = new ArrayList<ClusterableDoubleArray>();
 
 
 // -------------------------- OTHER METHODS --------------------------
@@ -83,7 +83,7 @@ public class UPGMATest
 
 		//ci = new MockClusterableIterator().init();
 
-		UPGMA<ClusterableDoubleArray> oc =
+		final UPGMA<ClusterableDoubleArray> oc =
 				new UPGMA<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null, null, null, null);
 
 		oc.addAll(new ClusterableIteratorFactory<ClusterableDoubleArray>(points).next());
@@ -91,11 +91,11 @@ public class UPGMATest
 
 		oc.train();
 
-		Collection<? extends CentroidCluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
+		final Collection<? extends CentroidCluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
 
 		assert theClusters.size() == 11;
 
-		for (Cluster<ClusterableDoubleArray> c : theClusters)
+		for (final Cluster<ClusterableDoubleArray> c : theClusters)
 			{
 			logger.debug(c);
 			}
@@ -106,7 +106,7 @@ public class UPGMATest
 		//assert oc.getTree().getValue().getN() == 6;
 		logger.info("\n" + TreePrinter.prettyPrint(oc.getTree()));
 
-		double largestLengthSpan = oc.getTree().getLargestLengthSpan();
+		final double largestLengthSpan = oc.getTree().getLargestLengthSpan();
 		assert MathUtils.equalWithinFPError(largestLengthSpan, 108.5638307100105);
 		}
 	}

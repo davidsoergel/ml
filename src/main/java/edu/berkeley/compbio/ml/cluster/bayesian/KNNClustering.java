@@ -61,9 +61,9 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 
 	private static final Logger logger = Logger.getLogger(KNNClustering.class);
 
-	private double voteProportionThreshold;
-	private double distanceTieThresholdRatio;
-	private double voteTieThresholdRatio;
+	private final double voteProportionThreshold;
+	private final double distanceTieThresholdRatio;
+	private final double voteTieThresholdRatio;
 	private SimpleFunction function = null;
 
 
@@ -75,11 +75,12 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 * @param dm                       The distance measure to use
 	 * @param unknownDistanceThreshold the minimum probability to accept when adding a point to a cluster
 	 */
-	public KNNClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold, Set<String> potentialTrainingBins,
-	                     Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
-	                     Set<String> testLabels, int maxNeighbors, double voteProportionThreshold,
-	                     double voteTieThresholdRatio, double distanceTieThresholdRatio,
-	                     SimpleFunction function) //, double decompositionDistanceThreshold)
+	public KNNClustering(final DissimilarityMeasure<T> dm, final double unknownDistanceThreshold,
+	                     final Set<String> potentialTrainingBins, final Map<String, Set<String>> predictLabelSets,
+	                     final Set<String> leaveOneOutLabels, final Set<String> testLabels, final int maxNeighbors,
+	                     final double voteProportionThreshold, final double voteTieThresholdRatio,
+	                     final double distanceTieThresholdRatio,
+	                     final SimpleFunction function) //, double decompositionDistanceThreshold)
 		{
 		//	super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels, maxNeighbors);
 		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels,
@@ -101,9 +102,10 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 * @param distance
 	 * @return
 	 */
-	protected ClusterMove<T, CentroidCluster<T>> makeClusterMove(CentroidCluster<T> cluster, double distance)
+	protected ClusterMove<T, CentroidCluster<T>> makeClusterMove(final CentroidCluster<T> cluster,
+	                                                             final double distance)
 		{
-		ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
+		final ClusterMove<T, CentroidCluster<T>> cm = new ClusterMove<T, CentroidCluster<T>>();
 		cm.bestCluster = cluster;
 		cm.bestDistance = distance;
 		if (function != null)
@@ -233,13 +235,13 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 		try
 			{
 			// make the prediction
-			TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
+			final TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> moves = scoredClusterMoves(frag);
 
 			// consider up to maxNeighbors neighbors.  If fewer neighbors than that passed the unknown threshold, so be it.
 			final VotingResults votingResults = addUpNeighborVotes(moves); //, populatedTrainingLabels);
 			labelWeights = votingResults.getLabelVotes();
 
-			BestLabelPair votingWinners = votingResults.getSubResults(potentialTrainingBins);
+			final BestLabelPair votingWinners = votingResults.getSubResults(potentialTrainingBins);
 
 			// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
 
@@ -247,24 +249,16 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			String predictedLabel = votingWinners.getBestLabel();
 			bestWeightedDistance = votingResults.computeWeightedDistance(predictedLabel);
 
-			voteProportion = labelWeights.getNormalized(predictedLabel);
-
-			//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy; set voteProportionThreshold high
-			if (voteProportion < voteProportionThreshold)
-				{
-				throw new NoGoodClusterException();
-				}
-
 			// check that there's not a (near) tie
 			if (votingWinners.hasSecondBestLabel())
 				{
-				String secondBestLabel = votingWinners.getSecondBestLabel();
+				final String secondBestLabel = votingWinners.getSecondBestLabel();
 
-				double bestVotes = labelWeights.get(predictedLabel);
-				double secondBestVotes = labelWeights.get(secondBestLabel);
+				final double bestVotes = labelWeights.get(predictedLabel);
+				final double secondBestVotes = labelWeights.get(secondBestLabel);
 				assert secondBestVotes <= bestVotes;
 
-				double secondBestWeightedDistance = votingResults.computeWeightedDistance(secondBestLabel);
+				final double secondBestWeightedDistance = votingResults.computeWeightedDistance(secondBestLabel);
 
 				// if the top two votes are too similar...
 				secondToBestVoteRatio = secondBestVotes / bestVotes;
@@ -276,12 +270,13 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 					// we don't know whether the "second-best" or the "best" distance is actually better,
 					// so we first check for a tie using both the threshold and its inverse.
 
-					double minRatio = distanceTieThresholdRatio;
-					double maxRatio = 1. / distanceTieThresholdRatio;
+					final double minRatio = distanceTieThresholdRatio;
+					final double maxRatio = 1. / distanceTieThresholdRatio;
 
 					if (!(secondToBestDistanceRatio < minRatio || secondToBestDistanceRatio > maxRatio))
 						{
 						// indistinguishable tie, call it unknown
+						// ** Would it better to just pick one?
 						throw new NoGoodClusterException();
 						}
 
@@ -303,6 +298,15 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 				secondToBestVoteRatio = 0;
 				secondToBestDistanceRatio =
 						1e308; // Double.MAX_VALUE; triggers MySQL bug # 21497  // infinity really, but that causes jdbc problems
+				}
+
+
+			voteProportion = labelWeights.getNormalized(predictedLabel);
+
+			//** note we usually want this not to kick in so we can plot vs. the threshold in Jandy; set voteProportionThreshold high
+			if (voteProportion < voteProportionThreshold)
+				{
+				throw new NoGoodClusterException();
 				}
 			}
 		catch (NoGoodClusterException e)

@@ -48,7 +48,6 @@ import edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.Set;
@@ -71,9 +70,9 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	//private DistanceMeasure<T> distanceMeasure;
 	//private int k;
 
-	public KmeansClustering(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                        Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
-	                        Set<String> testLabels)
+	public KmeansClustering(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
+	                        final Map<String, Set<String>> predictLabelSets, final Set<String> leaveOneOutLabels,
+	                        final Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		}
@@ -87,7 +86,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	@Override
 	public String shortClusteringStats()
 		{
-		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		return CentroidClusteringUtils.shortClusteringStats(getClusters(), measure);
 		}
 
 	/*	public void addAndRecenter(T p)
@@ -96,32 +95,35 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	   bestCluster(theClusters, p).addAndRecenter(p);  // this will automatically recalculate the centroid, etc.
 	   }*/
 
-	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+	public void computeClusterStdDevs(final ClusterableIterator<T> theDataPointProvider)
 		{
-		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
+		CentroidClusteringUtils.computeClusterStdDevs(getClusters(), measure, getAssignments(), theDataPointProvider);
 		}
 
 	@Override
 	public String clusteringStats()
 		{
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
+		final ByteArrayOutputStream b = new ByteArrayOutputStream();
+		CentroidClusteringUtils.writeClusteringStatsToStream(getClusters(), measure, b);
 		return b.toString();
 		}
 
-	public void writeClusteringStatsToStream(OutputStream outf)
+	public void writeClusteringStatsToStream(final OutputStream outf)
 		{
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		CentroidClusteringUtils.writeClusteringStatsToStream(getClusters(), measure, outf);
 		}
 
 // --------------------- Interface OnlineClusteringMethod ---------------------
 
-	public boolean add(T p)
+	public boolean add(final T p)
 		{
+		// ** this is not synchronized!  I think it's OK, but be careful...
+		// that should really only cause trouble if the same point gets added twice and simultaneously, and gets assiged to different clusters.  That seems highly unlikely.
+
 		assert p != null;
 		//n++;
-		String id = p.getId();
-		ClusterMove<T, CentroidCluster<T>> cm = bestClusterMove(p);
+		final String id = p.getId();
+		final ClusterMove<T, CentroidCluster<T>> cm = bestClusterMove(p);
 		//secondBestDistances.add(cm.secondBestDistance);
 		if (cm.isChanged())
 			{
@@ -133,7 +135,7 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 				{// probably just the first round
 				}
 			cm.bestCluster.add(p);//, cm.bestDistance);  // this will automatically recalculate the centroid, etc.
-			assignments.put(id, cm.bestCluster);
+			putAssignment(id, cm.bestCluster);
 			return true;
 			}
 		return false;
@@ -144,18 +146,18 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void initializeWithSamples(ClusterableIterator<T> trainingIterator,
-	                                  int initsamples) //, GenericFactory<T> prototypeFactory)
+	public void initializeWithSamples(final ClusterableIterator<T> trainingIterator,
+	                                  final int initsamples) //, GenericFactory<T> prototypeFactory)
 		//	throws GenericFactoryException
 		{
 		for (int i = 0; i < initsamples; i++)
 			{
 			// initialize the clusters with the first k points
 
-			AbstractCentroidCluster<T> c = new AdditiveCentroidCluster<T>(i, trainingIterator.next());
+			final AbstractCentroidCluster<T> c = new AdditiveCentroidCluster<T>(i, trainingIterator.next());
 			//c.setId(i);
 
-			theClusters.add(c);
+			addCluster(c);
 			}
 		logger.debug("initialized " + initsamples + " clusters");
 		}
@@ -176,22 +178,22 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p)
+	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(final T p)
 		{
-		ClusterMove<T, CentroidCluster<T>> result = new ClusterMove<T, CentroidCluster<T>>();
+		final ClusterMove<T, CentroidCluster<T>> result = new ClusterMove<T, CentroidCluster<T>>();
 		//double bestDistance = Double.MAX_VALUE;
 		//Cluster<T> bestCluster = null;
 
-		String id = p.getId();
-		result.oldCluster = assignments.get(id);
+		final String id = p.getId();
+		result.oldCluster = getAssignment(id);
 
 		if (logger.isTraceEnabled())
 			{
 			logger.trace("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (CentroidCluster<T> c : theClusters)
+		for (final CentroidCluster<T> c : getClusters())
 			{
-			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
+			final double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			if (logger.isTraceEnabled())
 				{
 				logger.trace("Trying " + c + "; distance = " + d + "; best so far = " + result.bestDistance);

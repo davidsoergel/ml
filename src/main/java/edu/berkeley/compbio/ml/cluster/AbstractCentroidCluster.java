@@ -59,7 +59,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	/**
 	 * Field centroid
 	 */
-	protected T centroid;
+	protected final T centroid;
 
 	/**
 	 * The sum of the squared distances from samples in this cluster to the centroid
@@ -78,7 +78,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	 * @param id       an integer uniquely identifying this cluster
 	 * @param centroid the T
 	 */
-	public AbstractCentroidCluster(int id, T centroid)//DistanceMeasure<T> dm
+	public AbstractCentroidCluster(final int id, final T centroid)//DistanceMeasure<T> dm
 		{
 		super(id);
 		this.centroid = centroid;//.clone();
@@ -106,16 +106,16 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setCentroid(@NotNull T centroid)
+/*	public void setCentroid(@NotNull final T centroid)
 		{
 		this.centroid = centroid;
 		}
-
+*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setSumOfSquareDistances(double v)
+	public void setSumOfSquareDistances(final double v)
 		{
 		sumOfSquareDistances = v;
 		}
@@ -127,19 +127,18 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean equals(Object other)
+	public boolean equals(final Object other)
 		{
 		// don't worry about matching the generic type; centroid.equals will take care of that
 		if (other instanceof AbstractCentroidCluster)
 			{
-			boolean result = centroid.equals(((AbstractCentroidCluster<T>) other).getCentroid())
-					// && theDistanceMeasure.equals(other.getTheDistanceMeasure())
-					&& super.equals(other);
 			/*	if (logger.isDebugEnabled())
 			   {
 			   logger.debug("" + this + " equals " + other + ": " + result);
 			   }*/
-			return result;
+			return centroid.equals(((AbstractCentroidCluster<T>) other).getCentroid())
+			       // && theDistanceMeasure.equals(other.getTheDistanceMeasure())
+			       && super.equals(other);
 			}
 		return false;
 		}
@@ -161,7 +160,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	@Override
 	public String toString()
 		{
-		Formatter f = new Formatter();
+		final Formatter f = new Formatter();
 		f.format("[Cluster %d] n=%d sd=%.2f", id, getN(), getStdDev());
 
 		return f.out().toString();
@@ -181,7 +180,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void addToSumOfSquareDistances(double v)
+	public void addToSumOfSquareDistances(final double v)
 		{
 		sumOfSquareDistances += v;
 		}

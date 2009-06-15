@@ -57,35 +57,35 @@ public class KohonenSOM2DTest
 	{
 // ------------------------------ FIELDS ------------------------------
 
-	SimpleFunction radiusFunction = new SimpleFunction()
+	final SimpleFunction radiusFunction = new SimpleFunction()
 	{
-	public double f(double x)
+	public double f(final double x)
 		{
 		return 15 - x;
 		}
 	};
 
-	SimpleFunction moveFactorFunction = new SimpleFunction()
+	final SimpleFunction moveFactorFunction = new SimpleFunction()
 	{
-	public double f(double x)
+	public double f(final double x)
 		{
 		return 1;
 		}
 	};
 
-	SimpleFunction weightFunction = new SimpleFunction()
+	final SimpleFunction weightFunction = new SimpleFunction()
 	{
-	public double f(double x)
+	public double f(final double x)
 		{
 		return 1.1 - x;
 		}
 	};
 
-	DissimilarityMeasure<ClusterableDoubleArray> dm = new EuclideanDistance();
+	final DissimilarityMeasure<ClusterableDoubleArray> dm = new EuclideanDistance();
 
-	GenericFactory<ClusterableDoubleArray> prototypeFactory = new GenericFactory<ClusterableDoubleArray>()
+	final GenericFactory<ClusterableDoubleArray> prototypeFactory = new GenericFactory<ClusterableDoubleArray>()
 	{
-	public ClusterableDoubleArray create(Object... constructorArguments) throws GenericFactoryException
+	public ClusterableDoubleArray create(final Object... constructorArguments) throws GenericFactoryException
 		{
 		return new ClusterableDoubleArray("test1", new double[]{0, 0, 0, 0, 0});
 		}
@@ -95,7 +95,7 @@ public class KohonenSOM2DTest
 		return ClusterableDoubleArray.class;
 		}
 	};
-	private BruteForceSearchStrategy<ClusterableDoubleArray> bruteForceStrategy =
+	private final BruteForceSearchStrategy<ClusterableDoubleArray> bruteForceStrategy =
 			new BruteForceSearchStrategy<ClusterableDoubleArray>();
 
 
@@ -104,16 +104,16 @@ public class KohonenSOM2DTest
 	@Test
 	public void WeightedMaskCellsAreUnique()
 		{
-		KohonenSOM2D som =
+		final KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{100, 100}, null, null, null, false, false, 0,
 				                 bruteForceStrategy);
 
-		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(20);
+		final KohonenSOM2D.WeightedMask mask = som.getWeightedMask(20);
 
-		Set<XYPair> pairSet = new HashSet<XYPair>();
+		final Set<XYPair> pairSet = new HashSet<XYPair>();
 		for (int i = 0; i < mask.numCells; i++)
 			{
-			XYPair pair = new XYPair(mask.deltaX[i], mask.deltaY[i]);
+			final XYPair pair = new XYPair(mask.deltaX[i], mask.deltaY[i]);
 			assert !pairSet.contains(pair);
 			pairSet.add(pair);
 			}
@@ -122,11 +122,11 @@ public class KohonenSOM2DTest
 	@Test
 	public void WeightedMaskMakesRadiusOneCircle()
 		{
-		KohonenSOM2D som =
+		final KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{10, 10}, null, null, null, false, false, 0,
 				                 bruteForceStrategy);
 
-		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(1);
+		final KohonenSOM2D.WeightedMask mask = som.getWeightedMask(1);
 
 		assert mask.numCells == 5;
 		}
@@ -134,11 +134,11 @@ public class KohonenSOM2DTest
 	@Test
 	public void WeightedMaskMakesRadiusTenCircle()
 		{
-		KohonenSOM2D som =
+		final KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{100, 100}, null, null, null, false, false, 0,
 				                 bruteForceStrategy);
 
-		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(10);
+		final KohonenSOM2D.WeightedMask mask = som.getWeightedMask(10);
 
 		assert mask.numCells == 345;
 		}
@@ -146,11 +146,11 @@ public class KohonenSOM2DTest
 	@Test
 	public void WeightedMaskMakesRadiusTwentyCircle()
 		{
-		KohonenSOM2D som =
+		final KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{10, 10}, null, null, null, false, false, 0,
 				                 bruteForceStrategy);
 
-		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(20);
+		final KohonenSOM2D.WeightedMask mask = som.getWeightedMask(20);
 
 		assert mask.numCells == 1303;
 		}
@@ -158,11 +158,11 @@ public class KohonenSOM2DTest
 	@Test
 	public void WeightedMaskMakesRadiusTwoCircle()
 		{
-		KohonenSOM2D som =
+		final KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{10, 10}, null, null, null, false, false, 0,
 				                 bruteForceStrategy);
 
-		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(2);
+		final KohonenSOM2D.WeightedMask mask = som.getWeightedMask(2);
 
 		assert mask.numCells == 21;
 		}
@@ -170,11 +170,11 @@ public class KohonenSOM2DTest
 	@Test
 	public void WeightedMaskMakesRadiusZeroCircle()
 		{
-		KohonenSOM2D som =
+		final KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{10, 10}, null, null, null, false, false, 0,
 				                 bruteForceStrategy);
 
-		KohonenSOM2D.WeightedMask mask = som.getWeightedMask(0);
+		final KohonenSOM2D.WeightedMask mask = som.getWeightedMask(0);
 
 		assert mask.numCells == 1;
 		}
@@ -182,7 +182,7 @@ public class KohonenSOM2DTest
 	@Test
 	public void averageDistanceToNeighboringCellsIsComputedCorrectly() throws GenericFactoryException
 		{
-		KohonenSOM2D som =
+		final KohonenSOM2D som =
 				new KohonenSOM2D(dm, null, null, null, null, new Integer[]{5, 5}, null, null, null, false, false, 0,
 				                 bruteForceStrategy);
 
@@ -203,9 +203,11 @@ public class KohonenSOM2DTest
 				   }*/
 		som.setPrototypeFactory(prototypeFactory);
 
-		som.clusterAt(2, 2).setCentroid(new ClusterableDoubleArray("test1", new double[]{1, 1, 1, 1, 1}));
+		((ClusterableDoubleArray) (som.clusterAt(2, 2).getCentroid()))
+				.incrementBy(new ClusterableDoubleArray("test1", new double[]{1, 1, 1, 1, 1}));
+		//som.clusterAt(2, 2).setCentroid(new ClusterableDoubleArray("test1", new double[]{1, 1, 1, 1, 1}));
 
-		double[] avgDist = som.computeCellAverageNeighborDistances();
+		final double[] avgDist = som.computeCellAverageNeighborDistances();
 
 		assert Arrays.equals(avgDist, new double[]{
 				//
@@ -226,8 +228,8 @@ public class KohonenSOM2DTest
 	public void initialTrainingSampleAltersAllCells()
 			throws ClusterException, NoGoodClusterException, GenericFactoryException
 		{
-		ClusterableDoubleArray prototype = new ClusterableDoubleArray("test1", new double[]{0, 0, 0, 0, 0});
-		KohonenSOM2D<ClusterableDoubleArray> som =
+		final ClusterableDoubleArray prototype = new ClusterableDoubleArray("test1", new double[]{0, 0, 0, 0, 0});
+		final KohonenSOM2D<ClusterableDoubleArray> som =
 				new KohonenSOM2D<ClusterableDoubleArray>(dm, null, null, null, null, new Integer[]{10, 10},
 				                                         moveFactorFunction, radiusFunction, weightFunction, false,
 				                                         true, 1, bruteForceStrategy);
@@ -235,7 +237,7 @@ public class KohonenSOM2DTest
 		som.setPrototypeFactory(prototypeFactory);
 		som.add(new ClusterableDoubleArray("test1", new double[]{1, 2, 3, 4, 5}));
 
-		for (CentroidCluster<ClusterableDoubleArray> cell : som.getClusters())
+		for (final CentroidCluster<ClusterableDoubleArray> cell : som.getClusters())
 			{
 			assert cell.getCentroid() != null;
 			assert !cell.getCentroid().equalValue(prototype);
@@ -246,7 +248,7 @@ public class KohonenSOM2DTest
 	public void secondTrainingSampleMatchesAppropriateCell()
 			throws ClusterException, NoGoodClusterException, GenericFactoryException
 		{
-		KohonenSOM2D<ClusterableDoubleArray> som =
+		final KohonenSOM2D<ClusterableDoubleArray> som =
 				new KohonenSOM2D<ClusterableDoubleArray>(dm, null, null, null, null, new Integer[]{10, 10},
 				                                         moveFactorFunction, radiusFunction, weightFunction, false,
 				                                         true, 1, bruteForceStrategy);
@@ -264,12 +266,13 @@ public class KohonenSOM2DTest
 		{
 // ------------------------------ FIELDS ------------------------------
 
-		int x, y;
+		final int x;
+		final int y;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-		private XYPair(int x, int y)
+		private XYPair(final int x, final int y)
 			{
 			this.x = x;
 			this.y = y;
@@ -281,7 +284,7 @@ public class KohonenSOM2DTest
 		 * {@inheritDoc}
 		 */
 		@Override
-		public boolean equals(Object o)
+		public boolean equals(final Object o)
 			{
 			if (this == o)
 				{
@@ -292,7 +295,7 @@ public class KohonenSOM2DTest
 				return false;
 				}
 
-			XYPair xyPair = (XYPair) o;
+			final XYPair xyPair = (XYPair) o;
 
 			if (x != xyPair.x)
 				{
@@ -312,8 +315,7 @@ public class KohonenSOM2DTest
 		@Override
 		public int hashCode()
 			{
-			int result;
-			result = x;
+			int result = x;
 			result = 31 * result + y;
 			return result;
 			}

@@ -14,7 +14,6 @@ import edu.berkeley.compbio.ml.cluster.PrototypeBasedCentroidClusteringMethod;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -33,14 +32,15 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 // ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(NearestNeighborClustering.class);
-	protected double unknownDistanceThreshold;
+	protected final double unknownDistanceThreshold;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public NearestNeighborClustering(DissimilarityMeasure<T> dm, double unknownDistanceThreshold,
-	                                 Set<String> potentialTrainingBins, Map<String, Set<String>> predictLabelSets,
-	                                 Set<String> leaveOneOutLabels, Set<String> testLabels)
+	public NearestNeighborClustering(final DissimilarityMeasure<T> dm, final double unknownDistanceThreshold,
+	                                 final Set<String> potentialTrainingBins,
+	                                 final Map<String, Set<String>> predictLabelSets,
+	                                 final Set<String> leaveOneOutLabels, final Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
@@ -55,7 +55,7 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 	@Override
 	public String shortClusteringStats()
 		{
-		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		return CentroidClusteringUtils.shortClusteringStats(getClusters(), measure);
 		}
 
 	/*public void addAll(Iterable<T> samples)
@@ -66,22 +66,22 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 			}
 		}
 */
-	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+	public void computeClusterStdDevs(final ClusterableIterator<T> theDataPointProvider)
 		{
-		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
+		CentroidClusteringUtils.computeClusterStdDevs(getClusters(), measure, getAssignments(), theDataPointProvider);
 		}
 
 	@Override
 	public String clusteringStats()
 		{
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
+		final ByteArrayOutputStream b = new ByteArrayOutputStream();
+		CentroidClusteringUtils.writeClusteringStatsToStream(getClusters(), measure, b);
 		return b.toString();
 		}
 
-	public void writeClusteringStatsToStream(OutputStream outf)
+	public void writeClusteringStatsToStream(final OutputStream outf)
 		{
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		CentroidClusteringUtils.writeClusteringStatsToStream(getClusters(), measure, outf);
 		}
 
 // --------------------- Interface OnlineClusteringMethod ---------------------
@@ -112,9 +112,9 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(final T p) throws NoGoodClusterException
 		{
-		ClusterMove result = new ClusterMove();
+		final ClusterMove result = new ClusterMove();
 
 		result.secondBestDistance = Double.POSITIVE_INFINITY;
 		result.bestDistance = Double.POSITIVE_INFINITY;
@@ -132,9 +132,8 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 				}
 			}
 
-		for (CentroidCluster<T> cluster : theClusters)
+		for (final CentroidCluster<T> cluster : getClusters())
 			{
-			double distance;
 			if (disallowedLabel != null && disallowedLabel
 					.equals(cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)))
 				{
@@ -145,6 +144,7 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 				// Note that different distance measures may need to deal with the priors differently:
 				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
 				// so, just pass the priors in and let the distance measure decide what to do with them
+				final double distance;
 				if (measure instanceof ProbabilisticDissimilarityMeasure)
 					{
 					distance = ((ProbabilisticDissimilarityMeasure) measure)
@@ -171,7 +171,7 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 		if (result.bestCluster == null)
 			{
 			throw new ClusterRuntimeException(
-					"None of the " + theClusters.size() + " clusters matched: " + p); // + ", last distance = " + temp);
+					"None of the " + getNumClusters() + " clusters matched: " + p); // + ", last distance = " + temp);
 			}
 		if (result.bestDistance > unknownDistanceThreshold)
 			{

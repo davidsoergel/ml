@@ -52,17 +52,17 @@ public class ClusterException extends ChainedException
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public ClusterException(String s)
+	public ClusterException(final String s)
 		{
 		super(s);
 		}
 
-	public ClusterException(Exception e)
+	public ClusterException(final Exception e)
 		{
 		super(e);
 		}
 
-	public ClusterException(Exception e, String s)
+	public ClusterException(final Exception e, final String s)
 		{
 		super(e, s);
 		}

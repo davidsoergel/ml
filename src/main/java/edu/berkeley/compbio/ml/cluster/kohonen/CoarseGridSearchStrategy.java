@@ -77,20 +77,20 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 	 * @return
 	 */
 	@Override
-	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(final T p) throws NoGoodClusterException
 		{
-		ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
+		final ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
 
-		String id = p.getId();
+		final String id = p.getId();
 		result.oldCluster = som.getAssignment(id);
 
 		if (logger.isTraceEnabled())
 			{
 			logger.trace("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		for (KohonenSOMCell<T> c : sparseGrid)
+		for (final KohonenSOMCell<T> c : sparseGrid)
 			{
-			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
+			final double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{
 				result.secondBestDistance = result.bestDistance;
@@ -105,10 +105,10 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 		//Set<Cluster<T>> neighborhood = som.getNeighborhood(result.bestCluster(), gridSpacing * 2);
 
 		for (Iterator<KohonenSOM2D<T>.WeightedCell> i =
-				som.getWeightedMask(gridSpacing * 2).iterator((KohonenSOMCell<T>) result.bestCluster); i.hasNext();)
+				som.getWeightedMask(gridSpacing * 2).iterator(result.bestCluster); i.hasNext();)
 			{
-			KohonenSOMCell<T> c = i.next().theCell;
-			double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
+			final KohonenSOMCell<T> c = i.next().theCell;
+			final double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 			if (d < result.bestDistance)
 				{
 				result.secondBestDistance = result.bestDistance;
@@ -134,13 +134,13 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 		}
 
 	@Override
-	public void setSOM(KohonenSOM2D<T> som)
+	public void setSOM(final KohonenSOM2D<T> som)
 		{
 		super.setSOM(som);
 		setGridSpacing(4);
 		}
 
-	public void setGridSpacing(int gridSpacing)
+	public void setGridSpacing(final int gridSpacing)
 		{
 		this.gridSpacing = gridSpacing;
 		sparseGrid = getSparseGridClusters();
@@ -148,9 +148,9 @@ public class CoarseGridSearchStrategy<T extends AdditiveClusterable<T>> extends 
 
 	public Set<? extends KohonenSOMCell<T>> getSparseGridClusters()
 		{
-		Set<KohonenSOMCell<T>> result = new HashSet<KohonenSOMCell<T>>();
-		int width = som.cellsPerDimension[0];
-		int height = som.cellsPerDimension[1];
+		final Set<KohonenSOMCell<T>> result = new HashSet<KohonenSOMCell<T>>();
+		final int width = som.cellsPerDimension[0];
+		final int height = som.cellsPerDimension[1];
 		for (int x = 0; x < width; x += gridSpacing)
 			{
 			for (int y = 0; y < height; y += gridSpacing)

@@ -46,7 +46,7 @@ public class EuclideanDistance implements DissimilarityMeasure<ClusterableDouble
 
 	private static final Logger logger = Logger.getLogger(EuclideanDistance.class);
 
-	private static EuclideanDistance _instance = new EuclideanDistance();
+	private static final EuclideanDistance _instance = new EuclideanDistance();
 
 
 // -------------------------- STATIC METHODS --------------------------
@@ -64,15 +64,14 @@ public class EuclideanDistance implements DissimilarityMeasure<ClusterableDouble
 	/**
 	 * {@inheritDoc}
 	 */
-	public double distanceFromTo(ClusterableDoubleArray a, ClusterableDoubleArray b)
+	public double distanceFromTo(final ClusterableDoubleArray a, final ClusterableDoubleArray b)
 		{
 		double sum = 0;
-		double x, y;
-		int l = a.length();
+		final int l = a.length();
 		for (int i = 0; i < l; i++)
 			{
-			x = a.get(i);
-			y = b.get(i);
+			double x = a.get(i);
+			double y = b.get(i);
 			sum += (x - y) * (x - y);
 			}
 		return Math.sqrt(sum);

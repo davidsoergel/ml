@@ -36,7 +36,6 @@ import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 import java.util.Set;
@@ -60,9 +59,9 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	protected HierarchicalClusteringMethod(DissimilarityMeasure<T> dm, Set<String> potentialTrainingBins,
-	                                       Map<String, Set<String>> predictLabelSets, Set<String> leaveOneOutLabels,
-	                                       Set<String> testLabels)
+	protected HierarchicalClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
+	                                       final Map<String, Set<String>> predictLabelSets,
+	                                       final Set<String> leaveOneOutLabels, final Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		}
@@ -76,25 +75,25 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 	@Override
 	public String shortClusteringStats()
 		{
-		return CentroidClusteringUtils.shortClusteringStats(theClusters, measure);
+		return CentroidClusteringUtils.shortClusteringStats(getClusters(), measure);
 		}
 
-	public void computeClusterStdDevs(ClusterableIterator<T> theDataPointProvider) throws IOException
+	public void computeClusterStdDevs(final ClusterableIterator<T> theDataPointProvider)
 		{
-		CentroidClusteringUtils.computeClusterStdDevs(theClusters, measure, assignments, theDataPointProvider);
+		CentroidClusteringUtils.computeClusterStdDevs(getClusters(), measure, getAssignments(), theDataPointProvider);
 		}
 
 	@Override
 	public String clusteringStats()
 		{
-		ByteArrayOutputStream b = new ByteArrayOutputStream();
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, b);
+		final ByteArrayOutputStream b = new ByteArrayOutputStream();
+		CentroidClusteringUtils.writeClusteringStatsToStream(getClusters(), measure, b);
 		return b.toString();
 		}
 
-	public void writeClusteringStatsToStream(OutputStream outf)
+	public void writeClusteringStatsToStream(final OutputStream outf)
 		{
-		CentroidClusteringUtils.writeClusteringStatsToStream(theClusters, measure, outf);
+		CentroidClusteringUtils.writeClusteringStatsToStream(getClusters(), measure, outf);
 		}
 
 // -------------------------- OTHER METHODS --------------------------

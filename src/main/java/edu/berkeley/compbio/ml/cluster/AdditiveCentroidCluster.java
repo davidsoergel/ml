@@ -57,7 +57,7 @@ public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends A
 	 *
 	 * @param centroid the T
 	 */
-	public AdditiveCentroidCluster(int id, T centroid)//DistanceMeasure<T> dm,
+	public AdditiveCentroidCluster(final int id, final T centroid)//DistanceMeasure<T> dm,
 		{
 		super(id, centroid);
 		}
@@ -71,7 +71,7 @@ public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends A
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean add(T point)
+	public synchronized boolean add(final T point)
 		{
 		super.add(point);
 		centroid.incrementBy(point);
@@ -79,7 +79,7 @@ public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends A
 		}
 
 	@Override
-	public boolean addAll(Cluster<T> otherCluster)
+	public boolean addAll(final Cluster<T> otherCluster)
 		{
 		super.addAll(otherCluster);
 		/*
@@ -89,7 +89,7 @@ public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends A
 			}
 			*/
 
-		int otherN = otherCluster.getN();
+		final int otherN = otherCluster.getN();
 		centroid.incrementByWeighted(((CentroidCluster<T>) otherCluster).getCentroid(), otherN / (otherN + getN()));
 		return true;
 		}
@@ -98,7 +98,7 @@ public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends A
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean remove(T point)
+	public boolean remove(final T point)
 		{
 		super.remove(point);
 		centroid.decrementBy(point);
@@ -106,7 +106,7 @@ public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends A
 		}
 
 	@Override
-	public boolean removeAll(Cluster<T> otherCluster)
+	public boolean removeAll(final Cluster<T> otherCluster)
 		{
 		super.removeAll(otherCluster);
 		/*
@@ -116,7 +116,7 @@ public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends A
 			}
 			*/
 
-		int otherN = otherCluster.getN();
+		final int otherN = otherCluster.getN();
 		centroid.decrementByWeighted(((CentroidCluster<T>) otherCluster).getCentroid(), otherN / (otherN + getN()));
 		logger.debug("Cluster removed " + otherCluster);
 		return true;

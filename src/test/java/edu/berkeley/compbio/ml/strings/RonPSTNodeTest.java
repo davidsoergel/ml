@@ -56,12 +56,7 @@ public class RonPSTNodeTest
 	@Test
 	public void addDirectlyUpstreamNodeWorks() throws SequenceSpectrumException
 		{
-		theNode = new RonPSTNode(new byte[0], new byte[]{
-				'a',
-				'b',
-				'c',
-				'd'
-		});
+		theNode = new RonPSTNode(new byte[0], new byte[]{'a', 'b', 'c', 'd'});
 		assert theNode.getUpstreamNode((byte) 'a') == null;
 		theNode.addUpstreamNode((byte) 'a');
 		assert theNode.getUpstreamNode((byte) 'a') != null;
@@ -70,19 +65,9 @@ public class RonPSTNodeTest
 	@Test
 	public void addUpstreamNodeChainWorks() throws SequenceSpectrumException
 		{
-		theNode = new RonPSTNode(new byte[0], new byte[]{
-				'a',
-				'b',
-				'c',
-				'd'
-		});
+		theNode = new RonPSTNode(new byte[0], new byte[]{'a', 'b', 'c', 'd'});
 		assert theNode.getUpstreamNode((byte) 'd') == null;
-		theNode.addUpstreamNode(new byte[]{
-				'a',
-				'b',
-				'c',
-				'd'
-		});
+		theNode.addUpstreamNode(new byte[]{'a', 'b', 'c', 'd'});
 		assert theNode.getUpstreamNode((byte) 'd').getUpstreamNode((byte) 'c').getUpstreamNode((byte) 'b')
 				.getUpstreamNode((byte) 'a') != null;
 		}
@@ -93,7 +78,7 @@ public class RonPSTNodeTest
 		try
 			{
 			theNode.copyProbsFrom(new RonPSTTest.StubSequenceSpectrum());
-			for (RonPSTNode trav : theNode.getAllUpstreamNodes())
+			for (final RonPSTNode trav : theNode.getAllUpstreamNodes())
 				{
 				assert trav.getProbs().size() == 0 || (trav.getProbs().size() == 4 && trav.getProbs()
 						.isAlreadyNormalized());
@@ -134,12 +119,7 @@ public class RonPSTNodeTest
 
 	private void buildSimplePST() throws SequenceSpectrumException
 		{
-		theNode = new RonPSTNode(new byte[0], new byte[]{
-				'a',
-				'b',
-				'c',
-				'd'
-		});
+		theNode = new RonPSTNode(new byte[0], new byte[]{'a', 'b', 'c', 'd'});
 		theNode.addUpstreamNode((byte) 'a');
 		theNode.addUpstreamNode((byte) 'b');
 		theNode.addUpstreamNode((byte) 'c');

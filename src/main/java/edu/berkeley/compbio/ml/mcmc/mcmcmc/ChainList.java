@@ -66,7 +66,7 @@ public class ChainList extends ArrayList<MonteCarlo> implements MonteCarloState
 	/**
 	 * {@inheritDoc}
 	 */
-	public void writeToDataCollector(int step, DataCollector dc)
+	public void writeToDataCollector(final int step, final DataCollector dc)
 		{
 		// ignore, this never happens
 		}

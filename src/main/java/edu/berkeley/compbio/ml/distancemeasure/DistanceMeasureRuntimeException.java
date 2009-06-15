@@ -51,17 +51,17 @@ public class DistanceMeasureRuntimeException extends ChainedRuntimeException
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public DistanceMeasureRuntimeException(String s)
+	public DistanceMeasureRuntimeException(final String s)
 		{
 		super(s);
 		}
 
-	public DistanceMeasureRuntimeException(Exception e)
+	public DistanceMeasureRuntimeException(final Exception e)
 		{
 		super(e);
 		}
 
-	public DistanceMeasureRuntimeException(Exception e, String s)
+	public DistanceMeasureRuntimeException(final Exception e, final String s)
 		{
 		super(e, s);
 		}

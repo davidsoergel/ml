@@ -47,6 +47,7 @@ import edu.berkeley.compbio.sequtils.SequenceReader;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 	private String label;
 
-	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+	private final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
 	/**
 	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
@@ -139,13 +140,13 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 *
 	 * @param id the sequence of symbols leading to this node
 	 */
-	public MarkovTreeNode(byte[] id, byte[] alphabet)
+	public MarkovTreeNode(final byte[] id, final byte[] alphabet)
 		{
 		this.id = id;
 		setAlphabet(alphabet);
 		}
 
-	public void setAlphabet(byte[] alphabet)
+	public void setAlphabet(final byte[] alphabet)
 		{
 		this.alphabet = alphabet;
 		logprobs = new double[alphabet.length];
@@ -184,7 +185,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return originalSequenceLength;
 		}
 
-	public void setOriginalSequenceLength(int originalSequenceLength)
+	public void setOriginalSequenceLength(final int originalSequenceLength)
 		{
 		this.originalSequenceLength = originalSequenceLength;
 		}
@@ -204,6 +205,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return probs;
 		}
 
+	@NotNull
 	public WeightedSet<String> getWeightedLabels()
 		{
 		return weightedLabels;
@@ -214,12 +216,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return leaf;
 		}
 
-	public void setId(byte[] id)
+	public void setId(final byte[] id)
 		{
 		this.id = id;
 		}
 
-	public void setLabel(String label)
+	public void setLabel(final String label)
 		{
 		this.label = label;
 		}
@@ -236,22 +238,18 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		{
 		try
 			{
-			MarkovTreeNode result = (MarkovTreeNode) super.clone();//new MarkovTreeNode(id, alphabet);
+			final MarkovTreeNode result = (MarkovTreeNode) super.clone();//new MarkovTreeNode(id, alphabet);
 			result.setAlphabet(alphabet);
 			result.probs = probs.clone();
-			for (byte b : alphabet)//children.keySet())
+			for (final byte b : alphabet)//children.keySet())
 				{
-				MarkovTreeNode child = getChild(b);
+				final MarkovTreeNode child = getChild(b);
 				if (child != null)
 					{
 					result.addChild(b, child.clone());
 					}
 				}
 			return result;
-			}
-		catch (SequenceSpectrumException e)
-			{
-			throw new Error("Impossible");
 			}
 		catch (CloneNotSupportedException e)
 			{
@@ -283,16 +281,16 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param sigma the symbol to follow from this node
 	 * @return the node pointed to, or null if that leaf does not exist
 	 */
-	public MarkovTreeNode getChild(byte sigma)//throws SequenceSpectrumException
+	public MarkovTreeNode getChild(final byte sigma)//throws SequenceSpectrumException
 		{
 		//return children == null ? null :
 		return children[DSArrayUtils.indexOf(alphabet, sigma)];
 		}
 
-	private void addChild(byte b, MarkovTreeNode child) throws SequenceSpectrumException
+	private void addChild(final byte b, final MarkovTreeNode child)
 		{
 		leaf = false;
-		int childIndex = DSArrayUtils.indexOf(alphabet, b);
+		final int childIndex = DSArrayUtils.indexOf(alphabet, b);
 		children[childIndex] = child;
 		}
 
@@ -301,42 +299,42 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 // --------------------- Interface AdditiveClusterable ---------------------
 
-	public void decrementBy(MarkovTreeNode object)
+	public void decrementBy(final MarkovTreeNode object)
 		{
 		throw new NotImplementedException();
 		}
 
-	public void decrementByWeighted(MarkovTreeNode object, double weight)
+	public void decrementByWeighted(final MarkovTreeNode object, final double weight)
 		{
 		throw new NotImplementedException();
 		}
 
-	public void incrementBy(MarkovTreeNode object)
+	public void incrementBy(final MarkovTreeNode object)
 		{
 		throw new NotImplementedException();
 		}
 
-	public void incrementByWeighted(MarkovTreeNode object, double weight)
+	public void incrementByWeighted(final MarkovTreeNode object, final double weight)
 		{
 		throw new NotImplementedException();
 		}
 
-	public MarkovTreeNode minus(MarkovTreeNode object)
+	public MarkovTreeNode minus(final MarkovTreeNode object)
 		{
 		throw new NotImplementedException();
 		}
 
-	public void multiplyBy(double v)
+	public void multiplyBy(final double v)
 		{
 		throw new NotImplementedException();
 		}
 
-	public MarkovTreeNode plus(MarkovTreeNode object)
+	public MarkovTreeNode plus(final MarkovTreeNode object)
 		{
 		throw new NotImplementedException();
 		}
 
-	public MarkovTreeNode times(double v)
+	public MarkovTreeNode times(final double v)
 		{
 		throw new NotImplementedException();
 		}
@@ -350,7 +348,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param other the MarkovTreeNode to compare
 	 * @return true if the trees have the same structure and transition probabilities, false otherwise
 	 */
-	public boolean equalValue(MarkovTreeNode other)
+	public boolean equalValue(final MarkovTreeNode other)
 		{
 		if (!Arrays.equals(id, other.id))
 			{
@@ -364,9 +362,9 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		   {
 		   return false;
 		   }*/
-		for (byte b : alphabet)//children.keySet())
+		for (final byte b : alphabet)//children.keySet())
 			{
-			double v = 0, v1 = 0;
+			double v = 0;
 			int unknown = 0;
 			try
 				{
@@ -376,6 +374,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				{
 				unknown++;
 				}
+			double v1 = 0;
 			try
 				{
 				v1 = other.probs.get(b);
@@ -392,12 +391,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				{
 				return false;
 				}
-			MarkovTreeNode node = null;
-			MarkovTreeNode node1 = null;
+			//MarkovTreeNode node = null;
+			//MarkovTreeNode node1 = null;
 			//	try
 			//		{
-			node = getChild(b);
-			node1 = other.getChild(b);
+			final MarkovTreeNode node = getChild(b);
+			final MarkovTreeNode node1 = other.getChild(b);
 			//		}
 			//	catch (SequenceSpectrumException e)
 			//		{
@@ -441,9 +440,9 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @throws edu.berkeley.compbio.ml.strings.SequenceSpectrumException
 	 *          when anything goes wrong
 	 */
-	public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
+	public Multinomial<Byte> conditionalsFrom(final byte[] prefix) throws SequenceSpectrumException
 		{
-		MarkovTreeNode node = get(prefix);
+		final MarkovTreeNode node = get(prefix);
 		if (node == null || node.probs == null)
 			{
 			throw new SequenceSpectrumException("Unknown probabilities at " + Arrays.toString(prefix));
@@ -461,7 +460,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
 	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
 	 */
-	public double fragmentLogProbability(SequenceFragment sequenceFragment, boolean perSample)
+	public double fragmentLogProbability(final SequenceFragment sequenceFragment, final boolean perSample)
 			throws SequenceSpectrumException
 		{
 		// the RonPSA implementation uses backlinks and so is vastly more efficient.
@@ -470,7 +469,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 		synchronized (sequenceFragment.getReaderForSynchronizing())  // because of resetting the reader
 			{
-			SequenceReader in;
+			final SequenceReader in;
 			try
 				{
 				in = sequenceFragment.getResetReader();
@@ -479,21 +478,22 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				{
 				throw new SequenceSpectrumRuntimeException(e);
 				}
-			int requiredPrefixLength = getMaxDepth() - 1;
+			final int requiredPrefixLength = getMaxDepth() - 1;
 			double logprob = 0;
-			CircularFifoBuffer prefix = new CircularFifoBuffer(requiredPrefixLength);
+			final CircularFifoBuffer prefix = new CircularFifoBuffer(requiredPrefixLength);
 
 			int samples = 0;
 			while (true)
 				{
 				try
 					{
-					byte c = in.read();
+					final byte c = in.read();
 
 					try
 						{
 						// PERF converting array prefix from circularFifoBuffer to byte[] is terribly inefficient
-						byte[] prefixAsBytes = DSArrayUtils.toPrimitive((Byte[]) prefix.toArray(new Byte[]{}));
+						final byte[] prefixAsBytes =
+								DSArrayUtils.toPrimitive((Byte[]) prefix.toArray(new Byte[prefix.size()]));
 
 						// these log probabilities could be cached, e.g. logConditionalProbability(c, prefix)
 						logprob += MathUtils.approximateLog(conditionalProbability(c, prefixAsBytes));
@@ -558,7 +558,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param prefix a byte array providing the conditioning prefix
 	 * @return the chosen symbol
 	 */
-	public byte sample(byte[] prefix) throws SequenceSpectrumRuntimeException
+	public byte sample(final byte[] prefix) throws SequenceSpectrumRuntimeException
 		{
 		try
 			{
@@ -585,7 +585,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param length the length of the desired random string
 	 * @return a byte[] of the desired length sampled from this distribution
 	 */
-	public byte[] sample(int length) throws SequenceSpectrumException
+	public byte[] sample(final int length) throws SequenceSpectrumException
 		{
 		throw new NotImplementedException();
 		/*
@@ -607,7 +607,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		 // do nothing
 		 }
  */
-	public void setIgnoreEdges(boolean ignoreEdges)
+	public void setIgnoreEdges(final boolean ignoreEdges)
 		{
 		// not relevant here...
 		}
@@ -638,7 +638,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param spectrum the SequenceSpectrum to compare
 	 * @return True if the spectra are equivalent, false otherwise
 	 */
-	public boolean spectrumEquals(SequenceSpectrum spectrum)
+	public boolean spectrumEquals(final SequenceSpectrum spectrum)
 		{
 		throw new NotImplementedException();
 		}
@@ -651,7 +651,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param prefix the sequence of symbols to follow from this node
 	 * @return the node at the end of the chain of transitions
 	 */
-	public MarkovTreeNode add(byte[] prefix) throws SequenceSpectrumException
+	public MarkovTreeNode add(final byte[] prefix) throws SequenceSpectrumException
 		{
 		if (prefix.length == 0)
 			{
@@ -675,10 +675,10 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param sigma the transition to follow from this node
 	 * @return the node at the other end of the transition
 	 */
-	public MarkovTreeNode addChild(byte sigma) throws SequenceSpectrumException
+	public MarkovTreeNode addChild(final byte sigma)
 		{
 		leaf = false;
-		int index = DSArrayUtils.indexOf(alphabet, sigma);
+		final int index = DSArrayUtils.indexOf(alphabet, sigma);
 		MarkovTreeNode result = children[index];
 		if (result == null)
 			{
@@ -693,7 +693,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		throw new NotImplementedException();
 		}
 
-	public double conditionalProbability(byte sigma) throws SequenceSpectrumException
+	public double conditionalProbability(final byte sigma) throws SequenceSpectrumException
 		{
 		try
 			{
@@ -706,13 +706,13 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		}
 
-	public double conditionalProbability(byte[] suffix, byte[] prefix) throws SequenceSpectrumException
+	public double conditionalProbability(final byte[] suffix, final byte[] prefix) throws SequenceSpectrumException
 		{
 		if (suffix.length == 0)
 			{
 			return 1;
 			}
-		byte sigma = suffix[0];
+		final byte sigma = suffix[0];
 		if (suffix.length == 1)
 			{
 			return conditionalProbability(sigma, prefix);
@@ -721,7 +721,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		                                                                      DSArrayUtils.append(prefix, sigma));
 		}
 
-	public double conditionalProbabilityByAlphabetIndex(int c)
+	public double conditionalProbabilityByAlphabetIndex(final int c)
 		{
 		try
 			{
@@ -757,10 +757,10 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * conditional probabilities according to the given spectrum.  That is: if this node has any children, ensures that
 	 * there is a child for each symbol in the alphabet.
 	 */
-	public void copyProbsFromSpectrumRecursively(SequenceSpectrum spectrum)
+	public void copyProbsFromSpectrumRecursively(final SequenceSpectrum spectrum)
 		//throws SequenceSpectrumException//DistributionException,
 		{
-		for (byte sigma : getAlphabet())
+		for (final byte sigma : getAlphabet())
 			{
 			// copy the probabilities regardless
 			double prob = 0;
@@ -804,7 +804,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 
 		// okay, but we still need to recurse to the children that do exist
-		for (MarkovTreeNode child : children)//.values())
+		for (final MarkovTreeNode child : children)//.values())
 			{
 			if (child != null)
 				{
@@ -813,7 +813,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		}
 
-	private void setProb(byte b, double prob) throws DistributionException
+	private void setProb(final byte b, final double prob) throws DistributionException
 		{
 		probs.put(b, prob);
 		}
@@ -821,7 +821,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public int countChildren()
 		{
 		int result = 0;
-		for (MarkovTreeNode n : children)
+		for (final MarkovTreeNode n : children)
 			{
 			if (n != null)
 				{
@@ -833,13 +833,13 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 	protected void diagnostics()
 		{
-		for (MarkovTreeNode node : getAllDownstreamNodes())
+		for (final MarkovTreeNode node : getAllDownstreamNodes())
 			{
 			total++;
 			if (node.isLeaf())
 				{
 				leaves++;
-				int depth = node.getIdBytes().length;//length();
+				final int depth = node.getIdBytes().length;//length();
 				avgdepth += depth;
 				maxdepth = Math.max(maxdepth, depth);
 				}
@@ -851,7 +851,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		//	logger.info("Learned Ron PST using params " + branchAbsoluteMin + " " + branchConditionalMin + " " + pRatioMinMax
 		//			+ " " + l_max);
 		logger.debug("Learned Ron PSA with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
-				+ ", max depth " + maxdepth);
+		             + ", max depth " + maxdepth);
 		if (logger.isTraceEnabled())
 			{
 			logger.trace("\n" + toLongString());
@@ -865,7 +865,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 */
 	public List<MarkovTreeNode> getAllDownstreamNodes()
 		{
-		List<MarkovTreeNode> result = new ArrayList<MarkovTreeNode>();
+		final List<MarkovTreeNode> result = new ArrayList<MarkovTreeNode>();
 
 		collectDownstreamNodes(result);
 		return result;
@@ -876,10 +876,10 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 *
 	 * @param nodeList a List to which to add this node and its children
 	 */
-	private void collectDownstreamNodes(List<MarkovTreeNode> nodeList)
+	private void collectDownstreamNodes(final List<MarkovTreeNode> nodeList)
 		{
 		nodeList.add(this);
-		for (MarkovTreeNode n : children)
+		for (final MarkovTreeNode n : children)
 			{
 			if (n != null)
 				{
@@ -895,22 +895,22 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 	public String toLongString()
 		{
-		StringBuffer sb = new StringBuffer();
-		Formatter formatter = new Formatter(sb, Locale.US);
+		final StringBuffer sb = new StringBuffer();
+		final Formatter formatter = new Formatter(sb, Locale.US);
 		appendString(formatter, "");
 		return sb.toString();
 		}
 
-	public void appendString(Formatter formatter, String indent)
+	public void appendString(final Formatter formatter, final String indent)
 		{
 		for (int i = 0; i < alphabet.length; i++)
 			{
-			byte b = alphabet[i];
+			final byte b = alphabet[i];
 			try
 				{
 				formatter.format("%s %3.3g -> %c\n", indent, probs.get(b), b);
 				//append(indent + probs.get(b) + " -> " + (char)b.byteValue() + "\n");
-				MarkovTreeNode child = children[i];
+				final MarkovTreeNode child = children[i];
 				if (child != null && child.getId().length() > getId().length())
 					{
 					child.appendString(formatter, indent + "     | ");
@@ -934,16 +934,16 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
 	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
 	 */
-	public double fragmentLogProbabilityFromIntKcount(SequenceFragment sequenceFragment)
+	public double fragmentLogProbabilityFromIntKcount(final SequenceFragment sequenceFragment)
 			throws SequenceSpectrumException
 		{
-		IntKcount kc = (IntKcount) sequenceFragment.getSpectrum(IntKcount.class, null);
+		final IntKcount kc = (IntKcount) sequenceFragment.getSpectrum(IntKcount.class, null);
 		//int k = kc.getK();
 
 		double result = 0;
 
 
-		for (byte[] firstWord : sequenceFragment.getFirstWords(kc.getK()))
+		for (final byte[] firstWord : sequenceFragment.getFirstWords(kc.getK()))
 			{
 			result += MathUtils.approximateLog(totalProbability(firstWord));
 			}
@@ -960,14 +960,14 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		   }*/
 
 
-		int[] counts = kc.getArray();
+		final int[] counts = kc.getArray();
 
 		for (int id = 0; id < counts.length; id++)
 			{
 			if (counts[id] > 0)
 				{
-				byte[] prefix = kc.prefixForId(id);
-				byte sigma = kc.lastSymbolForId(id);
+				final byte[] prefix = kc.prefixForId(id);
+				final byte sigma = kc.lastSymbolForId(id);
 
 				result += counts[id] * MathUtils.approximateLog(conditionalProbability(sigma, prefix));
 				}
@@ -982,18 +982,18 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param s a byte array
 	 * @return the probability, a double value between 0 and 1, inclusive
 	 */
-	public double totalProbability(byte[] s) throws SequenceSpectrumException
+	public double totalProbability(final byte[] s) throws SequenceSpectrumException
 		{
 		if (s.length == 0)
 			{
 			return 1;
 			}
-		return conditionalProbability(s, new byte[0]);
+		return conditionalProbability(s, DSArrayUtils.EMPTY_BYTE_ARRAY);
 		}
 
-	public double conditionalProbability(byte sigma, byte[] prefix) throws SequenceSpectrumException
+	public double conditionalProbability(final byte sigma, final byte[] prefix) throws SequenceSpectrumException
 		{
-		MarkovTreeNode node = get(prefix);
+		final MarkovTreeNode node = get(prefix);
 		if (node == null || node.probs == null)
 			{
 			throw new SequenceSpectrumException("Unknown probability: " + Arrays.toString(prefix) + " -> " + sigma);
@@ -1015,7 +1015,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param seq the sequence of symbols to follow from this node
 	 * @return the node at the end of the chain of transitions, or null if that leaf does not exist
 	 */
-	public MarkovTreeNode get(byte[] seq) throws SequenceSpectrumException
+	public MarkovTreeNode get(final byte[] seq) throws SequenceSpectrumException
 		{
 		if (seq.length == 0)
 			{
@@ -1023,7 +1023,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			return this;
 			}
 
-		MarkovTreeNode nextChild = children[DSArrayUtils.indexOf(alphabet, seq[0])];
+		final MarkovTreeNode nextChild = children[DSArrayUtils.indexOf(alphabet, seq[0])];
 
 		if (nextChild == null)
 			{
@@ -1051,15 +1051,14 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param descendantId the sequence to walk
 	 * @return the MarkovTreeNode
 	 */
-	public MarkovTreeNode getDescendant(byte[] descendantId)//throws SequenceSpectrumException
+	public MarkovTreeNode getDescendant(final byte[] descendantId)//throws SequenceSpectrumException
 		{
 		MarkovTreeNode result = this;
-		MarkovTreeNode next;
 
 		// this could also have been recursive, but that would have involved making each suffix byte[] explicitly
-		for (byte b : descendantId)
+		for (final byte b : descendantId)
 			{
-			next = result.getChild(b);
+			MarkovTreeNode next = result.getChild(b);
 			if (next == null)
 				{
 				return null;
@@ -1078,7 +1077,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return label;
 		}
 
-	public List<byte[]> getFirstWords(int k)
+	public List<byte[]> getFirstWords(final int k)
 		{
 		throw new NotImplementedException();
 		}
@@ -1089,15 +1088,14 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @param prefix the sequence to walk
 	 * @return the MarkovTreeNode
 	 */
-	public MarkovTreeNode getLongestPrefix(byte[] prefix) throws SequenceSpectrumException
+	public MarkovTreeNode getLongestPrefix(final byte[] prefix)
 		{
 		MarkovTreeNode result = this;
-		MarkovTreeNode next;
 
 		// this could also have been recursive, but that would have involved making each suffix byte[] explicitly
-		for (byte b : prefix)
+		for (final byte b : prefix)
 			{
-			next = result.getChild(b);
+			MarkovTreeNode next = result.getChild(b);
 			if (next == null)
 				{
 				return result;
@@ -1129,7 +1127,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public int getSubtreeNodes()
 		{
 		int result = 1;// this
-		for (MarkovTreeNode child : children)//.values())
+		for (final MarkovTreeNode child : children)//.values())
 			{
 			if (child != null)
 				{
@@ -1147,7 +1145,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	 * @return
 	 * @throws SequenceSpectrumException
 	 */
-	public double logConditionalProbability(byte sigma) throws SequenceSpectrumException
+	public double logConditionalProbability(final byte sigma) throws SequenceSpectrumException
 		{
 		try
 			{
@@ -1159,7 +1157,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			}
 		}
 
-	public double logConditionalProbabilityByAlphabetIndex(int c)
+	public double logConditionalProbabilityByAlphabetIndex(final int c)
 		{
 		return logprobs[c];
 		}
@@ -1193,7 +1191,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public void updateLogProbsRecursive()
 		{
 		updateLogProbs();
-		for (MarkovTreeNode child : children)//.values())
+		for (final MarkovTreeNode child : children)//.values())
 			{
 			if (child != null)
 				{

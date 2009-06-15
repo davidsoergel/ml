@@ -81,8 +81,8 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 	protected String id;
 	//protected int[] accepted;
 	//protected int[] proposed;
-	protected Map<Class<Move>, Integer> accepted = new HashMap<Class<Move>, Integer>();
-	protected Map<Class<Move>, Integer> proposed = new HashMap<Class<Move>, Integer>();
+	protected final Map<Class<Move>, Integer> accepted = new HashMap<Class<Move>, Integer>();
+	protected final Map<Class<Move>, Integer> proposed = new HashMap<Class<Move>, Integer>();
 
 	protected boolean isColdest = true;
 
@@ -122,7 +122,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		return dataCollector;
 		}
 
-	public void setDataCollector(DataCollector dc)
+	public void setDataCollector(final DataCollector dc)
 		{
 		this.dataCollector = dc;
 		}
@@ -144,7 +144,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		return heatFactor;
 		}
 
-	public void setHeatFactor(double t)
+	public void setHeatFactor(final double t)
 		{
 		heatFactor = t;
 		}
@@ -154,7 +154,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		return id;
 		}
 
-	public void setId(String id)
+	public void setId(final String id)
 		{
 		this.id = id;
 		}
@@ -164,7 +164,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		return movetypes;
 		}
 
-	public void setMovetypes(MoveTypeSet movetypes)
+	public void setMovetypes(final MoveTypeSet movetypes)
 		{
 		this.movetypes = movetypes;
 		}
@@ -208,14 +208,14 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		{
 		step++;// make the modulos and outputs appear 1-based
 		//logger.debug(String.format("[ %s ] Doing step %d: %d, %d", getId(), step, writeToConsoleInterval, collectDataToDiskInterval));
-		boolean writeToConsole = writeToConsoleInterval != 0 && ((step % writeToConsoleInterval) == 0);
-		boolean collectDataToDisk = collectDataToDiskInterval != 0 && ((step % collectDataToDiskInterval) == 0);
+		final boolean writeToConsole = writeToConsoleInterval != 0 && ((step % writeToConsoleInterval) == 0);
+		final boolean collectDataToDisk = collectDataToDiskInterval != 0 && ((step % collectDataToDiskInterval) == 0);
 
 
-		MonteCarloState currentState = getCurrentState();
-		MonteCarloState newState;
+		final MonteCarloState currentState = getCurrentState();
+		final MonteCarloState newState;
 
-		Move m = movetypes.newMove(currentState);
+		final Move m = movetypes.newMove(currentState);
 		if (m instanceof EnergyMove)
 			{
 			//throw new Error("EnergyMoves are currently prohibited, pending refactoring");
@@ -227,7 +227,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			newState = ((ProbabilityMove) m).doMove(heatFactor);
 			}
 
-		Class movetype = m.getClass();
+		final Class movetype = m.getClass();
 
 		proposedCount++;
 		//proposed[movetype]++;
@@ -248,9 +248,9 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 				currentState.writeToDataCollector(step, dataCollector);
 				}
 
-			for (GenericFactory<Move> f : movetypes.getFactories())
+			for (final GenericFactory<Move> f : movetypes.getFactories())
 				{
-				Class c = f.getCreatesClass();
+				final Class c = f.getCreatesClass();
 				dataCollector.setTimecourseValue(id + "." + c.getSimpleName() + ".proposed", proposed.get(c));
 				dataCollector.setTimecourseValue(id + "." + c.getSimpleName() + ".accepted", accepted.get(c));
 				}
@@ -263,12 +263,12 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			logger.debug(
 					"[ " + id + " ] Accepted " + acceptedCount + " out of " + proposedCount + " proposed total moves.");
 
-			for (GenericFactory<Move> f : movetypes.getFactories())
+			for (final GenericFactory<Move> f : movetypes.getFactories())
 				{
-				Class c = f.getCreatesClass();
+				final Class c = f.getCreatesClass();
 				logger.debug(
 						"[ " + id + " ] Accepted " + accepted.get(c) + " out of " + proposed.get(c) + " proposed " + c
-								+ " moves.");
+						+ " moves.");
 				}
 			//System.out.println("\n\n");
 			//acceptedCount = writeToConsoleInterval;
@@ -312,7 +312,7 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 		//Arrays.fill(accepted, 0);
 		//	proposed.clear();
 		//	accepted.clear();
-		for (Class c : movetypes.pluginMap.getAvailablePlugins())
+		for (final Class c : movetypes.pluginMap.getAvailablePlugins())
 			{
 			proposed.put(c, 0);
 			accepted.put(c, 0);
@@ -333,12 +333,12 @@ public abstract class MonteCarlo//<T extends MonteCarloState>
 			}
 		}
 
-	public void setColdest(boolean coldest)
+	public void setColdest(final boolean coldest)
 		{
 		isColdest = coldest;
 		}
 
-	public double unnormalizedLogLikelihood(MonteCarloState mcs)
+	public double unnormalizedLogLikelihood(final MonteCarloState mcs)
 		{
 		//return Math.pow(mcs.unnormalizedLikelihood(), (1./heatFactor));
 		logger.debug(String.format("unnormalizedLogLikelihood: %f, heatFactor = %f, product = %f",

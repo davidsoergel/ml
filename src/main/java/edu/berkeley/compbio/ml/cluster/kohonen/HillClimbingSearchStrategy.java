@@ -59,7 +59,7 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 		 {
 		 searchRadius = i;
 		 }
- */ KohonenSOM2DSearchStrategy<T> fallbackStrategy = new CoarseGridSearchStrategy<T>();
+ */ final KohonenSOM2DSearchStrategy<T> fallbackStrategy = new CoarseGridSearchStrategy<T>();
 
 
 // -------------------------- OTHER METHODS --------------------------
@@ -71,11 +71,11 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 	 * @return
 	 */
 	@Override
-	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(T p) throws NoGoodClusterException
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(final T p) throws NoGoodClusterException
 		{
-		ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
+		final ClusterMove<T, KohonenSOMCell<T>> result = new ClusterMove<T, KohonenSOMCell<T>>();
 
-		String id = p.getId();
+		final String id = p.getId();
 		result.oldCluster = som.getAssignment(id);
 
 		if (result.oldCluster == null)
@@ -87,10 +87,10 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 			{
 			logger.trace("Choosing best cluster for " + p + " (previous = " + result.oldCluster + ")");
 			}
-		KohonenSOM2D<T>.WeightedMask mask = som.getWeightedMask((int) getSearchRadius());
+		final KohonenSOM2D<T>.WeightedMask mask = som.getWeightedMask((int) getSearchRadius());
 
 
-		Set<CentroidCluster<T>> alreadyTested = new HashSet<CentroidCluster<T>>(10);
+		final Set<CentroidCluster<T>> alreadyTested = new HashSet<CentroidCluster<T>>(10);
 
 		result.bestCluster = result.oldCluster;
 		result.bestDistance = measure.distanceFromTo(p, result.bestCluster.getCentroid());
@@ -100,14 +100,13 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 		while (changed)
 			{
 			changed = false;
-			for (Iterator<KohonenSOM2D<T>.WeightedCell> i = mask.iterator((KohonenSOMCell<T>) result.bestCluster);
-			     i.hasNext();)
+			for (Iterator<KohonenSOM2D<T>.WeightedCell> i = mask.iterator(result.bestCluster); i.hasNext();)
 				{
-				KohonenSOMCell<T> c = i.next().theCell;
+				final KohonenSOMCell<T> c = i.next().theCell;
 				if (!alreadyTested.contains(c))
 					{
 					alreadyTested.add(c);
-					double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
+					final double d = measure.distanceFromTo(p, c.getCentroid());//c.distanceToCentroid(p);
 					if (d < result.bestDistance)
 						{
 						result.secondBestDistance = result.bestDistance;
@@ -141,7 +140,7 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 		}
 
 	@Override
-	public void setDistanceMeasure(DissimilarityMeasure<T> dissimilarityMeasure)
+	public void setDistanceMeasure(final DissimilarityMeasure<T> dissimilarityMeasure)
 		{
 		super.setDistanceMeasure(dissimilarityMeasure);
 		fallbackStrategy.setDistanceMeasure(dissimilarityMeasure);
@@ -157,7 +156,7 @@ public class HillClimbingSearchStrategy<T extends AdditiveClusterable<T>> extend
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setSOM(KohonenSOM2D<T> som)
+	public void setSOM(final KohonenSOM2D<T> som)
 		{
 		super.setSOM(som);
 

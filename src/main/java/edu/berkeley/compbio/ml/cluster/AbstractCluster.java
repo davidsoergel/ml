@@ -14,8 +14,8 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	/**
 	 * The unique integer identifier of this cluster
 	 */
-	protected int id;
-	protected WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+	protected final int id;
+	protected final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
 
 	/**
@@ -28,7 +28,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public AbstractCluster(int id)
+	public AbstractCluster(final int id)
 		{
 		this.id = id;
 		}
@@ -46,7 +46,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setDerivedLabelProbabilities(WeightedSet<String> derivedLabelProbabilities)
+	public void setDerivedLabelProbabilities(final WeightedSet<String> derivedLabelProbabilities)
 		{
 		this.derivedLabelProbabilities = derivedLabelProbabilities;
 		}
@@ -62,11 +62,11 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setId(int id)
+/*	public void setId(final int id)
 		{
 		this.id = id;
 		}
-
+*/
 	public WeightedSet<String> getWeightedLabels()
 		{
 		return weightedLabels;
@@ -99,7 +99,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean add(T point)
+	public boolean add(final T point)
 		{
 		weightedLabels.addAll(point.getWeightedLabels());
 		return true;
@@ -108,7 +108,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean addAll(Cluster<T> otherCluster)
+	public boolean addAll(final Cluster<T> otherCluster)
 		{
 		weightedLabels.addAll(otherCluster.getWeightedLabels());
 		return true;
@@ -117,7 +117,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean remove(T point)
+	public boolean remove(final T point)
 		{
 		weightedLabels.removeAll(point.getWeightedLabels());
 		return true;
@@ -126,7 +126,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean removeAll(Cluster<T> otherCluster)
+	public boolean removeAll(final Cluster<T> otherCluster)
 		{
 		weightedLabels.removeAll(otherCluster.getWeightedLabels());
 		return true;
@@ -134,7 +134,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 
 // -------------------------- OTHER METHODS --------------------------
 
-	public int compareTo(Cluster<T> o)
+	public int compareTo(final Cluster<T> o)
 		{
 		return id - o.getId();
 		}

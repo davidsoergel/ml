@@ -45,6 +45,7 @@ import com.davidsoergel.stats.Multinomial;
 import com.davidsoergel.stats.MutableDistribution;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Formatter;
 import java.util.HashSet;
@@ -86,12 +87,14 @@ public class RonPST extends RonPSTNode
 
 	private String label;
 
-	private WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+	private final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
 	private int originalSequenceLength;
 
 	// diagnostics
-	private int total = 0, leaves = 0, maxdepth = 0;
+	private int total = 0;
+	private int leaves = 0;
+	//private int maxdepth = 0;
 	private double avgdepth = 0;
 
 
@@ -136,8 +139,8 @@ public class RonPST extends RonPSTNode
 	 */
 
 
-	public RonPST(double branchAbsoluteMin, double branchConditionalMin, double pRatioMinMax, int l_max,
-	              SequenceSpectrum prob)
+	public RonPST(final double branchAbsoluteMin, final double branchConditionalMin, final double pRatioMinMax,
+	              final int l_max, final SequenceSpectrum prob)
 		//throws SequenceSpectrumException//DistributionException,
 		{
 		this();
@@ -152,10 +155,10 @@ public class RonPST extends RonPSTNode
 		   learn(pMin, alpha, pRatioMinMax, gammaMin, l_max, prob);
 		   }*/
 
-	private void learn(double branchAbsoluteMin, double branchConditionalMin, double pRatioMinMax, int l_max,
-	                   SequenceSpectrum fromSpectrum)
+	private void learn(final double branchAbsoluteMin, final double branchConditionalMin, final double pRatioMinMax,
+	                   final int l_max, final SequenceSpectrum fromSpectrum)
 		{
-		setId(new byte[]{});
+		setId(DSArrayUtils.EMPTY_BYTE_ARRAY);
 		setAlphabet(fromSpectrum.getAlphabet());
 
 		/*
@@ -171,11 +174,11 @@ public class RonPST extends RonPSTNode
 
 		// Step 1
 
-		Set<byte[]> remainingSequences = new HashSet<byte[]>();
+		final Set<byte[]> remainingSequences = new HashSet<byte[]>();
 
-		for (byte c : fromSpectrum.getAlphabet())
+		for (final byte c : fromSpectrum.getAlphabet())
 			{
-			byte[] s = new byte[]{c};
+			final byte[] s = new byte[]{c};
 			try
 				{
 				if (fromSpectrum.totalProbability(s) >= branchAbsoluteMin)//pMin)
@@ -195,26 +198,27 @@ public class RonPST extends RonPSTNode
 
 		while (!remainingSequences.isEmpty())
 			{
-			byte[] s = remainingSequences.iterator().next();
+			final byte[] s = remainingSequences.iterator().next();
 
 			// A)
 			remainingSequences.remove(s);
 
 			// B)
-			for (byte sigma : fromSpectrum.getAlphabet())
+			for (final byte sigma : fromSpectrum.getAlphabet())
 				{
 				try
 					{
-					double conditional = fromSpectrum.conditionalProbability(sigma, s);
-					double suffixConditional = fromSpectrum.conditionalProbability(sigma, DSArrayUtils.suffix(s, 1));
+					final double conditional = fromSpectrum.conditionalProbability(sigma, s);
+					final double suffixConditional =
+							fromSpectrum.conditionalProbability(sigma, DSArrayUtils.suffix(s, 1));
 
-					double probRatio = conditional / suffixConditional;
+					final double probRatio = conditional / suffixConditional;
 					//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
 					if ((conditional >= branchConditionalMin)// (1. + alpha) * gammaMin)
-							&&
-							// for some reason Ron et al only want to test this one way, but Bejerano, Kermorvant, etc.
-							// do it both ways, and that makes more sense anyway
-							((probRatio >= pRatioMinMax) || (probRatio <= (1. / pRatioMinMax))))
+					    &&
+					    // for some reason Ron et al only want to test this one way, but Bejerano, Kermorvant, etc.
+					    // do it both ways, and that makes more sense anyway
+					    ((probRatio >= pRatioMinMax) || (probRatio <= (1. / pRatioMinMax))))
 						{
 						//	logger.debug("" + conditional + " / " + suffixConditional + " = " + probRatio);
 						addAllSuffixes(s);
@@ -234,9 +238,9 @@ public class RonPST extends RonPSTNode
 			// from the backoff.  The reason for this is that we may discover an anomalous distribution at the 8th character in a case where 4-7 were uninformative.
 			if (s.length < l_max)
 				{
-				for (byte sigma2 : fromSpectrum.getAlphabet())
+				for (final byte sigma2 : fromSpectrum.getAlphabet())
 					{
-					byte[] s2 = DSArrayUtils.prepend(sigma2, s);
+					final byte[] s2 = DSArrayUtils.prepend(sigma2, s);
 					try
 						{
 						if (fromSpectrum.totalProbability(s2) >= branchAbsoluteMin)//pMin)
@@ -323,13 +327,13 @@ public class RonPST extends RonPSTNode
 
 	private void diagnostics()
 		{
-		for (RonPSTNode node : getAllUpstreamNodes())
+		for (final RonPSTNode node : getAllUpstreamNodes())
 			{
 			total++;
 			if (node.isLeaf())
 				{
 				leaves++;
-				int depth = node.getIdBytes().length;//length();
+				final int depth = node.getIdBytes().length;//length();
 				avgdepth += depth;
 				//maxdepth = Math.max(maxdepth, depth);
 				}
@@ -340,7 +344,7 @@ public class RonPST extends RonPSTNode
 		//	logger.info("Learned Ron PST using params " + branchAbsoluteMin + " " + branchConditionalMin + " " + pRatioMinMax
 		//			+ " " + l_max);
 		logger.debug("Learned Ron PST with " + total + " nodes, " + leaves + " leaves, avg depth " + avgdepth
-				+ ", max depth " + getMaxDepth());
+		             + ", max depth " + getMaxDepth());
 		if (logger.isTraceEnabled())
 			{
 			logger.trace("\n" + toLongString());
@@ -349,8 +353,8 @@ public class RonPST extends RonPSTNode
 
 	public String toLongString()
 		{
-		StringBuffer sb = new StringBuffer();
-		Formatter formatter = new Formatter(sb, Locale.US);
+		final StringBuffer sb = new StringBuffer();
+		final Formatter formatter = new Formatter(sb, Locale.US);
 		appendString(formatter, "");
 		return sb.toString();
 		}
@@ -370,12 +374,13 @@ public class RonPST extends RonPSTNode
 		return originalSequenceLength;
 		}
 
+	@NotNull
 	public WeightedSet<String> getWeightedLabels()
 		{
 		return weightedLabels;
 		}
 
-	public void setLabel(String label)
+	public void setLabel(final String label)
 		{
 		this.label = label;
 		}
@@ -403,7 +408,7 @@ public class RonPST extends RonPSTNode
 // --------------------- Interface AdditiveClusterable ---------------------
 
 
-	public void decrementBy(RonPST object)
+	public void decrementBy(final RonPST object)
 		{
 		throw new NotImplementedException();
 		}
@@ -411,20 +416,12 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public void decrementByWeighted(RonPST object, double weight)
+	public void decrementByWeighted(final RonPST object, final double weight)
 		{
 		throw new NotImplementedException();
 		}
 
-	public void incrementBy(RonPST object)
-		{
-		throw new NotImplementedException();
-		}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void incrementByWeighted(RonPST object, double weight)
+	public void incrementBy(final RonPST object)
 		{
 		throw new NotImplementedException();
 		}
@@ -432,7 +429,7 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public RonPST minus(RonPST object)
+	public void incrementByWeighted(final RonPST object, final double weight)
 		{
 		throw new NotImplementedException();
 		}
@@ -440,7 +437,7 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public void multiplyBy(double v)
+	public RonPST minus(final RonPST object)
 		{
 		throw new NotImplementedException();
 		}
@@ -448,7 +445,7 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public RonPST plus(RonPST object)
+	public void multiplyBy(final double v)
 		{
 		throw new NotImplementedException();
 		}
@@ -456,14 +453,22 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public RonPST times(double v)
+	public RonPST plus(final RonPST object)
+		{
+		throw new NotImplementedException();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public RonPST times(final double v)
 		{
 		throw new NotImplementedException();
 		}
 
 // --------------------- Interface Clusterable ---------------------
 
-	public boolean equalValue(RonPST other)
+	public boolean equalValue(final RonPST other)
 		{
 		throw new NotImplementedException();
 		}
@@ -480,7 +485,7 @@ public class RonPST extends RonPSTNode
 	 * @return the conditional probability, a double value between 0 and 1, inclusive
 	 * @see #fragmentLogProbability(SequenceFragment, boolean)
 	 */
-	public double conditionalProbability(byte sigma, byte[] prefix) throws SequenceSpectrumException
+	public double conditionalProbability(final byte sigma, final byte[] prefix) throws SequenceSpectrumException
 		{
 		//return getLongestSuffix(ArrayUtils.append(prefix, sigma)).conditionalProbability(sigma);
 		try
@@ -501,7 +506,7 @@ public class RonPST extends RonPSTNode
 	 * @param prefix a byte array providing the conditioning prefix
 	 * @return the Multinomial conditional distribution of symbols following the given prefix
 	 */
-	public Multinomial<Byte> conditionalsFrom(byte[] prefix) throws SequenceSpectrumException
+	public Multinomial<Byte> conditionalsFrom(final byte[] prefix) throws SequenceSpectrumException
 		{
 		return getLongestSuffix(prefix).getProbs();
 		}
@@ -516,7 +521,7 @@ public class RonPST extends RonPSTNode
 	 * @param sequenceFragment the SequenceFragment whose probability is to be computed
 	 * @return the natural logarithm of the conditional probability (a double value between 0 and 1, inclusive)
 	 */
-	public double fragmentLogProbability(SequenceFragment sequenceFragment, boolean perSample)
+	public double fragmentLogProbability(final SequenceFragment sequenceFragment, final boolean perSample)
 			throws SequenceSpectrumException
 		{
 		throw new NotImplementedException();
@@ -543,7 +548,7 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public byte sample(byte[] prefix) throws SequenceSpectrumException
+	public byte sample(final byte[] prefix) throws SequenceSpectrumException
 		{
 		try
 			{
@@ -559,7 +564,7 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public byte[] sample(int length) throws SequenceSpectrumException
+	public byte[] sample(final int length) throws SequenceSpectrumException
 		{
 		throw new NotImplementedException();
 		}
@@ -567,7 +572,7 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setIgnoreEdges(boolean b)
+	public void setIgnoreEdges(final boolean b)
 		{
 		throw new NotImplementedException();
 		}
@@ -583,7 +588,7 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean spectrumEquals(SequenceSpectrum spectrum)
+	public boolean spectrumEquals(final SequenceSpectrum spectrum)
 		{
 		throw new NotImplementedException();
 		}
@@ -591,7 +596,7 @@ public class RonPST extends RonPSTNode
 	/**
 	 * {@inheritDoc}
 	 */
-	public double totalProbability(byte[] s) throws SequenceSpectrumException
+	public double totalProbability(final byte[] s) throws SequenceSpectrumException
 		{
 		double result = 1.;
 		// PERF inefficient due to allocating a separate byte[] for each prefix
@@ -636,12 +641,12 @@ public class RonPST extends RonPSTNode
 		 }
  */
 
-	private RonPSTNode getLongestSuffix(byte[] bytes) throws SequenceSpectrumException
+	private RonPSTNode getLongestSuffix(final byte[] bytes) throws SequenceSpectrumException
 		{
 		RonPSTNode currentNode = this;
 		for (int i = bytes.length - 1; i >= 0; i--)
 			{
-			RonPSTNode nextNode = currentNode.getUpstreamNode(bytes[i]);
+			final RonPSTNode nextNode = currentNode.getUpstreamNode(bytes[i]);
 			if (nextNode == null)
 				{
 				return currentNode;
