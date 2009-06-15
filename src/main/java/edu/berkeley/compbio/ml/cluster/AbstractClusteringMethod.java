@@ -212,21 +212,23 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 		computeTrainingMass(tr);
 
-		// these are used for checking whether a sample should have been unknown or not
-		final Map<String, Set<String>> populatedPredictLabelSets = findPopulatedPredictLabelSets();
+		// prepare a tree for all prediction labels, whether they're populated or not
 
 		if (intraLabelDistances instanceof RequiresPreparationDistanceMetric
 		    && ((RequiresPreparationDistanceMetric) intraLabelDistances).reallyRequiresPreparation())
 			{
 			final Set<String> allLabels = new HashSet<String>();
 			allLabels.addAll(testLabels);
-			for (final Set<String> predictLabels : populatedPredictLabelSets.values())
+			for (final Set<String> predictLabels : predictLabelSets.values())
 				{
 				allLabels.addAll(predictLabels);
 				}
 
 			((RequiresPreparationDistanceMetric<String>) intraLabelDistances).prepare(allLabels);
 			}
+
+		// these are used for checking whether a sample should have been unknown or not
+		final Map<String, Set<String>> populatedPredictLabelSets = findPopulatedPredictLabelSets();
 
 		// classify the test samples
 
