@@ -193,6 +193,10 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		return result;
 		}
 
+	public int getCount(L actual, L predicted)
+		{
+		return confusionMatrix.get(actual).count(predicted);
+		}
 
 	public float specificity(final L label)
 		{

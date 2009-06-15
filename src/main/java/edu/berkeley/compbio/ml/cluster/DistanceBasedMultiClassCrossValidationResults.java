@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -106,6 +107,17 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		resultsNode.addChild(keyPath, "predictedCounts", DSArrayUtils.castToDouble(getPredictedCounts()));
 		resultsNode.addChild(keyPath, "actualCounts", DSArrayUtils.castToDouble(getActualCounts()));
 
+		List<Integer> flattenedConfusionMatrix = new ArrayList<Integer>();
+		SortedSet<L> labels = getLabels();
+		for (L actualLabel : labels)
+			{
+			for (L predictedLabel : labels)
+				{
+				flattenedConfusionMatrix.add(getCount(actualLabel, predictedLabel));
+				}
+			}
+
+		resultsNode.addChild(keyPath, "confusionMatrix", DSArrayUtils.toPrimitiveArray(flattenedConfusionMatrix));
 		/*	for(L label : getLabels())
 		   {
 		   asdf
