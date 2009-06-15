@@ -111,7 +111,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 * @param length        the length of this sequence
 	 */
 	public SequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName, final int startPosition,
-	                        final int length, @NotNull final SequenceSpectrumScanner scanner)
+	                        final int length, final SequenceSpectrumScanner scanner)
 		{
 		this(parent, sequenceName, startPosition, null, 0, scanner, length);
 
@@ -123,8 +123,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		}
 
 	public SequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName, final int startPosition,
-	                        @NotNull final SequenceReader in, final int desiredlength,
-	                        @NotNull final SequenceSpectrumScanner scanner)
+	                        final SequenceReader in, final int desiredlength, final SequenceSpectrumScanner scanner)
 		{
 		this(parent, sequenceName, startPosition, in, desiredlength, scanner, UNKNOWN_LENGTH);
 		}
@@ -147,8 +146,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *                                    sequence)
 	 */
 	public SequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName, final int startPosition,
-	                        @NotNull final SequenceReader in, final int desiredlength,
-	                        @NotNull final SequenceSpectrumScanner scanner, final int length)
+	                        final SequenceReader in, final int desiredlength, final SequenceSpectrumScanner scanner,
+	                        final int length)
 		{
 		super(parent, sequenceName, null, startPosition, length);
 
