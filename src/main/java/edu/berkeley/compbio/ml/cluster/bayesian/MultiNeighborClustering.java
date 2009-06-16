@@ -2,8 +2,10 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.dsutils.collections.HashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
+import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
+import com.google.common.base.Function;
 import com.google.common.collect.TreeMultimap;
 import edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
@@ -14,6 +16,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Note we use CentroidClusters internally, but th e centroids are in fact just the training samples, not new
@@ -103,35 +107,24 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 
 		//	ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
 
+		final AtomicInteger i = new AtomicInteger(0);
 
-		try
+		Parallel.forEach(trainingIterator, new Function<T, Void>()
+		{
+		public Void apply(@Nullable final T point)
 			{
-			int i = 0;
-			while (true)
-				{
-				final T point = trainingIterator.next();
-				final int clusterId = i++;
-				//		execService.submit(new Runnable()
-				//		{
-				//		public void run()
-				//			{
+			final int clusterId = i.incrementAndGet();
+			//		execService.submit(new Runnable()
+			//		{
+			//		public void run()
+			//			{
 
-				// generate one "cluster" per training sample.
-				final CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
-				addCluster(cluster);
-				}
+			// generate one "cluster" per training sample.
+			final CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
+			addCluster(cluster);
+			return null;
 			}
-
-		catch (NoSuchElementException e)
-			{
-			// iterator exhausted
-			}
-		//	});
-		//	}
-
-		//execService.finish("Processed %d training samples", 30);
-
-		//preparePriors();
+		});
 		}
 
 
