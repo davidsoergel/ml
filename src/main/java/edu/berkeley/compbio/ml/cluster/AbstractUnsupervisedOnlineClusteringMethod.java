@@ -3,7 +3,6 @@ package edu.berkeley.compbio.ml.cluster;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import org.apache.log4j.Logger;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -73,7 +72,7 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 		final ClusterableIterator<T> trainingIterator = trainingCollectionIteratorFactory.next();
 		//normalizeClusters();
 		int c = 0;
-		final Date starttime = new Date();
+//		final Date starttime = new Date();
 		//secondBestDistances.clear();
 		try
 			{

@@ -5,6 +5,7 @@ import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.TreeMultimap;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
@@ -17,7 +18,6 @@ import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -128,14 +128,17 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			            + " labels were trained");
 
 
-			clusterPriors = new HashMap<Cluster<T>, Double>();
+			final ImmutableMap.Builder<Cluster<T>, Double> builder = ImmutableMap.builder();
+
 			final Multinomial<String> labelPriors = new Multinomial<String>(populatedTrainingLabels);
 			for (final CentroidCluster<T> theCluster : immutableClusters)
 				{
 				final String label =
 						theCluster.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins); // PERF redundant
-				clusterPriors.put(theCluster, labelPriors.get(label));
+				builder.put(theCluster, labelPriors.get(label));
 				}
+
+			clusterPriors = builder.build();
 			}
 		catch (DistributionException e)
 			{

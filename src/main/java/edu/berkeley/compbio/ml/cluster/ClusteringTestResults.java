@@ -81,7 +81,7 @@ public class ClusteringTestResults<L extends Comparable>
 		}
 // --------------------- GETTER / SETTER METHODS ---------------------
 
-	public int getNumClusters()
+	public synchronized int getNumClusters()
 		{
 		return numClusters;
 		}
@@ -103,7 +103,7 @@ public class ClusteringTestResults<L extends Comparable>
 		}
 
 
-	public int getTestSamples()
+	public synchronized int getTestSamples()
 		{
 		return testSamples;
 		}
@@ -289,24 +289,24 @@ public class ClusteringTestResults<L extends Comparable>
 			}
 		}*/
 
-	public Double[] getBestVoteProportionsArray()
+	public synchronized Double[] getBestVoteProportionsArray()
 		{
 		return bestVoteProportions == null ? null : bestVoteProportions.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
-	public Double[] getComputedDistancesArray()
+	public synchronized Double[] getComputedDistancesArray()
 		{
 		return computedDistances == null ? null : computedDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
 
-	public Double[] getSecondToBestDistanceRatiosArray()
+	public synchronized Double[] getSecondToBestDistanceRatiosArray()
 		{
 		return secondToBestDistanceRatios == null ? null :
 		       secondToBestDistanceRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
-	public Double[] getSecondToBestVoteRatiosArray()
+	public synchronized Double[] getSecondToBestVoteRatiosArray()
 		{
 		return secondToBestVoteRatios == null ? null :
 		       secondToBestVoteRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);

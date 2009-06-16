@@ -38,6 +38,7 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
+import com.google.common.collect.ImmutableMap;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -189,7 +190,14 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				// iterator exhausted
 				}
 			priorsMult.normalize();
-			clusterPriors = priorsMult.getValueMap();
+
+
+//			clusterPriors = priorsMult.getValueMap();
+
+			final ImmutableMap.Builder<Cluster<T>, Double> builder = ImmutableMap.builder();
+			clusterPriors = builder.putAll(priorsMult.getValueMap()).build();
+
+
 //theClusters = theSubclusteringMap.values();
 
 			for (final Map.Entry<String, GrowableKmeansClustering<T>> entry : theSubclusteringMap.entrySet())

@@ -1,6 +1,5 @@
 package edu.berkeley.compbio.ml.cluster.svm;
 
-import com.davidsoergel.dsutils.concurrent.DepthFirstThreadPoolExecutor;
 import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
 import com.davidsoergel.stats.DissimilarityMeasure;
@@ -193,12 +192,13 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		//svm.setupQMatrix(problem);
 		logger.debug("Performing multiclass training");
 
-		final DepthFirstThreadPoolExecutor execService = DepthFirstThreadPoolExecutor.getInstance();
+		//final DepthFirstThreadPoolExecutor execService = DepthFirstThreadPoolExecutor.getInstance();
 
 		//	DepthFirstThreadPoolExecutor execService = new DepthFirstThreadPoolExecutor(nrThreads, nrThreads * 2);
-		model = svm.train(problem, param, execService);
+		model = svm.train(problem, param); //, execService);
 
 		//trainingStats = execService.shutdown();
+		//execService.shutdown();
 
 		if (leaveOneOutLabels != null)
 			{

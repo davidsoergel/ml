@@ -3,6 +3,7 @@ package edu.berkeley.compbio.ml.cluster;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.Multinomial;
+import com.google.common.collect.ImmutableMap;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
@@ -66,7 +67,8 @@ public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Cluster
 				priorsMult.put(cluster, 1);
 				}
 			priorsMult.normalize();
-			clusterPriors = priorsMult.getValueMap();
+			final ImmutableMap.Builder<Cluster<T>, Double> builder = ImmutableMap.builder();
+			clusterPriors = builder.putAll(priorsMult.getValueMap()).build();
 			}
 		catch (DistributionException e)
 			{
