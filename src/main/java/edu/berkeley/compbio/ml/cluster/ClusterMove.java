@@ -32,9 +32,6 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-
 /**
  * Represents a potential move of a sample from one cluster to another.  Doesn't actually refer to the sample itself,
  * strangely; apparently we haven't needed that yet.
@@ -45,18 +42,18 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> implements Comparable<ClusterMove<T, C>>
 	{
 
-	final static AtomicLong idCounter = new AtomicLong();
+//	final static AtomicLong idCounter = new AtomicLong();
 
-	// globally unique id for hashCode efficiency
+	// globally unique id for hashCode efficiency ?? no, default Object.hashcode() should be fine
 
-	private final long id;
+//	private final long id;
 
 	public ClusterMove()
 		{
-		id = idCounter.incrementAndGet();
+		//	id = idCounter.incrementAndGet();
 		}
 
-	@Override
+/*	@Override
 	public boolean equals(final Object o)
 		{
 		if (this == o)
@@ -84,7 +81,7 @@ public class ClusterMove<T extends Clusterable<T>, C extends Cluster<T>> impleme
 		int result;
 		result = (int) (id ^ (id >>> 32));
 		return result;
-		}
+		}*/
 // ------------------------------ FIELDS ------------------------------
 
 	/**
