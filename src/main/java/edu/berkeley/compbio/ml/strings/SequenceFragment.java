@@ -42,6 +42,7 @@ import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
 import edu.berkeley.compbio.sequtils.SequenceException;
 import edu.berkeley.compbio.sequtils.SequenceFragmentMetadata;
 import edu.berkeley.compbio.sequtils.SequenceReader;
+import edu.berkeley.compbio.sequtils.TranslationException;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -224,6 +225,47 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		return length;
 		}
+
+	// ** should be weak
+	byte[] translatedSequence = null;
+
+	protected synchronized void rescanTranslatedSequence()
+		{
+		try
+			{
+			if (theReader != null)
+				{
+				translatedSequence = new byte[desiredlength];
+
+				theReader.seek(parentMetadata, startPosition);
+				for (int i = 0; i < desiredlength; i++)
+					{
+					translatedSequence[i] = (byte) theReader.readTranslated();
+					}
+				}
+			}
+		catch (NotEnoughSequenceException e)
+			{
+			logger.error("Error", e);
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		catch (TranslationException e)
+			{
+			logger.error("Error", e);
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		catch (IOException e)
+			{
+			logger.error("Error", e);
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		catch (FilterException e)
+			{
+			logger.error("Error", e);
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		}
+
 
 	protected synchronized void rescan() throws NotEnoughSequenceException
 		{
@@ -905,5 +947,23 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			// the object being compared doesn't even have a base spectrum of the proper type, so it's definitely not equal
 			return false;
 			}
+		}
+
+	public void setTranslationAlphabet(final byte[] alphabet)
+		{
+		// perf
+		if (theReader.setTranslationAlphabet(alphabet))
+			{
+			translatedSequence = null;
+			}
+		}
+
+	public byte[] getTranslatedSequence(final byte[] alphabet)
+		{
+		if (translatedSequence == null)
+			{
+			rescanTranslatedSequence();
+			}
+		return translatedSequence;
 		}
 	}
