@@ -48,7 +48,7 @@ import java.util.Iterator;
  * @version $Id$
  */
 public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends BasicPhylogenyNode<CentroidCluster<T>>
-		implements CentroidCluster<T>
+		implements CentroidCluster<T>, Comparable<HierarchicalCentroidCluster<T>>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -295,5 +295,13 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 			{
 			sb.append(":").append(bootstrap);
 			}
+		}
+
+	public int compareTo(final HierarchicalCentroidCluster<T> o)
+		{
+		final int id = getId();
+		final int oid = o.getId();
+
+		return (id < oid) ? -1 : (id > oid) ? 1 : 0;
 		}
 	}
