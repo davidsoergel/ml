@@ -33,6 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
+import com.davidsoergel.dsutils.collections.UnorderedPair;
 import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.google.common.base.Function;
@@ -155,21 +156,29 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		public Void apply(final HierarchicalCentroidCluster<T> a)
 			{
 			final int ahc = a.hashCode();
+			// store up the results in this thread before copying them to the synchronized store at the end
+			final Map<UnorderedPair<HierarchicalCentroidCluster<T>>, Double> result =
+					new HashMap<UnorderedPair<HierarchicalCentroidCluster<T>>, Double>(getClusters().size());
 			for (HierarchicalCentroidCluster<T> b : getClusters())
 				{
 				if (ahc <= b.hashCode())
 					{
 					final Double d = measure.distanceFromTo(a.getValue().getCentroid(), b.getValue().getCentroid());
-					theActiveNodeDistanceMatrix.put(a, b, d);
+
+					// concurrency bottleneck
+					//theActiveNodeDistanceMatrix.put(a, b, d);
+
+					result.put(new UnorderedPair<HierarchicalCentroidCluster<T>>(a, b), d);
 					int numPairs = theActiveNodeDistanceMatrix.numPairs();
-					int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
 
 					if (numPairs % 10000 == 0)
 						{
+						int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
 						logger.info("UPGMA preparing " + numKeys + " active nodes, " + numPairs + " pair distances");
 						}
 					}
 				}
+			theActiveNodeDistanceMatrix.putAll(result);
 			return null;
 			}
 		});
