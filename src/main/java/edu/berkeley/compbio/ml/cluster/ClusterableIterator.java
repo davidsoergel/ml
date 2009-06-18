@@ -43,7 +43,8 @@ import java.io.IOException;
  * can just reset the iterator and run through it again.
  * <p/>
  * We don't extend Iterator in order to avoid thread synchronization issues resulting from the use of hasNext().  It's
- * better to just call next() and rely on NoSuchElementException.
+ * better to just call next() and rely on NoSuchElementException.  All classes implementing this should have a
+ * synchronized next().
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$

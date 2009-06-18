@@ -197,10 +197,10 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	 * @return a TestResults object encapsulating the proportions of test samples classified correctly, incorrectly, or not
 	 *         at all.
 	 * @throws edu.berkeley.compbio.ml.cluster.NoGoodClusterException
-	 *          when a test sample cannot be assigned to any cluster
+	 *                          when a test sample cannot be assigned to any cluster
 	 * @throws com.davidsoergel.stats.DistributionException
-	 *          when something goes wrong in computing the label probabilities
-	 * @throwz ClusterException when something goes wrong in the bowels of the clustering implementation
+	 *                          when something goes wrong in computing the label probabilities
+	 * @throws ClusterException when something goes wrong in the bowels of the clustering implementation
 	 */
 	public synchronized ClusteringTestResults test(final ClusterableIterator<T> theTestIterator,
 	                                               final DissimilarityMeasure<String> intraLabelDistances)
