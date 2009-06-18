@@ -28,9 +28,9 @@ public class CollectionClusterableIterator<T extends Clusterable<T>> implements 
 		{
 		return it.next();
 		}
-
+/*
 	public void reset()
 		{
 		it = underlyingCollection.iterator();
-		}
+		}*/
 	}
