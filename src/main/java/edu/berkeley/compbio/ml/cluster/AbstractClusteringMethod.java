@@ -101,7 +101,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<? extends C> getClusters()
+	public List<C> getClusters() //? extends C>
 		{
 		synchronized (theClusters)
 			{

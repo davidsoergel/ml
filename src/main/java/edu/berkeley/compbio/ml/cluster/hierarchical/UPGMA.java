@@ -152,7 +152,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		// then compute distances between all new clusters and all clusters (including the old and new ones)
 
 		UnorderedPairIterator<HierarchicalCentroidCluster<T>> pairs =
-				new UnorderedPairIterator(newClusters, getClusters());
+				new UnorderedPairIterator<HierarchicalCentroidCluster<T>>(newClusters, getClusters());
 
 		Parallel.forEach(pairs, new Function<UnorderedPair<HierarchicalCentroidCluster<T>>, Void>()
 		{
@@ -166,7 +166,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			int numPairs = theActiveNodeDistanceMatrix.numPairs();
 			int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
 
-			if (numKeys % 1000 == 0)
+			if (numPairs % 1000 == 0)
 				{
 				logger.info("UPGMA preparing " + numKeys + " active nodes, " + numPairs + " pair distances");
 				}
@@ -438,7 +438,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ClusterMove<T, CentroidCluster<T>> bestClusterMove(final T p) throws NoGoodClusterException
+	public ClusterMove<T, HierarchicalCentroidCluster<T>> bestClusterMove(final T p) throws NoGoodClusterException
 		{
 		final ClusterMove result = new ClusterMove();
 		result.bestDistance = Double.POSITIVE_INFINITY;
