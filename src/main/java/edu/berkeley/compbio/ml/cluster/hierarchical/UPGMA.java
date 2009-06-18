@@ -33,8 +33,6 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
-import com.davidsoergel.dsutils.collections.UnorderedPair;
-import com.davidsoergel.dsutils.collections.UnorderedPairIterator;
 import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.google.common.base.Function;
@@ -151,8 +149,37 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 		// then compute distances between all new clusters and all clusters (including the old and new ones)
 
+
+		Parallel.forEach(newClusters, new Function<HierarchicalCentroidCluster<T>, Void>()
+		{
+		public Void apply(final HierarchicalCentroidCluster<T> a)
+			{
+			final int ahc = a.hashCode();
+			for (HierarchicalCentroidCluster<T> b : getClusters())
+				{
+				if (ahc <= b.hashCode())
+					{
+					final Double d = measure.distanceFromTo(a.getValue().getCentroid(), b.getValue().getCentroid());
+					theActiveNodeDistanceMatrix.put(a, b, d);
+					int numPairs = theActiveNodeDistanceMatrix.numPairs();
+					int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
+
+					if (numPairs % 10000 == 0)
+						{
+						logger.info("UPGMA preparing " + numKeys + " active nodes, " + numPairs + " pair distances");
+						}
+					}
+				}
+			return null;
+			}
+		});
+
+		// this method doesn't parallelize well, because the apply() phase is too fast relative to the next() phase
+
+		/*
 		UnorderedPairIterator<HierarchicalCentroidCluster<T>> pairs =
 				new UnorderedPairIterator<HierarchicalCentroidCluster<T>>(newClusters, getClusters());
+
 
 		Parallel.forEach(pairs, new Function<UnorderedPair<HierarchicalCentroidCluster<T>>, Void>()
 		{
@@ -166,13 +193,14 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			int numPairs = theActiveNodeDistanceMatrix.numPairs();
 			int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
 
-			if (numPairs % 1000 == 0)
+			if (numPairs % 10000 == 0)
 				{
 				logger.info("UPGMA preparing " + numKeys + " active nodes, " + numPairs + " pair distances");
 				}
 			return null;
 			}
 		});
+		*/
 		}
 
 	public void add(final T sample)
