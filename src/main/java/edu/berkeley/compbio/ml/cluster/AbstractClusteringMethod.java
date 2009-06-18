@@ -244,7 +244,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			}
 		});
 
-		logger.debug("Enqueued " + i + " samples.");
+		logger.info("Tested " + i + " samples.");
 		tr.setTestSamples(i.intValue());
 
 		tr.finish();
@@ -330,7 +330,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					}
 				catch (NoSuchElementException e)
 					{
-					logger.warn("Cluster has no prediction label: " + theCluster);
+					logger.debug("Cluster has no prediction label: " + theCluster);
 					}
 				}
 			result.put(predictionSetName, populatedPredictLabels);

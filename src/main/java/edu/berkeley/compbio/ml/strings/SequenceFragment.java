@@ -76,7 +76,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	// ** weak references cause problems for additive clusters that can't be rescanned
 	//protected WeakReference<SequenceSpectrum> _baseSpectrum;
 
-	protected SequenceSpectrum baseSpectrum;
+	private SequenceSpectrum baseSpectrum;
 	protected final SequenceSpectrumScanner theScanner;
 
 	private FirstWordProvider firstWordProvider;
