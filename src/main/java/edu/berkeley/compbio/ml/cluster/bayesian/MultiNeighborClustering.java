@@ -384,10 +384,21 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			};
 
 			final WeightedSet<String> subVotes = labelVotes.extractWithKeys(populatedTrainingLabels);
+
+
 			//subVotes.retainKeys(populatedTrainingLabels);
 			final Iterator<String> vi = subVotes.keysInDecreasingWeightOrder(weightedDistanceSort).iterator();
+			final String bestLabel;
 
-			final String bestLabel = vi.next();
+			//	try{
+			bestLabel = vi.next();
+			/*	}
+		   catch(NoSuchElementException e)
+			   {
+			   // this should never happen
+			   throw new NoGoodClusterException();
+			   }*/
+
 			String secondBestLabel = null;
 			try
 				{

@@ -241,6 +241,11 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			final VotingResults votingResults = addUpNeighborVotes(moves); //, populatedTrainingLabels);
 			labelWeights = votingResults.getLabelVotes();
 
+			if (labelWeights.getItemCount() == 0)
+				{
+				throw new NoGoodClusterException();
+				}
+
 			final BestLabelPair votingWinners = votingResults.getSubResults(potentialTrainingBins);
 
 			// note the "votes" from each cluster may be fractional (probabilities) but we just summed them all up.
