@@ -122,9 +122,16 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			// generate one "cluster" per training sample.
 			final CentroidCluster<T> cluster = new BasicCentroidCluster<T>(clusterId, point);//measure
 			addCluster(cluster);
+
+			if (clusterId % 1000 == 0)
+				{
+				logger.info("Trained " + clusterId + " samples");
+				}
+
 			return null;
 			}
 		});
+		logger.info("Done training " + getNumClusters() + " samples");
 		}
 
 
