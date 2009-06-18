@@ -46,6 +46,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.HierarchicalCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +63,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T>
 	{
+	private static final Logger logger = Logger.getLogger(UPGMA.class);
+
 // ------------------------------ FIELDS ------------------------------
 
 	//private DissimilarityMeasure<T> dissimilarityMeasure;
@@ -160,7 +163,13 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 			final Double d = measure.distanceFromTo(a.getValue().getCentroid(), b.getValue().getCentroid());
 			theActiveNodeDistanceMatrix.put(a, b, d);
+			int numPairs = theActiveNodeDistanceMatrix.numPairs();
+			int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
 
+			if (numKeys % 1000 == 0)
+				{
+				logger.info("UPGMA preparing " + numKeys + " active nodes, " + numPairs + " pair distances");
+				}
 			return null;
 			}
 		});
@@ -280,6 +289,15 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 					                            + (b.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix
 							                 .get(b, node);
 					                 theActiveNodeDistanceMatrix.put(node, composite, d);
+
+					                 int numPairs = theActiveNodeDistanceMatrix.numPairs();
+					                 int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
+
+					                 if (numKeys % 1000 == 0)
+						                 {
+						                 logger.info("UPGMA training " + numKeys + " active nodes, " + numPairs
+						                             + " pair distances");
+						                 }
 					                 }
 				                 return null;
 				                 }

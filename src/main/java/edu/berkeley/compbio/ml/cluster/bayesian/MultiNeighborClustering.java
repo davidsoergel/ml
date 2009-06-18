@@ -357,7 +357,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			return computeWeightedDistance(labelContributions.get(label));
 			}
 
-		public BestLabelPair getSubResults(final Set<String> populatedTrainingLabels)
+		public BestLabelPair getSubResults(final Set<String> populatedTrainingLabels) throws NoGoodClusterException
 			{
 			// primary sort the labels by votes, secondary by weighted distance
 			// even if there is a unique label with the most votes, the second place one may still matter depending on the unknown thresholds
@@ -385,19 +385,19 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 
 			final WeightedSet<String> subVotes = labelVotes.extractWithKeys(populatedTrainingLabels);
 
-
 			//subVotes.retainKeys(populatedTrainingLabels);
 			final Iterator<String> vi = subVotes.keysInDecreasingWeightOrder(weightedDistanceSort).iterator();
 			final String bestLabel;
 
-			//	try{
-			bestLabel = vi.next();
-			/*	}
-		   catch(NoSuchElementException e)
-			   {
-			   // this should never happen
-			   throw new NoGoodClusterException();
-			   }*/
+			try
+				{
+				bestLabel = vi.next();
+				}
+			catch (NoSuchElementException e)
+				{
+				// this can happen with Gaussian KNN, for example, when all vote weights are zero
+				throw new NoGoodClusterException();
+				}
 
 			String secondBestLabel = null;
 			try
