@@ -116,9 +116,9 @@ public class RonPSA extends RonPSANode
 			in.setTranslationAlphabet(getAlphabet());
 			double logprob = 0;
 			RonPSANode currentNode = this;
-			int count = 0;
+			long count = 0;
 			int samples = 0;
-			final int desiredLength = sequenceFragment.getDesiredLength();
+			final long desiredLength = sequenceFragment.getDesiredLength();
 			while (count < desiredLength)
 				{
 				try

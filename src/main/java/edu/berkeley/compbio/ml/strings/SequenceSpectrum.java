@@ -139,7 +139,7 @@ public interface SequenceSpectrum<T extends SequenceSpectrum>
 	 * @return the length (type int) of this Kcount object.
 	 * @see #addUnknown()
 	 */
-	int getOriginalSequenceLength();
+	long getOriginalSequenceLength();
 
 	/**
 	 * Returns the number of real samples on which this spectrum is based, not including pseudocounts or any other smoothing whatnot.

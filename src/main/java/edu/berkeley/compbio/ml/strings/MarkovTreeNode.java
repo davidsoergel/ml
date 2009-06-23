@@ -126,7 +126,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 	private double avgdepth = 0;
 
-	private int originalSequenceLength;
+	private long originalSequenceLength;
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -180,12 +180,12 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		 throw new NotImplementedException();
 		 }
 */
-	public int getOriginalSequenceLength()
+	public long getOriginalSequenceLength()
 		{
 		return originalSequenceLength;
 		}
 
-	public void setOriginalSequenceLength(final int originalSequenceLength)
+	public void setOriginalSequenceLength(final long originalSequenceLength)
 		{
 		this.originalSequenceLength = originalSequenceLength;
 		}

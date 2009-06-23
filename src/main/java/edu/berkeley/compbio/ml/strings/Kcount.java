@@ -53,7 +53,7 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 
 	//protected int numberOfSamples = UNKNOWN_NUMBER_OF_SAMPLES;
 
-	protected int originalSequenceLength = 0; // = UNKNOWN_LENGTH;
+	protected long originalSequenceLength = 0; // = UNKNOWN_LENGTH;
 
 
 // --------------------- GETTER / SETTER METHODS ---------------------
@@ -87,7 +87,7 @@ public abstract class Kcount<T extends Kcount> extends HierarchicalSpectrum<T>
 	 * @return the length (type int) of this Kcount object.
 	 * @see #addUnknown()
 	 */
-	public int getOriginalSequenceLength()
+	public long getOriginalSequenceLength()
 		{
 		return originalSequenceLength;
 		}

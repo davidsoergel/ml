@@ -33,6 +33,7 @@
 
 package edu.berkeley.compbio.ml.strings;
 
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistributionProcessorException;
@@ -81,7 +82,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 	private FirstWordProvider firstWordProvider;
 	private final SequenceReader theReader;
-	private final int desiredlength;
+	private final long desiredlength;
 	private boolean ignoreEdges;
 
 
@@ -111,8 +112,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 * @param startPosition the index in the parent sequence of the first symbol in this sequence
 	 * @param length        the length of this sequence
 	 */
-	public SequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName, final int startPosition,
-	                        final int length, final SequenceSpectrumScanner scanner)
+	public SequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName, final long startPosition,
+	                        final long length, final SequenceSpectrumScanner scanner)
 		{
 		this(parent, sequenceName, startPosition, null, 0, scanner, length);
 
@@ -123,8 +124,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				this.desiredlength = 0;*/
 		}
 
-	public SequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName, final int startPosition,
-	                        final SequenceReader in, final int desiredlength, final SequenceSpectrumScanner scanner)
+	public SequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName, final long startPosition,
+	                        final SequenceReader in, final long desiredlength, final SequenceSpectrumScanner scanner)
 		{
 		this(parent, sequenceName, startPosition, in, desiredlength, scanner, UNKNOWN_LENGTH);
 		}
@@ -146,9 +147,9 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *                                    not throw this exception, but instead simply return a Kcount based on the short
 	 *                                    sequence)
 	 */
-	public SequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName, final int startPosition,
-	                        final SequenceReader in, final int desiredlength, final SequenceSpectrumScanner scanner,
-	                        final int length)
+	public SequenceFragment(final SequenceFragmentMetadata parent, final String sequenceName, final long startPosition,
+	                        final SequenceReader in, final long desiredlength, final SequenceSpectrumScanner scanner,
+	                        final long length)
 		{
 		super(parent, sequenceName, null, startPosition, length);
 
@@ -179,7 +180,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			try
 				{
-				rescan();
+				rescanSpectrum();
 				}
 			catch (NotEnoughSequenceException e)
 				{
@@ -206,21 +207,29 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 	 *
 	 * @return the length of this sequence
 	 */
-	public synchronized int getLength()
+	public synchronized long getLength()
 		{
 		if (length == UNKNOWN_LENGTH)
 			{
-			try
+			if (theScanner != null)
 				{
-				rescan();
+				try
+					{
+					rescanSpectrum();
+					}
+				/*	catch (IOException e)
+												   {
+												   logger.error(e);
+												   }*/
+				catch (NotEnoughSequenceException e)
+					{
+					//logger.error(e);
+					}
 				}
-			/*	catch (IOException e)
-			   {
-			   logger.error(e);
-			   }*/
-			catch (NotEnoughSequenceException e)
+			else
 				{
-				//logger.error(e);
+				rescanRawSequence();
+				length = rawSequence.length;
 				}
 			}
 		return length;
@@ -235,7 +244,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			if (theReader != null)
 				{
-				translatedSequence = new byte[desiredlength];
+				//BAD long->int
+				translatedSequence = new byte[(int) desiredlength];
 
 				theReader.seek(parentMetadata, startPosition);
 				for (int i = 0; i < desiredlength; i++)
@@ -266,8 +276,54 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		}
 
+	// ** should be weak
+	private byte[] rawSequence = null;
 
-	protected synchronized void rescan() throws NotEnoughSequenceException
+	protected synchronized void rescanRawSequence()// throws NotEnoughSequenceException
+		{
+		List<Byte> rawSequenceBuilder = new ArrayList<Byte>(); //byte[desiredlength];
+		try
+			{
+			if (theReader != null)
+				{
+				synchronized (theReader)
+					{
+
+					theReader.seek(parentMetadata, startPosition);
+					for (int i = 0; i < desiredlength; i++)
+						{
+						rawSequenceBuilder.add(new Byte((byte) theReader.read()));
+						}
+					}
+				}
+			}
+		catch (NotEnoughSequenceException e)
+			{
+			if (desiredLengthUnknown())
+				{
+				// OK, no problem, we're done
+				}
+			else
+				{
+				logger.error("Error", e);
+				throw new SequenceSpectrumRuntimeException(e);
+				}
+			}
+
+		catch (IOException e)
+			{
+			logger.error("Error", e);
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		catch (FilterException e)
+			{
+			logger.error("Error", e);
+			throw new SequenceSpectrumRuntimeException(e);
+			}
+		rawSequence = DSArrayUtils.toPrimitive(rawSequenceBuilder.toArray(DSArrayUtils.EMPTY_BYTE_OBJECT_ARRAY));
+		}
+
+	protected synchronized void rescanSpectrum() throws NotEnoughSequenceException
 		{
 		/*	if (_baseSpectrum.get() != null)
 			 {
@@ -557,7 +613,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 
 		// if we're reading the file anyway, we may as well remember the spectrum while we're at it.
-		rescan();
+		rescanSpectrum();
 
 		/*		try
 		   {
@@ -648,7 +704,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		   }
 	   }*/
 
-	public int getDesiredLength()
+	public long getDesiredLength()
 		{
 		return desiredlength;
 		}
@@ -840,11 +896,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		Collections.sort(conflicts);
 
-		int trav = getStartPositionFromRoot();
+		long trav = getStartPositionFromRoot();
 		for (final SequenceFragment conflict : conflicts)
 			{
-			final int trav2 = conflict.getStartPositionFromRoot();
-			final int len = trav2 - trav;
+			final long trav2 = conflict.getStartPositionFromRoot();
+			final int len = (int) (trav2 - trav);
 			if (len > 0)
 				{
 				assert theReader != null;
@@ -857,7 +913,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 
 		// add the last fragment after the last conflict
 
-		final int len = getStartPositionFromRoot() + length - trav;
+		final int len = (int) (getStartPositionFromRoot() + length - trav);
 		if (len > 0)
 			{
 			assert theReader != null;
@@ -958,12 +1014,22 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		}
 
-	public byte[] getTranslatedSequence(final byte[] alphabet)
+
+	public byte[] getTranslatedSequence() //final byte[] alphabet)
 		{
 		if (translatedSequence == null)
 			{
 			rescanTranslatedSequence();
 			}
 		return translatedSequence;
+		}
+
+	public byte[] getRawSequence()
+		{
+		if (rawSequence == null)
+			{
+			rescanRawSequence();
+			}
+		return rawSequence;
 		}
 	}

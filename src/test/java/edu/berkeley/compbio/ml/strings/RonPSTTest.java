@@ -484,7 +484,7 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		/**
 		 * {@inheritDoc}
 		 */
-		public int getOriginalSequenceLength()
+		public long getOriginalSequenceLength()
 			{
 			return 50;
 			//throw new NotImplementedException();

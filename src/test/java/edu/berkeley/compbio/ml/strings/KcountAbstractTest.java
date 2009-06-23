@@ -67,7 +67,7 @@ public class KcountAbstractTest<T extends Kcount> extends AtomicContractTest
 	public void addUnknownIncrementsLength() throws Exception
 		{
 		final Kcount kc = tif.createInstance();
-		final int l = kc.getOriginalSequenceLength();
+		final long l = kc.getOriginalSequenceLength();
 		kc.addUnknown();
 		assert kc.getOriginalSequenceLength() == l + 1;
 		}

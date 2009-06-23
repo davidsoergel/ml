@@ -89,7 +89,7 @@ public class AggregateSequenceFragment extends SequenceFragment
 		throw new NotImplementedException();
 		}
 
-	protected synchronized void rescan()
+	protected synchronized void rescanSpectrum()
 		{
 /*		SequenceSpectrum baseSpectrum = getBaseSpectrum();
 		if (baseSpectrum != null && baseSpectrum.getOriginalSequenceLength() != UNKNOWN_LENGTH)

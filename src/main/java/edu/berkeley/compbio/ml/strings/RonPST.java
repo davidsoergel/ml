@@ -89,7 +89,7 @@ public class RonPST extends RonPSTNode
 
 	private final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
 
-	private int originalSequenceLength;
+	private long originalSequenceLength;
 
 	// diagnostics
 	private int total = 0;
@@ -369,7 +369,7 @@ public class RonPST extends RonPSTNode
 		return alphabet;
 		}
 
-	public int getOriginalSequenceLength()
+	public long getOriginalSequenceLength()
 		{
 		return originalSequenceLength;
 		}
