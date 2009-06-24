@@ -2,6 +2,7 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
+import com.davidsoergel.dsutils.tree.HierarchyNode;
 import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
 import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
@@ -339,10 +340,12 @@ public class ClusteringTestResults<L extends Comparable>
 		 }
  */
 	//@Transactional
-	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode,
+	public void putResults(final HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> results,
 	                       final String labelDistancesName)
 		//, Map<String, String> friendlyLabelMap)
 		{
+		HierarchicalTypedPropertyNode<String, Object> resultsNode = results.getValue();
+
 		resultsNode.addChild("numClusters", getNumClusters());
 		//resultsNode.addChild("unknown", getUnknown());
 		resultsNode.addChild("shouldHaveBeenUnknown", getShouldHaveBeenUnknown());
@@ -379,11 +382,14 @@ public class ClusteringTestResults<L extends Comparable>
 			{
 			final String predictionLabelsName = entry.getKey();
 
-			final List<String> keyPath = new ArrayList<String>();
+			//	final List<String> keyPath = new ArrayList<String>();
 			//keyPath.add("RESULTS");
-			keyPath.add(predictionLabelsName);
+			//	keyPath.add(predictionLabelsName);
 
-			entry.getValue().putResults(resultsNode, keyPath, labelDistancesName, friendlyLabelMap);
+			HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> childResults = results.newChild();
+			childResults.setName(predictionLabelsName);
+			HierarchicalTypedPropertyNode<String, Object> childResultsNode = childResults.getValue();
+			entry.getValue().putResults(childResultsNode, labelDistancesName, friendlyLabelMap);
 			}
 		}
 	}

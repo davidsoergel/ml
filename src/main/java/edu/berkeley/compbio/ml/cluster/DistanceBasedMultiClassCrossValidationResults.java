@@ -78,34 +78,34 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		this.friendlyLabelMap = friendlyLabelMap;
 		}*/
 
-	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode, final List<String> keyPath,
+	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode,
+	                       //final List<String> keyPath,
 	                       final String labelDistancesName, final Map<L, String> friendlyLabelMap)
 		{
 
-		resultsNode.addChild(keyPath, "numPopulatedRealLabels", numPopulatedRealLabels());
-		resultsNode.addChild(keyPath, "numPredictedLabels", numPredictedLabels());
+		resultsNode.addChild("numPopulatedRealLabels", numPopulatedRealLabels());
+		resultsNode.addChild("numPredictedLabels", numPredictedLabels());
 
-		resultsNode.addChild(keyPath, "labelWithinClusterProbabilities", getLabelWithinClusterProbabilitiesArray());
+		resultsNode.addChild("labelWithinClusterProbabilities", getLabelWithinClusterProbabilitiesArray());
 
-		resultsNode.addChild(keyPath, "accuracy", new Double(accuracy()));
-		resultsNode.addChild(keyPath, "accuracyGivenClassified", accuracyGivenClassified());
-		resultsNode.addChild(keyPath, "classNormalizedSensitivity", classNormalizedSensitivity());
-		resultsNode.addChild(keyPath, "classNormalizedSpecificity", classNormalizedSpecificity());
-		resultsNode.addChild(keyPath, "classNormalizedPrecision", classNormalizedPrecision());
-		resultsNode.addChild(keyPath, "unknownLabel", unknown());
+		resultsNode.addChild("accuracy", new Double(accuracy()));
+		resultsNode.addChild("accuracyGivenClassified", accuracyGivenClassified());
+		resultsNode.addChild("classNormalizedSensitivity", classNormalizedSensitivity());
+		resultsNode.addChild("classNormalizedSpecificity", classNormalizedSpecificity());
+		resultsNode.addChild("classNormalizedPrecision", classNormalizedPrecision());
+		resultsNode.addChild("unknownLabel", unknown());
 
-		storeLabelDistances(labelDistancesName, getPredictionDistances(), resultsNode, keyPath);
-		storeLabelDistances(labelDistancesName + "ToSample", getPredictionDistancesWithPrecisionCost(), resultsNode,
-		                    keyPath);
+		storeLabelDistances(labelDistancesName, getPredictionDistances(), resultsNode);
+		storeLabelDistances(labelDistancesName + "ToSample", getPredictionDistancesWithPrecisionCost(), resultsNode);
 
-		resultsNode.addChild(keyPath, "classLabels", getLabels().toArray(DSArrayUtils.EMPTY_STRING_ARRAY));
-		resultsNode.addChild(keyPath, "friendlyLabels",
+		resultsNode.addChild("classLabels", getLabels().toArray(DSArrayUtils.EMPTY_STRING_ARRAY));
+		resultsNode.addChild("friendlyLabels",
 		                     getFriendlyLabels(friendlyLabelMap).toArray(DSArrayUtils.EMPTY_STRING_ARRAY));
-		resultsNode.addChild(keyPath, "sensitivity", DSArrayUtils.castToDouble(getSensitivities()));
-		resultsNode.addChild(keyPath, "specificity", DSArrayUtils.castToDouble(getSpecificities()));
-		resultsNode.addChild(keyPath, "precision", DSArrayUtils.castToDouble(getPrecisions()));
-		resultsNode.addChild(keyPath, "predictedCounts", DSArrayUtils.castToDouble(getPredictedCounts()));
-		resultsNode.addChild(keyPath, "actualCounts", DSArrayUtils.castToDouble(getActualCounts()));
+		resultsNode.addChild("sensitivity", DSArrayUtils.castToDouble(getSensitivities()));
+		resultsNode.addChild("specificity", DSArrayUtils.castToDouble(getSpecificities()));
+		resultsNode.addChild("precision", DSArrayUtils.castToDouble(getPrecisions()));
+		resultsNode.addChild("predictedCounts", DSArrayUtils.castToDouble(getPredictedCounts()));
+		resultsNode.addChild("actualCounts", DSArrayUtils.castToDouble(getActualCounts()));
 
 		List<Integer> flattenedConfusionMatrix = new ArrayList<Integer>();
 		SortedSet<L> labels = getLabels();
@@ -117,7 +117,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 				}
 			}
 
-		resultsNode.addChild(keyPath, "confusionMatrix", DSArrayUtils.toPrimitiveArray(flattenedConfusionMatrix));
+		resultsNode.addChild("confusionMatrix", DSArrayUtils.toPrimitiveArray(flattenedConfusionMatrix));
 		/*	for(L label : getLabels())
 		   {
 		   asdf
@@ -126,11 +126,9 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 
 
 	public static void storeLabelDistances(final String labelDistanceName, final List<Double> labelDistances,
-	                                       final HierarchicalTypedPropertyNode<String, Object> resultsNode,
-	                                       final List<String> keyPath)
+	                                       final HierarchicalTypedPropertyNode<String, Object> resultsNode)
 		{
-		resultsNode
-				.addChild(keyPath, labelDistanceName, labelDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY));
+		resultsNode.addChild(labelDistanceName, labelDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY));
 
 		if (!labelDistances.isEmpty())
 			{
@@ -155,9 +153,9 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 
 			try
 				{
-				resultsNode.addChild(keyPath, labelDistanceName + "90", h.topOfBin(89));
-				resultsNode.addChild(keyPath, labelDistanceName + "95", h.topOfBin(94));
-				resultsNode.addChild(keyPath, labelDistanceName + "99", h.topOfBin(98));
+				resultsNode.addChild(labelDistanceName + "90", h.topOfBin(89));
+				resultsNode.addChild(labelDistanceName + "95", h.topOfBin(94));
+				resultsNode.addChild(labelDistanceName + "99", h.topOfBin(98));
 				// note the highest bin is #99, so the top of that bin is the 100th %ile
 				}
 			catch (StatsException e)
@@ -172,8 +170,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 				}
 			else
 				{
-				resultsNode.addChild(keyPath, labelDistanceName + "Mean", mean);
-				resultsNode.addChild(keyPath, labelDistanceName + "StdDev", DSArrayUtils.stddev(labelDistances, mean));
+				resultsNode.addChild(labelDistanceName + "Mean", mean);
+				resultsNode.addChild(labelDistanceName + "StdDev", DSArrayUtils.stddev(labelDistances, mean));
 				}
 			}
 		}
