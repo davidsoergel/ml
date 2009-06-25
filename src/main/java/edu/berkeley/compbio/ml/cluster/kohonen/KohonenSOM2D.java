@@ -541,6 +541,8 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 			y %= cellsPerDimension[1];
 			}
 
+		// BAD why column-major order!?
+
 		return x * blockSize[0] + y;
 		}
 
