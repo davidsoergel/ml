@@ -97,7 +97,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	final double minRadius;
 
 	// the product of the first i dimensions, precomputed for convenience
-	int[] blockSize;
+	//int[] blockSize;
 
 	//	Map<Vector<Integer>, T> centroidsByPosition;
 
@@ -158,10 +158,11 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 			}
 
 		// precompute stuff for listIndexFor
+		/*
 		blockSize = new int[dimensions];
 		blockSize[1] = 1;
 		blockSize[0] = cellsPerDimension[1];
-
+*/
 		final int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
 
 		setNumClusters(totalCells);
@@ -467,17 +468,6 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		 return result;
 		 }
  */
-	private int[] cellPositionFor(int listIndex)
-		{
-		final int[] result = new int[dimensions];
-		for (int i = 0; i < dimensions; i++)
-			{
-			result[i] = listIndex / blockSize[i];
-			listIndex = listIndex % blockSize[i];
-			}
-		return result;
-		}
-
 	public double[] computeCellAverageNeighborDistances()
 		{
 		final double[] result = new double[getNumClusters()];
@@ -528,11 +518,37 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		return getCluster(listIndexFor(x, y));
 		}
 
+
 	/**
 	 * assumes inputs are entirely positive and within the bounds given by cellsPerDimension
 	 *
 	 * @return
 	 */
+
+	// dumb column-major version
+
+/*	private int listIndexFor(int x, int y)//int[] cellposition)
+		{
+		if (edgesWrap)
+			{
+			x %= cellsPerDimension[0];
+			y %= cellsPerDimension[1];
+			}
+
+		return x * blockSize[0] + y;
+		}
+
+	private int[] cellPositionFor(int listIndex)
+		{
+		final int[] result = new int[dimensions];
+		for (int i = 0; i < dimensions; i++)
+			{
+			result[i] = listIndex / blockSize[i];
+			listIndex = listIndex % blockSize[i];
+			}
+		return result;
+		}
+*/
 	private int listIndexFor(int x, int y)//int[] cellposition)
 		{
 		if (edgesWrap)
@@ -541,9 +557,14 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 			y %= cellsPerDimension[1];
 			}
 
-		// BAD why column-major order!?
+		return y * cellsPerDimension[0] + x;
+		}
 
-		return x * blockSize[0] + y;
+	private int[] cellPositionFor(int listIndex)
+		{
+		int x = listIndex % cellsPerDimension[0];
+		int y = listIndex / cellsPerDimension[0];
+		return new int[]{x, y};
 		}
 
 	private void createClusters(final int totalCells, final GenericFactory<T> prototypeFactory)
