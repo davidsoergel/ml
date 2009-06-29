@@ -219,11 +219,11 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 					}
 				/*	catch (IOException e)
 												   {
-												   logger.error(e);
+												   logger.error("Error", e);
 												   }*/
 				catch (NotEnoughSequenceException e)
 					{
-					//logger.error(e);
+					//logger.error("Error", e);
 					}
 				}
 			else
@@ -366,7 +366,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		/*catch (NotEnoughSequenceException e)
 			{
-			//logger.error(e);
+			//logger.error("Error", e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}*/
 		catch (DistributionProcessorException e)
@@ -636,12 +636,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		   }
 	   //	catch (IOException e)
 	   //   {
-	   //   logger.error(e);
+	   //   logger.error("Error", e);
 		//  throw new SequenceSpectrumRuntimeException(e);
 		//  }
 	   catch (FilterException e)
 		   {
-		   logger.error(e);
+		   logger.error("Error", e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }*/
 		}
@@ -679,27 +679,27 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		   }
 	   catch (IOException e)
 		   {
-		   logger.error(e);
+		   logger.error("Error", e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }
 	   catch (FilterException e)
 		   {
-		   logger.error(e);
+		   logger.error("Error", e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }
 	   catch (NotEnoughSequenceException e)
 		   {
-		   logger.error(e);
+		   logger.error("Error", e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }
 	   catch (DistributionProcessorException e)
 		   {
-		   logger.error(e);
+		   logger.error("Error", e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }
 	   catch (GenericFactoryException e)
 		   {
-		   logger.error(e);
+		   logger.error("Error", e);
 		   throw new SequenceSpectrumRuntimeException(e);
 		   }
 	   }*/
@@ -834,22 +834,22 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				}
 			/*	catch (NoSuchMethodException e)
 			   {
-			   logger.error(e);
+			   logger.error("Error", e);
 			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 			   }
 		   catch (IllegalAccessException e)
 			   {
-			   logger.error(e);
+			   logger.error("Error", e);
 			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 			   }
 		   catch (InvocationTargetException e)
 			   {
-			   logger.error(e);
+			   logger.error("Error", e);
 			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 			   }
 		   catch (InstantiationException e)
 			   {
-			   logger.error(e);
+			   logger.error("Error", e);
 			   throw new SequenceSpectrumException(e, "Requested spectrum unavailable");
 			   }*/
 			}
@@ -955,7 +955,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				 }
 			 catch (SequenceSpectrumException e)
 				 {
-				 logger.error(e);
+				 logger.error("Error", e);
 				 throw new DistributionProcessorException(e);
 				 }
 			 }

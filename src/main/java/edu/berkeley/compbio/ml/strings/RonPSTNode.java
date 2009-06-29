@@ -269,7 +269,7 @@ public class RonPSTNode extends AbstractGenericFactoryAware
 				}
 			catch (SequenceSpectrumException e)
 				{
-				//logger.error(e);
+				//logger.error("Error", e);
 				// no worries, just let prob=0 then
 				}
 			try

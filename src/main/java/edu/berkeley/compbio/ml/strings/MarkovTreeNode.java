@@ -569,7 +569,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 			{
 			return sample(DSArrayUtils.suffix(prefix, 1));
 			/*
-						logger.error(e);
+						logger.error("Error", e);
 						throw new SequenceSpectrumRuntimeException(e);*/
 			}
 		catch (DistributionException e)
@@ -770,7 +770,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 				}
 			catch (SequenceSpectrumException e)
 				{
-				//logger.error(e);
+				//logger.error("Error", e);
 				// no worries, just let prob=0 then
 				}
 			try
@@ -955,7 +955,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		   }
 	   catch (NotEnoughSequenceException e)
 		   {
-		   logger.error(e);
+		   logger.error("Error", e);
 		   throw new SequenceSpectrumException(e);
 		   }*/
 

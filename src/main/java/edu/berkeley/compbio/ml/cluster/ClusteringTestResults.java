@@ -263,7 +263,7 @@ public class ClusteringTestResults<L extends Comparable>
 			}
 		catch (StatsException e)
 			{
-			logger.error(e);
+			logger.error("Error", e);
 			throw new Error(e);
 			}
 
