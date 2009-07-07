@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.ml;
 
+import com.davidsoergel.dsutils.DSArrayUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.MapMaker;
@@ -52,7 +53,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 		}
 
 
-	public List<String> getFriendlyLabels(final Map<L, String> friendlyLabelMap)
+	public String[] getFriendlyLabels(final Map<L, String> friendlyLabelMap)
 		{
 		if (friendlyLabelMap == null)
 			{
@@ -63,7 +64,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 			{
 			result.add(friendlyLabelMap.get(l));
 			}
-		return result;
+		return result.toArray(DSArrayUtils.EMPTY_STRING_ARRAY);
 		}
 
 	public void sanityCheck()

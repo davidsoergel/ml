@@ -99,8 +99,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		storeLabelDistances(labelDistancesName + "ToSample", getPredictionDistancesWithPrecisionCost(), resultsNode);
 
 		resultsNode.addChild("classLabels", getLabels().toArray(DSArrayUtils.EMPTY_STRING_ARRAY));
-		resultsNode.addChild("friendlyLabels",
-		                     getFriendlyLabels(friendlyLabelMap).toArray(DSArrayUtils.EMPTY_STRING_ARRAY));
+		resultsNode.addChild("friendlyLabels", getFriendlyLabels(friendlyLabelMap));
 		resultsNode.addChild("sensitivity", DSArrayUtils.castToDouble(getSensitivities()));
 		resultsNode.addChild("specificity", DSArrayUtils.castToDouble(getSpecificities()));
 		resultsNode.addChild("precision", DSArrayUtils.castToDouble(getPrecisions()));
