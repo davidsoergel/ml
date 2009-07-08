@@ -244,13 +244,24 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			{
 			if (theReader != null)
 				{
-				//BAD long->int
-				translatedSequence = new byte[(int) desiredlength];
-
-				theReader.seek(parentMetadata, startPosition);
-				for (int i = 0; i < desiredlength; i++)
+				synchronized (theReader)
 					{
-					translatedSequence[i] = (byte) theReader.readTranslated();
+					//BAD long->int
+					translatedSequence = new byte[(int) desiredlength];
+
+					theReader.seek(parentMetadata, startPosition);
+					for (int i = 0; i < desiredlength; i++)
+						{
+						try
+							{
+							translatedSequence[i] = (byte) theReader.readTranslated();
+							}
+						catch (TranslationException e)
+							{
+							// probably a bad input character, e.g. an ambiguous nucleotide
+							translatedSequence[i] = -1;
+							}
+						}
 					}
 				}
 			}
@@ -259,11 +270,7 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			logger.error("Error", e);
 			throw new SequenceSpectrumRuntimeException(e);
 			}
-		catch (TranslationException e)
-			{
-			logger.error("Error", e);
-			throw new SequenceSpectrumRuntimeException(e);
-			}
+
 		catch (IOException e)
 			{
 			logger.error("Error", e);
@@ -339,9 +346,12 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				}
 			else
 				{
-				theReader.seek(parentMetadata, startPosition);
-				//prefix = new byte[PREFIX_LENGTH];
-				s = theScanner.scanSequence(this);//theReader, desiredlength);//, firstWords, FIRSTWORD_LENGTH);
+				synchronized (theReader)
+					{
+					theReader.seek(parentMetadata, startPosition);
+					//prefix = new byte[PREFIX_LENGTH];
+					s = theScanner.scanSequence(this);//theReader, desiredlength);//, firstWords, FIRSTWORD_LENGTH);
+					}
 				}
 			//prefixValid = Math.min(PREFIX_LENGTH, s.getNumberOfSamples() + s.getK() - 1);
 			setBaseSpectrum(s);
