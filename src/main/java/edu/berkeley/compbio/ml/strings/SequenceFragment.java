@@ -349,8 +349,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 				synchronized (theReader)
 					{
 					theReader.seek(parentMetadata, startPosition);
-					//prefix = new byte[PREFIX_LENGTH];
 					s = theScanner.scanSequence(this);//theReader, desiredlength);//, firstWords, FIRSTWORD_LENGTH);
+					//prefix = new byte[PREFIX_LENGTH];
 					}
 				}
 			//prefixValid = Math.min(PREFIX_LENGTH, s.getNumberOfSamples() + s.getK() - 1);
