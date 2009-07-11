@@ -146,12 +146,12 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 					}
 				}
 
-			final Histogram1D h = new EqualWeightHistogram1D(100, DSArrayUtils.toPrimitive(
-					labelDistances.toArray(new Double[labelDistances.size()])));
-
 
 			try
 				{
+				final Histogram1D h = new EqualWeightHistogram1D(100, DSArrayUtils.toPrimitive(
+						labelDistances.toArray(new Double[labelDistances.size()])));
+
 				resultsNode.addChild(labelDistanceName + "90", h.topOfBin(89));
 				resultsNode.addChild(labelDistanceName + "95", h.topOfBin(94));
 				resultsNode.addChild(labelDistanceName + "99", h.topOfBin(98));
