@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -21,7 +21,7 @@ public class AggregateSequenceFragment extends SequenceFragment
 
 	private static final Logger logger = Logger.getLogger(AggregateSequenceFragment.class);
 
-	private final Collection<SequenceFragment> theSFs = new HashSet<SequenceFragment>();
+	private final Collection<SequenceFragment> theSFs = new ConcurrentLinkedQueue<SequenceFragment>();
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
