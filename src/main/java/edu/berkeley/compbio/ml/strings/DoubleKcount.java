@@ -115,11 +115,17 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 
 // --------------------- Interface DoubleArrayContainer ---------------------
 
-	public synchronized double getArraySum()
+	public double getArraySum() //synchronized
 		{
 		if (dataSum == null)
 			{
-			dataSum = DSArrayUtils.sum(counts);
+			synchronized (this)
+				{
+				if (dataSum == null)
+					{
+					dataSum = DSArrayUtils.sum(counts);
+					}
+				}
 			}
 		return dataSum;
 		}
