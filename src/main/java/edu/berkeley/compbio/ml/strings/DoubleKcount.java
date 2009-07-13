@@ -56,7 +56,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	{
 // ------------------------------ FIELDS ------------------------------
 
-	protected double[] counts;
+	protected final double[] counts;
 
 	protected Double dataSum = null;
 
@@ -66,9 +66,10 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	/**
 	 * Creates a new Kcount instance.
 	 */
-	public DoubleKcount()
+	public DoubleKcount(double[] counts)
 		{
 		super();
+		this.counts = counts;
 		}
 
 // ------------------------ CANONICAL METHODS ------------------------
@@ -173,7 +174,7 @@ public abstract class DoubleKcount<T extends DoubleKcount> extends Kcount<T> imp
 	 *
 	 * @return The array of counts
 	 */
-	public synchronized double[] getArray()
+	public double[] getArray()
 		{
 		return counts;
 		}
