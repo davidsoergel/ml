@@ -192,6 +192,16 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		return baseSpectrum;
 		}
 
+	/**
+	 * Just get the baseSpectrum as is, with no synchronization or lazy initialization
+	 *
+	 * @return
+	 */
+	public final SequenceSpectrum getBaseSpectrumRaw()
+		{
+		return baseSpectrum;
+		}
+
 	public synchronized FirstWordProvider getFirstWordProvider() throws SequenceSpectrumException
 		{
 		if (ignoreEdges)
