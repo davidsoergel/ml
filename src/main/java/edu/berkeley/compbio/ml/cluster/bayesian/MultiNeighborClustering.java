@@ -15,6 +15,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -226,9 +227,10 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 
 		//ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
 
+		PointClusterFilter<T> clusterFilter = prohibitionModel == null ? null : prohibitionModel.getFilter(p);
 		for (final CentroidCluster<T> cluster : getClusters())
 			{
-			if (prohibitionModel.isProhibited(p, cluster))
+			if (clusterFilter.isProhibited(cluster))
 				{
 				// ignore this cluster
 				}

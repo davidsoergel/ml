@@ -10,6 +10,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.ml.cluster.PrototypeBasedCentroidClusteringMethod;
 import org.apache.log4j.Logger;
@@ -133,9 +134,12 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 			   }
 		   }*/
 
+
+		PointClusterFilter<T> clusterFilter = prohibitionModel == null ? null : prohibitionModel.getFilter(p);
+
 		for (final CentroidCluster<T> cluster : getClusters())
 			{
-			if (prohibitionModel.isProhibited(p, cluster))
+			if (clusterFilter.isProhibited(cluster))
 				//if (disallowedLabels != null && disallowedLabels
 				//		.containsAny(cluster.getWeightedLabels())) //.getDominantKeyInSet(leaveOneOutLabels)))
 				{

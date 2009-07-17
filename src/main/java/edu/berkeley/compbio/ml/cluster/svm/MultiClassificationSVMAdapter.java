@@ -21,6 +21,7 @@ import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 import org.apache.log4j.Logger;
@@ -245,9 +246,11 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		{
 		final Set<BatchCluster<T>> disallowedClusters = new HashSet<BatchCluster<T>>();
 
+		PointClusterFilter<T> clusterFilter = prohibitionModel == null ? null : prohibitionModel.getFilter(p);
+
 		for (final BatchCluster<T> cluster : model.getLabels())
 			{
-			if (prohibitionModel.isProhibited(p, cluster))
+			if (clusterFilter.isProhibited(cluster))
 				//	if (cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)
 				//			.equals(disallowedLabel))
 				{

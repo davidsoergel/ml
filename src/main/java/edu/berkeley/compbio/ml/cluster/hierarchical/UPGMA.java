@@ -44,6 +44,7 @@ import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.HierarchicalCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 import org.apache.log4j.Logger;
@@ -496,9 +497,11 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 		// what if we don't want to do leave-one-out?  this will throw NoSuchElementException
 		//	final String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
 
+		PointClusterFilter<T> clusterFilter = prohibitionModel == null ? null : prohibitionModel.getFilter(p);
+
 		for (final CentroidCluster<T> theCluster : getClusters())
 			{
-			if (prohibitionModel != null && prohibitionModel.isProhibited(p, theCluster))
+			if (clusterFilter.isProhibited(theCluster))
 				{
 				// ignore this cluster
 				}

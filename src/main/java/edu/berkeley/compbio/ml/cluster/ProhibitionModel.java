@@ -6,5 +6,7 @@ package edu.berkeley.compbio.ml.cluster;
  */
 public interface ProhibitionModel<T extends Clusterable<T>>
 	{
-	public boolean isProhibited(final T p, final Cluster<T> cluster);
+	//public boolean isProhibited(final T p, final Cluster<T> cluster);
+
+	PointClusterFilter<T> getFilter(T p);
 	}
