@@ -46,7 +46,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	protected final Set<String> potentialTrainingBins;
 	//protected final Set<String> predictLabels;
 	protected final Map<String, Set<String>> predictLabelSets;
-	protected final Function<String, Set<String>> prohibitionModel; //Set<String> leaveOneOutLabels;
+	protected final ProhibitionModel<T> prohibitionModel; //Set<String> leaveOneOutLabels;
 	protected final Set<String> testLabels;
 
 //	protected final int testThreads;
@@ -62,11 +62,11 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 	public AbstractClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
 	                                final Map<String, Set<String>> predictLabelSets,
-	                                final Set<String> leaveOneOutLabels, final Set<String> testLabels)
+	                                final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels)
 		{
 		measure = dm;
 		this.potentialTrainingBins = potentialTrainingBins;
-		this.leaveOneOutLabels = leaveOneOutLabels;
+		this.prohibitionModel = prohibitionModel;
 		this.predictLabelSets = predictLabelSets;
 		this.testLabels = testLabels;
 		//this.friendlyLabelMap =friendlyLabelMap;

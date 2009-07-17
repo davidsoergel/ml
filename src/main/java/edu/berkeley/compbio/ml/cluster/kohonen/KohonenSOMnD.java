@@ -44,6 +44,7 @@ import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 
@@ -121,12 +122,12 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	public KohonenSOMnD(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
-	                    final Map<String, Set<String>> predictLabelSets, final Set<String> leaveOneOutLabels,
+	                    final Map<String, Set<String>> predictLabelSets, final ProhibitionModel<T> prohibitionModel,
 	                    final Set<String> testLabels, final int[] cellsPerDimension,
 	                    final SimpleFunction moveFactorFunction, final SimpleFunction radiusFunction,
 	                    final boolean decrementLosingNeighborhood, final boolean edgesWrap)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 
 		this.cellsPerDimension = cellsPerDimension;
 

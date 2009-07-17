@@ -23,10 +23,10 @@ public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Cluster
 	protected AbstractSupervisedOnlineClusteringMethod(final DissimilarityMeasure<T> dm,
 	                                                   final Set<String> potentialTrainingBins,
 	                                                   final Map<String, Set<String>> predictLabelSets,
-	                                                   final Set<String> leaveOneOutLabels,
+	                                                   final ProhibitionModel<T> prohibitionModel,
 	                                                   final Set<String> testLabels)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		}
 
 

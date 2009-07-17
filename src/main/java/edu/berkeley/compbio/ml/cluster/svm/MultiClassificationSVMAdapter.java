@@ -5,7 +5,6 @@ import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.google.common.base.Function;
-import com.google.common.collect.MapMaker;
 import edu.berkeley.compbio.jlibsvm.ImmutableSvmParameter;
 import edu.berkeley.compbio.jlibsvm.binary.BinaryClassificationSVM;
 import edu.berkeley.compbio.jlibsvm.multi.MultiClassModel;
@@ -22,6 +21,7 @@ import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +54,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	Map<String, BatchCluster<T>> theClusterMap;
 
-	Map<String, MultiClassModel<BatchCluster<T>, T>> leaveOneOutModels;
+	//Map<String, MultiClassModel<BatchCluster<T>, T>> leaveOneOutModels;
 
 	private MultiClassModel<BatchCluster<T>, T> model;
 
@@ -72,10 +72,10 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 
 	public MultiClassificationSVMAdapter(final Set<String> potentialTrainingBins,
 	                                     final Map<String, Set<String>> predictLabelSets,
-	                                     final Set<String> leaveOneOutLabels, final Set<String> testLabels,
+	                                     final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels,
 	                                     @NotNull final ImmutableSvmParameter<BatchCluster<T>, T> param)
 		{
-		super(null, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(null, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		this.param = param;
 		}
 
@@ -201,22 +201,21 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		//execService.shutdown();
 
 
-		change to
-		prohibitionModel
-
-		if (leaveOneOutLabels != null)
+/*
+		if (prohibitionModel != null)
 			{
 			leaveOneOutModels =
-					new MapMaker().makeComputingMap(new Function<String, MultiClassModel<BatchCluster<T>, T>>()
+					new MapMaker().makeComputingMap(new Function<T, MultiClassModel<BatchCluster<T>, T>>()
 					{
-					public MultiClassModel<BatchCluster<T>, T> apply(@Nullable final String disallowedLabel)
+					public MultiClassModel<BatchCluster<T>, T> apply(@Nullable final T p) //String disallowedLabel)
 						{
 						final Set<BatchCluster<T>> disallowedClusters = new HashSet<BatchCluster<T>>();
 
 						for (final BatchCluster<T> cluster : model.getLabels())
 							{
-							if (cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)
-									.equals(disallowedLabel))
+							if(prohibitionModel.isProhibited(p, cluster))
+						//	if (cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)
+						//			.equals(disallowedLabel))
 								{
 								disallowedClusters.add(cluster);
 								}
@@ -225,7 +224,7 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 						}
 					});
 			}
-
+*/
 		removeEmptyClusters();
 		normalizeClusterLabelProbabilities();
 		}
@@ -240,6 +239,24 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		resultsNode.addChild("trainingWaitedSeconds", trainingStats.getWaitedSeconds());
 		*/
 		}
+
+	private MultiClassModel<BatchCluster<T>, T> makeMultiClassModelWithProhibition(
+			@Nullable final T p) //String disallowedLabel)
+		{
+		final Set<BatchCluster<T>> disallowedClusters = new HashSet<BatchCluster<T>>();
+
+		for (final BatchCluster<T> cluster : model.getLabels())
+			{
+			if (prohibitionModel.isProhibited(p, cluster))
+				//	if (cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)
+				//			.equals(disallowedLabel))
+				{
+				disallowedClusters.add(cluster);
+				}
+			}
+		return new MultiClassModel<BatchCluster<T>, T>(model, disallowedClusters);
+		}
+
 
 	// -------------------------- OTHER METHODS --------------------------
 	@Override
@@ -256,13 +273,14 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 	public ClusterMove<T, BatchCluster<T>> bestClusterMove(final T p) throws NoGoodClusterException
 		{
 		MultiClassModel<BatchCluster<T>, T> leaveOneOutModel = model;
-		if (leaveOneOutLabels != null)
+		if (prohibitionModel != null)
 			{
 			try
 				{
 				//BAD LOO doesn't work??
-				final String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
-				leaveOneOutModel = leaveOneOutModels.get(disallowedLabel);
+				//	final String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+				//	leaveOneOutModel = leaveOneOutModels.get(p); //disallowedLabel);
+				leaveOneOutModel = makeMultiClassModelWithProhibition(p);
 				}
 			catch (NoSuchElementException e)
 				{

@@ -50,9 +50,9 @@ public abstract class BatchTreeClusteringMethod<T extends Clusterable<T>> extend
 
 	protected BatchTreeClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
 	                                    final Map<String, Set<String>> predictLabelSets,
-	                                    final Set<String> leaveOneOutLabels, final Set<String> testLabels)
+	                                    final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		}
 
 	/**

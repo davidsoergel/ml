@@ -15,6 +15,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,10 +51,11 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 
 	public MultiNeighborClustering(final DissimilarityMeasure<T> dm, final double unknownDistanceThreshold,
 	                               final Set<String> potentialTrainingBins,
-	                               final Map<String, Set<String>> predictLabelSets, final Set<String> leaveOneOutLabels,
-	                               final Set<String> testLabels, final int maxNeighbors)
+	                               final Map<String, Set<String>> predictLabelSets,
+	                               final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels,
+	                               final int maxNeighbors)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		this.maxNeighbors = maxNeighbors;
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		}
@@ -221,21 +223,12 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		final TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> result =
 				TreeMultimap.create(); //<Double, ClusterMove<T, CentroidCluster<T>>>();
 
-		change to
-		prohibitionModel
-
-		String disallowedLabel = null;
-		if (leaveOneOutLabels != null)
-			{
-			disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
-			}
 
 		//ProgressReportingThreadPoolExecutor execService = new ProgressReportingThreadPoolExecutor();
 
 		for (final CentroidCluster<T> cluster : getClusters())
 			{
-			if (disallowedLabel != null && disallowedLabel
-					.equals(cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)))
+			if (prohibitionModel.isProhibited(p, cluster))
 				{
 				// ignore this cluster
 				}

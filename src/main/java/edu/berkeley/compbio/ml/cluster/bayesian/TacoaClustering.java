@@ -15,6 +15,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
@@ -43,10 +44,10 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 
 
 	public TacoaClustering(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
-	                       final Map<String, Set<String>> predictLabelSets, final Set<String> leaveOneOutLabels,
+	                       final Map<String, Set<String>> predictLabelSets, final ProhibitionModel<T> prohibitionModel,
 	                       final Set<String> testLabels, final int maxNeighbors, final double bestScoreRatioThreshold)
 		{
-		super(dm, Double.POSITIVE_INFINITY, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels,
+		super(dm, Double.POSITIVE_INFINITY, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels,
 		      maxNeighbors);
 		this.bestScoreRatioThreshold = bestScoreRatioThreshold;
 		}

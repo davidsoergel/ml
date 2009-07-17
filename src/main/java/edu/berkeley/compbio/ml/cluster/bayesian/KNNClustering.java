@@ -42,6 +42,7 @@ import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusteringTestResults;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
@@ -77,13 +78,13 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 	 */
 	public KNNClustering(final DissimilarityMeasure<T> dm, final double unknownDistanceThreshold,
 	                     final Set<String> potentialTrainingBins, final Map<String, Set<String>> predictLabelSets,
-	                     final Set<String> leaveOneOutLabels, final Set<String> testLabels, final int maxNeighbors,
-	                     final double voteProportionThreshold, final double voteTieThresholdRatio,
-	                     final double distanceTieThresholdRatio,
+	                     final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels,
+	                     final int maxNeighbors, final double voteProportionThreshold,
+	                     final double voteTieThresholdRatio, final double distanceTieThresholdRatio,
 	                     final SimpleFunction function) //, double decompositionDistanceThreshold)
 		{
 		//	super(potentialTrainingBins, dm, unknownDistanceThreshold, leaveOneOutLabels, maxNeighbors);
-		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels,
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels,
 		      maxNeighbors);
 
 		//		this.decompositionDistanceThreshold = decompositionDistanceThreshold;

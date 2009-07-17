@@ -43,6 +43,7 @@ import edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.ml.cluster.SampleInitializedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.SemisupervisedClusteringMethod;
 import org.apache.log4j.Logger;
@@ -71,10 +72,10 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 	//private int k;
 
 	public KmeansClustering(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
-	                        final Map<String, Set<String>> predictLabelSets, final Set<String> leaveOneOutLabels,
+	                        final Map<String, Set<String>> predictLabelSets, final ProhibitionModel<T> prohibitionModel,
 	                        final Set<String> testLabels)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

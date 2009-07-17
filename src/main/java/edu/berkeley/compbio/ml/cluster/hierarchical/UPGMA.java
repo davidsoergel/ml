@@ -44,6 +44,7 @@ import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.HierarchicalCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 import org.apache.log4j.Logger;
 
@@ -83,10 +84,10 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 	//	private SortedSet<ClusterPair<T>> theClusterPairs;
 
 	public UPGMA(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
-	             final Map<String, Set<String>> predictLabelSets, final Set<String> leaveOneOutLabels,
+	             final Map<String, Set<String>> predictLabelSets, final ProhibitionModel<T> prohibitionModel,
 	             final Set<String> testLabels)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -489,15 +490,15 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			return result;
 			}
 
-		change to
-		prohibitionModel
+		//	change to
+		//	prohibitionModel
 
-		//BAD what if we don't want to do leave-one-out?  this will throw NoSuchElementException
-		final String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+		// what if we don't want to do leave-one-out?  this will throw NoSuchElementException
+		//	final String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
 
 		for (final CentroidCluster<T> theCluster : getClusters())
 			{
-			if (disallowedLabel.equals(theCluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)))
+			if (prohibitionModel != null && prohibitionModel.isProhibited(p, theCluster))
 				{
 				// ignore this cluster
 				}

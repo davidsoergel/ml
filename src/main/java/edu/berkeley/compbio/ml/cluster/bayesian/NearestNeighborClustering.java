@@ -2,7 +2,6 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
-import com.google.common.base.Function;
 import edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -11,6 +10,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.ml.cluster.PrototypeBasedCentroidClusteringMethod;
 import org.apache.log4j.Logger;
 
@@ -40,9 +40,9 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 	public NearestNeighborClustering(final DissimilarityMeasure<T> dm, final double unknownDistanceThreshold,
 	                                 final Set<String> potentialTrainingBins,
 	                                 final Map<String, Set<String>> predictLabelSets,
-	                                 final Function<String, Set<String>> prohibitionModel, final Set<String> testLabels)
+	                                 final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
 		}
 

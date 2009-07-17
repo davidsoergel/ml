@@ -47,6 +47,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.ClusterableIteratorFactory;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -131,14 +132,14 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	public KohonenSOM2D(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
-	                    final Map<String, Set<String>> predictLabelSets, final Set<String> leaveOneOutLabels,
+	                    final Map<String, Set<String>> predictLabelSets, final ProhibitionModel<T> prohibitionModel,
 	                    final Set<String> testLabels, @NotNull final Integer[] cellsPerDimension,
 	                    final SimpleFunction moveFactorFunction, final SimpleFunction radiusFunction,
 	                    final SimpleFunction weightFunction, final boolean decrementLosingNeighborhood,
 	                    final boolean edgesWrap, final double minRadius,
 	                    final KohonenSOM2DSearchStrategy<T> searchStrategy)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 
 		this.cellsPerDimension = DSArrayUtils.toPrimitive(cellsPerDimension);
 

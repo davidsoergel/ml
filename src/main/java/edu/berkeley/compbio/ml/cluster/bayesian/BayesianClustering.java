@@ -43,6 +43,7 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,9 +75,9 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 	 */
 	public BayesianClustering(final DissimilarityMeasure<T> dm, final double unknownDistanceThreshold,
 	                          final Set<String> potentialTrainingBins, final Map<String, Set<String>> predictLabelSets,
-	                          final Set<String> leaveOneOutLabels, final Set<String> testLabels)
+	                          final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels)
 		{
-		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

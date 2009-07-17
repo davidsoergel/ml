@@ -46,6 +46,7 @@ import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.ml.cluster.kmeans.GrowableKmeansClustering;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
@@ -83,9 +84,9 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 	public LabelDecomposingBayesianClustering(final DissimilarityMeasure<T> dm, final double unknownDistanceThreshold,
 	                                          final Set<String> potentialTrainingBins,
 	                                          final Map<String, Set<String>> predictLabelSets,
-	                                          final Set<String> leaveOneOutLabels, final Set<String> testLabels)
+	                                          final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels)
 		{
-		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
+		super(dm, unknownDistanceThreshold, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -145,7 +146,7 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 						{
 						theIntraLabelClustering =
 								new GrowableKmeansClustering<T>(measure, potentialTrainingBins, predictLabelSets,
-								                                leaveOneOutLabels, testLabels);
+								                                prohibitionModel, testLabels);
 						theSubclusteringMap.put(bestLabel, theIntraLabelClustering);
 						}
 
