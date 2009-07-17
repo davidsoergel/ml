@@ -221,6 +221,9 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		final TreeMultimap<Double, ClusterMove<T, CentroidCluster<T>>> result =
 				TreeMultimap.create(); //<Double, ClusterMove<T, CentroidCluster<T>>>();
 
+		change to
+		prohibitionModel
+
 		String disallowedLabel = null;
 		if (leaveOneOutLabels != null)
 			{

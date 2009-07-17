@@ -2,6 +2,7 @@ package edu.berkeley.compbio.ml.cluster.bayesian;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
+import com.google.common.base.Function;
 import edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -16,7 +17,6 @@ import org.apache.log4j.Logger;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
@@ -40,7 +40,7 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 	public NearestNeighborClustering(final DissimilarityMeasure<T> dm, final double unknownDistanceThreshold,
 	                                 final Set<String> potentialTrainingBins,
 	                                 final Map<String, Set<String>> predictLabelSets,
-	                                 final Set<String> leaveOneOutLabels, final Set<String> testLabels)
+	                                 final Function<String, Set<String>> prohibitionModel, final Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, leaveOneOutLabels, testLabels);
 		this.unknownDistanceThreshold = unknownDistanceThreshold;
@@ -119,23 +119,25 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 		result.secondBestDistance = Double.POSITIVE_INFINITY;
 		result.bestDistance = Double.POSITIVE_INFINITY;
 
-		String disallowedLabel = null;
-		if (leaveOneOutLabels != null)
-			{
-			try
-				{
-				disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
-				}
-			catch (NoSuchElementException e)
-				{
-				// OK, leave disallowedLabel==null then
-				}
-			}
+		/*	Set<String> disallowedLabels = null;
+	   if (leaveOneOutLabels != null)
+		   {
+		   try
+			   {
+			   disallowedLabels = prohibitionModel.getProhibited(p.getWeightedLabels());
+	   //		disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
+			   }
+		   catch (NoSuchElementException e)
+			   {
+			   // OK, leave disallowedLabel==null then
+			   }
+		   }*/
 
 		for (final CentroidCluster<T> cluster : getClusters())
 			{
-			if (disallowedLabel != null && disallowedLabel
-					.equals(cluster.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels)))
+			if (prohibitionModel.isProhibited(p, cluster))
+				//if (disallowedLabels != null && disallowedLabels
+				//		.containsAny(cluster.getWeightedLabels())) //.getDominantKeyInSet(leaveOneOutLabels)))
 				{
 				// ignore this cluster
 				}

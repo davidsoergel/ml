@@ -489,6 +489,9 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			return result;
 			}
 
+		change to
+		prohibitionModel
+
 		//BAD what if we don't want to do leave-one-out?  this will throw NoSuchElementException
 		final String disallowedLabel = p.getWeightedLabels().getDominantKeyInSet(leaveOneOutLabels);
 

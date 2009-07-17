@@ -46,7 +46,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	protected final Set<String> potentialTrainingBins;
 	//protected final Set<String> predictLabels;
 	protected final Map<String, Set<String>> predictLabelSets;
-	protected final Set<String> leaveOneOutLabels;
+	protected final Function<String, Set<String>> prohibitionModel; //Set<String> leaveOneOutLabels;
 	protected final Set<String> testLabels;
 
 //	protected final int testThreads;

@@ -200,6 +200,10 @@ public class MultiClassificationSVMAdapter<T extends Clusterable<T>>
 		//trainingStats = execService.shutdown();
 		//execService.shutdown();
 
+
+		change to
+		prohibitionModel
+
 		if (leaveOneOutLabels != null)
 			{
 			leaveOneOutModels =
