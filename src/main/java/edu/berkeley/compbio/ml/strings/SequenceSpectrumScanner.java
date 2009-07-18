@@ -36,7 +36,7 @@ import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
-import edu.berkeley.compbio.sequtils.NucleotideFilter;
+import edu.berkeley.compbio.sequtils.SubstitutionFilter;
 
 import java.io.IOException;
 
@@ -58,7 +58,7 @@ public interface SequenceSpectrumScanner
 	 */
 	SequenceSpectrum getEmpty();
 
-	NucleotideFilter getNucleotideFilter();
+	SubstitutionFilter getNucleotideFilter();
 	/*	Kcount scanSequence(SequenceReader in, int desiredlength, List<byte[]> firstWords) //, int firstWordLength)
 				throws IOException, FilterException, NotEnoughSequenceException;*/
 
