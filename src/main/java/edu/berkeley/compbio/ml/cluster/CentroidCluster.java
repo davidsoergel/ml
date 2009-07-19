@@ -34,6 +34,8 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.stats.DistributionException;
 
+import java.io.Serializable;
+
 /**
  * A cluster, i.e. a grouping of samples, generally learned during a clustering process.  Stores a centroid, an object
  * of the same type as the samples representing the location of the cluster.  Depending on the clustering algorithm, the
@@ -50,7 +52,8 @@ import com.davidsoergel.stats.DistributionException;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface CentroidCluster<T extends Clusterable<T>> extends Cluster<T>
+public interface CentroidCluster<T extends Clusterable<T>>
+		extends Cluster<T>, Serializable //BAD this is not really Serializable, is it?
 	{
 // -------------------------- OTHER METHODS --------------------------
 
