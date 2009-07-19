@@ -33,148 +33,148 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>edu.berkeley.compbio</groupId>
+  <artifactId>ml</artifactId>
+
+  <name>ml</name>
+  <version>0.9-SNAPSHOT</version>
+  <url>http://dev.davidsoergel.com/ml</url>
+  <description>Generic implementations of various Machine Learning algorithms. Includes an online clustering framework
+    with a K-means implementation, and a Markov Chain Monte Carlo (MCMC) framework with a Metropolis-coupled
+    (MCMCMC) option.
+  </description>
+
+  <parent>
     <groupId>edu.berkeley.compbio</groupId>
-    <artifactId>ml</artifactId>
+    <artifactId>basepom</artifactId>
+    <version>0.92</version>
+  </parent>
 
-    <name>ml</name>
-    <version>0.9-SNAPSHOT</version>
-    <url>http://dev.davidsoergel.com/ml</url>
-    <description>Generic implementations of various Machine Learning algorithms. Includes an online clustering framework
-        with a K-means implementation, and a Markov Chain Monte Carlo (MCMC) framework with a Metropolis-coupled
-        (MCMCMC) option.
-    </description>
+  <inceptionYear>2006</inceptionYear>
 
-    <parent>
-        <groupId>edu.berkeley.compbio</groupId>
-        <artifactId>basepom</artifactId>
-        <version>0.92</version>
-    </parent>
+  <packaging>jar</packaging>
 
-    <inceptionYear>2006</inceptionYear>
-
-    <packaging>jar</packaging>
-
-    <issueManagement>
-        <system>Trac</system>
-        <url>http://dev.davidsoergel.com/ml/</url>
-    </issueManagement>
+  <issueManagement>
+    <system>Trac</system>
+    <url>http://dev.davidsoergel.com/ml/</url>
+  </issueManagement>
 
 
-    <scm>
-        <connection>scm:svn:http://svn.davidsoergel.com/repos/ml</connection>
-        <developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</developerConnection>
-    </scm>
+  <scm>
+    <connection>scm:svn:http://svn.davidsoergel.com/repos/ml</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</developerConnection>
+  </scm>
 
 
-    <distributionManagement>
-        <site>
-            <id>website</id>
-            <url>scpexe://dev.davidsoergel.com/home/build/mavensites/ml</url>
-        </site>
-    </distributionManagement>
+  <distributionManagement>
+    <site>
+      <id>website</id>
+      <url>scpexe://dev.davidsoergel.com/home/build/mavensites/ml</url>
+    </site>
+  </distributionManagement>
 
 
-    <developers>
-        <developer>
-            <id>dtulga</id>
-            <name>David Tulga</name>
-            <email>dtulga@compbio.berkeley.edu</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-            <organization>University of California, Berkeley</organization>
-            <timezone>-7</timezone>
-        </developer>
-        <developer>
-            <id>lorax</id>
-            <name>David Soergel</name>
-            <email>soergel@compbio.berkeley.edu</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-            <organization>University of California, Berkeley</organization>
-            <timezone>-7</timezone>
-        </developer>
-    </developers>
+  <developers>
+    <developer>
+      <id>dtulga</id>
+      <name>David Tulga</name>
+      <email>dtulga@compbio.berkeley.edu</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <organization>University of California, Berkeley</organization>
+      <timezone>-7</timezone>
+    </developer>
+    <developer>
+      <id>lorax</id>
+      <name>David Soergel</name>
+      <email>soergel@compbio.berkeley.edu</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <organization>University of California, Berkeley</organization>
+      <timezone>-7</timezone>
+    </developer>
+  </developers>
 
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>http://dev.davidsoergel.com/artifactory/repo</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>snapshots</id>
-            <url>http://dev.davidsoergel.com/artifactory/repo</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
+  <repositories>
+    <repository>
+      <id>central</id>
+      <url>http://dev.davidsoergel.com/artifactory/repo</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>snapshots</id>
+      <url>http://dev.davidsoergel.com/artifactory/repo</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
 
 
-    <dependencies>
-        <dependency>
-            <groupId>com.davidsoergel</groupId>
-            <artifactId>dsutils</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.davidsoergel</groupId>
-            <artifactId>dsutils</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <classifier>tests</classifier>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>edu.berkeley.compbio</groupId>
-            <artifactId>sequtils</artifactId>
-            <version>0.9-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>edu.berkeley.compbio</groupId>
-            <artifactId>phyloutils</artifactId>
-            <version>0.9-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.davidsoergel</groupId>
-            <artifactId>runutils</artifactId>
-            <version>0.9-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.davidsoergel</groupId>
-            <artifactId>stats</artifactId>
-            <version>0.9-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <version>2.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <!--	<dependency>
-          <groupId>biojava</groupId>
-          <artifactId>biojava</artifactId>
-          <version>1.6</version>
-      </dependency>-->
-        <dependency>
+  <dependencies>
+    <dependency>
+      <groupId>com.davidsoergel</groupId>
+      <artifactId>dsutils</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.davidsoergel</groupId>
+      <artifactId>dsutils</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.berkeley.compbio</groupId>
+      <artifactId>sequtils</artifactId>
+      <version>0.9-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>edu.berkeley.compbio</groupId>
+      <artifactId>phyloutils</artifactId>
+      <version>0.9-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.davidsoergel</groupId>
+      <artifactId>runutils</artifactId>
+      <version>0.9-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.davidsoergel</groupId>
+      <artifactId>stats</artifactId>
+      <version>0.9-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>2.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <!--	<dependency>
+              <groupId>biojava</groupId>
+              <artifactId>biojava</artifactId>
+              <version>1.6</version>
+          </dependency>-->
+    <!--    <dependency>
             <groupId>edu.berkeley.compbio</groupId>
             <artifactId>jlibsvm</artifactId>
             <version>0.9-SNAPSHOT</version>
-        </dependency>
+        </dependency>-->
 
-    </dependencies>
+  </dependencies>
 </project>
