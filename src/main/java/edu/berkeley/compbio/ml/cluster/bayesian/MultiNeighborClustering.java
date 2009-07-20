@@ -230,7 +230,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		PointClusterFilter<T> clusterFilter = prohibitionModel == null ? null : prohibitionModel.getFilter(p);
 		for (final CentroidCluster<T> cluster : getClusters())
 			{
-			if (clusterFilter.isProhibited(cluster))
+			if (clusterFilter != null && clusterFilter.isProhibited(cluster))
 				{
 				// ignore this cluster
 				}
