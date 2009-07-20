@@ -139,7 +139,7 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 
 		for (final CentroidCluster<T> cluster : getClusters())
 			{
-			if (clusterFilter.isProhibited(cluster))
+			if (clusterFilter != null && clusterFilter.isProhibited(cluster))
 				//if (disallowedLabels != null && disallowedLabels
 				//		.containsAny(cluster.getWeightedLabels())) //.getDominantKeyInSet(leaveOneOutLabels)))
 				{

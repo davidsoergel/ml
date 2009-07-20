@@ -501,7 +501,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 		for (final CentroidCluster<T> theCluster : getClusters())
 			{
-			if (clusterFilter.isProhibited(theCluster))
+			if (clusterFilter != null && clusterFilter.isProhibited(theCluster))
 				{
 				// ignore this cluster
 				}
