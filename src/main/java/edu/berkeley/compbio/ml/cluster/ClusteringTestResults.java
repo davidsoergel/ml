@@ -49,8 +49,6 @@ public class ClusteringTestResults<L extends Comparable>
 	//public double wrong = 0;
 	private int unknown = 0;
 	private int numClusters = 0;
-	private int shouldHaveBeenUnknown = 0;
-	private int shouldNotHaveBeenUnknown = 0;
 	private int testSamples;
 	private double trainingSeconds;
 	private double testingSeconds;
@@ -90,17 +88,6 @@ public class ClusteringTestResults<L extends Comparable>
 	public synchronized void setNumClusters(final int numClusters)
 		{
 		this.numClusters = numClusters;
-		}
-
-
-	public int getShouldHaveBeenUnknown()
-		{
-		return shouldHaveBeenUnknown;
-		}
-
-	public int getShouldNotHaveBeenUnknown()
-		{
-		return shouldNotHaveBeenUnknown;
 		}
 
 
@@ -313,14 +300,16 @@ public class ClusteringTestResults<L extends Comparable>
 		       secondToBestVoteRatios.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY);
 		}
 
-	public synchronized void incrementShouldHaveBeenUnknown()
+	public synchronized void incrementShouldHaveBeenUnknown(final String predictionSetName)
 		{
-		shouldHaveBeenUnknown++;
+		final DistanceBasedMultiClassCrossValidationResults cvResults = cvResultMap.get(predictionSetName);
+		cvResults.incrementShouldHaveBeenUnknown();
 		}
 
-	public synchronized void incrementShouldNotHaveBeenUnknown()
+	public synchronized void incrementShouldNotHaveBeenUnknown(final String predictionSetName)
 		{
-		shouldNotHaveBeenUnknown++;
+		final DistanceBasedMultiClassCrossValidationResults cvResults = cvResultMap.get(predictionSetName);
+		cvResults.incrementShouldNotHaveBeenUnknown();
 		}
 
 
@@ -348,8 +337,6 @@ public class ClusteringTestResults<L extends Comparable>
 
 		resultsNode.addChild("numClusters", getNumClusters());
 		//resultsNode.addChild("unknown", getUnknown());
-		resultsNode.addChild("shouldHaveBeenUnknown", getShouldHaveBeenUnknown());
-		resultsNode.addChild("shouldNotHaveBeenUnknown", getShouldNotHaveBeenUnknown());
 
 		resultsNode.addChild("computedDistances", getComputedDistancesArray());
 		resultsNode.addChild("secondToBestDistanceRatios", getSecondToBestDistanceRatiosArray());

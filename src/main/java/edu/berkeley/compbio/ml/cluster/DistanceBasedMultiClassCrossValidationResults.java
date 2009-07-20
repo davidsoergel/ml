@@ -35,6 +35,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 	 */
 	private List<Double> labelWithinClusterProbabilities = new ArrayList<Double>();
 
+	private int shouldHaveBeenUnknown = 0;
+	private int shouldNotHaveBeenUnknown = 0;
 
 	public void addSample(final L realLabel, final L predictedLabel, final double clusterProb,
 	                      final double broadWrongness, final double detailedWrongness)
@@ -94,6 +96,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		resultsNode.addChild("classNormalizedSpecificity", classNormalizedSpecificity());
 		resultsNode.addChild("classNormalizedPrecision", classNormalizedPrecision());
 		resultsNode.addChild("unknownLabel", unknown());
+		resultsNode.addChild("shouldHaveBeenUnknown", shouldHaveBeenUnknown);
+		resultsNode.addChild("shouldNotHaveBeenUnknown", shouldNotHaveBeenUnknown);
 
 		storeLabelDistances(labelDistancesName, getPredictionDistances(), resultsNode);
 		storeLabelDistances(labelDistancesName + "ToSample", getPredictionDistancesWithPrecisionCost(), resultsNode);
@@ -128,6 +132,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 	                                       final HierarchicalTypedPropertyNode<String, Object> resultsNode)
 		{
 		resultsNode.addChild(labelDistanceName, labelDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY));
+
 
 		if (!labelDistances.isEmpty())
 			{
@@ -173,5 +178,15 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 				resultsNode.addChild(labelDistanceName + "StdDev", DSArrayUtils.stddev(labelDistances, mean));
 				}
 			}
+		}
+
+	public void incrementShouldHaveBeenUnknown()
+		{
+		shouldHaveBeenUnknown++;
+		}
+
+	public void incrementShouldNotHaveBeenUnknown()
+		{
+		shouldNotHaveBeenUnknown++;
 		}
 	}

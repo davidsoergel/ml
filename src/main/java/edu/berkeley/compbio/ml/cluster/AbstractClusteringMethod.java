@@ -468,7 +468,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				// the fragment's best label does match a training label, it should not be unknown
 				if (populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
 					{
-					tr.incrementShouldNotHaveBeenUnknown();
+					tr.incrementShouldNotHaveBeenUnknown(predictionSetName);
 					}
 
 				broadWrongness = UNKNOWN_DISTANCE;
@@ -486,7 +486,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					// the fragment's real label does not match any populated training label (to which it might possibly have been classified), it should be unknown
 					if (!populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
 						{
-						tr.incrementShouldHaveBeenUnknown();
+						tr.incrementShouldHaveBeenUnknown(predictionSetName);
 						}
 
 					// compute a measure of how badly the prediction missed the truth, at the broad level
@@ -518,7 +518,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					// the fragment's best label does match a training label, it should not be unknown
 					if (populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
 						{
-						tr.incrementShouldNotHaveBeenUnknown();
+						tr.incrementShouldNotHaveBeenUnknown(predictionSetName);
 						}
 
 					broadWrongness = UNKNOWN_DISTANCE;
