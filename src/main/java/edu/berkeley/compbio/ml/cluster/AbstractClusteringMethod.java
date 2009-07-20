@@ -515,10 +515,13 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					predictedLabel = null;
 					clusterProb = 0;
 
+
+					tr.incrementOther(predictionSetName);
+
 					// the fragment's best label does match a training label, it should not be unknown
 					if (populatedPredictLabelSets.get(predictionSetName).contains(broadActualLabel))
 						{
-						tr.incrementShouldNotHaveBeenUnknown(predictionSetName);
+						tr.incrementShouldNotHaveBeenOther(predictionSetName);
 						}
 
 					broadWrongness = UNKNOWN_DISTANCE;

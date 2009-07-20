@@ -37,6 +37,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 
 	private int shouldHaveBeenUnknown = 0;
 	private int shouldNotHaveBeenUnknown = 0;
+	private int other = 0;
+	private int shouldNotHaveBeenOther = 0;
 
 	public void addSample(final L realLabel, final L predictedLabel, final double clusterProb,
 	                      final double broadWrongness, final double detailedWrongness)
@@ -98,6 +100,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		resultsNode.addChild("unknownLabel", unknown());
 		resultsNode.addChild("shouldHaveBeenUnknown", shouldHaveBeenUnknown);
 		resultsNode.addChild("shouldNotHaveBeenUnknown", shouldNotHaveBeenUnknown);
+		resultsNode.addChild("other", other);
+		resultsNode.addChild("shouldNotHaveBeenOther", shouldNotHaveBeenOther);
 
 		storeLabelDistances(labelDistancesName, getPredictionDistances(), resultsNode);
 		storeLabelDistances(labelDistancesName + "ToSample", getPredictionDistancesWithPrecisionCost(), resultsNode);
@@ -133,7 +137,6 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		{
 		resultsNode.addChild(labelDistanceName, labelDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY));
 
-
 		if (!labelDistances.isEmpty())
 			{
 			// we used "-0.1" to indicate a strain-perfect match, better than a match at distance 0.
@@ -145,6 +148,10 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 					{
 					d.add(0.);
 					}
+				else if (labelDistance > 1e100)
+					{
+					// drop the UNKNOWN_DISTANCE cases; compute the percentiles and averages below based on only the classified cases
+					}
 				else
 					{
 					d.add(labelDistance);
@@ -154,8 +161,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 
 			try
 				{
-				final Histogram1D h = new EqualWeightHistogram1D(100, DSArrayUtils.toPrimitive(
-						labelDistances.toArray(new Double[labelDistances.size()])));
+				final Histogram1D h =
+						new EqualWeightHistogram1D(100, DSArrayUtils.toPrimitive(d.toArray(new Double[d.size()])));
 
 				resultsNode.addChild(labelDistanceName + "90", h.topOfBin(89));
 				resultsNode.addChild(labelDistanceName + "95", h.topOfBin(94));
@@ -167,15 +174,15 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 				throw new ClusterRuntimeException(e);
 				}
 
-			final double mean = DSArrayUtils.mean(labelDistances);
+			final double mean = DSArrayUtils.mean(d);
 			if (Double.isInfinite(mean))
 				{
 				logger.warn("labelDistance mean is Infinity");
 				}
 			else
 				{
-				resultsNode.addChild(labelDistanceName + "Mean", mean);
-				resultsNode.addChild(labelDistanceName + "StdDev", DSArrayUtils.stddev(labelDistances, mean));
+				resultsNode.addChild(labelDistanceName + "MeanGivenClassified", mean);
+				resultsNode.addChild(labelDistanceName + "StdDevGivenClassified", DSArrayUtils.stddev(d, mean));
 				}
 			}
 		}
@@ -188,5 +195,15 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 	public void incrementShouldNotHaveBeenUnknown()
 		{
 		shouldNotHaveBeenUnknown++;
+		}
+
+	public void incrementOther()
+		{
+		other++;
+		}
+
+	public void incrementShouldNotHaveBeenOther()
+		{
+		shouldNotHaveBeenOther++;
 		}
 	}

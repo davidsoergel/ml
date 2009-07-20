@@ -312,6 +312,18 @@ public class ClusteringTestResults<L extends Comparable>
 		cvResults.incrementShouldNotHaveBeenUnknown();
 		}
 
+	public synchronized void incrementOther(final String predictionSetName)
+		{
+		final DistanceBasedMultiClassCrossValidationResults cvResults = cvResultMap.get(predictionSetName);
+		cvResults.incrementOther();
+		}
+
+	public synchronized void incrementShouldNotHaveBeenOther(final String predictionSetName)
+		{
+		final DistanceBasedMultiClassCrossValidationResults cvResults = cvResultMap.get(predictionSetName);
+		cvResults.incrementShouldNotHaveBeenOther();
+		}
+
 
 	public synchronized void incrementTotalTrainingMass(final double weightSum)
 		{
