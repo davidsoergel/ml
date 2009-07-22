@@ -93,7 +93,6 @@ public class UPGMATest
 
 		final Collection<? extends CentroidCluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
 
-		assert theClusters.size() == 11;
 
 		for (final Cluster<ClusterableDoubleArray> c : theClusters)
 			{
@@ -102,10 +101,11 @@ public class UPGMATest
 
 		oc.writeAssignmentsAsTextToStream(System.err);
 
-		assert oc.getN() == 6;
 		//assert oc.getTree().getValue().getN() == 6;
 		logger.info("\n" + TreePrinter.prettyPrint(oc.getTree()));
 
+		assert oc.getN() == 6;
+		assert theClusters.size() == 11;
 		final double largestLengthSpan = oc.getTree().getLargestLengthSpan();
 		assert MathUtils.equalWithinFPError(largestLengthSpan, 108.5638307100105);
 		}
