@@ -34,7 +34,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Formatter;
 
@@ -97,7 +96,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	/**
 	 * {@inheritDoc}
 	 */
-	@NotNull
+	//@NotNull
 	public T getCentroid()
 		{
 		return centroid;
@@ -136,7 +135,16 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 			   {
 			   logger.debug("" + this + " equals " + other + ": " + result);
 			   }*/
-			return centroid.equals(((AbstractCentroidCluster<T>) other).getCentroid())
+			T otherCentroid = ((AbstractCentroidCluster<T>) other).getCentroid();
+
+			if ((centroid == null && otherCentroid != null) || centroid != null && otherCentroid == null)
+				{
+				return false;
+				}
+
+			// now either both centroid are null, or neither are
+
+			return ((centroid == null && otherCentroid == null) || centroid.equals(otherCentroid))
 			       // && theDistanceMeasure.equals(other.getTheDistanceMeasure())
 			       && super.equals(other);
 			}

@@ -163,7 +163,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 					new HashMap<UnorderedPair<HierarchicalCentroidCluster<T>>, Double>(getClusters().size());
 			for (HierarchicalCentroidCluster<T> b : getClusters())
 				{
-				if (ahc <= b.hashCode())
+				if (ahc <= b.hashCode() && !a.equals(b))
 					{
 					final Double d = measure.distanceFromTo(a.getValue().getCentroid(), b.getValue().getCentroid());
 
@@ -311,8 +311,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 			addCluster(composite);
 
-
-			Parallel.forEach(theActiveNodeDistanceMatrix.getActiveKeys(),
+			// there was a mysterious concurrent-modification sort of problem; does this fix it?
+			Parallel.forEach(new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getActiveKeys()),
 			                 new Function<HierarchicalCentroidCluster<T>, Void>()
 			                 {
 			                 public Void apply(final HierarchicalCentroidCluster<T> node)
