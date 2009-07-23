@@ -388,6 +388,15 @@ public class ClusteringTestResults<L extends Comparable>
 			HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> childResults = results.newChild();
 			childResults.setName(predictionLabelsName);
 			HierarchicalTypedPropertyNode<String, Object> childResultsNode = childResults.getValue();
+			try
+				{
+				childResultsNode.addChild("predictionLabelSet", new Double(predictionLabelsName));
+				}
+			catch (NumberFormatException e)
+				{
+				childResultsNode.addChild("predictionLabelSet", predictionLabelsName);
+				}
+
 			entry.getValue().putResults(childResultsNode, labelDistancesName, friendlyLabelMap);
 			}
 		}
