@@ -341,25 +341,25 @@ public class ClusteringTestResults<L extends Comparable>
 		 }
  */
 	//@Transactional
-	public void putResults(final HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> results,
+	public void putResults(final HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> outerResults,
 	                       final String labelDistancesName)
 		//, Map<String, String> friendlyLabelMap)
 		{
-		HierarchicalTypedPropertyNode<String, Object> resultsNode = results.getValue();
+		HierarchicalTypedPropertyNode<String, Object> innerResults = outerResults.getValue();
 
-		resultsNode.addChild("numClusters", getNumClusters());
+		innerResults.addChild("numClusters", getNumClusters());
 		//resultsNode.addChild("unknown", getUnknown());
 
-		resultsNode.addChild("computedDistances", getComputedDistancesArray());
-		resultsNode.addChild("secondToBestDistanceRatios", getSecondToBestDistanceRatiosArray());
-		resultsNode.addChild("voteProportions", getBestVoteProportionsArray());
-		resultsNode.addChild("secondToBestVoteRatios", getSecondToBestVoteRatiosArray());
+		innerResults.addChild("computedDistances", getComputedDistancesArray());
+		innerResults.addChild("secondToBestDistanceRatios", getSecondToBestDistanceRatiosArray());
+		innerResults.addChild("voteProportions", getBestVoteProportionsArray());
+		innerResults.addChild("secondToBestVoteRatios", getSecondToBestVoteRatiosArray());
 //		resultsNode.addChild("labelWithinClusterProbabilities", getLabelWithinClusterProbabilitiesArray());
 
 //		resultsNode.addChild("accuracy", getAccuracy()); // (double) perfect / (double) tr.labelDistances.size());
 
-		resultsNode.addChild("trainingSeconds", getTrainingSeconds());
-		resultsNode.addChild("testingSecondsPerSample", getTestingSeconds() / getTestSamples());
+		innerResults.addChild("trainingSeconds", getTrainingSeconds());
+		innerResults.addChild("testingSecondsPerSample", getTestingSeconds() / getTestSamples());
 
 
 		/*		resultsNode.addChild("correctProbabilities", tr.correctPercentages);
@@ -372,10 +372,10 @@ public class ClusteringTestResults<L extends Comparable>
 
 				resultsNode.addChild("distanceBinCenters", tr.distanceBinCenters);*/
 
-		resultsNode.addChild("unknownCluster", getUnknown());  // as opposed to unknownLabel
-		resultsNode.addChild("totalTrainingMass", getTotalTrainingMass());
+		innerResults.addChild("unknownCluster", getUnknown());  // as opposed to unknownLabel
+		innerResults.addChild("totalTrainingMass", getTotalTrainingMass());
 
-		resultsNode.addChild("modelInfo", getInfo());
+		innerResults.addChild("modelInfo", getInfo());
 
 		for (final Map.Entry<String, DistanceBasedMultiClassCrossValidationResults<L>> entry : cvResultMap.entrySet())
 			{
@@ -385,7 +385,7 @@ public class ClusteringTestResults<L extends Comparable>
 			//keyPath.add("RESULTS");
 			//	keyPath.add(predictionLabelsName);
 
-			HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> childResults = results.newChild();
+			HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> childResults = outerREsults.newChild();
 			childResults.setName(predictionLabelsName);
 			HierarchicalTypedPropertyNode<String, Object> childResultsNode = childResults.getValue();
 			try
