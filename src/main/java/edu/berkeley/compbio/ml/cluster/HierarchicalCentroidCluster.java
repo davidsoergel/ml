@@ -108,7 +108,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public T getCentroid()
 		{
-		return getValue().getCentroid();
+		return getPayload().getCentroid();
 		}
 
 	/**
@@ -151,7 +151,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public boolean addAll(final Cluster<T> point)
 		{
-		return getValue().addAll(point);
+		return getPayload().addAll(point);
 		//throw new NotImplementedException();
 		}
 
@@ -161,7 +161,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public WeightedSet<String> getDerivedLabelProbabilities()
 		{
-		return getValue().getDerivedLabelProbabilities();
+		return getPayload().getDerivedLabelProbabilities();
 //		throw new NotImplementedException();
 		}
 
@@ -170,7 +170,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public int getId()
 		{
-		return getValue().getId();
+		return getPayload().getId();
 		}
 
 	/**
@@ -178,7 +178,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public int getN()
 		{
-		return getValue().getN();
+		return getPayload().getN();
 		}
 
 	/**
@@ -188,7 +188,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public WeightedSet<String> getWeightedLabels()
 		{
-		return getValue().getWeightedLabels();
+		return getPayload().getWeightedLabels();
 		//	throw new NotImplementedException();
 		}
 
@@ -232,7 +232,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public void updateDerivedWeightedLabelsFromLocal()
 		{
-		getValue().updateDerivedWeightedLabelsFromLocal();
+		getPayload().updateDerivedWeightedLabelsFromLocal();
 		}
 
 // --------------------- Interface LengthWeightHierarchyNode ---------------------
@@ -265,7 +265,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 			while (i.hasNext())
 				{
 				final BasicPhylogenyNode<CentroidCluster<T>> child = i.next();
-				if (child.getValue().getN() >= minClusterSize)
+				if (child.getPayload().getN() >= minClusterSize)
 					{
 					child.toNewick(sb, prefix, tab, minClusterSize, minLabelProb);
 					if (i.hasNext())

@@ -345,7 +345,7 @@ public class ClusteringTestResults<L extends Comparable>
 	                       final String labelDistancesName)
 		//, Map<String, String> friendlyLabelMap)
 		{
-		HierarchicalTypedPropertyNode<String, Object> innerResults = outerResults.getValue();
+		HierarchicalTypedPropertyNode<String, Object> innerResults = outerResults.getPayload();
 
 		innerResults.addChild("numClusters", getNumClusters());
 		//resultsNode.addChild("unknown", getUnknown());
@@ -387,7 +387,7 @@ public class ClusteringTestResults<L extends Comparable>
 
 			HierarchyNode<HierarchicalTypedPropertyNode<String, Object>, ?> childResults = outerREsults.newChild();
 			childResults.setName(predictionLabelsName);
-			HierarchicalTypedPropertyNode<String, Object> childResultsNode = childResults.getValue();
+			HierarchicalTypedPropertyNode<String, Object> childResultsNode = childResults.getPayload();
 			try
 				{
 				childResultsNode.addChild("predictionLabelSet", new Double(predictionLabelsName));

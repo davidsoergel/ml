@@ -165,7 +165,7 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 				{
 				if (ahc <= b.hashCode() && !a.equals(b))
 					{
-					final Double d = measure.distanceFromTo(a.getValue().getCentroid(), b.getValue().getCentroid());
+					final Double d = measure.distanceFromTo(a.getPayload().getCentroid(), b.getPayload().getCentroid());
 
 					// concurrency bottleneck
 					//theActiveNodeDistanceMatrix.put(a, b, d);
@@ -410,7 +410,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 			}
 		if (s == 2)
 			{
-			final Double d = measure.distanceFromTo(saveNode.getValue().getCentroid(), node.getValue().getCentroid());
+			final Double d =
+					measure.distanceFromTo(saveNode.getPayload().getCentroid(), node.getPayload().getCentroid());
 			theActiveNodeDistanceMatrix.put(saveNode, node, d);
 			saveNode = null;
 			}
@@ -428,8 +429,8 @@ public class UPGMA<T extends Clusterable<T>> extends BatchTreeClusteringMethod<T
 
 			for (final HierarchicalCentroidCluster<T> theActiveNode : activeNodes)
 				{
-				final Double d =
-						measure.distanceFromTo(node.getValue().getCentroid(), theActiveNode.getValue().getCentroid());
+				final Double d = measure.distanceFromTo(node.getPayload().getCentroid(),
+				                                        theActiveNode.getPayload().getCentroid());
 				theActiveNodeDistanceMatrix.put(node, theActiveNode, d);
 				}
 			}
