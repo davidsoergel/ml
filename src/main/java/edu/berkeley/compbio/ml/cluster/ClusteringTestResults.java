@@ -2,12 +2,10 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
-import com.davidsoergel.dsutils.collections.OrderedPair;
-import com.davidsoergel.dsutils.tree.HierarchyNode;
+import com.davidsoergel.runutils.DoubleHierarchicalTypedProperties;
 import com.davidsoergel.runutils.HierarchicalTypedPropertyNode;
 import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
-import edu.berkeley.compbio.jandy.services.ParameterSetModel;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -343,9 +341,15 @@ public class ClusteringTestResults<L extends Comparable>
 		 }
  */
 	//@Transactional
-	public void putResults(
-			final HierarchyNode<OrderedPair<String, HierarchicalTypedPropertyNode<String, Object>>, ?> outerResults,
-			final String labelDistancesName)
+	/**
+	 * This is designed for use with ParameterSetModel, but since that interface isn't available from this package, we have
+	 * to use the confusing generic spec.
+	 *
+	 * @param outerResults
+	 * @param labelDistancesName
+	 */
+	public void putResults(final DoubleHierarchicalTypedProperties<Integer, String, String, Object> outerResults,
+	                       final String labelDistancesName)
 		//, Map<String, String> friendlyLabelMap)
 		{
 		HierarchicalTypedPropertyNode<String, Object> innerResults = outerResults.getPayload();
@@ -388,10 +392,10 @@ public class ClusteringTestResults<L extends Comparable>
 			//keyPath.add("RESULTS");
 			//	keyPath.add(predictionLabelsName);
 
-			ParameterSetModel childResults = outerResults.newChild();
-			HierarchicalTypedPropertyNode<String, Object> childResultsNode = childResults.getPayload().getKey1();
+			DoubleHierarchicalTypedProperties<Integer, String, String, Object> childResults = outerResults.newChild();
+			childResults.setId2(predictionLabelsName);
+
 			HierarchicalTypedPropertyNode<String, Object> childResultsNode = childResults.getPayload();
-			childResults.setName(predictionLabelsName);
 			try
 				{
 				childResultsNode.addChild("predictionLabelSet", new Double(predictionLabelsName));
