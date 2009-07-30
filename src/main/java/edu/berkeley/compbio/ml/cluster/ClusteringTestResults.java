@@ -348,7 +348,7 @@ public class ClusteringTestResults<L extends Comparable>
 	 * @param outerResults
 	 * @param labelDistancesName
 	 */
-	public void putResults(final DoubleHierarchicalTypedProperties<Integer, String, String, Object> outerResults,
+	public void putResults(final DoubleHierarchicalTypedProperties<Integer, String, String, Object, ?> outerResults,
 	                       final String labelDistancesName)
 		//, Map<String, String> friendlyLabelMap)
 		{
@@ -392,7 +392,8 @@ public class ClusteringTestResults<L extends Comparable>
 			//keyPath.add("RESULTS");
 			//	keyPath.add(predictionLabelsName);
 
-			DoubleHierarchicalTypedProperties<Integer, String, String, Object> childResults = outerResults.newChild();
+			DoubleHierarchicalTypedProperties<Integer, String, String, Object, ?> childResults =
+					outerResults.newChild();
 			childResults.setId2(predictionLabelsName);
 
 			HierarchicalTypedPropertyNode<String, Object> childResultsNode = childResults.getPayload();
