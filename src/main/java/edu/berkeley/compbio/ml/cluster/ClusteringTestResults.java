@@ -8,6 +8,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -348,11 +349,12 @@ public class ClusteringTestResults<L extends Comparable>
 	 * @param outerResults
 	 * @param labelDistancesName
 	 */
-	public void putResults(final DoubleHierarchicalTypedProperties<Integer, String, String, Object, ?> outerResults,
-	                       final String labelDistancesName)
+	public void putResults(
+			final DoubleHierarchicalTypedProperties<Integer, String, String, Serializable, ?> outerResults,
+			final String labelDistancesName)
 		//, Map<String, String> friendlyLabelMap)
 		{
-		HierarchicalTypedPropertyNode<String, Object> innerResults = outerResults.getPayload();
+		HierarchicalTypedPropertyNode<String, Serializable> innerResults = outerResults.getPayload();
 
 		innerResults.addChild("numClusters", getNumClusters());
 		//resultsNode.addChild("unknown", getUnknown());
@@ -392,11 +394,11 @@ public class ClusteringTestResults<L extends Comparable>
 			//keyPath.add("RESULTS");
 			//	keyPath.add(predictionLabelsName);
 
-			DoubleHierarchicalTypedProperties<Integer, String, String, Object, ?> childResults =
+			DoubleHierarchicalTypedProperties<Integer, String, String, Serializable, ?> childResults =
 					outerResults.newChild();
 			childResults.setId2(predictionLabelsName);
 
-			HierarchicalTypedPropertyNode<String, Object> childResultsNode = childResults.getPayload();
+			HierarchicalTypedPropertyNode<String, Serializable> childResultsNode = childResults.getPayload();
 			try
 				{
 				childResultsNode.addChild("predictionLabelSet", new Double(predictionLabelsName));

@@ -9,6 +9,7 @@ import com.davidsoergel.stats.StatsException;
 import edu.berkeley.compbio.ml.MultiClassCrossValidationResults;
 import org.apache.log4j.Logger;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,8 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 	 * The real distance between the predicted label and the real label ("wrongness") according to a label distance
 	 * measure
 	 */
-	private final List<Double> predictionDistances = new ArrayList<Double>();
-	private final List<Double> predictionDistancesWithPrecisionCost = new ArrayList<Double>();
+	private final ArrayList<Double> predictionDistances = new ArrayList<Double>();
+	private final ArrayList<Double> predictionDistancesWithPrecisionCost = new ArrayList<Double>();
 	/**
 	 * Probability of the best label, given the best cluster.  Used for unsupervised clustering where each cluster may
 	 * contain samples with multiple labels.
@@ -51,12 +52,12 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		}
 
 
-	public List<Double> getPredictionDistances()
+	public ArrayList<Double> getPredictionDistances()
 		{
 		return predictionDistances;
 		}
 
-	public List<Double> getPredictionDistancesWithPrecisionCost()
+	public ArrayList<Double> getPredictionDistancesWithPrecisionCost()
 		{
 		return predictionDistancesWithPrecisionCost;
 		}
@@ -82,7 +83,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		this.friendlyLabelMap = friendlyLabelMap;
 		}*/
 
-	public void putResults(final HierarchicalTypedPropertyNode<String, Object> resultsNode,
+	public void putResults(final HierarchicalTypedPropertyNode<String, Serializable> resultsNode,
 	                       //final List<String> keyPath,
 	                       final String labelDistancesName, final Map<L, String> friendlyLabelMap)
 		{
@@ -133,7 +134,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 
 
 	public static void storeLabelDistances(final String labelDistanceName, final List<Double> labelDistances,
-	                                       final HierarchicalTypedPropertyNode<String, Object> resultsNode)
+	                                       final HierarchicalTypedPropertyNode<String, Serializable> resultsNode)
 		{
 		resultsNode.addChild(labelDistanceName, labelDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY));
 
