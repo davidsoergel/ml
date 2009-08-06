@@ -350,11 +350,11 @@ public class ClusteringTestResults<L extends Comparable>
 	 * @param labelDistancesName
 	 */
 	public void putResults(
-			final DoubleHierarchicalTypedProperties<Integer, String, String, Serializable, ?> outerResults,
+			final DoubleHierarchicalTypedProperties<Integer, String, String, Serializable, ?, ?> outerResults,
 			final String labelDistancesName)
 		//, Map<String, String> friendlyLabelMap)
 		{
-		HierarchicalTypedPropertyNode<String, Serializable> innerResults = outerResults.getPayload();
+		HierarchicalTypedPropertyNode<String, Serializable, ?> innerResults = outerResults.getPayload();
 
 		innerResults.addChild("numClusters", getNumClusters());
 		//resultsNode.addChild("unknown", getUnknown());
@@ -394,11 +394,11 @@ public class ClusteringTestResults<L extends Comparable>
 			//keyPath.add("RESULTS");
 			//	keyPath.add(predictionLabelsName);
 
-			DoubleHierarchicalTypedProperties<Integer, String, String, Serializable, ?> childResults =
+			DoubleHierarchicalTypedProperties<Integer, String, String, Serializable, ?, ?> childResults =
 					outerResults.newChild();
 			childResults.setId2(predictionLabelsName);
 
-			HierarchicalTypedPropertyNode<String, Serializable> childResultsNode = childResults.getPayload();
+			HierarchicalTypedPropertyNode<String, Serializable, ?> childResultsNode = childResults.getPayload();
 			try
 				{
 				childResultsNode.addChild("predictionLabelSet", new Double(predictionLabelsName));

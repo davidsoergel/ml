@@ -83,7 +83,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		this.friendlyLabelMap = friendlyLabelMap;
 		}*/
 
-	public void putResults(final HierarchicalTypedPropertyNode<String, Serializable> resultsNode,
+	public void putResults(final HierarchicalTypedPropertyNode<String, Serializable, ?> resultsNode,
 	                       //final List<String> keyPath,
 	                       final String labelDistancesName, final Map<L, String> friendlyLabelMap)
 		{
@@ -134,7 +134,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 
 
 	public static void storeLabelDistances(final String labelDistanceName, final List<Double> labelDistances,
-	                                       final HierarchicalTypedPropertyNode<String, Serializable> resultsNode)
+	                                       final HierarchicalTypedPropertyNode<String, Serializable, ?> resultsNode)
 		{
 		resultsNode.addChild(labelDistanceName, labelDistances.toArray(DSArrayUtils.EMPTY_DOUBLE_OBJECT_ARRAY));
 
