@@ -395,7 +395,7 @@ public class ClusteringTestResults<L extends Comparable>
 			//	keyPath.add(predictionLabelsName);
 
 			DoubleHierarchicalTypedProperties<Integer, String, String, Serializable, ?, ?> childResults =
-					outerResults.newChild();
+					outerResults.newChild(outerResults.newPayload());
 			childResults.setId2(predictionLabelsName);
 
 			HierarchicalTypedPropertyNode<String, Serializable, ?> childResultsNode = childResults.getPayload();
