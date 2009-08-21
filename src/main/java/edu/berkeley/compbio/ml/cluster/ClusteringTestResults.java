@@ -2,7 +2,7 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
-import com.davidsoergel.dsutils.htpn.DoubleHierarchicalTypedProperties;
+import com.davidsoergel.dsutils.dhtpn.SerializableDoubleHierarchicalTypedProperties;
 import com.davidsoergel.dsutils.htpn.HierarchicalTypedPropertyNode;
 import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
@@ -349,9 +349,8 @@ public class ClusteringTestResults<L extends Comparable>
 	 * @param outerResults
 	 * @param labelDistancesName
 	 */
-	public void putResults(
-			final DoubleHierarchicalTypedProperties<Integer, String, String, Serializable, ?, ?> outerResults,
-			final String labelDistancesName)
+	public void putResults(final SerializableDoubleHierarchicalTypedProperties<?> outerResults,
+	                       final String labelDistancesName)
 		//, Map<String, String> friendlyLabelMap)
 		{
 		HierarchicalTypedPropertyNode<String, Serializable, ?> innerResults = outerResults.getPayload();
@@ -394,7 +393,7 @@ public class ClusteringTestResults<L extends Comparable>
 			//keyPath.add("RESULTS");
 			//	keyPath.add(predictionLabelsName);
 
-			DoubleHierarchicalTypedProperties<Integer, String, String, Serializable, ?, ?> childResults =
+			SerializableDoubleHierarchicalTypedProperties<?> childResults =
 					outerResults.newChild(outerResults.newPayload());
 			childResults.setId2(predictionLabelsName);
 
