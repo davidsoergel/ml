@@ -2,8 +2,8 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
-import com.davidsoergel.dsutils.dhtpn.SerializableDoubleHierarchicalTypedProperties;
-import com.davidsoergel.dsutils.htpn.HierarchicalTypedPropertyNode;
+import com.davidsoergel.dsutils.tree.dhtpn.SerializableDoubleHierarchicalTypedProperties;
+import com.davidsoergel.dsutils.tree.htpn.HierarchicalTypedPropertyNode;
 import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
 import org.jetbrains.annotations.Nullable;

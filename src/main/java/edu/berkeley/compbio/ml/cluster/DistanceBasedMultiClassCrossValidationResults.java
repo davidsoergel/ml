@@ -2,7 +2,7 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
-import com.davidsoergel.dsutils.htpn.HierarchicalTypedPropertyNode;
+import com.davidsoergel.dsutils.tree.htpn.HierarchicalTypedPropertyNode;
 import com.davidsoergel.stats.EqualWeightHistogram1D;
 import com.davidsoergel.stats.Histogram1D;
 import com.davidsoergel.stats.StatsException;
