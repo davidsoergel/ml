@@ -212,6 +212,11 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 		computeTrainingMass(tr);
 
+		// BAD failure to distinguish a DissimilarityMeasure from what is really a DissimilarityMeasureFactory
+		// the reason for this is that we instantiate/inject it long before we have the test labels available, with which it may need to be "prepared"
+
+		//final DissimilarityMeasure<String> intraLabelDistances;
+
 		// prepare a tree for all prediction labels, whether they're populated or not
 
 		if (intraLabelDistances instanceof RequiresPreparationDistanceMetric
@@ -224,7 +229,12 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				allLabels.addAll(predictLabels);
 				}
 
+			//	intraLabelDistances =
 			((RequiresPreparationDistanceMetric<String>) intraLabelDistances).prepare(allLabels);
+			}
+		else
+			{
+			//	intraLabelDistances = intraLabelDistancesMaybeFactory;
 			}
 
 		// these are used for checking whether a sample should have been unknown or not
