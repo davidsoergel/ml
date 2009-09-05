@@ -122,19 +122,16 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 // ------------------------ CANONICAL METHODS ------------------------
 
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
+/*	@Override
 	public boolean equals(final Object other)
 		{
 		// don't worry about matching the generic type; centroid.equals will take care of that
 		if (other instanceof AbstractCentroidCluster)
 			{
-			/*	if (logger.isDebugEnabled())
-			   {
-			   logger.debug("" + this + " equals " + other + ": " + result);
-			   }*/
+			//	if (logger.isDebugEnabled())
+			//   {
+			//   logger.debug("" + this + " equals " + other + ": " + result);
+			 //  }
 			T otherCentroid = ((AbstractCentroidCluster<T>) other).getCentroid();
 
 			if ((centroid == null && otherCentroid != null) || centroid != null && otherCentroid == null)
@@ -142,18 +139,15 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 				return false;
 				}
 
-			// now either both centroid are null, or neither are
+			// now either both centroids are null, or neither are
 
 			return ((centroid == null && otherCentroid == null) || centroid.equals(otherCentroid))
-			       // && theDistanceMeasure.equals(other.getTheDistanceMeasure())
-			       && super.equals(other);
+				   // && theDistanceMeasure.equals(other.getTheDistanceMeasure())
+				   && super.equals(other);
 			}
 		return false;
 		}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int hashCode()
 		{
@@ -161,6 +155,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 		result = 31 * result + (centroid != null ? centroid.hashCode() : 0);
 		return result;
 		}
+*/
 
 	/**
 	 * {@inheritDoc}
