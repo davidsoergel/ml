@@ -159,31 +159,37 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 					}
 				}
 
-
-			try
+			if (d.isEmpty())
 				{
-				final Histogram1D h =
-						new EqualWeightHistogram1D(100, DSArrayUtils.toPrimitive(d.toArray(new Double[d.size()])));
-
-				resultsNode.addChild(labelDistanceName + "90", h.topOfBin(89));
-				resultsNode.addChild(labelDistanceName + "95", h.topOfBin(94));
-				resultsNode.addChild(labelDistanceName + "99", h.topOfBin(98));
-				// note the highest bin is #99, so the top of that bin is the 100th %ile
-				}
-			catch (StatsException e)
-				{
-				throw new ClusterRuntimeException(e);
-				}
-
-			final double mean = DSArrayUtils.mean(d);
-			if (Double.isInfinite(mean))
-				{
-				logger.warn("labelDistance mean is Infinity");
+				logger.warn("All distances were enormous (e.g., UNKNOWN_DISTANCE); no samples were predicted at all");
 				}
 			else
 				{
-				resultsNode.addChild(labelDistanceName + "MeanGivenClassified", mean);
-				resultsNode.addChild(labelDistanceName + "StdDevGivenClassified", DSArrayUtils.stddev(d, mean));
+				try
+					{
+					final Histogram1D h =
+							new EqualWeightHistogram1D(100, DSArrayUtils.toPrimitive(d.toArray(new Double[d.size()])));
+
+					resultsNode.addChild(labelDistanceName + "90", h.topOfBin(89));
+					resultsNode.addChild(labelDistanceName + "95", h.topOfBin(94));
+					resultsNode.addChild(labelDistanceName + "99", h.topOfBin(98));
+					// note the highest bin is #99, so the top of that bin is the 100th %ile
+					}
+				catch (StatsException e)
+					{
+					throw new ClusterRuntimeException(e);
+					}
+
+				final double mean = DSArrayUtils.mean(d);
+				if (Double.isInfinite(mean))
+					{
+					logger.warn("labelDistance mean is Infinity");
+					}
+				else
+					{
+					resultsNode.addChild(labelDistanceName + "MeanGivenClassified", mean);
+					resultsNode.addChild(labelDistanceName + "StdDevGivenClassified", DSArrayUtils.stddev(d, mean));
+					}
 				}
 			}
 		}
