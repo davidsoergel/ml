@@ -32,8 +32,8 @@
 
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
-import com.davidsoergel.dsutils.collections.WeightedSet;
+import com.davidsoergel.dsutils.collections.ConcurrentHashWeightedSet;
+import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import org.apache.log4j.Logger;
@@ -81,14 +81,14 @@ public class NeighborhoodCollectingLabelDiffuser<T extends AdditiveClusterable<T
 		int i = 0;
 		for (final C cell : theMap.getClusters())
 			{
-			final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+			final MutableWeightedSet<String> weightedLabels = new ConcurrentHashWeightedSet<String>();
 			final Iterator<Set<C>> shells = theMap.getNeighborhoodShellIterator(cell);
 
 			while (weightedLabels.getItemCount() < requiredLabels)
 				{
 				for (final CentroidCluster<T> shellMember : shells.next())
 					{
-					weightedLabels.addAll(shellMember.getWeightedLabels());
+					weightedLabels.addAll(shellMember.getMutableWeightedLabels());
 					}
 				}
 

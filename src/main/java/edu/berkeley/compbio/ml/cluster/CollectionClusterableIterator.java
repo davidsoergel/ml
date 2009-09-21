@@ -28,9 +28,17 @@ public class CollectionClusterableIterator<T extends Clusterable<T>> implements 
 		{
 		return it.next();
 		}
-/*
-	public void reset()
+
+	public T nextFullyLabelled()
 		{
-		it = underlyingCollection.iterator();
-		}*/
+		T s = next();
+		s.doneLabelling();
+		return s;
+		}
+
+	/*
+   public void reset()
+	   {
+	   it = underlyingCollection.iterator();
+	   }*/
 	}

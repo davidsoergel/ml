@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
 import org.apache.commons.lang.NotImplementedException;
@@ -186,9 +187,20 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 *
 	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
 	 */
-	public WeightedSet<String> getWeightedLabels()
+	public WeightedSet<String> getImmutableWeightedLabels()
 		{
-		return getPayload().getWeightedLabels();
+		return getPayload().getImmutableWeightedLabels();
+		//	throw new NotImplementedException();
+		}
+
+	/**
+	 * Gets the probabilities of mutually exclusive String labels.
+	 *
+	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
+	 */
+	public MutableWeightedSet<String> getMutableWeightedLabels()
+		{
+		return getPayload().getMutableWeightedLabels();
 		//	throw new NotImplementedException();
 		}
 

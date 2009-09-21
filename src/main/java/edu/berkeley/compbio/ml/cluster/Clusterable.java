@@ -33,8 +33,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.collections.WeightedSet;
-import org.jetbrains.annotations.NotNull;
+import com.davidsoergel.dsutils.Labellable;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -43,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface Clusterable<T extends Clusterable> extends Cloneable
+public interface Clusterable<T extends Clusterable> extends Cloneable, Labellable<String>
 	{
 // ------------------------ CANONICAL METHODS ------------------------
 
@@ -95,8 +94,11 @@ public interface Clusterable<T extends Clusterable> extends Cloneable
 	 *
 	 * @return a set of Strings describing this object
 	 */
+	/*@NotNull
+	MutableWeightedSet<String> getMutableWeightedLabels();
+
 	@NotNull
-	WeightedSet<String> getWeightedLabels();
+	WeightedSet<String> getImmutableWeightedLabels();*/
 	//throws PhyloUtilsException;
 
 	/**

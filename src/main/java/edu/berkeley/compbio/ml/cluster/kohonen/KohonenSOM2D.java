@@ -282,7 +282,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 		if (decrementLosingNeighborhood && loser != null)
 			{
-			winner.getWeightedLabels().removeAll(p.getWeightedLabels());
+			winner.getMutableWeightedLabels().removeAll(p.getMutableWeightedLabels());
 			for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(loser); i.hasNext();)
 				{
 				final WeightedCell v = i.next();
@@ -300,7 +300,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 				}
 			}
 
-		winner.getWeightedLabels().addAll(p.getWeightedLabels());
+		winner.getMutableWeightedLabels().addAll(p.getMutableWeightedLabels());
 		for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(winner); i.hasNext();)
 			{
 			final WeightedCell v = i.next();
@@ -400,7 +400,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 			//int i = 0;
 			//while(initIterator.hasNext())
 			{
-			addToRandomCell(initIterator.next());
+			addToRandomCell(initIterator.nextFullyLabelled());
 			if (i % 100 == 0)
 				{
 				logger.debug("Initialized with " + i + " samples.");

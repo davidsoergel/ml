@@ -96,7 +96,7 @@ public final class CentroidClusteringUtils //<T extends Clusterable<T>>
 			{
 			while (true) //(theDataPointProvider.hasNext())
 				{
-				final T p = theDataPointProvider.next();
+				final T p = theDataPointProvider.nextFullyLabelled();
 				final CentroidCluster<T> c = assignments.get(p.getId());
 				final double dist = measure.distanceFromTo(p, c.getCentroid());// c.distanceToCentroid(p);
 				c.addToSumOfSquareDistances(dist * dist);

@@ -33,7 +33,7 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.ConcurrentHashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +59,7 @@ public abstract class HierarchicalSpectrum<T extends HierarchicalSpectrum> exten
 	protected String label;
 
 
-	private final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+	private final WeightedSet<String> weightedLabels = new ConcurrentHashWeightedSet<String>();
 
 
 // --------------------- GETTER / SETTER METHODS ---------------------

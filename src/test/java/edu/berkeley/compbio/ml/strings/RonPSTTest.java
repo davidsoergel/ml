@@ -36,9 +36,10 @@ import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import com.davidsoergel.dsutils.ContractTest;
 import com.davidsoergel.dsutils.ContractTestAware;
 import com.davidsoergel.dsutils.DSArrayUtils;
+import com.davidsoergel.dsutils.LabellableImpl;
 import com.davidsoergel.dsutils.TestInstanceFactory;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
@@ -250,7 +251,25 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 		final Map<Byte, Double> counts = new HashMap<Byte, Double>();
 		final Map<Byte, Map<Byte, Double>> counts2 = new HashMap<Byte, Map<Byte, Double>>();
 
-		private final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+
+		private LabellableImpl<String> labels = new LabellableImpl<String>();
+
+		public void doneLabelling()
+			{
+			labels.doneLabelling();
+			}
+
+		@NotNull
+		public WeightedSet<String> getImmutableWeightedLabels()
+			{
+			return labels.getImmutableWeightedLabels();
+			}
+
+		@NotNull
+		public MutableWeightedSet<String> getMutableWeightedLabels()
+			{
+			return labels.getMutableWeightedLabels();
+			}
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -291,12 +310,6 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			}
 
 // --------------------- GETTER / SETTER METHODS ---------------------
-
-		@NotNull
-		public WeightedSet<String> getWeightedLabels()
-			{
-			return weightedLabels;
-			}
 
 // ------------------------ CANONICAL METHODS ------------------------
 

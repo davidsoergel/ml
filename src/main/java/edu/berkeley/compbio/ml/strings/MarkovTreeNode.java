@@ -35,7 +35,8 @@ package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.AbstractGenericFactoryAware;
 import com.davidsoergel.dsutils.DSArrayUtils;
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.LabellableImpl;
+import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MathUtils;
 import com.davidsoergel.stats.DistributionException;
@@ -72,6 +73,25 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	{
 // ------------------------------ FIELDS ------------------------------
 
+	private LabellableImpl<String> labels = new LabellableImpl<String>();
+
+	public void doneLabelling()
+		{
+		labels.doneLabelling();
+		}
+
+	@NotNull
+	public WeightedSet<String> getImmutableWeightedLabels()
+		{
+		return labels.getImmutableWeightedLabels();
+		}
+
+	@NotNull
+	public MutableWeightedSet<String> getMutableWeightedLabels()
+		{
+		return labels.getMutableWeightedLabels();
+		}
+
 	private static final Logger logger = Logger.getLogger(MarkovTreeNode.class);
 	protected byte[] id;
 	protected byte[] alphabet;
@@ -90,7 +110,7 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 
 	private String label;
 
-	private final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+//	private final MutableWeightedSet<String> weightedLabels = new ConcurrentHashWeightedSet<String>();
 
 	/**
 	 * Returns the maximum length of substrings considered in computing this statistical model of the sequence.  Our
@@ -203,12 +223,6 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 	public Multinomial<Byte> getProbs()
 		{
 		return probs;
-		}
-
-	@NotNull
-	public WeightedSet<String> getWeightedLabels()
-		{
-		return weightedLabels;
 		}
 
 	public boolean isLeaf()

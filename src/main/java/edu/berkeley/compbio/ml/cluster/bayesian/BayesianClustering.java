@@ -141,7 +141,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 			// generate one cluster per exclusive training bin (regardless of the labels we want to predict).
 			// the training samples must already be labelled with a bin ID.
 
-			final String clusterBinId = point.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+			final String clusterBinId = point.getImmutableWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
 
 			// nearly defeats the purpose of the foreach, except that trainingIterator.next() may be expensive
 			synchronized (theClusterMap)

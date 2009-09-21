@@ -272,7 +272,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	public String bestLabel(final T sample, final Set<String> predictLabels) throws NoGoodClusterException
 		{
 		final Cluster<T> c = bestClusterMove(sample).bestCluster;
-		return c.getWeightedLabels().getDominantKeyInSet(predictLabels);
+		return c.getMutableWeightedLabels().getDominantKeyInSet(predictLabels);
 //		c.updateDerivedWeightedLabelsFromLocal();
 //		WeightedSet<String> probs = c.getDerivedLabelProbabilities();
 //		String label = probs.getDominantKey();
@@ -355,7 +355,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		{
 		for (final C theCluster : getClusters())
 			{
-			tr.incrementTotalTrainingMass(theCluster.getWeightedLabels().getItemCount());
+			tr.incrementTotalTrainingMass(theCluster.getMutableWeightedLabels().getItemCount());
 			}
 		}
 
@@ -444,7 +444,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		// we want to measure wrongness _both_ at the broad level, matching where the prediction is made (so a perfect match is possible),
 		// _and_ at the detailed level, where even a perfect broad prediction incurs a cost due to lack of precision.
 
-		final WeightedSet<String> fragmentActualLabels = frag.getWeightedLabels();
+		final WeightedSet<String> fragmentActualLabels = frag.getImmutableWeightedLabels();
 		final String detailedActualLabel = fragmentActualLabels.getDominantKeyInSet(testLabels);
 
 		for (final Map.Entry<String, Set<String>> entry : predictLabelSets.entrySet())

@@ -134,9 +134,9 @@ public class LabelDecomposingBayesianClustering<T extends AdditiveClusterable<T>
 				while (true)
 					{
 
-					final T point = trainingIterator.next();
+					final T point = trainingIterator.nextFullyLabelled();
 
-					final String bestLabel = point.getWeightedLabels().getDominantKeyInSet(predictLabels);
+					final String bestLabel = point.getImmutableWeightedLabels().getDominantKeyInSet(predictLabels);
 //Cluster<T> cluster = theClusterMap.get(bestLabel);
 
 

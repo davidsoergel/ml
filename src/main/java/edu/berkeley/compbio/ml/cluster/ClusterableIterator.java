@@ -68,4 +68,5 @@ public interface ClusterableIterator<T extends Clusterable<T>> extends NextOnlyI
 	 * @throws IOException when something goes wrong
 	 */
 //	void reset(); //throws IOException;
+	public T nextFullyLabelled();
 	}

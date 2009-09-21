@@ -155,7 +155,8 @@ public class KmeansClustering<T extends AdditiveClusterable<T>>
 			{
 			// initialize the clusters with the first k points
 
-			final AbstractCentroidCluster<T> c = new AdditiveCentroidCluster<T>(i, trainingIterator.next());
+			final AbstractCentroidCluster<T> c =
+					new AdditiveCentroidCluster<T>(i, trainingIterator.nextFullyLabelled());
 			//c.setId(i);
 
 			addCluster(c);

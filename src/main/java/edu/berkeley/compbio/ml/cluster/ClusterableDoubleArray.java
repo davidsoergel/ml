@@ -34,12 +34,10 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
-import com.davidsoergel.dsutils.collections.WeightedSet;
+import com.davidsoergel.dsutils.LabellableImpl;
 import com.davidsoergel.stats.DoubleArrayContainer;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 
 /**
@@ -47,7 +45,8 @@ import org.jetbrains.annotations.NotNull;
  * @version $Id$
  */
 
-public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDoubleArray>, DoubleArrayContainer
+public class ClusterableDoubleArray extends LabellableImpl<String>
+		implements AdditiveClusterable<ClusterableDoubleArray>, DoubleArrayContainer
 	{
 // ------------------------------ FIELDS ------------------------------
 
@@ -59,7 +58,7 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 
 	private String label;
 
-	private final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+	//private final MutableWeightedSet<String> weightedLabels = new ConcurrentHashWeightedSet<String>();
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -75,12 +74,6 @@ public class ClusterableDoubleArray implements AdditiveClusterable<ClusterableDo
 		}
 
 // --------------------- GETTER / SETTER METHODS ---------------------
-
-	@NotNull
-	public WeightedSet<String> getWeightedLabels()
-		{
-		return weightedLabels;
-		}
 
 	public void setLabel(final String label)
 		{

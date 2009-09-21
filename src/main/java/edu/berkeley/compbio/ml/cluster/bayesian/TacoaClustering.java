@@ -112,7 +112,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 				try
 					{
 					// note this also insures that every cluster has a training label, otherwise it throws NoSuchElementException
-					final String label = theCluster.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
+					final String label =
+							theCluster.getImmutableWeightedLabels().getDominantKeyInSet(potentialTrainingBins);
 					// could use theCluster.getDerivedLabelProbabilities() there except they're not normalized yet, and there's no need
 
 					populatedTrainingLabels.add(label);
@@ -134,8 +135,8 @@ public class TacoaClustering<T extends AdditiveClusterable<T>> extends MultiNeig
 			final Multinomial<String> labelPriors = new Multinomial<String>(populatedTrainingLabels);
 			for (final CentroidCluster<T> theCluster : immutableClusters)
 				{
-				final String label =
-						theCluster.getWeightedLabels().getDominantKeyInSet(potentialTrainingBins); // PERF redundant
+				final String label = theCluster.getImmutableWeightedLabels()
+						.getDominantKeyInSet(potentialTrainingBins); // PERF redundant
 				builder.put(theCluster, labelPriors.get(label));
 				}
 

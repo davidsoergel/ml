@@ -1,13 +1,15 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.LabellableImpl;
+import com.davidsoergel.dsutils.collections.ConcurrentHashWeightedSet;
+import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
+public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<String> implements Cluster<T>
 	{
 // ------------------------------ FIELDS ------------------------------
 
@@ -15,7 +17,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	 * The unique integer identifier of this cluster
 	 */
 	protected final int id;
-	protected final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+//	protected final MutableWeightedSet<String> weightedLabels = new ConcurrentHashWeightedSet<String>();
 
 
 	/**
@@ -23,7 +25,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	 * can be set based on outside information (e.g., in the case of the Kohonen map, neighboring cells may exert an
 	 * influence)
 	 */
-	private WeightedSet<String> derivedLabelProbabilities = new HashWeightedSet<String>();
+	private WeightedSet<String> derivedLabelProbabilities = new ConcurrentHashWeightedSet<String>();
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -67,10 +69,6 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 		this.id = id;
 		}
 */
-	public WeightedSet<String> getWeightedLabels()
-		{
-		return weightedLabels;
-		}
 
 // ------------------------ INTERFACE METHODS ------------------------
 
@@ -82,7 +80,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	 */
 	public int getN()
 		{
-		return weightedLabels.getItemCount();
+		return getMutableWeightedLabels().getItemCount();
 		}
 
 	/**
@@ -91,8 +89,8 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	public void updateDerivedWeightedLabelsFromLocal()//throws DistributionException
 		{
 		//assert !weightedLabels.isEmpty();
-		derivedLabelProbabilities = new HashWeightedSet<String>(weightedLabels.getItemCount());
-		derivedLabelProbabilities.addAll(weightedLabels);
+		derivedLabelProbabilities = new ImmutableHashWeightedSet<String>(mutableWeightedLabels);
+		//derivedLabelProbabilities.addAll(weightedLabels);
 		//derivedLabelProbabilities.normalize();  // don't bother, it'll be done on request anyway
 		}
 
@@ -101,7 +99,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	 */
 	public boolean add(final T point)
 		{
-		weightedLabels.addAll(point.getWeightedLabels());
+		mutableWeightedLabels.addAll(point.getMutableWeightedLabels());
 		return true;
 		}
 
@@ -110,7 +108,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	 */
 	public boolean addAll(final Cluster<T> otherCluster)
 		{
-		weightedLabels.addAll(otherCluster.getWeightedLabels());
+		mutableWeightedLabels.addAll(otherCluster.getMutableWeightedLabels());
 		return true;
 		}
 
@@ -119,7 +117,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	 */
 	public boolean remove(final T point)
 		{
-		weightedLabels.removeAll(point.getWeightedLabels());
+		mutableWeightedLabels.removeAll(point.getMutableWeightedLabels());
 		return true;
 		}
 
@@ -128,7 +126,7 @@ public class AbstractCluster<T extends Clusterable<T>> implements Cluster<T>
 	 */
 	public boolean removeAll(final Cluster<T> otherCluster)
 		{
-		weightedLabels.removeAll(otherCluster.getWeightedLabels());
+		mutableWeightedLabels.removeAll(otherCluster.getMutableWeightedLabels());
 		return true;
 		}
 

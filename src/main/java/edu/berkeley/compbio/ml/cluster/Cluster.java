@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 
 /**
@@ -59,7 +60,9 @@ public interface Cluster<T extends Clusterable<T>>// extends Comparable<? extend
 	 *
 	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
 	 */
-	WeightedSet<String> getWeightedLabels();// throws DistributionException;
+	MutableWeightedSet<String> getMutableWeightedLabels();// throws DistributionException;
+
+	WeightedSet<String> getImmutableWeightedLabels();
 
 	/**
 	 * Remove the given sample from this cluster.

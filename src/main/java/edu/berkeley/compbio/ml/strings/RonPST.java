@@ -34,7 +34,8 @@
 package edu.berkeley.compbio.ml.strings;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.LabellableImpl;
+import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.runutils.Property;
 import com.davidsoergel.runutils.PropertyConsumer;
@@ -87,7 +88,26 @@ public class RonPST extends RonPSTNode
 
 	private String label;
 
-	private final WeightedSet<String> weightedLabels = new HashWeightedSet<String>();
+//	private final MutableWeightedSet<String> weightedLabels = new ConcurrentHashWeightedSet<String>();
+
+	private LabellableImpl<String> labels = new LabellableImpl<String>();
+
+	public void doneLabelling()
+		{
+		labels.doneLabelling();
+		}
+
+	@NotNull
+	public WeightedSet<String> getImmutableWeightedLabels()
+		{
+		return labels.getImmutableWeightedLabels();
+		}
+
+	@NotNull
+	public MutableWeightedSet<String> getMutableWeightedLabels()
+		{
+		return labels.getMutableWeightedLabels();
+		}
 
 	private long originalSequenceLength;
 
@@ -374,11 +394,6 @@ public class RonPST extends RonPSTNode
 		return originalSequenceLength;
 		}
 
-	@NotNull
-	public WeightedSet<String> getWeightedLabels()
-		{
-		return weightedLabels;
-		}
 
 	public void setLabel(final String label)
 		{

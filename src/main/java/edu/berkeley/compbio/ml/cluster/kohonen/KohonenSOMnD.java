@@ -316,7 +316,7 @@ public class KohonenSOMnD<T extends AdditiveClusterable<T>>
 			//int i = 0;
 			//while(initIterator.hasNext())
 			{
-			addToRandomCell(initIterator.next());
+			addToRandomCell(initIterator.nextFullyLabelled());
 			if (i % 100 == 0)
 				{
 				logger.debug("Initialized with " + i + " samples.");

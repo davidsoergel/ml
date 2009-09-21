@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
-import com.davidsoergel.dsutils.collections.HashWeightedSet;
+import com.davidsoergel.dsutils.collections.ConcurrentHashWeightedSet;
+import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
@@ -306,13 +307,13 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 
 		// use WeightedSet instead of MultiSet so we can aggregate label probabilities
 		// keep track of clusters per label, for the sake of tracking computed distances to the clusters contributing to each label
-		private final Map<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>> labelContributions =
-				new HashMap<String, WeightedSet<ClusterMove<T, CentroidCluster<T>>>>();
+		private final Map<String, MutableWeightedSet<ClusterMove<T, CentroidCluster<T>>>> labelContributions =
+				new HashMap<String, MutableWeightedSet<ClusterMove<T, CentroidCluster<T>>>>();
 
 		//	private String bestLabel;
 		//	private String secondBestLabel;
 
-		private final WeightedSet<String> labelVotes = new HashWeightedSet<String>();
+		private final MutableWeightedSet<String> labelVotes = new ConcurrentHashWeightedSet<String>();
 
 
 // --------------------- GETTER / SETTER METHODS ---------------------
@@ -332,10 +333,10 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 		public void addContribution(final ClusterMove<T, CentroidCluster<T>> cm, final String label,
 		                            final Double labelProbability)
 			{
-			WeightedSet<ClusterMove<T, CentroidCluster<T>>> contributionSet = labelContributions.get(label);
+			MutableWeightedSet<ClusterMove<T, CentroidCluster<T>>> contributionSet = labelContributions.get(label);
 			if (contributionSet == null)
 				{
-				contributionSet = new HashWeightedSet<ClusterMove<T, CentroidCluster<T>>>();
+				contributionSet = new ConcurrentHashWeightedSet<ClusterMove<T, CentroidCluster<T>>>();
 				labelContributions.put(label, contributionSet);
 				}
 			contributionSet.add(cm, labelProbability, 1);
