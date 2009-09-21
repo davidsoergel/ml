@@ -99,7 +99,7 @@ public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<St
 	 */
 	public boolean add(final T point)
 		{
-		mutableWeightedLabels.addAll(point.getMutableWeightedLabels());
+		mutableWeightedLabels.addAll(point.getImmutableWeightedLabels());
 		return true;
 		}
 
@@ -108,7 +108,7 @@ public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<St
 	 */
 	public boolean addAll(final Cluster<T> otherCluster)
 		{
-		mutableWeightedLabels.addAll(otherCluster.getMutableWeightedLabels());
+		mutableWeightedLabels.addAll(otherCluster.getImmutableWeightedLabels());
 		return true;
 		}
 
@@ -117,7 +117,7 @@ public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<St
 	 */
 	public boolean remove(final T point)
 		{
-		mutableWeightedLabels.removeAll(point.getMutableWeightedLabels());
+		mutableWeightedLabels.removeAll(point.getImmutableWeightedLabels());
 		return true;
 		}
 
@@ -126,7 +126,7 @@ public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<St
 	 */
 	public boolean removeAll(final Cluster<T> otherCluster)
 		{
-		mutableWeightedLabels.removeAll(otherCluster.getMutableWeightedLabels());
+		mutableWeightedLabels.removeAll(otherCluster.getImmutableWeightedLabels());
 		return true;
 		}
 
