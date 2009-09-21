@@ -248,6 +248,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		{
 		public Void apply(@Nullable final T frag)
 			{
+			// the forEach uses next(), not nextFullyLabelled
+			frag.doneLabelling();
 			i.incrementAndGet();
 			testOneSample(intraLabelDistances, tr, populatedPredictLabelSets, frag);
 			return null;
