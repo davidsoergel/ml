@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 
@@ -87,7 +88,7 @@ public interface Cluster<T extends Clusterable<T>>// extends Comparable<? extend
 	 *
 	 * @param derivedLabelProbabilities a WeightedSet giving the probabilities of String labels.
 	 */
-	void setDerivedLabelProbabilities(WeightedSet<String> derivedLabelProbabilities);
+	void setDerivedLabelProbabilities(ImmutableHashWeightedSet<String> derivedLabelProbabilities);
 
 	/**
 	 * Sets the integer id of this cluster.  These ids should be unique within a given clustering or classification

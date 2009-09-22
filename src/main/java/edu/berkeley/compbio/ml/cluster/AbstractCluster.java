@@ -1,7 +1,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.LabellableImpl;
-import com.davidsoergel.dsutils.collections.ConcurrentHashWeightedSet;
 import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 
@@ -25,7 +24,7 @@ public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<St
 	 * can be set based on outside information (e.g., in the case of the Kohonen map, neighboring cells may exert an
 	 * influence)
 	 */
-	private WeightedSet<String> derivedLabelProbabilities = new ConcurrentHashWeightedSet<String>();
+	private WeightedSet<String> derivedLabelProbabilities = null; //new ImmutableHashWeightedSet<String>();
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -48,7 +47,7 @@ public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<St
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setDerivedLabelProbabilities(final WeightedSet<String> derivedLabelProbabilities)
+	public void setDerivedLabelProbabilities(final ImmutableHashWeightedSet<String> derivedLabelProbabilities)
 		{
 		this.derivedLabelProbabilities = derivedLabelProbabilities;
 		}

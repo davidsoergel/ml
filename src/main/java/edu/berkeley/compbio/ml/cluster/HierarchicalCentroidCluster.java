@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
@@ -226,7 +227,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 *
 	 * @param derivedLabelProbabilities a WeightedSet giving the probabilities of mutually exclusive String labels.
 	 */
-	public void setDerivedLabelProbabilities(final WeightedSet<String> derivedLabelProbabilities)
+	public void setDerivedLabelProbabilities(final ImmutableHashWeightedSet<String> derivedLabelProbabilities)
 		{
 		throw new NotImplementedException();
 		}

@@ -33,6 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.kohonen;
 
 import com.davidsoergel.dsutils.collections.ConcurrentHashWeightedSet;
+import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -94,7 +95,8 @@ public class NeighborhoodCollectingLabelDiffuser<T extends AdditiveClusterable<T
 
 			//try
 			//	{
-			cell.setDerivedLabelProbabilities(weightedLabels);
+			// PERF maybe we don't want to copy the weights so much?  The alternative is to let the derived weights be mutable
+			cell.setDerivedLabelProbabilities(new ImmutableHashWeightedSet<String>(weightedLabels));
 			/*	}
 			catch (DistributionException e)
 				{
