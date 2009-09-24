@@ -36,7 +36,6 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 	private static final Logger logger = Logger.getLogger(AbstractClusteringMethod.class);
 
-	protected static final Double UNKNOWN_DISTANCE = 1e308; // Double.MAX_VALUE; triggers MySQL bug # 21497
 
 	protected final DissimilarityMeasure<T> measure;
 	private final ArrayList<C> theClusters = new ArrayList<C>(); //Collections.synchronizedList(new ArrayList<C>());
@@ -483,8 +482,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					tr.incrementShouldNotHaveBeenUnknown(predictionSetName);
 					}
 
-				broadWrongness = UNKNOWN_DISTANCE;
-				detailedWrongness = UNKNOWN_DISTANCE;
+				broadWrongness = DissimilarityMeasure.UNKNOWN_DISTANCE;
+				detailedWrongness = DissimilarityMeasure.UNKNOWN_DISTANCE;
 				}
 			else
 				{
@@ -536,8 +535,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 						tr.incrementShouldNotHaveBeenOther(predictionSetName);
 						}
 
-					broadWrongness = UNKNOWN_DISTANCE;
-					detailedWrongness = UNKNOWN_DISTANCE;
+					broadWrongness = DissimilarityMeasure.UNKNOWN_DISTANCE;
+					detailedWrongness = DissimilarityMeasure.UNKNOWN_DISTANCE;
 					}
 				}
 
@@ -579,7 +578,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			}
 		catch (NoGoodClusterException e)
 			{
-			bestDistance = UNKNOWN_DISTANCE;
+			bestDistance = DissimilarityMeasure.UNKNOWN_DISTANCE;
 			secondToBestDistanceRatio = 1.0;
 			bestVoteProportion = 0;
 			secondToBestVoteRatio = 1.0;
