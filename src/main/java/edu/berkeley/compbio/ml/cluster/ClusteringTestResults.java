@@ -4,6 +4,7 @@ import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
 import com.davidsoergel.dsutils.tree.dhtpn.SerializableDoubleHierarchicalTypedProperties;
 import com.davidsoergel.dsutils.tree.htpn.HierarchicalTypedPropertyNode;
+import com.davidsoergel.stats.DissimilarityMeasure;
 import com.google.common.base.Function;
 import com.google.common.collect.MapMaker;
 import org.jetbrains.annotations.Nullable;
@@ -192,7 +193,7 @@ public class ClusteringTestResults<L extends Comparable>
 	public synchronized void finish()
 		{
 		// keep track of whether any good predictions are ever made
-		if (DSCollectionUtils.allElementsEqual(computedDistances, AbstractClusteringMethod.UNKNOWN_DISTANCE))
+		if (DSCollectionUtils.allElementsEqual(computedDistances, DissimilarityMeasure.UNKNOWN_DISTANCE))
 			{
 			computedDistances = null;
 			}
