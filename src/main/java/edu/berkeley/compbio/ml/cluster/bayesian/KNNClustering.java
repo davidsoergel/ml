@@ -317,7 +317,7 @@ public class KNNClustering<T extends AdditiveClusterable<T>>
 			}
 		catch (NoGoodClusterException e)
 			{
-			bestWeightedDistance = DissimilarityMeasure.UNKNOWN_DISTANCE;
+			bestWeightedDistance = Double.NaN; //DissimilarityMeasure.UNKNOWN_DISTANCE;
 			secondToBestDistanceRatio = 1.0;
 			voteProportion = 0;
 			secondToBestVoteRatio = 1.0;

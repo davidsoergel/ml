@@ -482,8 +482,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 					tr.incrementShouldNotHaveBeenUnknown(predictionSetName);
 					}
 
-				broadWrongness = DissimilarityMeasure.UNKNOWN_DISTANCE;
-				detailedWrongness = DissimilarityMeasure.UNKNOWN_DISTANCE;
+				broadWrongness = Double.NaN; //DissimilarityMeasure.UNKNOWN_DISTANCE;
+				detailedWrongness = Double.NaN; //DissimilarityMeasure.UNKNOWN_DISTANCE;
 				}
 			else
 				{
@@ -535,8 +535,8 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 						tr.incrementShouldNotHaveBeenOther(predictionSetName);
 						}
 
-					broadWrongness = DissimilarityMeasure.UNKNOWN_DISTANCE;
-					detailedWrongness = DissimilarityMeasure.UNKNOWN_DISTANCE;
+					broadWrongness = Double.NaN; //DissimilarityMeasure.UNKNOWN_DISTANCE;
+					detailedWrongness = Double.NaN; //DissimilarityMeasure.UNKNOWN_DISTANCE;
 					}
 				}
 
@@ -578,7 +578,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			}
 		catch (NoGoodClusterException e)
 			{
-			bestDistance = DissimilarityMeasure.UNKNOWN_DISTANCE;
+			bestDistance = Double.NaN; //DissimilarityMeasure.UNKNOWN_DISTANCE;
 			secondToBestDistanceRatio = 1.0;
 			bestVoteProportion = 0;
 			secondToBestVoteRatio = 1.0;
