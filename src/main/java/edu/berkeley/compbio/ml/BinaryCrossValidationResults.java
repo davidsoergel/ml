@@ -53,4 +53,24 @@ public class BinaryCrossValidationResults extends CrossValidationResults
 		{
 		return ((float) tt / (float) (tt + tf) + (float) ff / (float) (ff + ft)) / 2f;
 		}
+
+	public float sensitivityA()
+		{
+		return (float) tt / (float) (tt + tf);
+		}
+
+	public float sensitivityB()
+		{
+		return (float) ff / (float) (ff + ft);
+		}
+
+	public float precisionA()
+		{
+		return (float) tt / (float) (tt + ft);
+		}
+
+	public int getNumExamples()
+		{
+		return numExamples;
+		}
 	}
