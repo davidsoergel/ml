@@ -38,6 +38,7 @@ import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
 import com.davidsoergel.stats.DistributionProcessorException;
 import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
+import edu.berkeley.compbio.sequtils.ByteArraySequenceReader;
 import edu.berkeley.compbio.sequtils.FilterException;
 import edu.berkeley.compbio.sequtils.NotEnoughSequenceException;
 import edu.berkeley.compbio.sequtils.SequenceException;
@@ -170,8 +171,8 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 		super(null, null, null, 0, rawSequence.length);
 
 		theScanner = scanner;
-		theReader = null;
-		this.desiredlength = 0;
+		theReader = new ByteArraySequenceReader(rawSequence);
+		this.desiredlength = rawSequence.length;
 		this.rawSequence = rawSequence;
 		}
 
