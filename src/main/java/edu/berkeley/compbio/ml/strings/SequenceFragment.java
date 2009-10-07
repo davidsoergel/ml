@@ -165,6 +165,16 @@ public class SequenceFragment extends SequenceFragmentMetadata implements Additi
 			}
 		}
 
+	public SequenceFragment(byte[] rawSequence, final SequenceSpectrumScanner scanner)
+		{
+		super(null, null, null, 0, rawSequence.length);
+
+		theScanner = scanner;
+		theReader = null;
+		this.desiredlength = 0;
+		this.rawSequence = rawSequence;
+		}
+
 // --------------------- GETTER / SETTER METHODS ---------------------
 
 	/**
