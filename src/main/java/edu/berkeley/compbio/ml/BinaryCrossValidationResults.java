@@ -73,4 +73,19 @@ public class BinaryCrossValidationResults extends CrossValidationResults
 		{
 		return numExamples;
 		}
+
+	public float falseBalance()
+		{
+		int denom = ft + tf;
+		if (denom == 0)
+			{
+			return 0;
+			}
+		return 2f * ((float) tf / (float) denom) - 1f;
+		}
+
+	public float absFalseBalance()
+		{
+		return Math.abs(falseBalance());
+		}
 	}
