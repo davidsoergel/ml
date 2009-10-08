@@ -92,6 +92,11 @@ public class MarkovTreeNode extends AbstractGenericFactoryAware
 		return labels.getMutableWeightedLabels();
 		}
 
+	public int getItemCount()
+		{
+		return labels.getItemCount();
+		}
+
 	private static final Logger logger = Logger.getLogger(MarkovTreeNode.class);
 	protected byte[] id;
 	protected byte[] alphabet;

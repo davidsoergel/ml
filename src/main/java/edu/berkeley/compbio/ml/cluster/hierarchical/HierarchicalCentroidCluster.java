@@ -32,6 +32,7 @@
 
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
+import com.davidsoergel.dsutils.Labellable;
 import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
@@ -58,9 +59,9 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public HierarchicalCentroidCluster(final int id, final Clusterable<T> sample)
+	public HierarchicalCentroidCluster(final int id, final T sample)
 		{
-		super(new BasicCentroidCluster(id, sample));
+		super(new BasicCentroidCluster<T>(id, sample));
 		setWeight(1.);
 		}
 
@@ -198,6 +199,11 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		//	throw new NotImplementedException();
 		}
 
+	public void doneLabelling()
+		{
+		((Labellable<String>) getPayload()).doneLabelling();
+		}
+
 	/**
 	 * Gets the probabilities of mutually exclusive String labels.
 	 *
@@ -205,7 +211,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public MutableWeightedSet<String> getMutableWeightedLabels()
 		{
-		return getPayload().getMutableWeightedLabels();
+		return ((Labellable<String>) getPayload()).getMutableWeightedLabels();
 		//	throw new NotImplementedException();
 		}
 

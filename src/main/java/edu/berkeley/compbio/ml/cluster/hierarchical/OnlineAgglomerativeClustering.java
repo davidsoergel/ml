@@ -105,6 +105,7 @@ public abstract class OnlineAgglomerativeClustering<T extends Clusterable<T>>
 			{
 			final HierarchicalCentroidCluster<T> c =
 					new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), sample);
+			c.doneLabelling();
 
 			// these is synchronized on the cluster list
 			// the cluster list is never used in thes implementation; onle the active list in the distance matrix matters

@@ -109,6 +109,11 @@ public class RonPST extends RonPSTNode
 		return labels.getMutableWeightedLabels();
 		}
 
+	public int getItemCount()
+		{
+		return labels.getItemCount();
+		}
+
 	private long originalSequenceLength;
 
 	// diagnostics

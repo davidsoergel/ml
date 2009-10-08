@@ -61,6 +61,8 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		// weight and weightedLabels.getItemCount() are maybe redundant; too bad
 		composite.setWeight(a.getWeight() + b.getWeight());
 
+		composite.doneLabelling();
+
 
 		addCompositeToDistanceMatrix(a, b, composite, theActiveNodeDistanceMatrix);
 

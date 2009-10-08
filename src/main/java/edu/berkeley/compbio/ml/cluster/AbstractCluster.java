@@ -79,7 +79,7 @@ public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<St
 	 */
 	public int getN()
 		{
-		return getMutableWeightedLabels().getItemCount();
+		return getItemCount(); //getMutableWeightedLabels().getItemCount();
 		}
 
 	/**

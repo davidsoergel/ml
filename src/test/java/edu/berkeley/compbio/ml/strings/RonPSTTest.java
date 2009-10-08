@@ -271,6 +271,11 @@ public class RonPSTTest extends ContractTestAware<RonPSTTest> implements TestIns
 			return labels.getMutableWeightedLabels();
 			}
 
+		public int getItemCount()
+			{
+			return labels.getItemCount();
+			}
+
 
 // --------------------------- CONSTRUCTORS ---------------------------
 

@@ -69,6 +69,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			{
 			final HierarchicalCentroidCluster<T> c =
 					new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), sample);
+			c.doneLabelling();
 			newClusters.add(c);
 			addCluster(c);
 			return null;
@@ -150,6 +151,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 	public synchronized void add(final T sample)
 		{
 		final HierarchicalCentroidCluster c = new HierarchicalCentroidCluster(idCount.getAndIncrement(), sample);
+		c.doneLabelling();
 		//c.setN(1);
 		addAndComputeDistances(c);
 		}

@@ -573,8 +573,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		{
 		for (int i = 0; i < totalCells; i++)
 			{
-			final KohonenSOMCell<T> c = new KohonenSOMCell<T>(i, prototypeFactory == null ? null :
-			                                                     prototypeFactory.create(String.valueOf(i)));
+			final T centroid = prototypeFactory == null ? null : prototypeFactory.create(String.valueOf(i));
+			centroid.doneLabelling();
+			final KohonenSOMCell<T> c = new KohonenSOMCell<T>(i, centroid);
 			//	c.setId(i);
 			addCluster(c);
 			}

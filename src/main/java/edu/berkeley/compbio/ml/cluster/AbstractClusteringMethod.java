@@ -273,7 +273,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	public String bestLabel(final T sample, final Set<String> predictLabels) throws NoGoodClusterException
 		{
 		final Cluster<T> c = bestClusterMove(sample).bestCluster;
-		return c.getMutableWeightedLabels().getDominantKeyInSet(predictLabels);
+		return c.getImmutableWeightedLabels().getDominantKeyInSet(predictLabels);
 //		c.updateDerivedWeightedLabelsFromLocal();
 //		WeightedSet<String> probs = c.getDerivedLabelProbabilities();
 //		String label = probs.getDominantKey();
@@ -356,7 +356,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		{
 		for (final C theCluster : getClusters())
 			{
-			tr.incrementTotalTrainingMass(theCluster.getMutableWeightedLabels().getItemCount());
+			tr.incrementTotalTrainingMass(theCluster.getImmutableWeightedLabels().getItemCount());
 			}
 		}
 

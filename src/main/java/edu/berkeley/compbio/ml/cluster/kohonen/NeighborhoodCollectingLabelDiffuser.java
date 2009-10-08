@@ -89,7 +89,7 @@ public class NeighborhoodCollectingLabelDiffuser<T extends AdditiveClusterable<T
 				{
 				for (final CentroidCluster<T> shellMember : shells.next())
 					{
-					weightedLabels.addAll(shellMember.getMutableWeightedLabels());
+					weightedLabels.addAll(shellMember.getImmutableWeightedLabels());
 					}
 				}
 

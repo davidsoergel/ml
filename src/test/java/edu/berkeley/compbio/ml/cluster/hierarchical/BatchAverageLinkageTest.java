@@ -74,6 +74,10 @@ public class BatchAverageLinkageTest
 		points.add(new ClusterableDoubleArray("4", new double[]{10, 20, 30, 4, 5}));
 		points.add(new ClusterableDoubleArray("5", new double[]{10, 20, 30, 40, 5}));
 		points.add(new ClusterableDoubleArray("6", new double[]{10, 20, 30, 40, 50}));
+		for (ClusterableDoubleArray point : points)
+			{
+			point.doneLabelling();
+			}
 		}
 
 	@Test
