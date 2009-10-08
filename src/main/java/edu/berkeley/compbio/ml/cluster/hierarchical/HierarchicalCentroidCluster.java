@@ -30,11 +30,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster;
+package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
+import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
+import edu.berkeley.compbio.ml.cluster.CentroidCluster;
+import edu.berkeley.compbio.ml.cluster.Cluster;
+import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
 import org.apache.commons.lang.NotImplementedException;
 

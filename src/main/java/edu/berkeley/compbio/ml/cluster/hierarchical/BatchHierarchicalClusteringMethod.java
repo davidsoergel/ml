@@ -30,9 +30,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package edu.berkeley.compbio.ml.cluster;
+package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
+import edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.CentroidCluster;
+import edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
+import edu.berkeley.compbio.ml.cluster.Clusterable;
+import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
+import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
+import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
 import java.io.ByteArrayOutputStream;
@@ -46,22 +54,24 @@ import java.util.Set;
  * as opposed to the usual assumption in the ClusterMethod superclass that the Clusters are discrete.
  * <p/>
  * This interface is agnostic about whether the implementation is supervised or unsupervised, and whether it is online
- * or batch.
+ * or batch.  Oops that's no longer true; rethink...
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  * @Author David Soergel
  * @Version 1.0
  */
-public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
+public abstract class BatchHierarchicalClusteringMethod<T extends Clusterable<T>>
 		extends AbstractBatchClusteringMethod<T, HierarchicalCentroidCluster<T>>
 		implements SupervisedClusteringMethod<T>, CentroidClusteringMethod<T>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	protected HierarchicalClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
-	                                       final Map<String, Set<String>> predictLabelSets,
-	                                       final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels)
+	protected BatchHierarchicalClusteringMethod(final DissimilarityMeasure<T> dm,
+	                                            final Set<String> potentialTrainingBins,
+	                                            final Map<String, Set<String>> predictLabelSets,
+	                                            final ProhibitionModel<T> prohibitionModel,
+	                                            final Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		}
@@ -106,12 +116,4 @@ public abstract class HierarchicalClusteringMethod<T extends Clusterable<T>>
 	 *         procedure has not been performed yet.
 	 */
 	public abstract LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree();
-
-
-	/**
-	 * Add the given samples to the set to be clustered, and remember the mapping from sample to cluster
-	 *
-	 * @param testIterator
-	 */
-//	public abstract void addAllAndRemember(Iterator<T> testIterator);
 	}

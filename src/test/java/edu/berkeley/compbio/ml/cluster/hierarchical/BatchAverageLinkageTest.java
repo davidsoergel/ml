@@ -53,11 +53,11 @@ import java.util.List;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class UPGMATest
+public class BatchAverageLinkageTest
 	{
 // ------------------------------ FIELDS ------------------------------
 
-	private static final Logger logger = Logger.getLogger(UPGMATest.class);
+	private static final Logger logger = Logger.getLogger(BatchAverageLinkageTest.class);
 
 	final List<ClusterableDoubleArray> points = new ArrayList<ClusterableDoubleArray>();
 
@@ -83,8 +83,9 @@ public class UPGMATest
 
 		//ci = new MockClusterableIterator().init();
 
-		final UPGMA<ClusterableDoubleArray> oc =
-				new UPGMA<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null, null, null, null);
+		final BatchAgglomerativeClustering<ClusterableDoubleArray> oc =
+				new BatchAgglomerativeClustering<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null, null,
+				                                                         null, null, new AverageLinkageAgglomerator());
 
 		oc.addAll(new ClusterableIteratorFactory<ClusterableDoubleArray>(points).next());
 
