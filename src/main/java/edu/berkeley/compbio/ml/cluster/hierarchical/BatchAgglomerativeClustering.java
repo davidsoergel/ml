@@ -13,7 +13,7 @@ import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
-import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
+import edu.berkeley.compbio.phyloutils.BasicRootedPhylogeny;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -268,9 +268,8 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree()
+	public BasicRootedPhylogeny<HierarchicalCentroidCluster<T>> getTree()
 		{
-		return theRoot;
+		return new BasicRootedPhylogeny<HierarchicalCentroidCluster<T>>(theRoot);
 		}
 	}
