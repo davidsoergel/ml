@@ -34,14 +34,12 @@ package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod;
-import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
-import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -63,7 +61,7 @@ import java.util.Set;
  */
 public abstract class BatchHierarchicalClusteringMethod<T extends Clusterable<T>>
 		extends AbstractBatchClusteringMethod<T, HierarchicalCentroidCluster<T>>
-		implements SupervisedClusteringMethod<T>, CentroidClusteringMethod<T>
+		implements SupervisedClusteringMethod<T>, CentroidClusteringMethod<T>, HierarchicalClusteringMethod<T>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -105,15 +103,4 @@ public abstract class BatchHierarchicalClusteringMethod<T extends Clusterable<T>
 		{
 		CentroidClusteringUtils.writeClusteringStatsToStream(getClusters(), measure, outf);
 		}
-
-// -------------------------- OTHER METHODS --------------------------
-
-	/**
-	 * Returns a LengthWeightHierarchyNode representing the root of the computed clustering tree.  Only valid after
-	 * performClustering() has been run.
-	 *
-	 * @return a LengthWeightHierarchyNode representing the root of the computed clustering tree, or null if the clustering
-	 *         procedure has not been performed yet.
-	 */
-	public abstract LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree();
 	}
