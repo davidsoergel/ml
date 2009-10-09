@@ -70,21 +70,23 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 		composite.doneLabelling();
 
+
+		int numActive = theActiveNodeDistanceMatrix.numKeys();
+		int numPairs = theActiveNodeDistanceMatrix.numPairs();
+
 		// PERF unnecessary...
 		// add the branch to the distance table for consistency
 		theActiveNodeDistanceMatrix.put(a, composite, distance);
 		theActiveNodeDistanceMatrix.put(b, composite, distance);
 
-
-		int numActive = theActiveNodeDistanceMatrix.numKeys();
-		int numPairs = theActiveNodeDistanceMatrix.numPairs();
-
 		addCompositeToDistanceMatrix(a, b, composite, theActiveNodeDistanceMatrix);
 
+		//** these assertions are likely true only for single-threaded clusterers,
+		// and we don't want to synchronize a whole block on theActiveNodeDistancesMatrix here just for the sake of the assertions
 		if (numActive > 2)
 			{
 			assert theActiveNodeDistanceMatrix.numKeys() == numActive + 1;
-			assert theActiveNodeDistanceMatrix.numPairs() == numPairs + numActive - 2;
+			assert theActiveNodeDistanceMatrix.numPairs() == numPairs + numActive;
 			}
 
 

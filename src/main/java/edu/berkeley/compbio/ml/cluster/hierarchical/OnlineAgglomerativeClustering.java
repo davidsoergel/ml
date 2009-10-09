@@ -46,7 +46,7 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 	public OnlineAgglomerativeClustering(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
 	                                     final Map<String, Set<String>> predictLabelSets,
 	                                     final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels,
-	                                     double threshold, Agglomerator agg)
+	                                     Double threshold, Agglomerator agg)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		this.threshold = threshold;
@@ -159,39 +159,45 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 				// but some of them may have disappeared in the meantime.
 				// Just drop them if so, even if the distance was short; too bad, that's the cost of the online setting.
 
-				final Set<HierarchicalCentroidCluster<T>> remainingActiveKeys =
-						new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getActiveKeys());
 
-				distancesToC.keySet().retainAll(remainingActiveKeys);
-				for (Map.Entry<HierarchicalCentroidCluster<T>, Double> entry : distancesToC.entrySet())
+				final Set<HierarchicalCentroidCluster<T>> activeKeys = theActiveNodeDistanceMatrix.getActiveKeys();
+
+				if (activeKeys.size() > 0)
 					{
-					final HierarchicalCentroidCluster<T> b = entry.getKey();
-					final Double d = entry.getValue();
-					theActiveNodeDistanceMatrix.put(c, b, d);
+					final Set<HierarchicalCentroidCluster<T>> remainingActiveKeys =
+							new HashSet<HierarchicalCentroidCluster<T>>(activeKeys);
+					distancesToC.keySet().retainAll(remainingActiveKeys);
+					for (Map.Entry<HierarchicalCentroidCluster<T>, Double> entry : distancesToC.entrySet())
+						{
+						final HierarchicalCentroidCluster<T> b = entry.getKey();
+						final Double d = entry.getValue();
+						theActiveNodeDistanceMatrix.put(c, b, d);
 
-					remainingActiveKeys.remove(b);
-					}
+						remainingActiveKeys.remove(b);
+						}
 
-				// also there may be new active nodes for which we didn't compute distances before; that's why we copied the active list before
-				// catch up and do them now; too bad about the synchronization
-				for (HierarchicalCentroidCluster<T> b : remainingActiveKeys)
-					{
-					final Double d = measure.distanceFromTo(c.getPayload().getCentroid(), b.getPayload().getCentroid());
-					theActiveNodeDistanceMatrix.put(c, b, d);
-					}
+					// also there may be new active nodes for which we didn't compute distances before; that's why we copied the active list before
+					// catch up and do them now; too bad about the synchronization
+					for (HierarchicalCentroidCluster<T> b : remainingActiveKeys)
+						{
+						final Double d =
+								measure.distanceFromTo(c.getPayload().getCentroid(), b.getPayload().getCentroid());
+						theActiveNodeDistanceMatrix.put(c, b, d);
+						}
 
-				// the new node may have various effects, depending on the subclass
-				// it may induce multiple joins, e.g. by acting as a bridge in a single-linkage situation
+					// the new node may have various effects, depending on the subclass
+					// it may induce multiple joins, e.g. by acting as a bridge in a single-linkage situation
 
-				while (theActiveNodeDistanceMatrix.getSmallestValue() <= threshold)
-					{
-					final HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
-					final HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
-					final HierarchicalCentroidCluster<T> composite =
-							agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
-					agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
-					addCluster(composite);
-					theRoot = composite;  // this will actually be true on the last iteration
+					while (theActiveNodeDistanceMatrix.getSmallestValue() <= threshold)
+						{
+						final HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
+						final HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
+						final HierarchicalCentroidCluster<T> composite =
+								agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
+						agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
+						addCluster(composite);
+						theRoot = composite;  // this will actually be true on the last iteration
+						}
 					}
 				}
 

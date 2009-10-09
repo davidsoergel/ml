@@ -130,7 +130,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 		{
 		final List<HierarchicalCentroidCluster<T>> allClusters = getClusters();
 
-		//AtomicInteger clusterCounter = new AtomicInteger(0);
+		final AtomicInteger clusterCounter = new AtomicInteger(0);
 
 		//PERF Gah concurrency problems
 		//** just use lazy compute?  No point, theActiveNodeDistanceMatrix needs the values immediately because it sorts on them.
@@ -165,13 +165,16 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			// But the whole point of this batch method is that we addAll first and train later, which is why both methods are synchronized.
 			theActiveNodeDistanceMatrix.putAll(result);
 
-			int numPairs = theActiveNodeDistanceMatrix.numPairs();
-
-			if (numPairs % 10000 == 0)
+			final int clusterCount = clusterCounter.incrementAndGet();
+			if (clusterCount % 100 == 0)
 				{
 				int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
-				logger.info("Batch agglomerative clustering preparing " + numKeys + " active nodes, " + numPairs
-				            + " pair distances");
+
+				//if (numPairs % 10000 == 0)
+				//	{
+				int numPairs = theActiveNodeDistanceMatrix.numPairs();
+				logger.info("Batch agglomerative clustering preparing " + clusterCount + " of " + numKeys
+				            + " active nodes, " + numPairs + " pair distances");
 				}
 
 			return null;
