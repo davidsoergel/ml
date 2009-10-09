@@ -23,13 +23,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Agglomeratively cluster points in an online manner.  Clusters are joined when their distance is within the provided
  * threshold.  During the online process, there may be many active clusters that are not related to each other-- their
- * pairwise distances are known to be greater than the threshold, and there is no root.
+ * pairwise distances are known to be greater than the threshold, and there is no root.  At the end of the online
+ * process, any remaining active nodes (which are still disconnected because they are separated by more than the
+ * threshold) are joined by a batch method.
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public abstract class OnlineAgglomerativeClustering<T extends Clusterable<T>>
-		extends OnlineHierarchicalClusteringMethod<T>
+public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends OnlineHierarchicalClusteringMethod<T>
 	{
 	private static final Logger logger = Logger.getLogger(OnlineAgglomerativeClustering.class);
 	protected final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix =
@@ -199,7 +200,15 @@ public abstract class OnlineAgglomerativeClustering<T extends Clusterable<T>>
 
 		);
 
-		normalizeClusterLabelProbabilities();
+		// note the batch clustering phase it not necessary if we just want to count OTUs, but it allows us to use a consistent DepthFirstIterator to find the OTUs later
+
+		BatchAgglomerativeClustering<T> batchClustering =
+				new BatchAgglomerativeClustering<T>(measure, potentialTrainingBins, predictLabelSets, prohibitionModel,
+				                                    testLabels, agglomerator);
+
+		batchClustering.
+
+				normalizeClusterLabelProbabilities();
 		}
 
 	/**
@@ -210,9 +219,4 @@ public abstract class OnlineAgglomerativeClustering<T extends Clusterable<T>>
 		{
 		return theRoot;
 		}
-
-
-	protected abstract void computeDistance(HierarchicalCentroidCluster<T> origA, HierarchicalCentroidCluster<T> origB,
-	                                        HierarchicalCentroidCluster<T> composite,
-	                                        HierarchicalCentroidCluster<T> otherNode);
 	}

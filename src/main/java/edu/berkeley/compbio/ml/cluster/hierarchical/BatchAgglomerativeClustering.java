@@ -60,29 +60,52 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 
 
 		// first create all the new clusters
+		final Set<HierarchicalCentroidCluster<T>> newClusters = createNewClusters(samples);
 
-		final Set<HierarchicalCentroidCluster<T>> newClusters =
-				new ConcurrentSkipListSet<HierarchicalCentroidCluster<T>>();
 
-		Parallel.forEach(samples, new Function<T, Void>()
+		// then compute distances between all new clusters and all clusters (including the old and new ones)
+		computeDistances(newClusters);
+
+
+		//});
+
+		// this method doesn't parallelize well, because the apply() phase is too fast relative to the next() phase
+
+		/*
+		UnorderedPairIterator<HierarchicalCentroidCluster<T>> pairs =
+				new UnorderedPairIterator<HierarchicalCentroidCluster<T>>(newClusters, getClusters());
+
+
+		Parallel.forEach(pairs, new Function<UnorderedPair<HierarchicalCentroidCluster<T>>, Void>()
 		{
-		public Void apply(final T sample)
+		public Void apply(final UnorderedPair<HierarchicalCentroidCluster<T>> pair)
 			{
-			final HierarchicalCentroidCluster<T> c =
-					new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), sample);
-			c.doneLabelling();
-			newClusters.add(c);
-			addCluster(c);
+			HierarchicalCentroidCluster<T> a = pair.getKey1();
+			HierarchicalCentroidCluster<T> b = pair.getKey2();
+
+			final Double d = measure.distanceFromTo(a.getValue().getCentroid(), b.getValue().getCentroid());
+			theActiveNodeDistanceMatrix.put(a, b, d);
+			int numPairs = theActiveNodeDistanceMatrix.numPairs();
+			int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
+
+			if (numPairs % 10000 == 0)
+				{
+				logger.info("UPGMA preparing " + numKeys + " active nodes, " + numPairs + " pair distances");
+				}
 			return null;
 			}
 		});
+		*/
+		}
 
-		// then compute distances between all new clusters and all clusters (including the old and new ones)
+	private void computeDistances(final Set<HierarchicalCentroidCluster<T>> newClusters)
+		{
 		final List<HierarchicalCentroidCluster<T>> allClusters = getClusters();
 
 		//AtomicInteger clusterCounter = new AtomicInteger(0);
 
 		//PERF Gah concurrency problems
+		//** just use lazy compute?
 
 		for (HierarchicalCentroidCluster<T> a : newClusters)
 
@@ -127,35 +150,26 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 
 			//		return null;
 			}
-		//});
+		}
 
-		// this method doesn't parallelize well, because the apply() phase is too fast relative to the next() phase
-
-		/*
-		UnorderedPairIterator<HierarchicalCentroidCluster<T>> pairs =
-				new UnorderedPairIterator<HierarchicalCentroidCluster<T>>(newClusters, getClusters());
-
-
-		Parallel.forEach(pairs, new Function<UnorderedPair<HierarchicalCentroidCluster<T>>, Void>()
+	private Set<HierarchicalCentroidCluster<T>> createNewClusters(final ClusterableIterator<T> samples)
 		{
-		public Void apply(final UnorderedPair<HierarchicalCentroidCluster<T>> pair)
+		final Set<HierarchicalCentroidCluster<T>> newClusters =
+				new ConcurrentSkipListSet<HierarchicalCentroidCluster<T>>();
+
+		Parallel.forEach(samples, new Function<T, Void>()
+		{
+		public Void apply(final T sample)
 			{
-			HierarchicalCentroidCluster<T> a = pair.getKey1();
-			HierarchicalCentroidCluster<T> b = pair.getKey2();
-
-			final Double d = measure.distanceFromTo(a.getValue().getCentroid(), b.getValue().getCentroid());
-			theActiveNodeDistanceMatrix.put(a, b, d);
-			int numPairs = theActiveNodeDistanceMatrix.numPairs();
-			int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
-
-			if (numPairs % 10000 == 0)
-				{
-				logger.info("UPGMA preparing " + numKeys + " active nodes, " + numPairs + " pair distances");
-				}
+			final HierarchicalCentroidCluster<T> c =
+					new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), sample);
+			c.doneLabelling();
+			newClusters.add(c);
+			addCluster(c);
 			return null;
 			}
 		});
-		*/
+		return newClusters;
 		}
 
 	public synchronized void add(final T sample)
