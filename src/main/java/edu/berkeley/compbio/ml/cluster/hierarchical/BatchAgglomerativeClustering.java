@@ -13,7 +13,6 @@ import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
-import edu.berkeley.compbio.phyloutils.BasicRootedPhylogeny;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -58,6 +57,8 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			{
 			throw new ClusterRuntimeException("Can't add samples to a batch clustering that has already been trained");
 			}
+
+
 		// first create all the new clusters
 
 		final Set<HierarchicalCentroidCluster<T>> newClusters =
@@ -79,9 +80,16 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 		// then compute distances between all new clusters and all clusters (including the old and new ones)
 		final List<HierarchicalCentroidCluster<T>> allClusters = getClusters();
 
-		Parallel.forEach(newClusters, new Function<HierarchicalCentroidCluster<T>, Void>()
-		{
-		public Void apply(final HierarchicalCentroidCluster<T> a)
+		//AtomicInteger clusterCounter = new AtomicInteger(0);
+
+		//PERF Gah concurrency problems
+
+		for (HierarchicalCentroidCluster<T> a : newClusters)
+
+
+			//	Parallel.forEach(newClusters, new Function<HierarchicalCentroidCluster<T>, Void>()
+			//	{
+			//	public Void apply(final HierarchicalCentroidCluster<T> a)
 			{
 			final int ahc = a.hashCode();
 			// store up the results in this thread before copying them to the synchronized store at the end
@@ -92,20 +100,12 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 				{
 				if (ahc <= b.hashCode() && !a.equals(b))
 					{
-					final Double d = measure.distanceFromTo(a.getPayload().getCentroid(), b.getPayload().getCentroid());
+					final double d = measure.distanceFromTo(a.getPayload().getCentroid(), b.getPayload().getCentroid());
 
 					// concurrency bottleneck
 					//theActiveNodeDistanceMatrix.put(a, b, d);
 
 					result.put(new UnorderedPair<HierarchicalCentroidCluster<T>>(a, b), d);
-					int numPairs = theActiveNodeDistanceMatrix.numPairs();
-
-					if (numPairs % 10000 == 0)
-						{
-						int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
-						logger.info("Batch agglomerative clustering preparing " + numKeys + " active nodes, " + numPairs
-						            + " pair distances");
-						}
 					}
 				}
 
@@ -115,9 +115,19 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			// if clusters were _removed_ in the meantime, that would be a problem because we'd hereby reactivate them.
 			// But the whole point of this batch method is that we addAll first and train later, which is why both methods are synchronized.
 			theActiveNodeDistanceMatrix.putAll(result);
-			return null;
+
+			int numPairs = theActiveNodeDistanceMatrix.numPairs();
+
+			if (numPairs % 10000 == 0)
+				{
+				int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
+				logger.info("Batch agglomerative clustering preparing " + numKeys + " active nodes, " + numPairs
+				            + " pair distances");
+				}
+
+			//		return null;
 			}
-		});
+		//});
 
 		// this method doesn't parallelize well, because the apply() phase is too fast relative to the next() phase
 
@@ -171,6 +181,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			{
 			// find shortest distance
 
+			//PERF just get the keypair once
 			final HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
 			final HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
 			final HierarchicalCentroidCluster<T> composite =
@@ -268,8 +279,8 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 	/**
 	 * {@inheritDoc}
 	 */
-	public BasicRootedPhylogeny<HierarchicalCentroidCluster<T>> getTree()
+	public HierarchicalCentroidCluster<T> getTree()
 		{
-		return new BasicRootedPhylogeny<HierarchicalCentroidCluster<T>>(theRoot);
+		return theRoot;
 		}
 	}

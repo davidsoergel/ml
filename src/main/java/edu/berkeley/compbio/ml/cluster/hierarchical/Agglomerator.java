@@ -1,8 +1,6 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
-import com.davidsoergel.dsutils.concurrent.Parallel;
-import com.google.common.base.Function;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 
 import java.util.HashSet;
@@ -25,15 +23,24 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 	                                          final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
 		{
 		// there was a mysterious concurrent-modification sort of problem; does this fix it?
-		Parallel.forEach(new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getActiveKeys()),
-		                 new Function<HierarchicalCentroidCluster<T>, Void>()
-		                 {
-		                 public Void apply(final HierarchicalCentroidCluster<T> node)
-			                 {
-			                 addCompositeVsNodeToDistanceMatrix(a, b, composite, node, theActiveNodeDistanceMatrix);
-			                 return null;
-			                 }
-		                 });
+		final HashSet<HierarchicalCentroidCluster<T>> activeKeys =
+				new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getActiveKeys());
+
+
+		//** serial test
+		for (HierarchicalCentroidCluster<T> node : activeKeys)
+			{
+			addCompositeVsNodeToDistanceMatrix(a, b, composite, node, theActiveNodeDistanceMatrix);
+			}
+		/*	Parallel.forEach(activeKeys,
+								 new Function<HierarchicalCentroidCluster<T>, Void>()
+								 {
+								 public Void apply(final HierarchicalCentroidCluster<T> node)
+									 {
+									 addCompositeVsNodeToDistanceMatrix(a, b, composite, node, theActiveNodeDistanceMatrix);
+									 return null;
+									 }
+								 });*/
 		}
 
 	public HierarchicalCentroidCluster<T> joinNodes(final int id, final HierarchicalCentroidCluster<T> a,
@@ -63,13 +70,30 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 		composite.doneLabelling();
 
+		int numActive = theActiveNodeDistanceMatrix.numKeys();
+		int numPairs = theActiveNodeDistanceMatrix.numPairs();
 
 		addCompositeToDistanceMatrix(a, b, composite, theActiveNodeDistanceMatrix);
 
+
+		if (numActive > 2)
+			{
+			assert theActiveNodeDistanceMatrix.numKeys() == numActive + 1;
+			assert theActiveNodeDistanceMatrix.numPairs() == numPairs + numActive - 2;
+			}
 		// remove the two merged clusters from consideration
 
-		theActiveNodeDistanceMatrix.remove(a);
-		theActiveNodeDistanceMatrix.remove(b);
+		int removedA = theActiveNodeDistanceMatrix.remove(a);
+		int removedB = theActiveNodeDistanceMatrix.remove(b);
+
+		assert removedA == numActive - 1;
+		assert removedB == numActive - 2;
+
+		if (numActive > 2)
+			{
+			assert theActiveNodeDistanceMatrix.numKeys() == numActive - 1;
+			assert theActiveNodeDistanceMatrix.numPairs() == numPairs - (numActive - 1);
+			}
 
 		// add the composite node to the active list
 		// no longer needed; automatic

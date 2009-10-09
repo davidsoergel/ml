@@ -83,6 +83,7 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 		this.centroid = centroid;//.clone();
 		if (centroid != null)
 			{
+			centroid.doneLabelling();
 			mutableWeightedLabels.addAll(centroid.getImmutableWeightedLabels());
 			}
 		//n++;

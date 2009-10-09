@@ -59,17 +59,18 @@ public class CompleteLinkageAgglomerator<T extends Clusterable<T>> extends Agglo
 			}
 		else
 			{
-			double d = Math.max(theActiveNodeDistanceMatrix.get(origA, otherNode),
-			                    theActiveNodeDistanceMatrix.get(origB, otherNode));
+			final Double aDist = theActiveNodeDistanceMatrix.get(origA, otherNode);
+			final Double bDist = theActiveNodeDistanceMatrix.get(origB, otherNode);
+			double d = Math.max(aDist, bDist);
 			theActiveNodeDistanceMatrix.put(otherNode, composite, d);
 
-			int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
+			/*	int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
 
-			if (numKeys % 1000 == 0)
-				{
-				int numPairs = theActiveNodeDistanceMatrix.numPairs();
-				logger.info("Single-linkage training " + numKeys + " active nodes, " + numPairs + " pair distances");
-				}
+		   if (numKeys % 1000 == 0)
+			   {
+			   int numPairs = theActiveNodeDistanceMatrix.numPairs();
+			   logger.info("Single-linkage training " + numKeys + " active nodes, " + numPairs + " pair distances");
+			   }*/
 			}
 		}
 	}

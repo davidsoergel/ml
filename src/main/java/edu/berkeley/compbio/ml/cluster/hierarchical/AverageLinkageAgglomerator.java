@@ -64,13 +64,13 @@ public class AverageLinkageAgglomerator<T extends Clusterable<T>> extends Agglom
 					.get(origB, otherNode);
 			theActiveNodeDistanceMatrix.put(otherNode, composite, d);
 
-			int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
+			/*	int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
 
-			if (numKeys % 1000 == 0)
-				{
-				int numPairs = theActiveNodeDistanceMatrix.numPairs();
-				logger.info("Single-linkage training " + numKeys + " active nodes, " + numPairs + " pair distances");
-				}
+		   if (numKeys % 1000 == 0)
+			   {
+			   int numPairs = theActiveNodeDistanceMatrix.numPairs();
+			   logger.info("Single-linkage training " + numKeys + " active nodes, " + numPairs + " pair distances");
+			   }*/
 			}
 		}
 	}
