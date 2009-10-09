@@ -47,6 +47,7 @@ import java.util.Set;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
+@Deprecated
 public abstract class AbstractOnlineClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
 		extends AbstractClusteringMethod<T, C> implements OnlineClusteringMethod<T> //, CentroidClusteringMethod<T>
 	{

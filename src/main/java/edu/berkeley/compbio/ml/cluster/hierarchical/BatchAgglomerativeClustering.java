@@ -15,8 +15,8 @@ import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,14 +30,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends BatchHierarchicalClusteringMethod<T>
 	{
 	private static final Logger logger = Logger.getLogger(BatchAgglomerativeClustering.class);
-	protected final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix =
-			new Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double>();
-	private HierarchicalCentroidCluster<T> theRoot;
-	private final Map<T, HierarchicalCentroidCluster<T>> sampleToLeafClusterMap =
-			new HashMap<T, HierarchicalCentroidCluster<T>>();
-	private final AtomicInteger idCount = new AtomicInteger(0);
-	HierarchicalCentroidCluster<T> saveNode;
-	Agglomerator<T> agglomerator;
+
+	// set in the constructor
+	protected final Agglomerator<T> agglomerator;
+
+	//state
+
+	protected final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix;
+	//=	new Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double>();
+
+
+	// the result ends up here, but it may temporarily contain intermediate values
+	protected HierarchicalCentroidCluster<T> theRoot;
+
+//	private final Map<T, HierarchicalCentroidCluster<T>> sampleToLeafClusterMap =
+//			new HashMap<T, HierarchicalCentroidCluster<T>>();
+
+	protected final AtomicInteger idCount = new AtomicInteger(0);
+
+
+//	HierarchicalCentroidCluster<T> saveNode;
+
 
 	public BatchAgglomerativeClustering(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
 	                                    final Map<String, Set<String>> predictLabelSets,
@@ -46,7 +59,22 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		this.agglomerator = agg;
+		theActiveNodeDistanceMatrix = new Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double>();
 		}
+
+	public BatchAgglomerativeClustering(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
+	                                    final Map<String, Set<String>> predictLabelSets,
+	                                    final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels,
+	                                    final ArrayList<HierarchicalCentroidCluster<T>> theClusters,
+	                                    final Map<String, HierarchicalCentroidCluster<T>> assignments, final int n,
+	                                    Agglomerator agg,
+	                                    Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
+		{
+		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels, theClusters, assignments, n);
+		this.agglomerator = agg;
+		this.theActiveNodeDistanceMatrix = theActiveNodeDistanceMatrix;
+		}
+
 
 	/**
 	 * {@inheritDoc}
@@ -105,14 +133,12 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 		//AtomicInteger clusterCounter = new AtomicInteger(0);
 
 		//PERF Gah concurrency problems
-		//** just use lazy compute?
+		//** just use lazy compute?  No point, theActiveNodeDistanceMatrix needs the values immediately because it sorts on them.
 
-		for (HierarchicalCentroidCluster<T> a : newClusters)
-
-
-			//	Parallel.forEach(newClusters, new Function<HierarchicalCentroidCluster<T>, Void>()
-			//	{
-			//	public Void apply(final HierarchicalCentroidCluster<T> a)
+		//for (HierarchicalCentroidCluster<T> a : newClusters)
+		Parallel.forEach(newClusters, new Function<HierarchicalCentroidCluster<T>, Void>()
+		{
+		public Void apply(final HierarchicalCentroidCluster<T> a)
 			{
 			final int ahc = a.hashCode();
 			// store up the results in this thread before copying them to the synchronized store at the end
@@ -148,8 +174,9 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 				            + " pair distances");
 				}
 
-			//		return null;
+			return null;
 			}
+		});
 		}
 
 	private Set<HierarchicalCentroidCluster<T>> createNewClusters(final ClusterableIterator<T> samples)
@@ -172,13 +199,16 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 		return newClusters;
 		}
 
-	public synchronized void add(final T sample)
+	/*
+	private synchronized void add(final T sample)
 		{
 		final HierarchicalCentroidCluster c = new HierarchicalCentroidCluster(idCount.getAndIncrement(), sample);
 		c.doneLabelling();
 		//c.setN(1);
 		addAndComputeDistances(c);
 		}
+
+		*/
 
 	public void createClusters()
 		{
@@ -195,11 +225,13 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			{
 			// find shortest distance
 
-			//PERF just get the keypair once
-			final HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
-			final HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
+			UnorderedPair<HierarchicalCentroidCluster<T>> pair =
+					theActiveNodeDistanceMatrix.getKeyPairWithSmallestValue();
+			final HierarchicalCentroidCluster<T> a = pair.getKey1();
+			final HierarchicalCentroidCluster<T> b = pair.getKey2();
 			final HierarchicalCentroidCluster<T> composite =
 					agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
+			agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
 			addCluster(composite);
 			theRoot = composite;  // this will actually be true on the last iteration
 			}
@@ -214,7 +246,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 	 *
 	 * @param node
 	 */
-	public synchronized void addAndComputeDistances(final HierarchicalCentroidCluster<T> node)
+/*	private synchronized void addAndComputeDistances(final HierarchicalCentroidCluster<T> node)
 		{
 		//PERF better synchronization
 		//synchronized (theClusters)
@@ -246,6 +278,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 				}
 			}
 		}
+*/
 
 	/**
 	 * {@inheritDoc}
@@ -256,6 +289,8 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 		final ClusterMove result = new ClusterMove();
 		result.bestDistance = Double.POSITIVE_INFINITY;
 
+		// since we're not using sampleToLeafClusterMap explicitly, it's possible for one of the training samples to be mapped to another cluster at distance 0
+		/*
 		final HierarchicalCentroidCluster<T> c = sampleToLeafClusterMap.get(p);
 		if (c != null)
 			{
@@ -264,6 +299,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			result.bestDistance = 0;
 			return result;
 			}
+			*/
 
 		PointClusterFilter<T> clusterFilter = prohibitionModel == null ? null : prohibitionModel.getFilter(p);
 

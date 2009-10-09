@@ -27,7 +27,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 				new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getActiveKeys());
 
 
-		//** serial test
+		//PERF serial test
 		for (HierarchicalCentroidCluster<T> node : activeKeys)
 			{
 			addCompositeVsNodeToDistanceMatrix(a, b, composite, node, theActiveNodeDistanceMatrix);
@@ -70,17 +70,36 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 		composite.doneLabelling();
 
+		// PERF unnecessary...
+		// add the branch to the distance table for consistency
+		theActiveNodeDistanceMatrix.put(a, composite, distance);
+		theActiveNodeDistanceMatrix.put(b, composite, distance);
+
+
 		int numActive = theActiveNodeDistanceMatrix.numKeys();
 		int numPairs = theActiveNodeDistanceMatrix.numPairs();
 
 		addCompositeToDistanceMatrix(a, b, composite, theActiveNodeDistanceMatrix);
-
 
 		if (numActive > 2)
 			{
 			assert theActiveNodeDistanceMatrix.numKeys() == numActive + 1;
 			assert theActiveNodeDistanceMatrix.numPairs() == numPairs + numActive - 2;
 			}
+
+
+		// add the composite node to the active list
+		// no longer needed; automatic
+		// theActiveNodeDistanceMatrix.add(composite);
+		return composite;
+		}
+
+	public void removeJoinedNodes(final HierarchicalCentroidCluster<T> a, final HierarchicalCentroidCluster<T> b,
+	                              final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
+		{
+		int numActive = theActiveNodeDistanceMatrix.numKeys();
+		int numPairs = theActiveNodeDistanceMatrix.numPairs();
+
 		// remove the two merged clusters from consideration
 
 		int removedA = theActiveNodeDistanceMatrix.remove(a);
@@ -91,13 +110,8 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 		if (numActive > 2)
 			{
-			assert theActiveNodeDistanceMatrix.numKeys() == numActive - 1;
-			assert theActiveNodeDistanceMatrix.numPairs() == numPairs - (numActive - 1);
+			assert theActiveNodeDistanceMatrix.numKeys() == numActive - 2;
+			assert theActiveNodeDistanceMatrix.numPairs() == numPairs - (numActive - 1) - (numActive - 2);
 			}
-
-		// add the composite node to the active list
-		// no longer needed; automatic
-		// theActiveNodeDistanceMatrix.add(composite);
-		return composite;
 		}
 	}

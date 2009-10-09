@@ -12,7 +12,9 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clusterable<T>, C extends Cluster<T>>
-		extends AbstractOnlineClusteringMethod<T, C> implements UnsupervisedClusteringMethod<T>
+		extends AbstractClusteringMethod<T, C> implements OnlineClusteringMethod<T>,
+//		extends AbstractOnlineClusteringMethod<T, C> implements
+                                                          UnsupervisedClusteringMethod<T>
 	{
 // ------------------------------ FIELDS ------------------------------
 

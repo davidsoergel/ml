@@ -52,7 +52,7 @@ public interface BatchClusteringMethod<T extends Clusterable<T>> extends Cluster
 	 */
 	void addAll(ClusterableIterator<T> samples);  //? extends Clusterable<T>
 
-	void add(T sample);
+	//void add(T sample);
 
 	/**
 	 * Add the given samples to the set to be clustered, and remember the mapping from sample to cluster

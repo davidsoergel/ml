@@ -36,17 +36,19 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 	private static final Logger logger = Logger.getLogger(AbstractClusteringMethod.class);
 
-
+	//set in the constructor
 	protected final DissimilarityMeasure<T> measure;
-	private final ArrayList<C> theClusters = new ArrayList<C>(); //Collections.synchronizedList(new ArrayList<C>());
-	private final Map<String, C> assignments = new HashMap<String, C>();// see whether anything changed
-	private int n = 0;
-
 	protected final Set<String> potentialTrainingBins;
-	//protected final Set<String> predictLabels;
 	protected final Map<String, Set<String>> predictLabelSets;
-	protected final ProhibitionModel<T> prohibitionModel; //Set<String> leaveOneOutLabels;
+	protected final ProhibitionModel<T> prohibitionModel;
 	protected final Set<String> testLabels;
+
+	//state
+	protected final ArrayList<C> theClusters;
+// = new ArrayList<C>(); //Collections.synchronizedList(new ArrayList<C>());
+	protected final Map<String, C> assignments;// = new HashMap<String, C>();// see whether anything changed
+	protected int n;//= 0;
+
 
 //	protected final int testThreads;
 
@@ -68,6 +70,28 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		this.prohibitionModel = prohibitionModel;
 		this.predictLabelSets = predictLabelSets;
 		this.testLabels = testLabels;
+		this.theClusters = new ArrayList<C>();
+		this.assignments = new HashMap<String, C>();
+		this.n = 0;
+
+		//this.friendlyLabelMap =friendlyLabelMap;
+//		this.testThreads = testThreads;
+		}
+
+	public AbstractClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
+	                                final Map<String, Set<String>> predictLabelSets,
+	                                final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels,
+	                                final ArrayList<C> theClusters, final Map<String, C> assignments, final int n)
+		{
+		measure = dm;
+		this.potentialTrainingBins = potentialTrainingBins;
+		this.prohibitionModel = prohibitionModel;
+		this.predictLabelSets = predictLabelSets;
+		this.testLabels = testLabels;
+		this.theClusters = theClusters;
+		this.assignments = assignments;
+		this.n = n;
+
 		//this.friendlyLabelMap =friendlyLabelMap;
 //		this.testThreads = testThreads;
 		}

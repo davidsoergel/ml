@@ -33,7 +33,8 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
-import edu.berkeley.compbio.ml.cluster.AbstractBatchClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.AbstractClusteringMethod;
+import edu.berkeley.compbio.ml.cluster.BatchClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
@@ -43,6 +44,7 @@ import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,8 +62,11 @@ import java.util.Set;
  * @Version 1.0
  */
 public abstract class BatchHierarchicalClusteringMethod<T extends Clusterable<T>>
-		extends AbstractBatchClusteringMethod<T, HierarchicalCentroidCluster<T>>
-		implements SupervisedClusteringMethod<T>, CentroidClusteringMethod<T>, HierarchicalClusteringMethod<T>
+		extends AbstractClusteringMethod<T, HierarchicalCentroidCluster<T>> implements BatchClusteringMethod<T>,
+		//extends AbstractBatchClusteringMethod<T, HierarchicalCentroidCluster<T>>
+		                                                                               SupervisedClusteringMethod<T>,
+		                                                                               CentroidClusteringMethod<T>,
+		                                                                               HierarchicalClusteringMethod<T>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -74,7 +79,16 @@ public abstract class BatchHierarchicalClusteringMethod<T extends Clusterable<T>
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		}
 
-// ------------------------ INTERFACE METHODS ------------------------
+	public BatchHierarchicalClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
+	                                         final Map<String, Set<String>> predictLabelSets,
+	                                         final ProhibitionModel<T> tProhibitionModel, final Set<String> testLabels,
+	                                         final ArrayList<HierarchicalCentroidCluster<T>> theClusters,
+	                                         final Map<String, HierarchicalCentroidCluster<T>> assignments, final int n)
+		{
+		super(dm, potentialTrainingBins, predictLabelSets, tProhibitionModel, testLabels, theClusters, assignments, n);
+		}
+
+	// ------------------------ INTERFACE METHODS ------------------------
 
 
 // --------------------- Interface CentroidClusteringMethod ---------------------

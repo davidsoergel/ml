@@ -189,6 +189,7 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 					final HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
 					final HierarchicalCentroidCluster<T> composite =
 							agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
+					agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
 					addCluster(composite);
 					theRoot = composite;  // this will actually be true on the last iteration
 					}
@@ -204,11 +205,12 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 
 		BatchAgglomerativeClustering<T> batchClustering =
 				new BatchAgglomerativeClustering<T>(measure, potentialTrainingBins, predictLabelSets, prohibitionModel,
-				                                    testLabels, agglomerator);
+				                                    testLabels, theClusters, assignments, n, agglomerator,
+				                                    theActiveNodeDistanceMatrix);
 
-		batchClustering.
-
-				normalizeClusterLabelProbabilities();
+		batchClustering.train();
+		theRoot = batchClustering.getTree();
+		normalizeClusterLabelProbabilities();
 		}
 
 	/**
