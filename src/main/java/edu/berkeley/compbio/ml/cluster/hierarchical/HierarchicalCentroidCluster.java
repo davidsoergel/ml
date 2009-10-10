@@ -96,6 +96,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		return f.out().toString();
 		}
 
+
 // ------------------------ INTERFACE METHODS ------------------------
 
 
@@ -326,5 +327,29 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		final int oid = o.getId();
 
 		return (id < oid) ? -1 : (id > oid) ? 1 : 0;
+		}
+
+	@Override
+	public boolean equals(final Object o)
+		{
+		if (this == o)
+			{
+			return true;
+			}
+		if (!(o instanceof HierarchicalCentroidCluster))
+			{
+			return false;
+			}
+		if (getId() != ((HierarchicalCentroidCluster) o).getId())
+			{
+			return false;
+			}
+		return true;
+		}
+
+	@Override
+	public int hashCode()
+		{
+		return getId();
 		}
 	}

@@ -2,13 +2,11 @@ package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AbstractSupervisedOnlineClusteringMethod;
-import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
-import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
@@ -24,7 +22,7 @@ import java.util.Set;
  */
 public abstract class OnlineHierarchicalClusteringMethod<T extends Clusterable<T>>
 		extends AbstractSupervisedOnlineClusteringMethod<T, HierarchicalCentroidCluster<T>>
-		implements CentroidClusteringMethod<T>
+		implements CentroidClusteringMethod<T>, HierarchicalClusteringMethod<T>
 	{// --------------------------- CONSTRUCTORS ---------------------------
 
 	protected OnlineHierarchicalClusteringMethod(final DissimilarityMeasure<T> dm,
@@ -75,5 +73,5 @@ public abstract class OnlineHierarchicalClusteringMethod<T extends Clusterable<T
 	 * @return a LengthWeightHierarchyNode representing the root of the computed clustering tree, or null if the clustering
 	 *         procedure has not been performed yet.
 	 */
-	public abstract LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree();
+	//public abstract LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree();
 	}

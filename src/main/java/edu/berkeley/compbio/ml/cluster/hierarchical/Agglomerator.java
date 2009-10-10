@@ -49,7 +49,12 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		{
 		// set the branch lengths
 
-		Double distance = theActiveNodeDistanceMatrix.get(a, b) / 2.;
+		Double debug = theActiveNodeDistanceMatrix.get(a, b);
+		if (debug == null)
+			{
+			debug = theActiveNodeDistanceMatrix.get(a, b);
+			}
+		Double distance = debug / 2.;
 		a.setLength(distance);
 		b.setLength(distance);
 

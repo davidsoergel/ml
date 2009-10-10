@@ -11,7 +11,6 @@ import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
-import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
@@ -98,6 +97,16 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 
 	protected synchronized void trainWithKnownTrainingLabels(final ClusterableIterator<T> samples)
 		{
+		// initialize with two samples
+		T s1 = samples.next();
+		T s2 = samples.next();
+		final HierarchicalCentroidCluster<T> s1c = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), s1);
+		final HierarchicalCentroidCluster<T> s2c = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), s2);
+
+		double d = measure.distanceFromTo(s1c.getPayload().getCentroid(), s2c.getPayload().getCentroid());
+		theActiveNodeDistanceMatrix.put(s1c, s2c, d);
+
+
 		// careful, synchronization is very tricksy here
 
 		Parallel.forEach(samples, new Function<T, Void>()
@@ -222,8 +231,7 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public LengthWeightHierarchyNode<CentroidCluster<T>, ? extends LengthWeightHierarchyNode> getTree()
+	public HierarchicalCentroidCluster<T> getTree()
 		{
 		return theRoot;
 		}
