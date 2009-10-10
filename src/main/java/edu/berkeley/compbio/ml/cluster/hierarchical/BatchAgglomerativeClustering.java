@@ -180,6 +180,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			return null;
 			}
 		});
+		theActiveNodeDistanceMatrix.matrixCompleteSanityCheck();
 		}
 
 	private Set<HierarchicalCentroidCluster<T>> createNewClusters(final ClusterableIterator<T> samples)
@@ -237,6 +238,16 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
 			addCluster(composite);
 			theRoot = composite;  // this will actually be true on the last iteration
+
+			int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
+			if (numKeys % 100 == 0)
+				{
+				//if (numPairs % 10000 == 0)
+				//	{
+				int numPairs = theActiveNodeDistanceMatrix.numPairs();
+				logger.info("Batch agglomerative clustering: " + numKeys + " active nodes, " + numPairs
+				            + " pair distances");
+				}
 			}
 
 		normalizeClusterLabelProbabilities();

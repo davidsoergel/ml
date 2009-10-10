@@ -53,7 +53,7 @@ public class SingleLinkageAgglomerator<T extends Clusterable<T>> extends Agglome
 	                                                  final HierarchicalCentroidCluster<T> otherNode,
 	                                                  final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
 		{
-		if (otherNode == origA || otherNode == origB)
+		if (otherNode == origA || otherNode == origB || otherNode == composite)
 			{
 			// ignore
 			}

@@ -110,7 +110,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		assert removedA == numActive - 1;
 		assert removedB == numActive - 2;
 
-		if (numActive > 2)
+		if (numActive > 3)
 			{
 			assert theActiveNodeDistanceMatrix.numKeys() == numActive - 2;
 			assert theActiveNodeDistanceMatrix.numPairs() == numPairs - (numActive - 1) - (numActive - 2);
