@@ -29,9 +29,9 @@ public class RandomOrderedBatchAgglomerativeClustering<T extends Clusterable<T>>
 	                                                 final Set<String> potentialTrainingBins,
 	                                                 final Map<String, Set<String>> predictLabelSets,
 	                                                 final ProhibitionModel<T> tProhibitionModel,
-	                                                 final Set<String> testLabels, Agglomerator agg)
+	                                                 final Set<String> testLabels, Agglomerator agg, double maxDistance)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, tProhibitionModel, testLabels, agg);
+		super(dm, potentialTrainingBins, predictLabelSets, tProhibitionModel, testLabels, agg, maxDistance);
 		}
 
 	public RandomOrderedBatchAgglomerativeClustering(final DissimilarityMeasure<T> dm,

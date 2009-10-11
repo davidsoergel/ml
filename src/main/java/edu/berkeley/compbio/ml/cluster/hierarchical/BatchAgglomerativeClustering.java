@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
+import com.davidsoergel.dsutils.collections.Symmetric2dBiMapWithDefault;
 import com.davidsoergel.dsutils.collections.UnorderedPair;
 import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
@@ -49,17 +50,21 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 	protected final AtomicInteger idCount = new AtomicInteger(0);
 
 
+	protected final double maxDistance;
+
 //	HierarchicalCentroidCluster<T> saveNode;
 
 
 	public BatchAgglomerativeClustering(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
 	                                    final Map<String, Set<String>> predictLabelSets,
 	                                    final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels,
-	                                    Agglomerator agg)
+	                                    Agglomerator agg, double maxDistance)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		this.agglomerator = agg;
-		theActiveNodeDistanceMatrix = new Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double>();
+		this.maxDistance = maxDistance;
+		theActiveNodeDistanceMatrix =
+				new Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double>(Double.MAX_VALUE);
 		}
 
 	public BatchAgglomerativeClustering(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
@@ -72,6 +77,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels, theClusters, assignments, n);
 		this.agglomerator = agg;
+		this.maxDistance = 0;
 		this.theActiveNodeDistanceMatrix = theActiveNodeDistanceMatrix;
 		}
 
@@ -149,11 +155,15 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 				{
 				if (ahc <= b.hashCode() && !a.equals(b))
 					{
-					final double d = measure.distanceFromTo(a.getPayload().getCentroid(), b.getPayload().getCentroid());
+					double d = measure.distanceFromTo(a.getPayload().getCentroid(), b.getPayload().getCentroid());
 
 					// concurrency bottleneck
 					//theActiveNodeDistanceMatrix.put(a, b, d);
 
+					if (d > maxDistance)
+						{
+						d = Double.MAX_VALUE;
+						}
 					result.put(new UnorderedPair<HierarchicalCentroidCluster<T>>(a, b), d);
 					}
 				}
@@ -180,7 +190,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			return null;
 			}
 		});
-		theActiveNodeDistanceMatrix.matrixCompleteSanityCheck();
+		//theActiveNodeDistanceMatrix.matrixCompleteSanityCheck();
 		}
 
 	private Set<HierarchicalCentroidCluster<T>> createNewClusters(final ClusterableIterator<T> samples)
@@ -225,11 +235,15 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 	public synchronized void train()  // aka performClustering
 		{
 		setN(theActiveNodeDistanceMatrix.numKeys());
-		while (theActiveNodeDistanceMatrix.numKeys() > 1)
+		while (theActiveNodeDistanceMatrix.numPairs() > 0)
 			{
+
+//			OrderedPair<UnorderedPair<HierarchicalCentroidCluster<T>>, Double> keyValuePair =
+//					theActiveNodeDistanceMatrix.getKeyPairAndSmallestValue();
+
 			// find shortest distance
 
-			UnorderedPair<HierarchicalCentroidCluster<T>> pair =
+			UnorderedPair<HierarchicalCentroidCluster<T>> pair = //keyValuePair.getKey1();
 					theActiveNodeDistanceMatrix.getKeyPairWithSmallestValue();
 			final HierarchicalCentroidCluster<T> a = pair.getKey1();
 			final HierarchicalCentroidCluster<T> b = pair.getKey2();
@@ -237,7 +251,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 					agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
 			agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
 			addCluster(composite);
-			theRoot = composite;  // this will actually be true on the last iteration
+			theRoot = composite;  // this may actually be true on the last iteration
 
 			int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
 			if (numKeys % 100 == 0)
@@ -247,6 +261,21 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 				int numPairs = theActiveNodeDistanceMatrix.numPairs();
 				logger.info("Batch agglomerative clustering: " + numKeys + " active nodes, " + numPairs
 				            + " pair distances");
+				}
+			}
+
+
+		// if we had set a distance cutoff and ended up with multuple disconnected clusters,
+		// connect them to a single root via a star phylogeny with long branches
+
+		Set<HierarchicalCentroidCluster<T>> remainingKeys = theActiveNodeDistanceMatrix.getActiveKeys();
+		if (remainingKeys.size() > 1)
+			{
+			theRoot = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), null);
+			for (HierarchicalCentroidCluster<T> remainingKey : remainingKeys)
+				{
+				remainingKey.setParent(theRoot);
+				remainingKey.setLength(Double.MAX_VALUE);
 				}
 			}
 

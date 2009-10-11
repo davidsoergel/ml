@@ -1,6 +1,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
+import com.davidsoergel.dsutils.collections.Symmetric2dBiMapWithDefault;
 import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.google.common.base.Function;
@@ -33,7 +34,7 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 	{
 	private static final Logger logger = Logger.getLogger(OnlineAgglomerativeClustering.class);
 	protected final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix =
-			new Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double>();
+			new Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double>(Double.MAX_VALUE);
 	private HierarchicalCentroidCluster<T> theRoot;
 	private final Map<T, HierarchicalCentroidCluster<T>> sampleToLeafClusterMap =
 			new HashMap<T, HierarchicalCentroidCluster<T>>();

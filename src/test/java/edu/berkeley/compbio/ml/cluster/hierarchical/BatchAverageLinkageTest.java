@@ -89,7 +89,8 @@ public class BatchAverageLinkageTest
 
 		final BatchAgglomerativeClustering<ClusterableDoubleArray> oc =
 				new BatchAgglomerativeClustering<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null, null,
-				                                                         null, null, new AverageLinkageAgglomerator());
+				                                                         null, null, new AverageLinkageAgglomerator(),
+				                                                         1000);
 
 		oc.addAll(new ClusterableIteratorFactory<ClusterableDoubleArray>(points).next());
 

@@ -91,7 +91,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		if (numActive > 2)
 			{
 			assert theActiveNodeDistanceMatrix.numKeys() == numActive + 1;
-			assert theActiveNodeDistanceMatrix.numPairs() == numPairs + numActive;
+//			assert theActiveNodeDistanceMatrix.numPairs() == numPairs + numActive;
 			}
 
 
@@ -104,21 +104,23 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 	public void removeJoinedNodes(final HierarchicalCentroidCluster<T> a, final HierarchicalCentroidCluster<T> b,
 	                              final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
 		{
-		int numActive = theActiveNodeDistanceMatrix.numKeys();
-		int numPairs = theActiveNodeDistanceMatrix.numPairs();
+		//	int numActive = theActiveNodeDistanceMatrix.numKeys();
+		//	int numPairs = theActiveNodeDistanceMatrix.numPairs();
 
 		// remove the two merged clusters from consideration
 
-		int removedA = theActiveNodeDistanceMatrix.remove(a);
-		int removedB = theActiveNodeDistanceMatrix.remove(b);
+		//	int removedA =
+		theActiveNodeDistanceMatrix.remove(a);
+		//	int removedB =
+		theActiveNodeDistanceMatrix.remove(b);
 
-		assert removedA == numActive - 1;
+/*		assert removedA == numActive - 1;
 		assert removedB == numActive - 2;
 
 		if (numActive > 3)
 			{
 			assert theActiveNodeDistanceMatrix.numKeys() == numActive - 2;
 			assert theActiveNodeDistanceMatrix.numPairs() == numPairs - (numActive - 1) - (numActive - 2);
-			}
+			}*/
 		}
 	}
