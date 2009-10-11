@@ -67,7 +67,9 @@ import java.util.WeakHashMap;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class SequenceFragment extends SequenceFragmentMetadata implements AdditiveClusterable<SequenceFragment>
+public class SequenceFragment extends SequenceFragmentMetadata<SequenceFragment>
+		implements AdditiveClusterable<SequenceFragment>
+		//, Comparable<SequenceFragment>
 	{
 // ------------------------------ FIELDS ------------------------------
 

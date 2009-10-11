@@ -92,10 +92,8 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			throw new ClusterRuntimeException("Can't add samples to a batch clustering that has already been trained");
 			}
 
-
 		// first create all the new clusters
 		final Set<HierarchicalCentroidCluster<T>> newClusters = createNewClusters(samples);
-
 
 		// then compute distances between all new clusters and all clusters (including the old and new ones)
 		computeDistances(newClusters);
@@ -265,7 +263,7 @@ public class BatchAgglomerativeClustering<T extends Clusterable<T>> extends Batc
 			}
 
 
-		// if we had set a distance cutoff and ended up with multuple disconnected clusters,
+		// if we had set a distance cutoff and ended up with multiple disconnected clusters,
 		// connect them to a single root via a star phylogeny with long branches
 
 		Set<HierarchicalCentroidCluster<T>> remainingKeys = theActiveNodeDistanceMatrix.getActiveKeys();

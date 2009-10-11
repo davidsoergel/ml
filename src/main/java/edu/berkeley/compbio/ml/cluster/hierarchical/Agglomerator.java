@@ -81,8 +81,8 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 		// PERF unnecessary...
 		// add the branch to the distance table for consistency
-		theActiveNodeDistanceMatrix.put(a, composite, distance);
-		theActiveNodeDistanceMatrix.put(b, composite, distance);
+		//	theActiveNodeDistanceMatrix.put(a, composite, distance);
+		//	theActiveNodeDistanceMatrix.put(b, composite, distance);
 
 		addCompositeToDistanceMatrix(a, b, composite, theActiveNodeDistanceMatrix);
 
