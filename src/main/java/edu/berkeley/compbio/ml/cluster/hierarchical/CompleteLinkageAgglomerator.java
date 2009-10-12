@@ -62,7 +62,9 @@ public class CompleteLinkageAgglomerator<T extends Clusterable<T>> extends Agglo
 			final Double aDist = theActiveNodeDistanceMatrix.get(origA, otherNode);
 			final Double bDist = theActiveNodeDistanceMatrix.get(origB, otherNode);
 			double d = Math.max(aDist, bDist);
+
 			theActiveNodeDistanceMatrix.put(otherNode, composite, d);
+
 
 			/*	int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
 

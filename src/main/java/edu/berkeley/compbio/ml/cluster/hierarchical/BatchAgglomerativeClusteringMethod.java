@@ -48,7 +48,7 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 			final Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
 		{
 		this.theActiveNodeDistanceMatrix = theActiveNodeDistanceMatrix;
-		idCount.set(theActiveNodeDistanceMatrix.numKeys());
+		idCount.set(theActiveNodeDistanceMatrix.getMaxId());
 		}
 
 
@@ -61,7 +61,7 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 		this.agglomerator = agg;
 		theActiveNodeDistanceMatrix =
 				new Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double>(Double.MAX_VALUE);
-		idCount.set(theActiveNodeDistanceMatrix.numKeys());
+		idCount.set(theActiveNodeDistanceMatrix.getMaxId());
 		}
 
 	public BatchAgglomerativeClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
@@ -75,7 +75,7 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels, theClusters, assignments, n);
 		this.agglomerator = agg;
 		this.theActiveNodeDistanceMatrix = theActiveNodeDistanceMatrix;
-		idCount.set(theActiveNodeDistanceMatrix.numKeys());
+		idCount.set(theActiveNodeDistanceMatrix.getMaxId());
 		}
 
 

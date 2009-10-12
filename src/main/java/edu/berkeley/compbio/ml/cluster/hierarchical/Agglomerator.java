@@ -26,12 +26,16 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		final HashSet<HierarchicalCentroidCluster<T>> activeKeys =
 				new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getActiveKeys());
 
+		assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(composite);
 
 		//PERF serial test
 		for (HierarchicalCentroidCluster<T> node : activeKeys)
 			{
 			addCompositeVsNodeToDistanceMatrix(a, b, composite, node, theActiveNodeDistanceMatrix);
 			}
+
+		assert theActiveNodeDistanceMatrix.getActiveKeys().contains(composite);
+
 		/*	Parallel.forEach(activeKeys,
 								 new Function<HierarchicalCentroidCluster<T>, Void>()
 								 {
