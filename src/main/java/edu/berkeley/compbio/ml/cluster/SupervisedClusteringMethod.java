@@ -21,4 +21,8 @@ public interface SupervisedClusteringMethod<T extends Clusterable<T>> extends Cl
 	 */
 //	void train(CollectionIteratorFactory<T> trainingCollectionIteratorFactory, final GenericFactory<T> prototypeFactory,
 //	           int trainingEpochs) throws IOException, ClusterException;
+
+	//public DissimilarityMeasure<T> getDissimilarityMeasure();
+
+	String getDistanceSpec();
 	}

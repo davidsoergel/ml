@@ -45,7 +45,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 	//state
 	protected final ArrayList<C> theClusters;
-// = new ArrayList<C>(); //Collections.synchronizedList(new ArrayList<C>());
+	// = new ArrayList<C>(); //Collections.synchronizedList(new ArrayList<C>());
 	protected final Map<String, C> assignments;// = new HashMap<String, C>();// see whether anything changed
 	protected int n;//= 0;
 
@@ -55,6 +55,15 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 	//private final Map<String, String> friendlyLabelMap;
 // --------------------------- CONSTRUCTORS ---------------------------
 
+/*	public DissimilarityMeasure<T> getDissimilarityMeasure()
+		{
+		return measure;
+		}*/
+
+	public String getDistanceSpec()
+		{
+		return measure.toString();
+		}
 
 	public void setN(final int n)
 		{
@@ -78,6 +87,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 //		this.testThreads = testThreads;
 		}
 
+	//
 	public AbstractClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
 	                                final Map<String, Set<String>> predictLabelSets,
 	                                final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels,

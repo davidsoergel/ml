@@ -20,6 +20,9 @@ public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Cluster
 	{
 	private static final Logger logger = Logger.getLogger(AbstractSupervisedOnlineClusteringMethod.class);
 
+
+	//protected final DissimilarityMeasure<T> measure;
+
 // --------------------------- CONSTRUCTORS ---------------------------
 
 	protected AbstractSupervisedOnlineClusteringMethod(final DissimilarityMeasure<T> dm,
@@ -29,6 +32,7 @@ public abstract class AbstractSupervisedOnlineClusteringMethod<T extends Cluster
 	                                                   final Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
+		//measure=dm;
 		}
 
 

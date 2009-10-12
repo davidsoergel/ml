@@ -16,6 +16,10 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 //		extends AbstractOnlineClusteringMethod<T, C> implements
                                                           UnsupervisedClusteringMethod<T>
 	{
+
+
+//	protected final DissimilarityMeasure<T> measure;
+
 // ------------------------------ FIELDS ------------------------------
 
 	private static final Logger logger = Logger.getLogger(AbstractUnsupervisedOnlineClusteringMethod.class);
@@ -30,6 +34,7 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 	                                                     final Set<String> testLabels)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
+		//	measure = dm;
 		}
 
 // ------------------------ INTERFACE METHODS ------------------------

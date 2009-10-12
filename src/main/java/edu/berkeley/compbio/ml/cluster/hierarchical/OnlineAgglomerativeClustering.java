@@ -1,6 +1,5 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
-import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMapWithDefault;
 import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
@@ -33,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends OnlineHierarchicalClusteringMethod<T>
 	{
 	private static final Logger logger = Logger.getLogger(OnlineAgglomerativeClustering.class);
-	protected final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix =
+	protected final Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix =
 			new Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double>(Double.MAX_VALUE);
 	private HierarchicalCentroidCluster<T> theRoot;
 	private final Map<T, HierarchicalCentroidCluster<T>> sampleToLeafClusterMap =
@@ -219,10 +218,10 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 
 		// note the batch clustering phase it not necessary if we just want to count OTUs, but it allows us to use a consistent DepthFirstIterator to find the OTUs later
 
-		BatchAgglomerativeClustering<T> batchClustering =
-				new BatchAgglomerativeClustering<T>(measure, potentialTrainingBins, predictLabelSets, prohibitionModel,
-				                                    testLabels, theClusters, assignments, n, agglomerator,
-				                                    theActiveNodeDistanceMatrix);
+		BatchAgglomerativeClusteringMethod<T> batchClustering =
+				new BatchAgglomerativeClusteringMethod<T>(potentialTrainingBins, predictLabelSets, prohibitionModel,
+				                                          testLabels, theClusters, assignments, n, agglomerator,
+				                                          theActiveNodeDistanceMatrix);
 
 		batchClustering.train();
 		theRoot = batchClustering.getTree();

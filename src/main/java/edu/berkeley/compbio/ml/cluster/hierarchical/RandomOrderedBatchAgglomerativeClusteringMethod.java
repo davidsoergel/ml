@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
-import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
+import com.davidsoergel.dsutils.collections.Symmetric2dBiMapWithDefault;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
@@ -21,28 +21,29 @@ import java.util.Set;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class RandomOrderedBatchAgglomerativeClustering<T extends Clusterable<T>> extends BatchAgglomerativeClustering<T>
+public class RandomOrderedBatchAgglomerativeClusteringMethod<T extends Clusterable<T>>
+		extends BatchAgglomerativeClusteringMethod<T>
 	{
-	private static final Logger logger = Logger.getLogger(RandomOrderedBatchAgglomerativeClustering.class);
+	private static final Logger logger = Logger.getLogger(RandomOrderedBatchAgglomerativeClusteringMethod.class);
 
-	public RandomOrderedBatchAgglomerativeClustering(final DissimilarityMeasure<T> dm,
-	                                                 final Set<String> potentialTrainingBins,
-	                                                 final Map<String, Set<String>> predictLabelSets,
-	                                                 final ProhibitionModel<T> tProhibitionModel,
-	                                                 final Set<String> testLabels, Agglomerator agg, double maxDistance)
+	public RandomOrderedBatchAgglomerativeClusteringMethod(final DissimilarityMeasure<T> dm,
+	                                                       final Set<String> potentialTrainingBins,
+	                                                       final Map<String, Set<String>> predictLabelSets,
+	                                                       final ProhibitionModel<T> tProhibitionModel,
+	                                                       final Set<String> testLabels, Agglomerator agg)
 		{
-		super(dm, potentialTrainingBins, predictLabelSets, tProhibitionModel, testLabels, agg, maxDistance);
+		super(dm, potentialTrainingBins, predictLabelSets, tProhibitionModel, testLabels, agg);
 		}
 
-	public RandomOrderedBatchAgglomerativeClustering(final DissimilarityMeasure<T> dm,
-	                                                 final Set<String> potentialTrainingBins,
-	                                                 final Map<String, Set<String>> predictLabelSets,
-	                                                 final ProhibitionModel<T> tProhibitionModel,
-	                                                 final Set<String> testLabels,
-	                                                 final ArrayList<HierarchicalCentroidCluster<T>> theClusters,
-	                                                 final Map<String, HierarchicalCentroidCluster<T>> assignments,
-	                                                 final int n, Agglomerator agg,
-	                                                 Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
+	public RandomOrderedBatchAgglomerativeClusteringMethod(final DissimilarityMeasure<T> dm,
+	                                                       final Set<String> potentialTrainingBins,
+	                                                       final Map<String, Set<String>> predictLabelSets,
+	                                                       final ProhibitionModel<T> tProhibitionModel,
+	                                                       final Set<String> testLabels,
+	                                                       final ArrayList<HierarchicalCentroidCluster<T>> theClusters,
+	                                                       final Map<String, HierarchicalCentroidCluster<T>> assignments,
+	                                                       final int n, Agglomerator agg,
+	                                                       Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, tProhibitionModel, testLabels, theClusters, assignments, n,
 		      agg, theActiveNodeDistanceMatrix);

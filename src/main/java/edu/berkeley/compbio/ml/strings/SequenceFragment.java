@@ -75,7 +75,8 @@ public class SequenceFragment extends SequenceFragmentMetadata<SequenceFragment>
 
 	private static final Logger logger = Logger.getLogger(SequenceFragment.class);
 
-	protected final Map<Class, SequenceSpectrum> theDerivedSpectra = new WeakHashMap<Class, SequenceSpectrum>();
+	protected transient final Map<Class, SequenceSpectrum> theDerivedSpectra =
+			new WeakHashMap<Class, SequenceSpectrum>();
 
 	// ** weak references cause problems for additive clusters that can't be rescanned
 	//protected WeakReference<SequenceSpectrum> _baseSpectrum;

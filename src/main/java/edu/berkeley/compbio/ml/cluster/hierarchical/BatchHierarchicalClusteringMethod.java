@@ -34,11 +34,11 @@ package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.AbstractClusteringMethod;
-import edu.berkeley.compbio.ml.cluster.BatchClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
+import edu.berkeley.compbio.ml.cluster.DistanceMatrixBatchClusteringMethod;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.ml.cluster.SupervisedClusteringMethod;
 
@@ -62,11 +62,10 @@ import java.util.Set;
  * @Version 1.0
  */
 public abstract class BatchHierarchicalClusteringMethod<T extends Clusterable<T>>
-		extends AbstractClusteringMethod<T, HierarchicalCentroidCluster<T>> implements BatchClusteringMethod<T>,
+		extends AbstractClusteringMethod<T, HierarchicalCentroidCluster<T>>
+		implements DistanceMatrixBatchClusteringMethod<T>,
 		//extends AbstractBatchClusteringMethod<T, HierarchicalCentroidCluster<T>>
-		                                                                               SupervisedClusteringMethod<T>,
-		                                                                               CentroidClusteringMethod<T>,
-		                                                                               HierarchicalClusteringMethod<T>
+		           SupervisedClusteringMethod<T>, CentroidClusteringMethod<T>, HierarchicalClusteringMethod<T>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
