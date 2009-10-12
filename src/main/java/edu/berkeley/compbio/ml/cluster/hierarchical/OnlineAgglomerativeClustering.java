@@ -151,14 +151,14 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 					//theActiveNodeDistanceMatrix.put(a, b, d);
 
 					distancesToC.put(b, d);
-					int numPairs = theActiveNodeDistanceMatrix.numPairs();
+					/*		int numPairs = theActiveNodeDistanceMatrix.numPairs();
 
-					if (numPairs % 10000 == 0)
-						{
-						int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
-						logger.info("Online agglomerative clustering: " + numKeys + " active nodes, " + numPairs
-						            + " pair distances");
-						}
+				   if (numPairs % 10000 == 0)
+					   {
+					   int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
+					   logger.info("Online agglomerative clustering: " + numKeys + " active nodes, " + numPairs
+								   + " pair distances");
+					   }*/
 					}
 				}
 

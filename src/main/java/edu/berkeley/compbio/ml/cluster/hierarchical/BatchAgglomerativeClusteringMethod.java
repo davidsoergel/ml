@@ -124,15 +124,15 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 			addCluster(composite);
 			theRoot = composite;  // this may actually be true on the last iteration
 
-			int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
-			if (numKeys % 100 == 0)
-				{
-				//if (numPairs % 10000 == 0)
-				//	{
-				int numPairs = theActiveNodeDistanceMatrix.numPairs();
-				logger.info("Batch agglomerative clustering: " + numKeys + " active nodes, " + numPairs
-				            + " pair distances");
-				}
+			/*		int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
+		   if (numKeys % 100 == 0)
+			   {
+			   //if (numPairs % 10000 == 0)
+			   //	{
+			   int numPairs = theActiveNodeDistanceMatrix.numPairs();
+			   logger.info("Batch agglomerative clustering: " + numKeys + " active nodes, " + numPairs
+						   + " pair distances");
+			   }*/
 			}
 
 

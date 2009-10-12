@@ -137,7 +137,7 @@ public class RandomOrderedBatchAgglomerativeClusteringMethod<T extends Clusterab
 			theRoot = composite;  // this will actually be true on the last iteration
 
 
-			int numKeys = parentlessNodes.size();
+			/*int numKeys = parentlessNodes.size();
 			if (numKeys % 100 == 0)
 				{
 				//if (numPairs % 10000 == 0)
@@ -145,7 +145,7 @@ public class RandomOrderedBatchAgglomerativeClusteringMethod<T extends Clusterab
 				int numPairs = theActiveNodeDistanceMatrix.numPairs();
 				logger.info("Batch agglomerative clustering: " + numKeys + " active nodes, " + numPairs
 				            + " pair distances");
-				}
+				}*/
 			}
 
 		normalizeClusterLabelProbabilities();
