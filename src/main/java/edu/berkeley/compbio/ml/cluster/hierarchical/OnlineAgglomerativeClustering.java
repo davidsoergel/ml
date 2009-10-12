@@ -219,9 +219,9 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 		// note the batch clustering phase it not necessary if we just want to count OTUs, but it allows us to use a consistent DepthFirstIterator to find the OTUs later
 
 		BatchAgglomerativeClusteringMethod<T> batchClustering =
-				new BatchAgglomerativeClusteringMethod<T>(potentialTrainingBins, predictLabelSets, prohibitionModel,
-				                                          testLabels, theClusters, assignments, n, agglomerator,
-				                                          theActiveNodeDistanceMatrix);
+				new BatchAgglomerativeClusteringMethod<T>(measure, potentialTrainingBins, predictLabelSets,
+				                                          prohibitionModel, testLabels, theClusters, assignments, n,
+				                                          agglomerator, theActiveNodeDistanceMatrix);
 
 		batchClustering.train();
 		theRoot = batchClustering.getTree();
