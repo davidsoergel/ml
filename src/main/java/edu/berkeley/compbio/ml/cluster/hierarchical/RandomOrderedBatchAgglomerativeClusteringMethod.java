@@ -43,7 +43,7 @@ public class RandomOrderedBatchAgglomerativeClusteringMethod<T extends Clusterab
 	                                                       final ArrayList<HierarchicalCentroidCluster<T>> theClusters,
 	                                                       final Map<String, HierarchicalCentroidCluster<T>> assignments,
 	                                                       final int n, Agglomerator agg,
-	                                                       Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
+	                                                       Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, tProhibitionModel, testLabels, theClusters, assignments, n,
 		      agg, theActiveNodeDistanceMatrix);

@@ -24,12 +24,14 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 	{
 	private static final Logger logger = Logger.getLogger(BatchAgglomerativeClusteringMethod.class);
 
+	public static final Float LONG_DISTANCE = Float.MAX_VALUE;
+
 	// set in the constructor
 	protected final Agglomerator<T> agglomerator;
 
 	//state
 
-	protected Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix;
+	protected Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix;
 	//=	new Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double>();
 
 
@@ -45,7 +47,7 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 //	HierarchicalCentroidCluster<T> saveNode;
 
 	public void setDistanceMatrix(
-			final Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
+			final Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
 		{
 		this.theActiveNodeDistanceMatrix = theActiveNodeDistanceMatrix;
 		idCount.set(theActiveNodeDistanceMatrix.getMaxId());
@@ -60,7 +62,7 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 		this.agglomerator = agg;
 		theActiveNodeDistanceMatrix =
-				new Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double>(Double.MAX_VALUE);
+				new Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float>(LONG_DISTANCE);
 		idCount.set(theActiveNodeDistanceMatrix.getMaxId());
 		}
 
@@ -70,7 +72,7 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 	                                          final ArrayList<HierarchicalCentroidCluster<T>> theClusters,
 	                                          final Map<String, HierarchicalCentroidCluster<T>> assignments,
 	                                          final int n, Agglomerator agg,
-	                                          Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
+	                                          Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels, theClusters, assignments, n);
 		this.agglomerator = agg;
@@ -79,7 +81,7 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 		}
 
 
-	public Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> getDistanceMatrix()
+	public Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> getDistanceMatrix()
 		{
 		return theActiveNodeDistanceMatrix;
 		}

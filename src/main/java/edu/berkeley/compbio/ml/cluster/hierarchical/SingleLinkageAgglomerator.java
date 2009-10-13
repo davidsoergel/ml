@@ -51,7 +51,7 @@ public class SingleLinkageAgglomerator<T extends Clusterable<T>> extends Agglome
 	                                                  final HierarchicalCentroidCluster<T> origB,
 	                                                  final HierarchicalCentroidCluster<T> composite,
 	                                                  final HierarchicalCentroidCluster<T> otherNode,
-	                                                  final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
+	                                                  final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
 		{
 		if (otherNode == origA || otherNode == origB || otherNode == composite)
 			{
@@ -59,10 +59,10 @@ public class SingleLinkageAgglomerator<T extends Clusterable<T>> extends Agglome
 			}
 		else
 			{
-			final Double aDist = theActiveNodeDistanceMatrix.get(origA, otherNode);
-			final Double bDist = theActiveNodeDistanceMatrix.get(origB, otherNode);
+			final Float aDist = theActiveNodeDistanceMatrix.get(origA, otherNode);
+			final Float bDist = theActiveNodeDistanceMatrix.get(origB, otherNode);
 
-			double d = Math.min(aDist, bDist);
+			float d = Math.min(aDist, bDist);
 			theActiveNodeDistanceMatrix.put(otherNode, composite, d);
 
 

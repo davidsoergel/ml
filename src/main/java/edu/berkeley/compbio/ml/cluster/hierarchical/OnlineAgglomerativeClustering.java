@@ -32,8 +32,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends OnlineHierarchicalClusteringMethod<T>
 	{
 	private static final Logger logger = Logger.getLogger(OnlineAgglomerativeClustering.class);
-	protected final Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix =
-			new Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double>(Double.MAX_VALUE);
+	public static final Float LONG_DISTANCE = Float.MAX_VALUE;
+
+	protected final Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix =
+			new Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float>(LONG_DISTANCE);
 	private HierarchicalCentroidCluster<T> theRoot;
 	private final Map<T, HierarchicalCentroidCluster<T>> sampleToLeafClusterMap =
 			new HashMap<T, HierarchicalCentroidCluster<T>>();
@@ -103,7 +105,7 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 		final HierarchicalCentroidCluster<T> s1c = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), s1);
 		final HierarchicalCentroidCluster<T> s2c = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), s2);
 
-		double d = measure.distanceFromTo(s1c.getPayload().getCentroid(), s2c.getPayload().getCentroid());
+		float d = (float) measure.distanceFromTo(s1c.getPayload().getCentroid(), s2c.getPayload().getCentroid());
 		theActiveNodeDistanceMatrix.put(s1c, s2c, d);
 
 
@@ -132,8 +134,8 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 			// then things are purely local for a while
 			final int ahc = c.hashCode();
 			// store up the results in this thread before copying them to the synchronized store at the end
-			final Map<HierarchicalCentroidCluster<T>, Double> distancesToC =
-					new HashMap<HierarchicalCentroidCluster<T>, Double>(getClusters().size());
+			final Map<HierarchicalCentroidCluster<T>, Float> distancesToC =
+					new HashMap<HierarchicalCentroidCluster<T>, Float>(getClusters().size());
 
 
 			for (HierarchicalCentroidCluster<T> b : activeClusters)
@@ -145,7 +147,8 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 				else */
 				if (ahc <= b.hashCode() && !c.equals(b))
 					{
-					final Double d = measure.distanceFromTo(c.getPayload().getCentroid(), b.getPayload().getCentroid());
+					final float d =
+							(float) measure.distanceFromTo(c.getPayload().getCentroid(), b.getPayload().getCentroid());
 
 					// concurrency bottleneck
 					//theActiveNodeDistanceMatrix.put(a, b, d);
@@ -176,10 +179,10 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 					final Set<HierarchicalCentroidCluster<T>> remainingActiveKeys =
 							new HashSet<HierarchicalCentroidCluster<T>>(activeKeys);
 					distancesToC.keySet().retainAll(remainingActiveKeys);
-					for (Map.Entry<HierarchicalCentroidCluster<T>, Double> entry : distancesToC.entrySet())
+					for (Map.Entry<HierarchicalCentroidCluster<T>, Float> entry : distancesToC.entrySet())
 						{
 						final HierarchicalCentroidCluster<T> b = entry.getKey();
-						final Double d = entry.getValue();
+						final float d = entry.getValue();
 						theActiveNodeDistanceMatrix.put(c, b, d);
 
 						remainingActiveKeys.remove(b);
@@ -189,8 +192,8 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 					// catch up and do them now; too bad about the synchronization
 					for (HierarchicalCentroidCluster<T> b : remainingActiveKeys)
 						{
-						final Double d =
-								measure.distanceFromTo(c.getPayload().getCentroid(), b.getPayload().getCentroid());
+						final float d = (float) measure
+								.distanceFromTo(c.getPayload().getCentroid(), b.getPayload().getCentroid());
 						theActiveNodeDistanceMatrix.put(c, b, d);
 						}
 

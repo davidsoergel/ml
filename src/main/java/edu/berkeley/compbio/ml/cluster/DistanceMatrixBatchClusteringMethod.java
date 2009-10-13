@@ -9,7 +9,7 @@ import edu.berkeley.compbio.ml.cluster.hierarchical.HierarchicalCentroidCluster;
  */
 public interface DistanceMatrixBatchClusteringMethod<T extends Clusterable<T>> extends BatchClusteringMethod<T>
 	{
-	Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> getDistanceMatrix();
+	Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> getDistanceMatrix();
 
-	void setDistanceMatrix(Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Double> distanceMatrix);
+	void setDistanceMatrix(Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> distanceMatrix);
 	}

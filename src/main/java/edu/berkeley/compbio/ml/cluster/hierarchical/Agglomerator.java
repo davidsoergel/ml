@@ -15,12 +15,12 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 	                                                           final HierarchicalCentroidCluster<T> origB,
 	                                                           final HierarchicalCentroidCluster<T> composite,
 	                                                           final HierarchicalCentroidCluster<T> otherNode,
-	                                                           final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix);
+	                                                           final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix);
 
 	private void addCompositeToDistanceMatrix(final HierarchicalCentroidCluster<T> a,
 	                                          final HierarchicalCentroidCluster<T> b,
 	                                          final HierarchicalCentroidCluster<T> composite,
-	                                          final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
+	                                          final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
 		{
 		// there was a mysterious concurrent-modification sort of problem; does this fix it?
 		final HashSet<HierarchicalCentroidCluster<T>> activeKeys =
@@ -50,18 +50,18 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 	public HierarchicalCentroidCluster<T> joinNodes(final int id, final HierarchicalCentroidCluster<T> a,
 	                                                final HierarchicalCentroidCluster<T> b,
-	                                                final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
+	                                                final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
 		{
 		// set the branch lengths
 
-		Double dist = theActiveNodeDistanceMatrix.get(a, b);
+		Float dist = theActiveNodeDistanceMatrix.get(a, b);
 		/*	if (dist == null)
 		   {
 		   dist = theActiveNodeDistanceMatrix.get(a, b);
 		   }*/
-		Double distance = dist / 2.;
-		a.setLength(distance);
-		b.setLength(distance);
+		Float distance = dist / 2f;
+		a.setLength(distance.doubleValue());
+		b.setLength(distance.doubleValue());
 
 		// create a composite node
 
@@ -82,7 +82,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 
 		int numActive = theActiveNodeDistanceMatrix.numKeys();
-		int numPairs = theActiveNodeDistanceMatrix.numPairs();
+//		int numPairs = theActiveNodeDistanceMatrix.numPairs();
 
 		// PERF unnecessary...
 		// add the branch to the distance table for consistency
@@ -107,7 +107,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		}
 
 	public void removeJoinedNodes(final HierarchicalCentroidCluster<T> a, final HierarchicalCentroidCluster<T> b,
-	                              final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Double> theActiveNodeDistanceMatrix)
+	                              final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
 		{
 		//	int numActive = theActiveNodeDistanceMatrix.numKeys();
 		//	int numPairs = theActiveNodeDistanceMatrix.numPairs();
