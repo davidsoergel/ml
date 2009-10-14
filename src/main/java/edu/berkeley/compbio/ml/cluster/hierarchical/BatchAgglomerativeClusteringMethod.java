@@ -135,15 +135,11 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 			assert a.getParent() == null;
 			assert b.getParent() == null;
 
-			assert theActiveNodeDistanceMatrix.getActiveKeys().contains(a);
-			assert theActiveNodeDistanceMatrix.getActiveKeys().contains(b);
+			//assert theActiveNodeDistanceMatrix.getActiveKeys().contains(a);
+			//assert theActiveNodeDistanceMatrix.getActiveKeys().contains(b);
 
 			assert a.getWeight() != null;
 			assert b.getWeight() != null;
-
-
-			assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(a);
-			assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(b);
 
 			final HierarchicalCentroidCluster<T> composite =
 					agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
@@ -152,6 +148,9 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 
 			theActiveNodeDistanceMatrix.remove(a);
 			theActiveNodeDistanceMatrix.remove(b);
+
+			//assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(a);
+			//assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(b);
 
 			addCluster(composite);
 			theRoot = composite;  // this may actually be true on the last iteration
