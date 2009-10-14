@@ -81,6 +81,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 		composite.doneLabelling();
 
+		assert composite.getWeight() != null;
 
 		int numActive = theActiveNodeDistanceMatrix.numKeys();
 //		int numPairs = theActiveNodeDistanceMatrix.numPairs();
@@ -89,8 +90,10 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		// add the branch to the distance table for consistency
 		//	theActiveNodeDistanceMatrix.put(a, composite, distance);
 		//	theActiveNodeDistanceMatrix.put(b, composite, distance);
+		assert composite.getWeight() != null;
 
 		addCompositeToDistanceMatrix(a, b, composite, theActiveNodeDistanceMatrix);
+		assert composite.getWeight() != null;
 
 		//** these assertions are likely true only for single-threaded clusterers,
 		// and we don't want to synchronize a whole block on theActiveNodeDistancesMatrix here just for the sake of the assertions
@@ -109,7 +112,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		return composite;
 		}
 
-	public void removeJoinedNodes(final HierarchicalCentroidCluster<T> a, final HierarchicalCentroidCluster<T> b,
+/*	public void removeJoinedNodes(final HierarchicalCentroidCluster<T> a, final HierarchicalCentroidCluster<T> b,
 	                              final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
 		{
 		//	int numActive = theActiveNodeDistanceMatrix.numKeys();
@@ -121,7 +124,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		theActiveNodeDistanceMatrix.remove(a);
 		//	int removedB =
 		theActiveNodeDistanceMatrix.remove(b);
-
+*/
 /*		assert removedA == numActive - 1;
 		assert removedB == numActive - 2;
 
@@ -130,5 +133,5 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 			assert theActiveNodeDistanceMatrix.numKeys() == numActive - 2;
 			assert theActiveNodeDistanceMatrix.numPairs() == numPairs - (numActive - 1) - (numActive - 2);
 			}*/
-		}
+//		}
 	}

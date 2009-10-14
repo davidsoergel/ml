@@ -108,6 +108,17 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 	public synchronized void train()  // aka performClustering
 		{
 		setN(theActiveNodeDistanceMatrix.numKeys());
+
+		// ** sanity checks
+		for (Map.Entry<UnorderedPair<HierarchicalCentroidCluster<T>>, Float> entry : theActiveNodeDistanceMatrix
+				.entrySet())
+			{
+			UnorderedPair<HierarchicalCentroidCluster<T>> pair = entry.getKey();
+			assert pair.getKey1().getParent() == null;
+			assert pair.getKey2().getParent() == null;
+			}
+
+
 		while (theActiveNodeDistanceMatrix.numPairs() > 0)
 			{
 
@@ -121,15 +132,29 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 			final HierarchicalCentroidCluster<T> a = pair.getKey1();
 			final HierarchicalCentroidCluster<T> b = pair.getKey2();
 
+			assert a.getParent() == null;
+			assert b.getParent() == null;
+
+			assert theActiveNodeDistanceMatrix.getActiveKeys().contains(a);
+			assert theActiveNodeDistanceMatrix.getActiveKeys().contains(b);
+
 			assert a.getWeight() != null;
 			assert b.getWeight() != null;
 
+//			agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
+
+			theActiveNodeDistanceMatrix.remove(a);
+			theActiveNodeDistanceMatrix.remove(b);
+
+			assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(a);
+			assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(b);
+
 			final HierarchicalCentroidCluster<T> composite =
 					agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
-			agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
 			addCluster(composite);
 			theRoot = composite;  // this may actually be true on the last iteration
 
+			assert composite.getParent() == null;
 			assert !composite.getChildren().isEmpty();
 			assert composite.getWeight() != null;
 
