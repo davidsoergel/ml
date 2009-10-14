@@ -120,11 +120,19 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 					theActiveNodeDistanceMatrix.getKeyPairWithSmallestValue();
 			final HierarchicalCentroidCluster<T> a = pair.getKey1();
 			final HierarchicalCentroidCluster<T> b = pair.getKey2();
+
+			assert a.getWeight() != null;
+			assert b.getWeight() != null;
+
 			final HierarchicalCentroidCluster<T> composite =
 					agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
 			agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
 			addCluster(composite);
 			theRoot = composite;  // this may actually be true on the last iteration
+
+			assert !composite.getChildren().isEmpty();
+			assert composite.getWeight() != null;
+
 
 			/*		int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
 		   if (numKeys % 100 == 0)

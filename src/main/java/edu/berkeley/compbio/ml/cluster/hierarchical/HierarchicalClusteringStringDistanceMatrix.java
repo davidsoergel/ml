@@ -127,9 +127,9 @@ public class HierarchicalClusteringStringDistanceMatrix
 //		public Void apply(final String sample)
 //			{
 
-			final HierarchicalCentroidCluster<SimpleClusterable<String>> c =
-					new HierarchicalCentroidCluster<SimpleClusterable<String>>(idCount.getAndIncrement(),
-					                                                           new SimpleClusterable<String>(sample));
+			final HierarchicalCentroidCluster<SimpleClusterable<String>> c = newClusters.get(sample);
+			//	new HierarchicalCentroidCluster<SimpleClusterable<String>>(idCount.getAndIncrement(),
+			//	                                                           new SimpleClusterable<String>(sample));
 			c.doneLabelling();
 			assert newClusters.get(sample) == null;
 			newClusters.put(sample, c);
@@ -173,4 +173,13 @@ public class HierarchicalClusteringStringDistanceMatrix
 			stream.writeFloat(value);
 			}
 		}
+
+	/*public boolean allClustersHaveWeight()
+		{
+		for (HierarchicalCentroidCluster<SimpleClusterable<String>> o : keyToKeyPairs.keySet())
+			{
+			if(o.getWeight() == null) { return false;}
+			}
+		return true;
+		}*/
 	}
