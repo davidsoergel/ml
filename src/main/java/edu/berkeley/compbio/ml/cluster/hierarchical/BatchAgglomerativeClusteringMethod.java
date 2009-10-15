@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
+import com.davidsoergel.dsutils.collections.OrderedPair;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMapWithDefault;
 import com.davidsoergel.dsutils.collections.UnorderedPair;
 import com.davidsoergel.stats.DissimilarityMeasure;
@@ -42,7 +43,12 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 //			new HashMap<T, HierarchicalCentroidCluster<T>>();
 
 	protected final AtomicInteger idCount = new AtomicInteger(0);
+	private Float threshold;
 
+	public void setThreshold(final float threshold)
+		{
+		this.threshold = threshold;
+		}
 
 //	HierarchicalCentroidCluster<T> saveNode;
 
@@ -118,7 +124,6 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 			assert pair.getKey2().getParent() == null;
 			}
 
-
 		while (theActiveNodeDistanceMatrix.numPairs() > 0)
 			{
 
@@ -127,8 +132,15 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 
 			// find shortest distance
 
-			UnorderedPair<HierarchicalCentroidCluster<T>> pair = //keyValuePair.getKey1();
-					theActiveNodeDistanceMatrix.getKeyPairWithSmallestValue();
+			//	UnorderedPair<HierarchicalCentroidCluster<T>> pair = //keyValuePair.getKey1();
+			//			theActiveNodeDistanceMatrix.getKeyPairWithSmallestValue();
+			OrderedPair<UnorderedPair<HierarchicalCentroidCluster<T>>, Float> smallest =
+					theActiveNodeDistanceMatrix.getKeyPairAndSmallestValue();
+			UnorderedPair<HierarchicalCentroidCluster<T>> pair = smallest.getKey1();
+			if (smallest.getKey2() > threshold)
+				{
+				break;
+				}
 			final HierarchicalCentroidCluster<T> a = pair.getKey1();
 			final HierarchicalCentroidCluster<T> b = pair.getKey2();
 

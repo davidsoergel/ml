@@ -12,4 +12,6 @@ public interface DistanceMatrixBatchClusteringMethod<T extends Clusterable<T>> e
 	Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> getDistanceMatrix();
 
 	void setDistanceMatrix(Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> distanceMatrix);
+
+	void setThreshold(float threshold);
 	}
