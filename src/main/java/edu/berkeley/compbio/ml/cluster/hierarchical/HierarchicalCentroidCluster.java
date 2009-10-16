@@ -36,11 +36,14 @@ import com.davidsoergel.dsutils.Labellable;
 import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
+import com.davidsoergel.dsutils.tree.DepthFirstTreeIterator;
+import com.davidsoergel.dsutils.tree.DepthFirstTreeIteratorImpl;
 import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
+import edu.berkeley.compbio.phyloutils.PhylogenyNode;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Formatter;
@@ -74,6 +77,14 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	public HierarchicalCentroidCluster<T> clone()
 		{
 		return (HierarchicalCentroidCluster<T>) super.clone();
+		}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public DepthFirstTreeIterator<CentroidCluster<T>, PhylogenyNode<CentroidCluster<T>>> depthFirstIterator()
+		{
+		return new DepthFirstTreeIteratorImpl<CentroidCluster<T>, PhylogenyNode<CentroidCluster<T>>>(this);
 		}
 
 	/**

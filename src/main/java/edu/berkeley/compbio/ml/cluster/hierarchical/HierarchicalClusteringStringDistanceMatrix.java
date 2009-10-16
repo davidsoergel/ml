@@ -1,8 +1,10 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
+import com.davidsoergel.dsutils.collections.DSCollectionUtils;
 import com.davidsoergel.dsutils.collections.OrderedPair;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMapWithDefault;
 import com.davidsoergel.dsutils.collections.UnorderedPair;
+import com.davidsoergel.dsutils.collections.UnorderedPairIterator;
 import edu.berkeley.compbio.ml.cluster.SimpleClusterable;
 
 import java.io.EOFException;
@@ -15,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -241,4 +244,24 @@ public class HierarchicalClusteringStringDistanceMatrix
 			}
 		return true;
 		}*/
+
+	public HierarchicalClusteringStringDistanceMatrix sample(final int sampleSize)
+		{
+		if (sampleSize == 0)
+			{
+			return this;
+			}
+		final Set<HierarchicalCentroidCluster<SimpleClusterable<String>>> clusters = getActiveKeys();
+		DSCollectionUtils.retainRandom(clusters, sampleSize);
+
+		HierarchicalClusteringStringDistanceMatrix result = new HierarchicalClusteringStringDistanceMatrix();
+		UnorderedPairIterator<HierarchicalCentroidCluster<SimpleClusterable<String>>> pi =
+				new UnorderedPairIterator<HierarchicalCentroidCluster<SimpleClusterable<String>>>(clusters, clusters);
+		while (pi.hasNext())
+			{
+			UnorderedPair<HierarchicalCentroidCluster<SimpleClusterable<String>>> p = pi.next();
+			result.put(p, get(p));
+			}
+		return result;
+		}
 	}
