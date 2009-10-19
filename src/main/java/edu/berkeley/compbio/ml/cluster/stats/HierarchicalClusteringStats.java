@@ -69,7 +69,9 @@ public class HierarchicalClusteringStats
 				if (children.isEmpty() || children.iterator().next().getLength() < halfThreshold)
 					{
 					//otuCount++;
-					result.add(node.getPayload().getCentroid());
+					final CentroidCluster payload = node.getPayload();
+					final Clusterable cluster = payload.getCentroid();
+					result.add(cluster);
 					it.skipAllDescendants(node);
 					}
 				}

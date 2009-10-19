@@ -36,14 +36,11 @@ import com.davidsoergel.dsutils.Labellable;
 import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
-import com.davidsoergel.dsutils.tree.DepthFirstTreeIterator;
-import com.davidsoergel.dsutils.tree.DepthFirstTreeIteratorImpl;
 import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
-import edu.berkeley.compbio.phyloutils.PhylogenyNode;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Formatter;
@@ -52,13 +49,15 @@ import java.util.Iterator;
 
 /**
  * A tree node representing a hierarchical cluster.  Fakes multiple inheritance by providing a facade to the contained
- * Cluster.
+ * Cluster.  I.e., this is mostly a PhylogenyNode containing a CentroidCluster value, but it can also act like a
+ * CentroidCluster directly.
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends BasicPhylogenyNode<CentroidCluster<T>>
 		implements CentroidCluster<T>, Comparable<HierarchicalCentroidCluster<T>>
+		//,    HierarchyNode<CentroidCluster<T>,HierarchicalCentroidCluster<T>>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
@@ -81,12 +80,26 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * This iterator should return HierarchicalCentroidClusters
 	 */
-	public DepthFirstTreeIterator<CentroidCluster<T>, PhylogenyNode<CentroidCluster<T>>> depthFirstIterator()
+	/*public DepthFirstTreeIterator<CentroidCluster<T>, PhylogenyNode<CentroidCluster<T>>> depthFirstIterator()
 		{
 		return new DepthFirstTreeIteratorImpl<CentroidCluster<T>, PhylogenyNode<CentroidCluster<T>>>(this);
 		}
+		*/
 
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * This iterator should return HierarchicalCentroidClusters
+	 */
+/*	public DepthFirstTreeIterator<CentroidCluster<T>, CentroidCluster<T>>> depthFirstIterator()
+		{
+		return new DepthFirstTreeIteratorImpl<CentroidCluster<T>, CentroidCluster<T>>>(this);
+		}
+*/
 	/**
 	 * {@inheritDoc}
 	 */
@@ -363,4 +376,25 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		{
 		return getId();
 		}
+/*
+	public void setParent(HierarchicalCentroidCluster<T> c)
+		{
+		super.setParent(c);
+		}
+
+
+	public void registerChild(HierarchicalCentroidCluster<T> c)
+		{
+		super.registerChild(c);
+		}
+
+	public void unregisterChild(HierarchicalCentroidCluster<T> c)
+		{
+		super.unregisterChild(c);
+		}
+
+	public List<HierarchicalCentroidCluster<T>> getAncestorPath()
+		{
+
+		}*/
 	}
