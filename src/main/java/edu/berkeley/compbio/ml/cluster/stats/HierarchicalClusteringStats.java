@@ -3,6 +3,7 @@ package edu.berkeley.compbio.ml.cluster.stats;
 import com.davidsoergel.dsutils.tree.DepthFirstTreeIterator;
 import com.davidsoergel.dsutils.tree.TreeException;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
+import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterList;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusteringStats;
@@ -44,22 +45,23 @@ public class HierarchicalClusteringStats
 		return result;
 		}
 
-	private static Map<Double, ClusterList> selectOTUs(final HierarchicalCentroidCluster tree,
-	                                                   Collection<Double> thresholds) throws TreeException
+	private static <T extends Clusterable<T>> Map<Double, ClusterList<T>> selectOTUs(
+			final HierarchicalCentroidCluster<T> tree, Collection<Double> thresholds) throws TreeException
 		{
-		final DepthFirstTreeIterator<CentroidCluster, PhylogenyNode<CentroidCluster>> it = tree.depthFirstIterator();
+		final DepthFirstTreeIterator<CentroidCluster<T>, PhylogenyNode<CentroidCluster<T>>> it =
+				tree.depthFirstIterator();
 
-		final Map<Double, ClusterList> results = new HashMap<Double, ClusterList>();
+		final Map<Double, ClusterList<T>> results = new HashMap<Double, ClusterList<T>>();
 
 		int i = 0;
 		for (final Double threshold : thresholds)
 			{
-			Set<Clusterable> result = new HashSet<Clusterable>();
+			Set<Cluster<T>> result = new HashSet<Cluster<T>>();
 			final double halfThreshold = threshold / 2.0;
 			//int otuCount = 0;
 			while (it.hasNext())
 				{
-				final PhylogenyNode<CentroidCluster> node = it.next();
+				final HierarchicalCentroidCluster<T> node = (HierarchicalCentroidCluster<T>) it.next();
 				final Collection<? extends LengthWeightHierarchyNode> children = node.getChildren();
 				//assert children.isEmpty() || children.size() == 2;
 
@@ -69,13 +71,13 @@ public class HierarchicalClusteringStats
 				if (children.isEmpty() || children.iterator().next().getLength() < halfThreshold)
 					{
 					//otuCount++;
-					final CentroidCluster payload = node.getPayload();
-					final Clusterable cluster = payload.getCentroid();
-					result.add(cluster);
+					//final CentroidCluster payload = node.getPayload();
+					//final Clusterable cluster = node.getCentroid();
+					result.add(node);
 					it.skipAllDescendants(node);
 					}
 				}
-			results.put(threshold, new SimpleClusterList(result));
+			results.put(threshold, new SimpleClusterList<T>(result));
 			i++;
 			}
 		return results;
