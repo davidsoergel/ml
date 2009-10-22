@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -218,6 +219,15 @@ public class HierarchicalClusteringStringDistanceMatrix
 		Collections.sort(keys);
 		stream.writeObject(keys);
 
+		// this will be way faster than indexOf calls.  Could use binary search too I guess?
+		Map<String, Integer> indexMap = new HashMap<String, Integer>();
+		int i = 0;
+		for (String key : keys)
+			{
+			indexMap.put(key, i);
+			i++;
+			}
+
 		// store the pairs using integer indexes
 		for (OrderedPair<UnorderedPair<HierarchicalCentroidCluster<SimpleClusterable<String>>>, Float> entry : keyPairToValueSorted
 				.getSortedPairs())
@@ -227,8 +237,8 @@ public class HierarchicalClusteringStringDistanceMatrix
 			HierarchicalCentroidCluster<SimpleClusterable<String>> cluster2 = idPair.getKey2();
 			String key1 = cluster1.getCentroid().getId();
 			String key2 = cluster2.getCentroid().getId();
-			int id1 = keys.indexOf(key1);
-			int id2 = keys.indexOf(key2);
+			int id1 = indexMap.get(key1); //keys.indexOf(key1);
+			int id2 = indexMap.get(key2); //keys.indexOf(key2);
 			float value = entry.getKey2();
 			stream.writeInt(id1);
 			stream.writeInt(id2);
