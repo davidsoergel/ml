@@ -1,8 +1,11 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
+import com.davidsoergel.dsutils.collections.IndexedSymmetric2dBiMapWithDefault;
+import com.davidsoergel.dsutils.collections.InsertionTrackingSet;
 import com.davidsoergel.dsutils.collections.OrderedPair;
-import com.davidsoergel.dsutils.collections.Symmetric2dBiMapWithDefault;
+import com.davidsoergel.dsutils.collections.SortedSymmetric2dBiMap;
+import com.davidsoergel.dsutils.collections.SortedSymmetric2dBiMapWithDefault;
 import com.davidsoergel.dsutils.collections.UnorderedPair;
 import com.davidsoergel.dsutils.collections.UnorderedPairIterator;
 import edu.berkeley.compbio.ml.cluster.SimpleClusterable;
@@ -12,25 +15,19 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public class HierarchicalClusteringStringDistanceMatrix
-		extends Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<SimpleClusterable<String>>, Float>
-		implements Serializable
+		extends IndexedSymmetric2dBiMapWithDefault<HierarchicalCentroidCluster<SimpleClusterable<String>>, Float>
+		implements Serializable, SortedSymmetric2dBiMap<HierarchicalCentroidCluster<SimpleClusterable<String>>, Float>
 	{
-	private static final long serialVersionUID = 3L;
+	private static final long serialVersionUID = 4L;
 
 	public HierarchicalClusteringStringDistanceMatrix()  // for custom deserialization
 		{
@@ -45,110 +42,44 @@ public class HierarchicalClusteringStringDistanceMatrix
 
 	public HierarchicalClusteringStringDistanceMatrix(HierarchicalClusteringStringDistanceMatrix cloneFrom)
 		{
-		defaultValue = cloneFrom.defaultValue;
+		setDefaultValue(cloneFrom.getDefaultValue());
 
+		// map the old clusters to new clusters, maintaining the indexes
 
-		// first copy all the keys
-
-		List<String> keys = new ArrayList<String>();
-		for (HierarchicalCentroidCluster<SimpleClusterable<String>> cluster : cloneFrom.getActiveKeys())
+		keys = new InsertionTrackingSet<HierarchicalCentroidCluster<SimpleClusterable<String>>>();
+		final Collection<HierarchicalCentroidCluster<SimpleClusterable<String>>> oldClusters = cloneFrom.getKeys();
+		for (HierarchicalCentroidCluster<SimpleClusterable<String>> oldCluster : oldClusters)
 			{
-			keys.add(cluster.getCentroid().getId());
-			}
-		//	Collections.sort(keys);
-		final AtomicInteger idCount = new AtomicInteger();
-		Map<String, HierarchicalCentroidCluster<SimpleClusterable<String>>> newClusters =
-				createNewClusters(keys, idCount);
+			String name = oldCluster.getCentroid().getId();
+			final Integer id = cloneFrom.keys.indexOf(oldCluster);
 
-		for (HierarchicalCentroidCluster<SimpleClusterable<String>> cluster : newClusters.values())
-			{
-			addKey(cluster);
+			final HierarchicalCentroidCluster<SimpleClusterable<String>> c =
+					new HierarchicalCentroidCluster<SimpleClusterable<String>>(id, new SimpleClusterable<String>(name));
+
+			keys.put(c, id);
 			}
 
-		setMaxId(idCount.get());
-
-
-		// map the pairs to the new clusters using integer indexes
-		for (OrderedPair<UnorderedPair<HierarchicalCentroidCluster<SimpleClusterable<String>>>, Float> entry : cloneFrom
-				.keyPairToValueSorted.getSortedPairs())
-			{
-			UnorderedPair<HierarchicalCentroidCluster<SimpleClusterable<String>>> idPair = entry.getKey1();
-			HierarchicalCentroidCluster<SimpleClusterable<String>> oldCluster1 = idPair.getKey1();
-			HierarchicalCentroidCluster<SimpleClusterable<String>> oldCluster2 = idPair.getKey2();
-			String string1 = oldCluster1.getCentroid().getId();
-			String string2 = oldCluster2.getCentroid().getId();
-			//int id1 = keys.indexOf(key1);
-			//int id2 = keys.indexOf(key2);
-			float value = entry.getKey2();
-
-			//String string1 = keys.get(id1);
-			//String string2 = keys.get(id2);
-
-			final HierarchicalCentroidCluster<SimpleClusterable<String>> cluster1 = newClusters.get(string1);
-			final HierarchicalCentroidCluster<SimpleClusterable<String>> cluster2 = newClusters.get(string2);
-
-			assert cluster1 != null;
-			assert cluster2 != null;
-
-			put(cluster1, cluster2, value);
-			}
+		// clone the value table
+		underlyingIntMap = new SortedSymmetric2dBiMapWithDefault<Integer, Float>(cloneFrom.underlyingIntMap);
 		}
 
-
-/*
-	public static Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<SimpleClusterable<String>>, Double> fromString(
-			final Symmetric2dBiMapWithDefault<String, Double> stringDistanceMatrix)
-		{
-		Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<SimpleClusterable<String>>, Double> result =
-				new Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<SimpleClusterable<String>>, Double>(
-						stringDistanceMatrix.getDefaultValue());
-
-		final AtomicInteger idCount = new AtomicInteger();
-
-		Map<String, HierarchicalCentroidCluster<SimpleClusterable<String>>> clusters =
-				createNewClusters(stringDistanceMatrix.getActiveKeys(), idCount);
-
-		result.setMaxId(idCount.get());
-
-		// insure that the empty lists get copied too
-		for (Map.Entry<String, HierarchicalCentroidCluster<SimpleClusterable<String>>> entry : clusters.entrySet())
-			{
-			result.addKey(entry.getValue());
-			}
-
-		for (Map.Entry<UnorderedPair<String>, Double> entry : stringDistanceMatrix.entrySet())
-			{
-			final UnorderedPair<String> pair = entry.getKey();
-			final String string1 = pair.getKey1();
-			final String string2 = pair.getKey2();
-
-			final HierarchicalCentroidCluster<SimpleClusterable<String>> cluster1 = clusters.get(string1);
-			final HierarchicalCentroidCluster<SimpleClusterable<String>> cluster2 = clusters.get(string2);
-
-			assert cluster1 != null;
-			assert cluster2 != null;
-
-			result.put(cluster1, cluster2, entry.getValue());
-			}
-
-		return result;
-		}
-	*/
 
 	private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException
 		{
-		defaultValue = (Float) (stream.readObject());
-		List<String> keys = (List<String>) stream.readObject();
+		setDefaultValue((Float) (stream.readObject()));
+		InsertionTrackingSet<String> keyStrings = (InsertionTrackingSet<String>) stream.readObject();
 
-		final AtomicInteger idCount = new AtomicInteger();
-		Map<String, HierarchicalCentroidCluster<SimpleClusterable<String>>> clusters = createNewClusters(keys, idCount);
+		// map the strings to new clusters, maintaining the indexes
 
-		for (HierarchicalCentroidCluster<SimpleClusterable<String>> cluster : clusters.values())
+		keys = new InsertionTrackingSet<HierarchicalCentroidCluster<SimpleClusterable<String>>>();
+		for (String name : keyStrings)
 			{
-			addKey(cluster);
-			}
+			final Integer id = keyStrings.indexOf(name);
+			final HierarchicalCentroidCluster<SimpleClusterable<String>> c =
+					new HierarchicalCentroidCluster<SimpleClusterable<String>>(id, new SimpleClusterable<String>(name));
 
-		setMaxId(idCount.get());
+			keys.put(c, id);
+			}
 
 		try
 			{
@@ -157,16 +88,7 @@ public class HierarchicalClusteringStringDistanceMatrix
 				int id1 = stream.readInt();
 				int id2 = stream.readInt();
 				float value = stream.readFloat();
-				String string1 = keys.get(id1);
-				String string2 = keys.get(id2);
-
-				final HierarchicalCentroidCluster<SimpleClusterable<String>> cluster1 = clusters.get(string1);
-				final HierarchicalCentroidCluster<SimpleClusterable<String>> cluster2 = clusters.get(string2);
-
-				assert cluster1 != null;
-				assert cluster2 != null;
-
-				put(cluster1, cluster2, value);
+				underlyingIntMap.put(id1, id2, value);
 				}
 			}
 		catch (EOFException e)
@@ -174,71 +96,25 @@ public class HierarchicalClusteringStringDistanceMatrix
 			}
 		}
 
-	private static Map<String, HierarchicalCentroidCluster<SimpleClusterable<String>>> createNewClusters(
-			final Collection<String> samples, final AtomicInteger idCount)
-		{
-		final Map<String, HierarchicalCentroidCluster<SimpleClusterable<String>>> newClusters =
-				new ConcurrentHashMap<String, HierarchicalCentroidCluster<SimpleClusterable<String>>>();
-
-		for (String sample : samples)
-			{
-
-			//assert new HashSet<String>(samples).size() == samples.size();
-
-//		Parallel.forEach(samples, new Function<String, Void>()
-//		{
-//		public Void apply(final String sample)
-//			{
-
-			final HierarchicalCentroidCluster<SimpleClusterable<String>> c =
-					new HierarchicalCentroidCluster<SimpleClusterable<String>>(idCount.getAndIncrement(),
-					                                                           new SimpleClusterable<String>(sample));
-			c.doneLabelling();
-			assert newClusters.get(sample) == null;
-			newClusters.put(sample, c);
-			//theActiveNodeDistanceMatrix.addKey(c);
-			//addCluster(c);
-//			return null;
-			}
-//		});
-		assert newClusters.size() == samples.size();
-		return newClusters;
-		}
-
 	private void writeObject(ObjectOutputStream stream) throws IOException
 		{
-		stream.writeObject(defaultValue);
+		stream.writeObject(getDefaultValue());
 
-		// establish a canonical order for the keys
+		// map the clusters to their strings, maintaining the indexes
 
-		List<String> keys = new ArrayList<String>();
-		for (HierarchicalCentroidCluster<SimpleClusterable<String>> cluster : getActiveKeys())
+		InsertionTrackingSet<String> keyStrings = new InsertionTrackingSet<String>();
+		for (HierarchicalCentroidCluster<SimpleClusterable<String>> cluster : keys)
 			{
-			keys.add(cluster.getCentroid().getId());
+			keyStrings.put(cluster.getCentroid().getId(), keys.indexOf(cluster));
 			}
-		Collections.sort(keys);
-		stream.writeObject(keys);
-
-		// this will be way faster than indexOf calls.  Could use binary search too I guess?
-		Map<String, Integer> indexMap = new HashMap<String, Integer>();
-		int i = 0;
-		for (String key : keys)
-			{
-			indexMap.put(key, i);
-			i++;
-			}
+		stream.writeObject(keyStrings);
 
 		// store the pairs using integer indexes
-		for (OrderedPair<UnorderedPair<HierarchicalCentroidCluster<SimpleClusterable<String>>>, Float> entry : keyPairToValueSorted
-				.getSortedPairs())
+		for (OrderedPair<UnorderedPair<Integer>, Float> entry : underlyingIntMap.keyPairToValueSorted.getSortedPairs())
 			{
-			UnorderedPair<HierarchicalCentroidCluster<SimpleClusterable<String>>> idPair = entry.getKey1();
-			HierarchicalCentroidCluster<SimpleClusterable<String>> cluster1 = idPair.getKey1();
-			HierarchicalCentroidCluster<SimpleClusterable<String>> cluster2 = idPair.getKey2();
-			String key1 = cluster1.getCentroid().getId();
-			String key2 = cluster2.getCentroid().getId();
-			int id1 = indexMap.get(key1); //keys.indexOf(key1);
-			int id2 = indexMap.get(key2); //keys.indexOf(key2);
+			UnorderedPair<Integer> idPair = entry.getKey1();
+			int id1 = idPair.getKey1();
+			int id2 = idPair.getKey2();
 			float value = entry.getKey2();
 			stream.writeInt(id1);
 			stream.writeInt(id2);
@@ -246,22 +122,14 @@ public class HierarchicalClusteringStringDistanceMatrix
 			}
 		}
 
-	/*public boolean allClustersHaveWeight()
-		{
-		for (HierarchicalCentroidCluster<SimpleClusterable<String>> o : keyToKeyPairs.keySet())
-			{
-			if(o.getWeight() == null) { return false;}
-			}
-		return true;
-		}*/
-
 	public HierarchicalClusteringStringDistanceMatrix sample(final int sampleSize)
 		{
 		if (sampleSize == 0)
 			{
 			return this;
 			}
-		final Set<HierarchicalCentroidCluster<SimpleClusterable<String>>> clusters = getActiveKeys();
+		final Set<HierarchicalCentroidCluster<SimpleClusterable<String>>> clusters =
+				new HashSet<HierarchicalCentroidCluster<SimpleClusterable<String>>>(getKeys());
 		DSCollectionUtils.retainRandom(clusters, sampleSize);
 
 		HierarchicalClusteringStringDistanceMatrix result = new HierarchicalClusteringStringDistanceMatrix();

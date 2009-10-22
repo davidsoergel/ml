@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
-import com.davidsoergel.dsutils.collections.Symmetric2dBiMapWithDefault;
+import com.davidsoergel.dsutils.collections.IndexedSymmetric2dBiMapWithDefault;
 import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.google.common.base.Function;
@@ -13,6 +13,7 @@ import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import org.apache.log4j.Logger;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,8 +35,9 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 	private static final Logger logger = Logger.getLogger(OnlineAgglomerativeClustering.class);
 	public static final Float LONG_DISTANCE = Float.MAX_VALUE;
 
-	protected final Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix =
-			new Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float>(LONG_DISTANCE);
+	protected final IndexedSymmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float>
+			theActiveNodeDistanceMatrix =
+			new IndexedSymmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float>(LONG_DISTANCE);
 	private HierarchicalCentroidCluster<T> theRoot;
 	private final Map<T, HierarchicalCentroidCluster<T>> sampleToLeafClusterMap =
 			new HashMap<T, HierarchicalCentroidCluster<T>>();
@@ -128,8 +130,8 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 			// In particular, it includes new leaves from other threads that have not yet appeared in the distance matrix.
 
 			// this is synchronized on the distance matrix, so we probably have to wait for another thread to finish its updates
-			final Set<HierarchicalCentroidCluster<T>> activeClusters =
-					theActiveNodeDistanceMatrix.getActiveKeys();//getClusters();
+			final Collection<HierarchicalCentroidCluster<T>> activeClusters =
+					theActiveNodeDistanceMatrix.getKeys();//getClusters();
 
 			// then things are purely local for a while
 			final int ahc = c.hashCode();
@@ -172,7 +174,7 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 				// Just drop them if so, even if the distance was short; too bad, that's the cost of the online setting.
 
 
-				final Set<HierarchicalCentroidCluster<T>> activeKeys = theActiveNodeDistanceMatrix.getActiveKeys();
+				final Collection<HierarchicalCentroidCluster<T>> activeKeys = theActiveNodeDistanceMatrix.getKeys();
 
 				if (activeKeys.size() > 0)
 					{
@@ -204,10 +206,10 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 						{
 						final HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
 						final HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
-						assert theActiveNodeDistanceMatrix.getActiveKeys().contains(a);
-						assert theActiveNodeDistanceMatrix.getActiveKeys().contains(b);
-						assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(a);
-						assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(b);
+						assert theActiveNodeDistanceMatrix.getKeys().contains(a);
+						assert theActiveNodeDistanceMatrix.getKeys().contains(b);
+						assert !theActiveNodeDistanceMatrix.getKeys().contains(a);
+						assert !theActiveNodeDistanceMatrix.getKeys().contains(b);
 						final HierarchicalCentroidCluster<T> composite =
 								agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
 						theActiveNodeDistanceMatrix.remove(a);

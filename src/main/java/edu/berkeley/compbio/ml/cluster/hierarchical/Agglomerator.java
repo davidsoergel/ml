@@ -24,7 +24,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		{
 		// there was a mysterious concurrent-modification sort of problem; does this fix it?
 		final HashSet<HierarchicalCentroidCluster<T>> activeKeys =
-				new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getActiveKeys());
+				new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getKeys());
 
 		//assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(composite);
 		theActiveNodeDistanceMatrix.addKey(composite);

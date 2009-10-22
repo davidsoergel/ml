@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.collections.Symmetric2dBiMapWithDefault;
+import com.davidsoergel.dsutils.collections.IndexedSymmetric2dBiMapWithDefault;
 import edu.berkeley.compbio.ml.cluster.hierarchical.HierarchicalCentroidCluster;
 
 /**
@@ -9,9 +9,9 @@ import edu.berkeley.compbio.ml.cluster.hierarchical.HierarchicalCentroidCluster;
  */
 public interface DistanceMatrixBatchClusteringMethod<T extends Clusterable<T>> extends BatchClusteringMethod<T>
 	{
-	Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> getDistanceMatrix();
+	IndexedSymmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> getDistanceMatrix();
 
-	void setDistanceMatrix(Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> distanceMatrix);
+	void setDistanceMatrix(IndexedSymmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> distanceMatrix);
 
 	void setThreshold(float threshold);
 	}

@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
-import com.davidsoergel.dsutils.collections.Symmetric2dBiMapWithDefault;
+import com.davidsoergel.dsutils.collections.IndexedSymmetric2dBiMapWithDefault;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
@@ -43,7 +43,7 @@ public class RandomOrderedBatchAgglomerativeClusteringMethod<T extends Clusterab
 	                                                       final ArrayList<HierarchicalCentroidCluster<T>> theClusters,
 	                                                       final Map<String, HierarchicalCentroidCluster<T>> assignments,
 	                                                       final int n, Agglomerator agg,
-	                                                       Symmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
+	                                                       IndexedSymmetric2dBiMapWithDefault<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, tProhibitionModel, testLabels, theClusters, assignments, n,
 		      agg, theActiveNodeDistanceMatrix);
@@ -61,7 +61,7 @@ public class RandomOrderedBatchAgglomerativeClusteringMethod<T extends Clusterab
 
 		// because we're going to leave all nodes in the distance matrix, we have to keep track separately of which nodes need aggregation
 		final Set<HierarchicalCentroidCluster<T>> parentlessNodes =
-				new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getActiveKeys());
+				new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getKeys());
 
 		while (parentlessNodes.size() > 1)
 
@@ -75,7 +75,7 @@ public class RandomOrderedBatchAgglomerativeClusteringMethod<T extends Clusterab
 			// PERF the matrix is already sorted, but it's not obvious how to take advantage of that
 			//theActiveNodeDistanceMatrix.getMatchingPairWithSmallestValue(node);
 
-			for (HierarchicalCentroidCluster<T> testCluster : theActiveNodeDistanceMatrix.getActiveKeys())
+			for (HierarchicalCentroidCluster<T> testCluster : theActiveNodeDistanceMatrix.getKeys())
 				{
 				if (!testCluster.equals(node))
 					{
@@ -125,7 +125,7 @@ public class RandomOrderedBatchAgglomerativeClusteringMethod<T extends Clusterab
 			// join the leaf with that cluster
 
 			final HierarchicalCentroidCluster<T> composite =
-					agglomerator.joinNodes(idCount.getAndIncrement(), node, bestCluster, theActiveNodeDistanceMatrix);
+					agglomerator.joinNodes(nextId.getAndIncrement(), node, bestCluster, theActiveNodeDistanceMatrix);
 
 			parentlessNodes.remove(node);
 			parentlessNodes.remove(bestCluster);
