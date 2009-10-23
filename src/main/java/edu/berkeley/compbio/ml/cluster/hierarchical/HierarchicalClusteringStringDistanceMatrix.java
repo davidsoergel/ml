@@ -58,6 +58,7 @@ public class HierarchicalClusteringStringDistanceMatrix
 
 			final HierarchicalCentroidCluster<SimpleClusterable<String>> c =
 					new HierarchicalCentroidCluster<SimpleClusterable<String>>(id, new SimpleClusterable<String>(name));
+			c.getMutableWeightedLabels().add(name, 1.0, 1);
 			c.doneLabelling();
 			keys.put(c, id);
 			}
@@ -80,7 +81,8 @@ public class HierarchicalClusteringStringDistanceMatrix
 			final Integer id = keyStrings.indexOf(name);
 			final HierarchicalCentroidCluster<SimpleClusterable<String>> c =
 					new HierarchicalCentroidCluster<SimpleClusterable<String>>(id, new SimpleClusterable<String>(name));
-
+			c.getMutableWeightedLabels().add(name, 1.0, 1);
+			c.doneLabelling();
 			keys.put(c, id);
 			}
 

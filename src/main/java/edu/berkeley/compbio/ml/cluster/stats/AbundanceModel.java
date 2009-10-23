@@ -25,6 +25,7 @@ public class AbundanceModel
 		for (Cluster<? extends Clusterable> cluster : l)
 			{
 			final int n = cluster.getN();
+			//final int n = cluster.getWeight();
 			if (n == 0)
 				{
 				F[0]++;
