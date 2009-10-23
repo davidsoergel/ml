@@ -125,7 +125,7 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 			assert pair.getKey2().getParent() == null;
 			}*/
 
-		while (theActiveNodeDistanceMatrix.numPairs() > 0)
+		while (!theActiveNodeDistanceMatrix.isEmpty())
 			{
 
 //			OrderedPair<UnorderedPair<HierarchicalCentroidCluster<T>>, Double> keyValuePair =
