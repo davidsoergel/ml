@@ -117,13 +117,13 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 		setN(theActiveNodeDistanceMatrix.numKeys());
 
 		// ** sanity checks
-		for (Map.Entry<UnorderedPair<HierarchicalCentroidCluster<T>>, Float> entry : theActiveNodeDistanceMatrix
+/*		for (Map.Entry<UnorderedPair<HierarchicalCentroidCluster<T>>, Float> entry : theActiveNodeDistanceMatrix
 				.entrySet())
 			{
 			UnorderedPair<HierarchicalCentroidCluster<T>> pair = entry.getKey();
 			assert pair.getKey1().getParent() == null;
 			assert pair.getKey2().getParent() == null;
-			}
+			}*/
 
 		while (theActiveNodeDistanceMatrix.numPairs() > 0)
 			{

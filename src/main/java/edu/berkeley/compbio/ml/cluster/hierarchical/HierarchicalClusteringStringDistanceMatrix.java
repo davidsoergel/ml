@@ -9,6 +9,7 @@ import com.davidsoergel.dsutils.collections.SortedSymmetric2dBiMapWithDefault;
 import com.davidsoergel.dsutils.collections.UnorderedPair;
 import com.davidsoergel.dsutils.collections.UnorderedPairIterator;
 import edu.berkeley.compbio.ml.cluster.SimpleClusterable;
+import org.apache.log4j.Logger;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -27,6 +28,8 @@ public class HierarchicalClusteringStringDistanceMatrix
 		extends IndexedSymmetric2dBiMapWithDefault<HierarchicalCentroidCluster<SimpleClusterable<String>>, Float>
 		implements Serializable, SortedSymmetric2dBiMap<HierarchicalCentroidCluster<SimpleClusterable<String>>, Float>
 	{
+	private static final Logger logger = Logger.getLogger(HierarchicalClusteringStringDistanceMatrix.class);
+
 	private static final long serialVersionUID = 4L;
 
 	public HierarchicalClusteringStringDistanceMatrix()  // for custom deserialization
@@ -55,7 +58,7 @@ public class HierarchicalClusteringStringDistanceMatrix
 
 			final HierarchicalCentroidCluster<SimpleClusterable<String>> c =
 					new HierarchicalCentroidCluster<SimpleClusterable<String>>(id, new SimpleClusterable<String>(name));
-
+			c.doneLabelling();
 			keys.put(c, id);
 			}
 
@@ -81,6 +84,8 @@ public class HierarchicalClusteringStringDistanceMatrix
 			keys.put(c, id);
 			}
 
+		int count = 0;
+
 		try
 			{
 			while (true)
@@ -89,11 +94,18 @@ public class HierarchicalClusteringStringDistanceMatrix
 				int id2 = stream.readInt();
 				float value = stream.readFloat();
 				underlyingIntMap.put(id1, id2, value);
+				count++;
+				/*	if (count % 1000 == 0)
+				   {
+				   logger.info("Loading distance matrix from cache: " + count + " pairs between " + keys.size()
+							   + " keys.");
+				   }*/
 				}
 			}
 		catch (EOFException e)
 			{
 			}
+		logger.info("Loaded distance matrix from cache: " + keys.size() + " keys, " + count + " pairs");
 		}
 
 	private void writeObject(ObjectOutputStream stream) throws IOException
