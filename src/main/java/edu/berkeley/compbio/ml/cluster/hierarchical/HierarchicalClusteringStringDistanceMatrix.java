@@ -30,7 +30,7 @@ public class HierarchicalClusteringStringDistanceMatrix
 	{
 	private static final Logger logger = Logger.getLogger(HierarchicalClusteringStringDistanceMatrix.class);
 
-	private static final long serialVersionUID = 4L;
+	private static final long serialVersionUID = 5L;
 
 	public HierarchicalClusteringStringDistanceMatrix()  // for custom deserialization
 		{
