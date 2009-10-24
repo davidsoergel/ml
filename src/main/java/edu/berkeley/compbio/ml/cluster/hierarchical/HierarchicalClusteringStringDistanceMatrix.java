@@ -146,7 +146,8 @@ public class HierarchicalClusteringStringDistanceMatrix
 				new HashSet<HierarchicalCentroidCluster<SimpleClusterable<String>>>(getKeys());
 		DSCollectionUtils.retainRandom(clusters, sampleSize);
 
-		HierarchicalClusteringStringDistanceMatrix result = new HierarchicalClusteringStringDistanceMatrix();
+		HierarchicalClusteringStringDistanceMatrix result =
+				new HierarchicalClusteringStringDistanceMatrix(getDefaultValue());
 		UnorderedPairIterator<HierarchicalCentroidCluster<SimpleClusterable<String>>> pi =
 				new UnorderedPairIterator<HierarchicalCentroidCluster<SimpleClusterable<String>>>(clusters, clusters);
 		while (pi.hasNext())
