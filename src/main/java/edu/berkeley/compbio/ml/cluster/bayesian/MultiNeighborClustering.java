@@ -1,9 +1,9 @@
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
+import com.davidsoergel.conja.Parallel;
 import com.davidsoergel.dsutils.collections.ConcurrentHashWeightedSet;
 import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
-import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.ProbabilisticDissimilarityMeasure;
 import com.google.common.base.Function;

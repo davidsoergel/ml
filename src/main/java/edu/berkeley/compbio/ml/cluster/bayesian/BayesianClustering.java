@@ -33,9 +33,9 @@
 
 package edu.berkeley.compbio.ml.cluster.bayesian;
 
+import com.davidsoergel.conja.Parallel;
 import com.davidsoergel.dsutils.GenericFactory;
 import com.davidsoergel.dsutils.GenericFactoryException;
-import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.google.common.base.Function;
 import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;

@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
+import com.davidsoergel.conja.Parallel;
 import com.davidsoergel.dsutils.collections.IndexedSymmetric2dBiMapWithDefault;
-import com.davidsoergel.dsutils.concurrent.Parallel;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.google.common.base.Function;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;

@@ -33,7 +33,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.dsutils.collections.NextOnlyIterator;
+import com.davidsoergel.conja.NextOnlyIterator;
 
 import java.io.IOException;
 
