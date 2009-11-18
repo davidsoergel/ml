@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.conja.Function;
 import com.davidsoergel.conja.Parallel;
 import com.davidsoergel.conja.ProgressReportingThreadPoolExecutor;
 import com.davidsoergel.dsutils.collections.WeightedSet;
@@ -7,7 +8,6 @@ import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DissimilarityMeasure;
 import com.davidsoergel.stats.DistributionException;
 import com.davidsoergel.stats.RequiresPreparationDistanceMetric;
-import com.google.common.base.Function;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
