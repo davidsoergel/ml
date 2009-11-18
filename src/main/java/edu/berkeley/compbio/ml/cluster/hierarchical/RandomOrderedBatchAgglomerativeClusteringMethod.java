@@ -3,10 +3,10 @@ package edu.berkeley.compbio.ml.cluster.hierarchical;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
 import com.davidsoergel.dsutils.collections.IndexedSymmetric2dBiMapWithDefault;
 import com.davidsoergel.stats.DissimilarityMeasure;
+import com.davidsoergel.trees.PhylogenyNode;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
-import edu.berkeley.compbio.phyloutils.PhylogenyNode;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

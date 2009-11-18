@@ -1,6 +1,8 @@
 package edu.berkeley.compbio.ml.cluster.stats;
 
 import com.davidsoergel.trees.DepthFirstTreeIterator;
+import com.davidsoergel.trees.LengthWeightHierarchyNode;
+import com.davidsoergel.trees.PhylogenyNode;
 import com.davidsoergel.trees.TreeException;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
@@ -9,8 +11,6 @@ import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusteringStats;
 import edu.berkeley.compbio.ml.cluster.SimpleClusterList;
 import edu.berkeley.compbio.ml.cluster.hierarchical.HierarchicalCentroidCluster;
-import edu.berkeley.compbio.phyloutils.LengthWeightHierarchyNode;
-import edu.berkeley.compbio.phyloutils.PhylogenyNode;
 
 import java.util.Collection;
 import java.util.HashMap;

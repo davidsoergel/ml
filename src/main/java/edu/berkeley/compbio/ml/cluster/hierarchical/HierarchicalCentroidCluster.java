@@ -36,11 +36,11 @@ import com.davidsoergel.dsutils.Labellable;
 import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
+import com.davidsoergel.trees.BasicPhylogenyNode;
 import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
-import edu.berkeley.compbio.phyloutils.BasicPhylogenyNode;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Formatter;
