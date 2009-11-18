@@ -2,10 +2,10 @@ package edu.berkeley.compbio.ml.cluster;
 
 import com.davidsoergel.dsutils.DSArrayUtils;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
-import com.davidsoergel.dsutils.tree.htpn.HierarchicalTypedPropertyNode;
 import com.davidsoergel.stats.EqualWeightHistogram1D;
 import com.davidsoergel.stats.Histogram1D;
 import com.davidsoergel.stats.StatsException;
+import com.davidsoergel.trees.htpn.HierarchicalTypedPropertyNode;
 import edu.berkeley.compbio.ml.MultiClassCrossValidationResults;
 import org.apache.log4j.Logger;
 

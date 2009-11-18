@@ -33,7 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.math.MathUtils;
-import com.davidsoergel.dsutils.tree.TreePrinter;
+import com.davidsoergel.trees.TreePrinter;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;

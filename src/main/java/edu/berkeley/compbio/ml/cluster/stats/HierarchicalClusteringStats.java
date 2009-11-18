@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.ml.cluster.stats;
 
-import com.davidsoergel.dsutils.tree.DepthFirstTreeIterator;
-import com.davidsoergel.dsutils.tree.TreeException;
+import com.davidsoergel.trees.DepthFirstTreeIterator;
+import com.davidsoergel.trees.TreeException;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterList;
