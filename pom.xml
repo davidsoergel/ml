@@ -155,13 +155,13 @@
     <dependency>
       <groupId>com.davidsoergel</groupId>
       <artifactId>runutils</artifactId>
-      <version>0.9-SNAPSHOT</version>
+      <version>0.9</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.davidsoergel</groupId>
       <artifactId>stats</artifactId>
-      <version>0.9-SNAPSHOT</version>
+      <version>0.9</version>
       <scope>compile</scope>
     </dependency>
 
