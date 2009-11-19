@@ -43,10 +43,6 @@
       <package name="edu.berkeley.compbio.ml.distancemeasure"/>
       <package name="edu.berkeley.compbio.ml.mcmc"/>
     </packages>
-    <classes>
-      <class name="edu.berkeley.compbio.sequtils.strings.MarkovTreeNodeTest"/>
-      <class name="edu.berkeley.compbio.sequtils.strings.RonPSTNodeTest"/>
-      <class name="edu.berkeley.compbio.sequtils.strings.RonPSTTest"/>
-    </classes>
+
   </test>
 </suite>
