@@ -31,14 +31,13 @@
   ~ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.berkeley.compbio</groupId>
   <artifactId>ml</artifactId>
 
   <name>ml</name>
-  <version>0.9-SNAPSHOT</version>
+  <version>0.9</version>
   <url>http://dev.davidsoergel.com/ml</url>
   <description>Generic implementations of various Machine Learning algorithms. Includes an online clustering framework
     with a K-means implementation, and a Markov Chain Monte Carlo (MCMC) framework with a Metropolis-coupled
@@ -62,8 +61,8 @@
 
 
   <scm>
-    <connection>scm:svn:http://svn.davidsoergel.com/repos/ml</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</developerConnection>
+    <connection>scm:svn:http://svn.davidsoergel.com/repos/ml/tags/ml-0.9</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml/tags/ml-0.9</developerConnection>
   </scm>
 
 
