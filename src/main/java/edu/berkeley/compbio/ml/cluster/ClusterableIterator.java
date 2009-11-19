@@ -33,7 +33,7 @@
 
 package edu.berkeley.compbio.ml.cluster;
 
-import com.davidsoergel.conja.NextOnlyIterator;
+import com.davidsoergel.conja.ThreadSafeNextOnlyIterator;
 
 import java.io.IOException;
 
@@ -49,7 +49,7 @@ import java.io.IOException;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface ClusterableIterator<T extends Clusterable<T>> extends NextOnlyIterator<T>
+public interface ClusterableIterator<T extends Clusterable<T>> extends ThreadSafeNextOnlyIterator<T>
 		//	extends Iterator<T>, Iterable<T>//, Comparable<ClusterableIterator<T>>
 	{
 // ------------------------ INTERFACE METHODS ------------------------
