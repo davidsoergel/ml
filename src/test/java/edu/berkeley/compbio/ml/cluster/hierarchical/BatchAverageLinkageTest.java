@@ -41,7 +41,6 @@ import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.distancemeasure.EuclideanDistance;
 import org.apache.log4j.Logger;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -79,7 +78,7 @@ public class BatchAverageLinkageTest
 			}
 		}
 
-	@Test
+	//@Test
 	public void testSimilarPointsClusterTogether() throws CloneNotSupportedException, IOException
 		{
 		ClusterableIterator ci;
@@ -108,7 +107,8 @@ public class BatchAverageLinkageTest
 		oc.writeAssignmentsAsTextToStream(System.err);
 
 		//assert oc.getTree().getValue().getN() == 6;
-		logger.info("\n" + TreePrinter.prettyPrint(oc.getTree()));
+		final HierarchicalCentroidCluster<ClusterableDoubleArray> root = oc.getTree();
+		logger.info("\n" + TreePrinter.prettyPrint(root));
 
 		assert oc.getN() == 6;
 		assert theClusters.size() == 11;
