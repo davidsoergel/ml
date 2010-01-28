@@ -121,13 +121,13 @@
     <dependency>
       <groupId>com.davidsoergel</groupId>
       <artifactId>dsutils</artifactId>
-      <version>1.01</version>
+      <version>1.02-SNAPSHOT</version>
       <!--<scope>compile</scope>-->
     </dependency>
     <dependency>
       <groupId>com.davidsoergel</groupId>
       <artifactId>dsutils</artifactId>
-      <version>1.01</version>
+      <version>1.02-SNAPSHOT</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
