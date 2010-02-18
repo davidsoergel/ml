@@ -69,11 +69,23 @@ public class BinaryCrossValidationResults extends CrossValidationResults
 		return (float) tt / (float) (tt + ft);
 		}
 
+	public float precisionB()
+		{
+		return (float) ff / (float) (ff + tf);
+		}
+
 	public int getNumExamples()
 		{
 		return numExamples;
 		}
 
+	/**
+	 * A measure of the tradeoff between TF and FT.  When this is 0, there are equally many false positives and false
+	 * negatives (in absolute numbers).  When it's greater than 0, there are more false negatives (TF), and when it's less
+	 * than 0, there are more false positives (FT).
+	 *
+	 * @return
+	 */
 	public float falseBalance()
 		{
 		int denom = ft + tf;
@@ -84,8 +96,32 @@ public class BinaryCrossValidationResults extends CrossValidationResults
 		return 2f * ((float) tf / (float) denom) - 1f;
 		}
 
+
 	public float absFalseBalance()
 		{
 		return Math.abs(falseBalance());
+		}
+
+	public String toString()
+		{
+		final StringBuffer sb = new StringBuffer();
+		sb.append(String.format("Cross Validation Classified = %.2f%%\n", 100.0 * (1.0 - unknown())));
+		sb.append(String.format("True->True: %.2f%%, False->False: %.2f%%, True->False: %.2f%%, False->True: %.2f%%\n",
+		                        trueTrueRate(), falseFalseRate(), trueFalseRate(), falseTrueRate()));
+
+		sb.append(String.format("Cross Validation Accuracy (of those classified) = %.2f%%\n",
+		                        100.0 * accuracyGivenClassified()));
+		sb.append(String.format("Cross Validation Accuracy (of total) = %.2f%%\n", 100.0 * accuracy()));
+
+		sb.append(String.format("Sensitivity(true): %.2f%%, Sensitivity(false): %.2f%%\n", sensitivityA(),
+		                        sensitivityB()));
+
+		sb.append(String.format("Class-normalized sensitivity: %.2f%%\n", classNormalizedSensitivity()));
+
+		sb.append(String.format("Precision(true): %.2f%%, Precision(false): %.2f%%\n", precisionA(), precisionB()));
+
+		sb.append(String.format("False balance (>0 => TF, <0 => FT): %.2f%%\n", falseBalance()));
+
+		return sb.toString();
 		}
 	}
