@@ -107,20 +107,22 @@ public class BinaryCrossValidationResults extends CrossValidationResults
 		final StringBuffer sb = new StringBuffer();
 		sb.append(String.format("Cross Validation Classified = %.2f%%\n", 100.0 * (1.0 - unknown())));
 		sb.append(String.format("True->True: %.2f%%, False->False: %.2f%%, True->False: %.2f%%, False->True: %.2f%%\n",
-		                        trueTrueRate(), falseFalseRate(), trueFalseRate(), falseTrueRate()));
+		                        100.0 * trueTrueRate(), 100.0 * falseFalseRate(), 100.0 * trueFalseRate(),
+		                        100.0 * falseTrueRate()));
 
 		sb.append(String.format("Cross Validation Accuracy (of those classified) = %.2f%%\n",
 		                        100.0 * accuracyGivenClassified()));
 		sb.append(String.format("Cross Validation Accuracy (of total) = %.2f%%\n", 100.0 * accuracy()));
 
-		sb.append(String.format("Sensitivity(true): %.2f%%, Sensitivity(false): %.2f%%\n", sensitivityA(),
-		                        sensitivityB()));
+		sb.append(String.format("Sensitivity(true): %.2f%%, Sensitivity(false): %.2f%%\n", 100.0 * sensitivityA(),
+		                        100.0 * sensitivityB()));
 
-		sb.append(String.format("Class-normalized sensitivity: %.2f%%\n", classNormalizedSensitivity()));
+		sb.append(String.format("Class-normalized sensitivity: %.2f%%\n", 100.0 * classNormalizedSensitivity()));
 
-		sb.append(String.format("Precision(true): %.2f%%, Precision(false): %.2f%%\n", precisionA(), precisionB()));
+		sb.append(String.format("Precision(true): %.2f%%, Precision(false): %.2f%%\n", 100.0 * precisionA(),
+		                        100.0 * precisionB()));
 
-		sb.append(String.format("False balance (>0 => TF, <0 => FT): %.2f%%\n", falseBalance()));
+		sb.append(String.format("False balance (>0 => TF, <0 => FT): %.2f\n", falseBalance()));
 
 		return sb.toString();
 		}
