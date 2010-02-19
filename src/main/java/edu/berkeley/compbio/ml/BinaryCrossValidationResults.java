@@ -12,22 +12,22 @@ public class BinaryCrossValidationResults extends CrossValidationResults
 	protected int ft;
 	protected int ff;
 
-	float trueTrueRate()
+	public float trueTrueRate()
 		{
 		return (float) tt / (float) numExamples;
 		}
 
-	float falseTrueRate()
+	public float falseTrueRate()
 		{
 		return (float) ft / (float) numExamples;
 		}
 
-	float trueFalseRate()
+	public float trueFalseRate()
 		{
 		return (float) tf / (float) numExamples;
 		}
 
-	float falseFalseRate()
+	public float falseFalseRate()
 		{
 		return (float) ff / (float) numExamples;
 		}
