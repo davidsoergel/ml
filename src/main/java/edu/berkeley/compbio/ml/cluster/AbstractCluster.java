@@ -32,6 +32,7 @@ public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<St
 	public AbstractCluster(final int id)
 		{
 		this.id = id;
+		getMutableWeightedLabels(); // initialize it
 		}
 
 // --------------------- GETTER / SETTER METHODS ---------------------
