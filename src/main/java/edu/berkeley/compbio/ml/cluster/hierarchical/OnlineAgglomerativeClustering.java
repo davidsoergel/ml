@@ -237,6 +237,7 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 		batchClustering.train();
 		theRoot = batchClustering.getTree();
 		normalizeClusterLabelProbabilities();
+		doneLabellingClusters();
 		}
 
 	/**

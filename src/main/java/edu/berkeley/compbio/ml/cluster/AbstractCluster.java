@@ -89,7 +89,8 @@ public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<St
 	public void updateDerivedWeightedLabelsFromLocal()//throws DistributionException
 		{
 		//assert !weightedLabels.isEmpty();
-		derivedLabelProbabilities = new ImmutableHashWeightedSet<String>(mutableWeightedLabels);
+		derivedLabelProbabilities =
+				new ImmutableHashWeightedSet<String>(getImmutableWeightedLabels()); //mutableWeightedLabels);
 		//derivedLabelProbabilities.addAll(weightedLabels);
 		//derivedLabelProbabilities.normalize();  // don't bother, it'll be done on request anyway
 		}

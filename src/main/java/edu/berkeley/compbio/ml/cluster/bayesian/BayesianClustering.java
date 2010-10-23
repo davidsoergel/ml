@@ -179,7 +179,7 @@ public class BayesianClustering<T extends AdditiveClusterable<T>> extends Neares
 			}
 		});
 
-
+		doneLabellingClusters();
 		/*
 
 	   try

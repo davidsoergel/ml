@@ -3,6 +3,7 @@ package edu.berkeley.compbio.ml.cluster;
 import com.davidsoergel.conja.Function;
 import com.davidsoergel.conja.Parallel;
 import com.davidsoergel.conja.ProgressReportingThreadPoolExecutor;
+import com.davidsoergel.dsutils.Labellable;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.dsutils.math.MersenneTwisterFast;
 import com.davidsoergel.stats.DissimilarityMeasure;
@@ -88,6 +89,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		}
 
 	//
+
 	public AbstractClusteringMethod(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
 	                                final Map<String, Set<String>> predictLabelSets,
 	                                final ProhibitionModel<T> prohibitionModel, final Set<String> testLabels,
@@ -647,5 +649,13 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				}
 			}
 		p.flush();
+		}
+
+	protected void doneLabellingClusters()
+		{
+		for (Labellable<String> theCluster : theClusters)
+			{
+			theCluster.doneLabelling();
+			}
 		}
 	}

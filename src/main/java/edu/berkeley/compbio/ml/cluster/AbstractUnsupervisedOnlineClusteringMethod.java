@@ -92,7 +92,7 @@ public abstract class AbstractUnsupervisedOnlineClusteringMethod<T extends Clust
 					// okay, that's assuming an unsupervised clustering method, where things just get clustered by proximity and we look at the labels later.
 					// but for a supervised method, the clusters are defined by the labels in the first place.
 
-					final T p = trainingIterator.nextFullyLabelled();
+					final T p = trainingIterator.next();
 					if (add(p))
 						{
 						changed++;

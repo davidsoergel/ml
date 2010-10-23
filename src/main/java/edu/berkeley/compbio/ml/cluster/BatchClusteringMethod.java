@@ -50,7 +50,7 @@ public interface BatchClusteringMethod<T extends Clusterable<T>> extends Cluster
 	 *
 	 * @param samples a Collection of Clusterable objects.
 	 */
-//	void addAll(ClusterableIterator<T> samples);  //? extends Clusterable<T>
+	//void addAll(ClusterableIterator<T> samples);  //? extends Clusterable<T>
 
 	//void add(T sample);
 

@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
+import com.davidsoergel.dsutils.Labellable;
 import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 
@@ -7,7 +8,7 @@ import com.davidsoergel.dsutils.collections.WeightedSet;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public interface Cluster<T extends Clusterable<T>>// extends Comparable<? extends Cluster<T>>
+public interface Cluster<T extends Clusterable<T>> extends Labellable<String>// extends Comparable<? extends Cluster<T>>
 	{
 // -------------------------- OTHER METHODS --------------------------
 
@@ -62,7 +63,7 @@ public interface Cluster<T extends Clusterable<T>>// extends Comparable<? extend
 	 */
 //	MutableWeightedSet<String> getMutableWeightedLabels();// throws DistributionException;
 
-	WeightedSet<String> getImmutableWeightedLabels();
+	//WeightedSet<String> getImmutableWeightedLabels();
 
 	//void doneLabelling();
 

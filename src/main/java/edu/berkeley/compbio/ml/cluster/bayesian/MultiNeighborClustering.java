@@ -135,6 +135,7 @@ public abstract class MultiNeighborClustering<T extends AdditiveClusterable<T>>
 			return null;
 			}
 		});
+		doneLabellingClusters();
 		logger.info("Done training " + getNumClusters() + " samples");
 		}
 

@@ -300,7 +300,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 				}
 			}
 
-		winner.getMutableWeightedLabels().addAll(p.getMutableWeightedLabels());
+		winner.getMutableWeightedLabels().addAll(p.getImmutableWeightedLabels()); //p.getMutableWeightedLabels());
 		for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(winner); i.hasNext();)
 			{
 			final WeightedCell v = i.next();
@@ -367,6 +367,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		{
 		super.train(trainingCollectionIteratorFactory, iterations);
 		labeler.propagateLabels(this);
+		doneLabellingClusters();
 		}
 
 // --------------------- Interface PrototypeBasedCentroidClusteringMethod ---------------------
@@ -444,6 +445,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		 return cm.bestCluster;
 		 }
  */
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -659,6 +661,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 			 }
 		 }
  */
+
 	public void resetChanged()
 		{
 		changed = 0;

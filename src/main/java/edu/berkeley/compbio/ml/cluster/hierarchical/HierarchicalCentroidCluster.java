@@ -159,6 +159,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		 getValue().setCentroid(centroid);
 		 }
  */
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -397,4 +398,9 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		{
 
 		}*/
+
+	public int getItemCount()
+		{
+		return getPayload().getItemCount();
+		}
 	}
