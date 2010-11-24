@@ -3,6 +3,7 @@ package edu.berkeley.compbio.ml.cluster.hierarchical;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
 import com.davidsoergel.dsutils.collections.IndexedSymmetric2dBiMapWithDefault;
 import com.davidsoergel.stats.DissimilarityMeasure;
+import com.davidsoergel.trees.BasicPhylogenyNode;
 import com.davidsoergel.trees.PhylogenyNode;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
@@ -90,7 +91,7 @@ public class RandomOrderedBatchAgglomerativeClusteringMethod<T extends Clusterab
 
 			// invalidate the portions of the tree that are sensitive to the cluster: its ancestors disappear entirely, and all of their immediate children lose their parent link
 
-			final List<PhylogenyNode<CentroidCluster<T>>> ancestors = bestCluster.getAncestorPath(false);
+			final List<BasicPhylogenyNode<CentroidCluster<T>>> ancestors = bestCluster.getAncestorPath(false);
 
 			if (!ancestors.isEmpty())
 				{
