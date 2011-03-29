@@ -43,6 +43,8 @@ import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import org.apache.commons.lang.NotImplementedException;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Formatter;
 import java.util.Iterator;
 
@@ -296,37 +298,37 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		{
 		throw new NotImplementedException();
 		}*/
-	public void toNewick(final StringBuffer sb, String prefix, final String tab, final int minClusterSize,
-	                     final double minLabelProb)
+	public void toNewick(final Writer out, String prefix, final String tab, final int minClusterSize,
+	                     final double minLabelProb) throws IOException
 		{
 		// (children)name:length
 
 		if (prefix != null)
 			{
-			sb.append(prefix);
+			out.write(prefix);
 			}
 
 		if (!children.isEmpty())
 			{
 			prefix = prefix == null ? null : prefix + tab;
-			sb.append("(");
+			out.write("(");
 			final Iterator<BasicPhylogenyNode<CentroidCluster<T>>> i = children.iterator();
 			while (i.hasNext())
 				{
 				final BasicPhylogenyNode<CentroidCluster<T>> child = i.next();
 				if (child.getPayload().getN() >= minClusterSize)
 					{
-					child.toNewick(sb, prefix, tab, minClusterSize, minLabelProb);
+					child.toNewick(out, prefix, tab, minClusterSize, minLabelProb);
 					if (i.hasNext())
 						{
-						sb.append(",");
+						out.write(",");
 						}
 					}
 				}
-			sb.append(")");
+			out.write(")");
 			}
 
-		sb.append(getN());
+		out.write(getN());
 
 		final WeightedSet<String> labels = getDerivedLabelProbabilities();
 
@@ -337,12 +339,16 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 				{
 				break;
 				}
-			sb.append("_").append(label).append("=").append(String.format("%.2f", labelProb));
+			out.write("_");
+			out.write(label);
+			out.write("=");
+			out.write(String.format("%.2f", labelProb));
 			}
 
 		if (bootstrap != 0)
 			{
-			sb.append(":").append(bootstrap);
+			out.write(":");
+			out.write(bootstrap.toString());
 			}
 		}
 
