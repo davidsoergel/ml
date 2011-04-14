@@ -61,9 +61,9 @@ public class ClusteringTestResults<L extends Comparable>
 	private Map<L, String> friendlyLabelMap;
 
 	public ClusteringTestResults() //final Map<String, String> friendlyLabelMap)
-		{
-		//this.friendlyLabelMap = friendlyLabelMap;
-		}
+	{
+	//this.friendlyLabelMap = friendlyLabelMap;
+	}
 
 	public void setFriendlyLabelMap(final Map<L, String> friendlyLabelMap)
 		{
@@ -165,13 +165,29 @@ public class ClusteringTestResults<L extends Comparable>
 	                                             final double broadWrongness, final double detailedWrongness)
 
 		{
-		assert !(Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness));
-		assert !(Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness));
-		assert !(Double.isNaN(clusterProb) || Double.isInfinite(clusterProb));
-
 		final DistanceBasedMultiClassCrossValidationResults cvResults = cvResultMap.get(predictionSetName);
 
-		cvResults.addSample(broadActualLabel, predictedLabel, clusterProb, broadWrongness, detailedWrongness);
+		if (Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness))
+			{
+			cvResults.addIgnoredSample();
+			}
+		if (Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness))
+			{
+			cvResults.addIgnoredSample();
+			}
+		if (Double.isNaN(clusterProb) || Double.isInfinite(clusterProb))
+			{
+			cvResults.addIgnoredSample();
+			}
+		// assert !(Double.isNaN(broadWrongness) || Double.isInfinite(broadWrongness));
+		// assert !(Double.isNaN(detailedWrongness) || Double.isInfinite(detailedWrongness));
+		// assert !(Double.isNaN(clusterProb) || Double.isInfinite(clusterProb));
+
+		else
+			{
+
+			cvResults.addSample(broadActualLabel, predictedLabel, clusterProb, broadWrongness, detailedWrongness);
+			}
 		}
 
 	//public int perfect = 0;
@@ -346,6 +362,7 @@ public class ClusteringTestResults<L extends Comparable>
 		 }
  */
 	//@Transactional
+
 	/**
 	 * This is designed for use with ParameterSetModel, but since that interface isn't available from this package, we have
 	 * to use the confusing generic spec.
@@ -355,7 +372,7 @@ public class ClusteringTestResults<L extends Comparable>
 	 */
 	public void putResults(final SerializableDoubleHierarchicalTypedProperties<?> outerResults,
 	                       final String labelDistancesName)
-		//, Map<String, String> friendlyLabelMap)
+	//, Map<String, String> friendlyLabelMap)
 		{
 		HierarchicalTypedPropertyNode<String, Serializable, ?> innerResults = outerResults.getPayload();
 

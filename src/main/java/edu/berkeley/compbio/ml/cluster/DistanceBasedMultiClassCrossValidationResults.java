@@ -40,6 +40,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 	private int shouldNotHaveBeenUnknown = 0;
 	private int other = 0;
 	private int shouldNotHaveBeenOther = 0;
+	private int ignoredSamples;  // samples that were not considered because they violated some condition
 
 	public void addSample(final L realLabel, final L predictedLabel, final double clusterProb,
 	                      final double broadWrongness, final double detailedWrongness)
@@ -51,6 +52,11 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		labelWithinClusterProbabilities.add(clusterProb);
 		}
 
+
+	public void addIgnoredSample()
+		{
+		ignoredSamples++;
+		}
 
 	public ArrayList<Double> getPredictionDistances()
 		{
@@ -103,6 +109,13 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 		resultsNode.addChild("shouldNotHaveBeenUnknown", shouldNotHaveBeenUnknown);
 		resultsNode.addChild("other", other);
 		resultsNode.addChild("shouldNotHaveBeenOther", shouldNotHaveBeenOther);
+		resultsNode.addChild("ignoredSamples", ignoredSamples);
+		if (ignoredSamples != 0)
+			{
+			logger.error("Ignored " + ignoredSamples
+			             + " samples that produced errors (e.g., due to insufficient class labels); " + numExamples
+			             + " samples remained");
+			}
 
 		storeLabelDistances(labelDistancesName, getPredictionDistances(), resultsNode);
 		storeLabelDistances(labelDistancesName + "ToSample", getPredictionDistancesWithPrecisionCost(), resultsNode);

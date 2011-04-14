@@ -368,16 +368,17 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			int clustersWithPredictionLabel = 0;
 			for (final C theCluster : getClusters())
 				{
+				WeightedSet<String> labelProbabilities = theCluster.getDerivedLabelProbabilities();
 				try
 					{
 					// note this also insures that every cluster has a prediction label, otherwise it throws NoSuchElementException
-					final String label = theCluster.getDerivedLabelProbabilities().getDominantKeyInSet(predictLabels);
+					final String label = labelProbabilities.getDominantKeyInSet(predictLabels);
 					populatedPredictLabels.add(label);
 					clustersWithPredictionLabel++;
 					}
 				catch (NoSuchElementException e)
 					{
-					logger.debug("Cluster has no prediction label: " + theCluster);
+					logger.warn("Cluster has no " + predictionSetName + " prediction label: " + labelProbabilities);
 					}
 				}
 			result.put(predictionSetName, populatedPredictLabels);
@@ -387,6 +388,32 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 			}
 		return result;
 		}
+
+	/*
+	protected void testClustersHavePredictionLabels()
+		{
+
+		for (final Map.Entry<String, Set<String>> entry : predictLabelSets.entrySet())
+			{
+			final String predictionSetName = entry.getKey();
+			final Set<String> predictLabels = entry.getValue();
+
+			for (C theCluster : theClusters)
+				{
+				final WeightedSet<String> fragmentActualLabels = theCluster.getImmutableWeightedLabels();
+				try
+					{
+					final String detailedActualLabel = fragmentActualLabels.getDominantKeyInSet(testLabels);
+					}
+				catch (NoSuchElementException e)
+					{
+					logger.error("Cluster has no " + predictionSetName + " prediction label: "
+					             + fragmentActualLabels);
+					}
+				}
+			}
+		}
+		*/
 
 	public void computeTrainingMass(final ClusteringTestResults tr)
 		{
@@ -467,6 +494,7 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 		final WeightedSet<String> predictedLabelWeights = predictLabelWeights(tr, frag);
 		testAgainstPredictionLabels(intraLabelDistances, tr, populatedPredictLabelSets, frag, predictedLabelWeights);
 		}
+
 
 	protected void testAgainstPredictionLabels(final DissimilarityMeasure<String> intraLabelDistances,
 	                                           final ClusteringTestResults tr,
@@ -557,6 +585,9 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 				catch (NoSuchElementException e)
 					{
 					// a cluster was found, but it has no prediction label.
+
+					//	logger.error("Best match cluster has no " + predictionSetName + " prediction label: " + fragmentActualLabels);
+
 					// BAD treat this as "unknown" for now
 					// Note it's not "unknown" but "other".
 					predictedLabel = null;
@@ -585,46 +616,46 @@ public abstract class AbstractClusteringMethod<T extends Clusterable<T>, C exten
 
 	protected WeightedSet<String> predictLabelWeights(final ClusteringTestResults tr,
 	                                                  final T frag) //, Set<String> populatedTrainingLabels)
+	{
+	double secondToBestDistanceRatio = 0;
+
+	double bestDistance;
+	double bestVoteProportion;
+	double secondToBestVoteRatio = 0;
+
+
+	WeightedSet<String> labelWeights = null;
+
+	try
 		{
-		double secondToBestDistanceRatio = 0;
-
-		double bestDistance;
-		double bestVoteProportion;
-		double secondToBestVoteRatio = 0;
-
-
-		WeightedSet<String> labelWeights = null;
-
-		try
+		// make the prediction
+		final ClusterMove<T, C> cm = bestClusterMove(frag);   // throws NoGoodClusterException
+		bestDistance = cm.bestDistance;
+		if (cm.bestDistance != 0)
 			{
-			// make the prediction
-			final ClusterMove<T, C> cm = bestClusterMove(frag);   // throws NoGoodClusterException
-			bestDistance = cm.bestDistance;
-			if (cm.bestDistance != 0)
-				{
-				secondToBestDistanceRatio = cm.secondBestDistance / cm.bestDistance;
-				}
-			bestVoteProportion = cm.voteProportion;
-			if (cm.voteProportion != 0)
-				{
-				secondToBestVoteRatio = cm.secondBestVoteProportion / cm.voteProportion;
-				}
-
-			labelWeights = cm.bestCluster.getDerivedLabelProbabilities();
+			secondToBestDistanceRatio = cm.secondBestDistance / cm.bestDistance;
 			}
-		catch (NoGoodClusterException e)
+		bestVoteProportion = cm.voteProportion;
+		if (cm.voteProportion != 0)
 			{
-			bestDistance = Double.NaN; //DissimilarityMeasure.UNKNOWN_DISTANCE;
-			secondToBestDistanceRatio = 1.0;
-			bestVoteProportion = 0;
-			secondToBestVoteRatio = 1.0;
-
-			tr.incrementUnknown();
+			secondToBestVoteRatio = cm.secondBestVoteProportion / cm.voteProportion;
 			}
 
-		tr.addClusterResult(bestDistance, secondToBestDistanceRatio, bestVoteProportion, secondToBestVoteRatio);
-		return labelWeights;
+		labelWeights = cm.bestCluster.getDerivedLabelProbabilities();
 		}
+	catch (NoGoodClusterException e)
+		{
+		bestDistance = Double.NaN; //DissimilarityMeasure.UNKNOWN_DISTANCE;
+		secondToBestDistanceRatio = 1.0;
+		bestVoteProportion = 0;
+		secondToBestVoteRatio = 1.0;
+
+		tr.incrementUnknown();
+		}
+
+	tr.addClusterResult(bestDistance, secondToBestDistanceRatio, bestVoteProportion, secondToBestVoteRatio);
+	return labelWeights;
+	}
 
 	/**
 	 * Return a ClusterMove object describing the best way to reassign the given point to a new cluster.

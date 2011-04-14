@@ -23,7 +23,7 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	{
 	private static final Logger logger = Logger.getLogger(MultiClassCrossValidationResults.class);
 
-	private int numExamples;
+	protected int numExamples;
 	private final Map<L, Multiset<L>> confusionMatrix;
 
 	// BAD test this class
@@ -35,16 +35,16 @@ public class MultiClassCrossValidationResults<L extends Comparable> extends Cros
 	//private Map<L, String> friendlyLabelMap;
 
 	public MultiClassCrossValidationResults()//Map<L, String> friendlyLabelMap)
+	{
+	confusionMatrix = new MapMaker().makeComputingMap(new Function<L, Multiset<L>>()
+	{
+	public Multiset<L> apply(final L key)
 		{
-		confusionMatrix = new MapMaker().makeComputingMap(new Function<L, Multiset<L>>()
-		{
-		public Multiset<L> apply(final L key)
-			{
-			return HashMultiset.create();
-			}
-		});
-		//this.friendlyLabelMap = friendlyLabelMap;
+		return HashMultiset.create();
 		}
+	});
+	//this.friendlyLabelMap = friendlyLabelMap;
+	}
 
 
 	public SortedSet<L> getLabels()
