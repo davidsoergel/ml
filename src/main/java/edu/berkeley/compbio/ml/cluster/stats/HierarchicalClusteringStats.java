@@ -48,14 +48,15 @@ public class HierarchicalClusteringStats
 	private static <T extends Clusterable<T>> Map<Double, ClusterList<T>> selectOTUs(
 			final HierarchicalCentroidCluster<T> tree, Collection<Double> thresholds) throws TreeException
 		{
-		final DepthFirstTreeIterator<CentroidCluster<T>, PhylogenyNode<CentroidCluster<T>>> it =
-				tree.depthFirstIterator();
 
 		final Map<Double, ClusterList<T>> results = new HashMap<Double, ClusterList<T>>();
 
 		int i = 0;
 		for (final Double threshold : thresholds)
 			{
+			final DepthFirstTreeIterator<CentroidCluster<T>, PhylogenyNode<CentroidCluster<T>>> it =
+					tree.depthFirstIterator();
+
 			Set<Cluster<T>> result = new HashSet<Cluster<T>>();
 			final double halfThreshold = threshold / 2.0;
 			//int otuCount = 0;
