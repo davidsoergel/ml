@@ -42,6 +42,7 @@ import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import org.apache.commons.lang.NotImplementedException;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -221,6 +222,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 *
 	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
 	 */
+	@NotNull
 	public WeightedSet<String> getImmutableWeightedLabels()
 		{
 		return getPayload().getImmutableWeightedLabels();
@@ -237,6 +239,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 *
 	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
 	 */
+	@NotNull
 	public MutableWeightedSet<String> getMutableWeightedLabels()
 		{
 		return ((Labellable<String>) getPayload()).getMutableWeightedLabels();
@@ -352,7 +355,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 			}
 		}
 
-	public int compareTo(final HierarchicalCentroidCluster<T> o)
+	public int compareTo(@NotNull final HierarchicalCentroidCluster<T> o)
 		{
 		final int id = getId();
 		final int oid = o.getId();
