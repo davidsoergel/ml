@@ -30,7 +30,7 @@ public class HierarchicalClusteringStringDistanceMatrix
 	{
 	private static final Logger logger = Logger.getLogger(HierarchicalClusteringStringDistanceMatrix.class);
 
-	private static final long serialVersionUID = 5L;
+	private static final long serialVersionUID = 6L;
 
 	public HierarchicalClusteringStringDistanceMatrix()  // for custom deserialization
 	{
@@ -79,12 +79,14 @@ public class HierarchicalClusteringStringDistanceMatrix
 			{
 			// clone the value table
 			underlyingIntMap = new SortedSymmetric2dBiMapWithDefault<Integer, Float>(cloneFrom.underlyingIntMap);
+			sanityCheck();
 			}
 		else
 			{
 			// this is a performance improvement for cases where we don't care about modifying the original.
 			// It's dangerous though, use with caution
 			underlyingIntMap = cloneFrom.underlyingIntMap;
+			sanityCheck();
 			}
 		}
 
