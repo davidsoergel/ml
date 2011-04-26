@@ -3,8 +3,6 @@ package edu.berkeley.compbio.ml.cluster.hierarchical;
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 
-import java.util.HashSet;
-
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
@@ -23,17 +21,18 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 	                                          final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
 		{
 		// there was a mysterious concurrent-modification sort of problem; does this fix it?
-		final HashSet<HierarchicalCentroidCluster<T>> activeKeys =
-				new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getKeys());
+		// final Collection<HierarchicalCentroidCluster<T>> activeKeys =
+		//		new HashSet<HierarchicalCentroidCluster<T>>(theActiveNodeDistanceMatrix.getKeys());
 
-		//assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(composite);
-		theActiveNodeDistanceMatrix.addKey(composite);
 
 		//PERF serial test
-		for (HierarchicalCentroidCluster<T> node : activeKeys)
+		for (HierarchicalCentroidCluster<T> node : theActiveNodeDistanceMatrix.getKeys())
 			{
 			addCompositeVsNodeToDistanceMatrix(a, b, composite, node, theActiveNodeDistanceMatrix);
 			}
+
+		//assert !theActiveNodeDistanceMatrix.getActiveKeys().contains(composite);
+		theActiveNodeDistanceMatrix.addKey(composite);
 
 		//assert theActiveNodeDistanceMatrix.getActiveKeys().contains(composite);
 
@@ -81,8 +80,6 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 		composite.doneLabelling();
 
-		assert composite.getWeight() != null;
-
 		int numActive = theActiveNodeDistanceMatrix.numKeys();
 //		int numPairs = theActiveNodeDistanceMatrix.numPairs();
 
@@ -90,10 +87,9 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		// add the branch to the distance table for consistency
 		//	theActiveNodeDistanceMatrix.put(a, composite, distance);
 		//	theActiveNodeDistanceMatrix.put(b, composite, distance);
-		assert composite.getWeight() != null;
+
 
 		addCompositeToDistanceMatrix(a, b, composite, theActiveNodeDistanceMatrix);
-		assert composite.getWeight() != null;
 
 		//** these assertions are likely true only for single-threaded clusterers,
 		// and we don't want to synchronize a whole block on theActiveNodeDistancesMatrix here just for the sake of the assertions
