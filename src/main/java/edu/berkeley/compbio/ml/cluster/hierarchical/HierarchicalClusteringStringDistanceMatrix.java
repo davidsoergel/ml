@@ -33,17 +33,29 @@ public class HierarchicalClusteringStringDistanceMatrix
 	private static final long serialVersionUID = 5L;
 
 	public HierarchicalClusteringStringDistanceMatrix()  // for custom deserialization
-		{
-		super();
-		//super(null);
-		}
+	{
+	super();
+	//super(null);
+	}
 
 	public HierarchicalClusteringStringDistanceMatrix(final Float defaultValue)
 		{
 		super(defaultValue);
 		}
 
-	public HierarchicalClusteringStringDistanceMatrix(HierarchicalClusteringStringDistanceMatrix cloneFrom)
+	public HierarchicalClusteringStringDistanceMatrix(final Float defaultValue,
+	                                                  final InsertionTrackingSet<HierarchicalCentroidCluster<SimpleClusterable<String>>> keys)
+		{
+		super(defaultValue, keys);
+		}
+
+	public HierarchicalClusteringStringDistanceMatrix copyDefaultAndKeys()
+		{
+		return new HierarchicalClusteringStringDistanceMatrix(getDefaultValue(), keys);
+		}
+
+	public HierarchicalClusteringStringDistanceMatrix(HierarchicalClusteringStringDistanceMatrix cloneFrom,
+	                                                  boolean deepCopy)
 		{
 		setDefaultValue(cloneFrom.getDefaultValue());
 
@@ -63,8 +75,17 @@ public class HierarchicalClusteringStringDistanceMatrix
 			keys.put(c, id);
 			}
 
-		// clone the value table
-		underlyingIntMap = new SortedSymmetric2dBiMapWithDefault<Integer, Float>(cloneFrom.underlyingIntMap);
+		if (deepCopy)
+			{
+			// clone the value table
+			underlyingIntMap = new SortedSymmetric2dBiMapWithDefault<Integer, Float>(cloneFrom.underlyingIntMap);
+			}
+		else
+			{
+			// this is a performance improvement for cases where we don't care about modifying the original.
+			// It's dangerous though, use with caution
+			underlyingIntMap = cloneFrom.underlyingIntMap;
+			}
 		}
 
 
