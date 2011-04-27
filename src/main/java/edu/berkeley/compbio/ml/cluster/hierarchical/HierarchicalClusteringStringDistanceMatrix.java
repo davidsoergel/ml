@@ -130,6 +130,7 @@ public class HierarchicalClusteringStringDistanceMatrix
 		catch (EOFException e)
 			{
 			}
+		underlyingIntMap.addKeys(keys.getIndexes());
 		logger.info("Loaded distance matrix from cache: " + keys.size() + " keys, " + count + " pairs");
 		}
 
