@@ -79,7 +79,7 @@ public class HierarchicalClusteringStringDistanceMatrix
 			{
 			// clone the value table
 			underlyingIntMap = new SortedSymmetric2dBiMapWithDefault<Integer, Float>(cloneFrom.underlyingIntMap);
-			sanityCheck();
+			sanityCheck();  // keeping these separate makes the stack trace reveal which branch we're in when an error occurs
 			}
 		else
 			{
