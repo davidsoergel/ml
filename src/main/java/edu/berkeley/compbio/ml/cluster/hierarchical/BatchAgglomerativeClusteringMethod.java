@@ -196,6 +196,7 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 				{
 				remainingKey.setParent(theRoot);
 				remainingKey.setLength(Double.MAX_VALUE);
+				theRoot.addAll(remainingKey);
 				}
 			}
 

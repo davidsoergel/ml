@@ -35,6 +35,7 @@ package edu.berkeley.compbio.ml.cluster;
 
 import org.apache.log4j.Logger;
 
+import java.io.Serializable;
 import java.util.Formatter;
 
 
@@ -48,7 +49,7 @@ import java.util.Formatter;
  * @version $Id$
  */
 public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends AbstractCluster<T>
-		implements CentroidCluster<T>
+		implements CentroidCluster<T>, Serializable
 	{
 // ------------------------------ FIELDS ------------------------------
 

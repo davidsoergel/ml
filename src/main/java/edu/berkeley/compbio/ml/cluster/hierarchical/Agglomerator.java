@@ -67,7 +67,6 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		final HierarchicalCentroidCluster<T> composite = new HierarchicalCentroidCluster<T>(id,
 		                                                                                    null);  // don't bother storing explicit centroids for composite nodes
 
-
 		a.setParent(composite);
 		b.setParent(composite);
 

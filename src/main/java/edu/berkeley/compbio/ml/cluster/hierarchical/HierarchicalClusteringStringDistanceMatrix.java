@@ -68,10 +68,14 @@ public class HierarchicalClusteringStringDistanceMatrix
 			String name = oldCluster.getCentroid().getId();
 			final Integer id = cloneFrom.keys.indexOf(oldCluster);
 
+			SimpleClusterable<String> simpleClusterable = new SimpleClusterable<String>(name);
+			simpleClusterable.getMutableWeightedLabels().add(name, 1.0, 1);
+			simpleClusterable.doneLabelling();
+
 			final HierarchicalCentroidCluster<SimpleClusterable<String>> c =
-					new HierarchicalCentroidCluster<SimpleClusterable<String>>(id, new SimpleClusterable<String>(name));
-			c.getMutableWeightedLabels().add(name, 1.0, 1);
+					new HierarchicalCentroidCluster<SimpleClusterable<String>>(id, simpleClusterable);
 			c.doneLabelling();
+
 			keys.put(c, id);
 			}
 
@@ -102,9 +106,12 @@ public class HierarchicalClusteringStringDistanceMatrix
 		for (String name : keyStrings)
 			{
 			final Integer id = keyStrings.indexOf(name);
+			SimpleClusterable<String> simpleClusterable = new SimpleClusterable<String>(name);
+			simpleClusterable.getMutableWeightedLabels().add(name, 1.0, 1);
+			simpleClusterable.doneLabelling();
 			final HierarchicalCentroidCluster<SimpleClusterable<String>> c =
-					new HierarchicalCentroidCluster<SimpleClusterable<String>>(id, new SimpleClusterable<String>(name));
-			c.getMutableWeightedLabels().add(name, 1.0, 1);
+					new HierarchicalCentroidCluster<SimpleClusterable<String>>(id, simpleClusterable);
+			//	c.getMutableWeightedLabels().add(name, 1.0, 1);
 			c.doneLabelling();
 			keys.put(c, id);
 			}
@@ -162,7 +169,7 @@ public class HierarchicalClusteringStringDistanceMatrix
 
 	public HierarchicalClusteringStringDistanceMatrix sample(final int sampleSize)
 		{
-		if (sampleSize == 0)
+		if (sampleSize == 0 || sampleSize >= numKeys())
 			{
 			return this;
 			}

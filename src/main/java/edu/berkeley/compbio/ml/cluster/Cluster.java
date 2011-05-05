@@ -50,9 +50,9 @@ public interface Cluster<T extends Clusterable<T>> extends Labellable<String>// 
 	int getId();
 
 	/**
-	 * Returns the number of samples in thie cluster
+	 * Returns the number of samples in this cluster
 	 *
-	 * @return the number of samples in thie cluster
+	 * @return the number of samples in this cluster
 	 */
 	int getN();
 

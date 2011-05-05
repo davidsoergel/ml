@@ -105,7 +105,9 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 		T s1 = samples.next();
 		T s2 = samples.next();
 		final HierarchicalCentroidCluster<T> s1c = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), s1);
+		s1c.doneLabelling();
 		final HierarchicalCentroidCluster<T> s2c = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), s2);
+		s2c.doneLabelling();
 
 		float d = (float) measure.distanceFromTo(s1c.getPayload().getCentroid(), s2c.getPayload().getCentroid());
 		theActiveNodeDistanceMatrix.put(s1c, s2c, d);

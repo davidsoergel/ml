@@ -11,7 +11,8 @@ import java.io.Serializable;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class SimpleClusterable<T extends Serializable> implements Clusterable<SimpleClusterable<T>>, Serializable
+public class SimpleClusterable<T extends Serializable & Comparable>
+		implements Clusterable<SimpleClusterable<T>>, Serializable, Comparable<SimpleClusterable<T>>
 	{
 	transient private LabellableImpl<String> labels = new LabellableImpl<String>();
 
@@ -57,5 +58,16 @@ public class SimpleClusterable<T extends Serializable> implements Clusterable<Si
 	public String getId()
 		{
 		return id.toString();
+		}
+
+	public int compareTo(final SimpleClusterable<T> o)
+		{
+		return id.compareTo(o.getId());
+		}
+
+	@Override
+	public String toString()
+		{
+		return "SimpleClusterable{" + "id=" + id + '}';
 		}
 	}

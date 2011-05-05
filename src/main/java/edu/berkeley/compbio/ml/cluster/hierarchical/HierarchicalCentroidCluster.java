@@ -37,7 +37,9 @@ import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.trees.BasicPhylogenyNode;
+import com.davidsoergel.trees.PhylogenyNode;
 import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
+import edu.berkeley.compbio.ml.cluster.BatchCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
@@ -47,7 +49,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Formatter;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 
 /**
@@ -59,7 +63,8 @@ import java.util.Iterator;
  * @version $Id$
  */
 public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends BasicPhylogenyNode<CentroidCluster<T>>
-		implements CentroidCluster<T>, Comparable<HierarchicalCentroidCluster<T>>
+		implements CentroidCluster<T>,
+		           BatchCluster<T, HierarchicalCentroidCluster<T>> //, Comparable<HierarchicalCentroidCluster<T>>
 		//,    HierarchyNode<CentroidCluster<T>,HierarchicalCentroidCluster<T>>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -67,6 +72,9 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	public HierarchicalCentroidCluster(final int id, final T sample)
 		{
 		super(new BasicCentroidCluster<T>(id, sample));
+		//getPayload().doneLabelling();
+		//getMutableWeightedLabels().addAll(getPayload().getImmutableWeightedLabels());
+		//doneLabelling();
 		setWeight(1.);
 		}
 
@@ -187,6 +195,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public boolean addAll(final Cluster<T> point)
 		{
+		cachedPoints = null;
 		return getPayload().addAll(point);
 		//throw new NotImplementedException();
 		}
@@ -411,5 +420,25 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	public int getItemCount()
 		{
 		return getPayload().getItemCount();
+		}
+
+	public void forgetExamples()
+		{
+		throw new NotImplementedException();
+		}
+
+	Set<T> cachedPoints;
+
+	public Set<T> getPoints()
+		{
+		if (cachedPoints == null)
+			{
+			cachedPoints = new HashSet<T>();
+			for (PhylogenyNode<CentroidCluster<T>> t : getDescendantLeaves())
+				{
+				cachedPoints.add(t.getPayload().getCentroid());
+				}
+			}
+		return cachedPoints;
 		}
 	}

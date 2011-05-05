@@ -4,11 +4,14 @@ import com.davidsoergel.dsutils.LabellableImpl;
 import com.davidsoergel.dsutils.collections.ImmutableHashWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 
+import java.io.Serializable;
+
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<String> implements Cluster<T>
+public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<String>
+		implements Cluster<T>, Serializable
 	{
 // ------------------------------ FIELDS ------------------------------
 

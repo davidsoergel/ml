@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.ml.cluster.stats;
 
+import com.davidsoergel.trees.BasicPhylogenyNode;
 import com.davidsoergel.trees.DepthFirstTreeIterator;
 import com.davidsoergel.trees.LengthWeightHierarchyNode;
 import com.davidsoergel.trees.PhylogenyNode;
@@ -22,31 +23,40 @@ import java.util.Set;
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
-public class HierarchicalClusteringStats
+public class HierarchicalClusteringStats<T extends Clusterable<T>>
 	{
-	final HierarchicalCentroidCluster theClustering;
+	final HierarchicalCentroidCluster<T> theClustering;
+	final HierarchicalCentroidCluster<T> referenceTree;
 
-	public HierarchicalClusteringStats(final HierarchicalCentroidCluster theClustering)
+	public HierarchicalClusteringStats(final HierarchicalCentroidCluster<T> theClustering,
+	                                   final HierarchicalCentroidCluster<T> referenceTree)
 		{
 		this.theClustering = theClustering;
+		this.referenceTree = referenceTree;
 		}
 
 	public Map<Double, ClusteringStats> statsByLevel(Collection<Double> thresholds) throws TreeException
 		{
 		final Map<Double, ClusteringStats> result = new HashMap<Double, ClusteringStats>();
-		Map<Double, ClusterList> clusterSets = selectOTUs(theClustering, thresholds);
-		for (Map.Entry<Double, ClusterList> entry : clusterSets.entrySet())
+
+		Map<Double, ClusterList<T>> clusterSets = selectOTUs(theClustering, thresholds);
+		Map<Double, ClusterList<T>> referenceSets = selectOTUs(referenceTree, thresholds);
+
+		for (Map.Entry<Double, ClusterList<T>> entry : clusterSets.entrySet())
 			{
 			Double threshold = entry.getKey();
 			ClusterList clusters = entry.getValue();
-			ClusteringStats stats = new ClusteringStats(clusters);
+
+			ClusterList referenceClusters = referenceSets.get(threshold);
+
+			ClusteringStats stats = new ClusteringStats(clusters, referenceClusters); //, comparator);
 			result.put(threshold, stats);
 			}
 		return result;
 		}
 
-	private static <T extends Clusterable<T>> Map<Double, ClusterList<T>> selectOTUs(
-			final HierarchicalCentroidCluster<T> tree, Collection<Double> thresholds) throws TreeException
+	private Map<Double, ClusterList<T>> selectOTUs(final BasicPhylogenyNode tree, Collection<Double> thresholds)
+			throws TreeException
 		{
 
 		final Map<Double, ClusterList<T>> results = new HashMap<Double, ClusterList<T>>();

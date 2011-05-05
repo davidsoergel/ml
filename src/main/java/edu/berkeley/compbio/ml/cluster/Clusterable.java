@@ -55,7 +55,7 @@ public interface Clusterable<T extends Clusterable> extends Cloneable, Labellabl
 	 * @see Object#clone
 	 * @see java.lang.Cloneable
 	 */
-	T clone();
+	//protected T clone();
 
 
 // -------------------------- OTHER METHODS --------------------------

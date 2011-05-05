@@ -17,6 +17,7 @@ public class AbundanceModel
 	int Sabund = 0;
 	public int[] F = new int[11];
 	public int observed;
+	public int totalSamples = 0;
 
 	public AbundanceModel(final ClusterList<? extends Clusterable> a)
 		{
@@ -25,6 +26,8 @@ public class AbundanceModel
 		for (Cluster<? extends Clusterable> cluster : l)
 			{
 			final int n = cluster.getN();
+			totalSamples += n;
+
 			//final int n = cluster.getWeight();
 			if (n == 0)
 				{
