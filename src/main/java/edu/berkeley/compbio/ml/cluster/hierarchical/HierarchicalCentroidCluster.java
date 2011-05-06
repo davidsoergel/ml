@@ -429,7 +429,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 
 	Set<T> cachedPoints;
 
-	public Set<T> getPoints()
+	public synchronized Set<T> getPoints()
 		{
 		if (cachedPoints == null)
 			{
