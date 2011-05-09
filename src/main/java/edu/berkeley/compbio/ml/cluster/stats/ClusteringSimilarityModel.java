@@ -1,5 +1,6 @@
 package edu.berkeley.compbio.ml.cluster.stats;
 
+import com.davidsoergel.dsutils.EquivalenceDefinition;
 import com.davidsoergel.dsutils.collections.DSCollectionUtils;
 import com.davidsoergel.dsutils.collections.UnorderedPair;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
@@ -8,9 +9,9 @@ import edu.berkeley.compbio.ml.cluster.ClusterList;
 import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -49,20 +50,20 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 	List<? extends Cluster<? extends T>> referenceClusters = referenceClusterList.getClusters();
 	List<? extends Cluster<? extends T>> clusters = theClusterList.getClusters();
 
-	List<BatchCluster<T, ?>> castReferenceClusters = new ArrayList<BatchCluster<T, ?>>();
+	Set<BatchCluster<T, ?>> castReferenceClusters = new HashSet<BatchCluster<T, ?>>();
 	for (Cluster<? extends T> referenceCluster : referenceClusters)
 		{
 		castReferenceClusters.add((BatchCluster<T, ?>) referenceCluster);
 		}
 
-	List<BatchCluster<T, ?>> castClusters = new ArrayList<BatchCluster<T, ?>>();
+	Set<BatchCluster<T, ?>> castClusters = new HashSet<BatchCluster<T, ?>>();
 	for (Cluster<? extends T> cluster : clusters)
 		{
 		castClusters.add((BatchCluster<T, ?>) cluster);
 		}
 
 	Set<BatchCluster<T, ?>> identicalClusters =
-			DSCollectionUtils.intersection(castReferenceClusters, castClusters, new IdenticalClusterComparator());
+			DSCollectionUtils.intersectionFast(castReferenceClusters, castClusters, new IdenticalClusterComparator());
 
 
 	proportionOfReferenceClustersIdentical = (double) identicalClusters.size() / (double) castReferenceClusters.size();
@@ -71,10 +72,10 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 
 	// look for clusters that can be unambiguously mapped to one another
 
-	Set<BatchCluster<T, ?>> mappableReferenceClusters =
-			DSCollectionUtils.intersection(castReferenceClusters, castClusters, new MappableClusterComparator(0.5));
-	Set<BatchCluster<T, ?>> mappablePredictedClusters =
-			DSCollectionUtils.intersection(castClusters, castReferenceClusters, new MappableClusterComparator(0.5));
+	Set<BatchCluster<T, ?>> mappableReferenceClusters = DSCollectionUtils
+			.intersectionExhaustive(castReferenceClusters, castClusters, new MappableClusterComparator(0.5));
+	Set<BatchCluster<T, ?>> mappablePredictedClusters = DSCollectionUtils
+			.intersectionExhaustive(castClusters, castReferenceClusters, new MappableClusterComparator(0.5));
 
 	// obviously the number of mappable clusters must be the same, since the mapping is 1-1, though the actual clusters are different
 	// oops this is no longer true since the "mappable" thing is now asymmetric
@@ -156,11 +157,11 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 
 
 	Set<UnorderedPair<T>> truePositives = DSCollectionUtils
-			.intersection(referenceSameClusterSamplePairs, predictedSameClusterSamplePairs, comparator);
-	Set<UnorderedPair<T>> falsePositives =
-			DSCollectionUtils.subtract(predictedSameClusterSamplePairs, referenceSameClusterSamplePairs, comparator);
-	Set<UnorderedPair<T>> falseNegatives =
-			DSCollectionUtils.subtract(referenceSameClusterSamplePairs, predictedSameClusterSamplePairs, comparator);
+			.intersectionFast(referenceSameClusterSamplePairs, predictedSameClusterSamplePairs, comparator);
+	Set<UnorderedPair<T>> falsePositives = DSCollectionUtils
+			.subtractFast(predictedSameClusterSamplePairs, referenceSameClusterSamplePairs, comparator);
+	Set<UnorderedPair<T>> falseNegatives = DSCollectionUtils
+			.subtractFast(referenceSameClusterSamplePairs, predictedSameClusterSamplePairs, comparator);
 
 	int trueNegatives = totalSamplePairs - truePositives.size() - falsePositives.size() - falseNegatives.size();
 
@@ -254,8 +255,6 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 			{
 			}
 
-		//** could rejigger to sort by overall match quality: large clusters with lots of overlap first
-		//** note this sort is overall unstable: "equal" elements may not be contiguous
 		public int compare(final BatchCluster<T, ?> o1, final BatchCluster<T, ?> o2)
 			{
 
@@ -266,7 +265,9 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 			Set<T> samplesA = o1.getPoints();
 			Set<T> samplesB = o2.getPoints();
 
-			// rely on hashcodes & equality of the samples
+			// don't rely on hashcodes & equality of the samples
+			// this is to support SimpleClusterable, which has a stable sort comparing the ID strings,
+			// but where we can't use equals() and hashCode() because the labels are mutable
 			Collection<T> union = DSCollectionUtils.unionUsingCompare(samplesA, samplesB);
 			Collection<T> intersection = DSCollectionUtils.intersectionUsingCompare(samplesA, samplesB);
 
@@ -318,7 +319,7 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 			}
 		}
 
-	private class MappableClusterComparator implements Comparator<BatchCluster<T, ?>>
+	private class MappableClusterComparator implements EquivalenceDefinition<BatchCluster<T, ?>>
 		{
 		private double minMatchingSamplesRequiredForEquality;
 
@@ -337,7 +338,7 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 
 		//** could rejigger to sort by overall match quality: large clusters with lots of overlap first
 		//** note this sort is overall unstable: "equal" elements may not be contiguous
-		public int compare(final BatchCluster<T, ?> o1, final BatchCluster<T, ?> o2)
+		public boolean areEquivalent(final BatchCluster<T, ?> o1, final BatchCluster<T, ?> o2)
 			{
 
 			// recall n may be different from the number of samples, so we don't trust it.
@@ -359,9 +360,9 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 			*/
 
 			// since this is asymmetric anyway, may as well do the relaxed variant
-			if (intersection.size() > samplesA.size() * minMatchingSamplesRequiredForEquality)
-				{
-				return 0;
+			return (intersection.size() > samplesA.size() * minMatchingSamplesRequiredForEquality);
+			/*	{
+				return true;
 				}
 
 			// still need a stable sort
@@ -403,7 +404,7 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 					}
 				}
 
-			throw new ClusterRuntimeException("Impossible");
+			throw new ClusterRuntimeException("Impossible");*/
 			}
 		}
 	}

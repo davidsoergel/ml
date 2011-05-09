@@ -17,10 +17,12 @@ public class SimpleClusterable<T extends Serializable & Comparable>
 	transient private LabellableImpl<String> labels = new LabellableImpl<String>();
 
 	final T id;
+	final String idString;
 
 	public SimpleClusterable(final T id)
 		{
 		this.id = id;
+		this.idString = id.toString();
 		}
 
 	public void doneLabelling()
@@ -57,12 +59,14 @@ public class SimpleClusterable<T extends Serializable & Comparable>
 
 	public String getId()
 		{
-		return id.toString();
+		return idString;
 		}
+
+	// we can't safely implement equals and hashCode() because the labels are mutable; but we can provide a stable sort anyway
 
 	public int compareTo(final SimpleClusterable<T> o)
 		{
-		return id.compareTo(o.getId());
+		return idString.compareTo(o.getId());
 		}
 
 	@Override
