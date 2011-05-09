@@ -88,7 +88,7 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 
 	// Sensitivity/specificity of pairwise taxon OTU co-occurrence.  I.e., being in the same cluster in the reference clustering is the goal; how well is that predicted?
 
-	Set<UnorderedPair<T>> referenceSameClusterSamplePairs = new TreeSet<UnorderedPair<T>>();
+	SortedSet<UnorderedPair<T>> referenceSameClusterSamplePairs = new TreeSet<UnorderedPair<T>>();
 	for (BatchCluster<T, ?> cluster : castReferenceClusters)
 		{
 		SortedSet<T> points = new TreeSet<T>(cluster.getPoints());
@@ -105,7 +105,7 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 			}
 		}
 
-	Set<UnorderedPair<T>> predictedSameClusterSamplePairs = new TreeSet<UnorderedPair<T>>();
+	SortedSet<UnorderedPair<T>> predictedSameClusterSamplePairs = new TreeSet<UnorderedPair<T>>();
 	for (BatchCluster<T, ?> cluster : castClusters)
 		{
 		SortedSet<T> points = new TreeSet<T>(cluster.getPoints());
@@ -133,35 +133,12 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 			   DSCollectionUtils.subtract(referenceSameClusterSamplePairs, predictedSameClusterSamplePairs).size();
 	   */
 
-	final Comparator<UnorderedPair<T>> comparator = new Comparator<UnorderedPair<T>>()
-	{
-	public int compare(final UnorderedPair<T> o1, final UnorderedPair<T> o2)
-		{
-		// note use of special element comparator?
-		// no, don't need it
-		/* int c = sampleComparator.compare(o1.getKey1(),o2.getKey1());
-		   if (c == 0)
-			   {
-			   c = sampleComparator.compare(o1.getKey2(),o2.getKey2());
-			   }
-		   return c;
-		   */
-		int c = o1.getKey1().compareTo(o2.getKey1());
-		if (c == 0)
-			{
-			c = o1.getKey2().compareTo(o2.getKey2());
-			}
-		return c;
-		}
-	};
-
-
 	Set<UnorderedPair<T>> truePositives = DSCollectionUtils
-			.intersectionFast(referenceSameClusterSamplePairs, predictedSameClusterSamplePairs, comparator);
+			.intersectionFastUsingCompare(referenceSameClusterSamplePairs, predictedSameClusterSamplePairs);
 	Set<UnorderedPair<T>> falsePositives = DSCollectionUtils
-			.subtractFast(predictedSameClusterSamplePairs, referenceSameClusterSamplePairs, comparator);
+			.subtractFastUsingCompare(predictedSameClusterSamplePairs, referenceSameClusterSamplePairs);
 	Set<UnorderedPair<T>> falseNegatives = DSCollectionUtils
-			.subtractFast(referenceSameClusterSamplePairs, predictedSameClusterSamplePairs, comparator);
+			.subtractFastUsingCompare(referenceSameClusterSamplePairs, predictedSameClusterSamplePairs);
 
 	int trueNegatives = totalSamplePairs - truePositives.size() - falsePositives.size() - falseNegatives.size();
 
@@ -262,14 +239,14 @@ public class ClusteringSimilarityModel<T extends Clusterable<T> & Comparable<T>>
 			//	int so1 = o1.getN();
 			//	int so2 = o2.getN();
 
-			Set<T> samplesA = o1.getPoints();
-			Set<T> samplesB = o2.getPoints();
+			SortedSet<T> samplesA = o1.getPoints();
+			SortedSet<T> samplesB = o2.getPoints();
 
 			// don't rely on hashcodes & equality of the samples
 			// this is to support SimpleClusterable, which has a stable sort comparing the ID strings,
 			// but where we can't use equals() and hashCode() because the labels are mutable
-			Collection<T> union = DSCollectionUtils.unionUsingCompare(samplesA, samplesB);
-			Collection<T> intersection = DSCollectionUtils.intersectionUsingCompare(samplesA, samplesB);
+			Collection<T> union = DSCollectionUtils.unionFastUsingCompare(samplesA, samplesB);
+			Collection<T> intersection = DSCollectionUtils.intersectionFastUsingCompare(samplesA, samplesB);
 
 			if (intersection.size() == union.size())
 				{

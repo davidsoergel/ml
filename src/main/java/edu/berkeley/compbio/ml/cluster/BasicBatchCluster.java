@@ -1,7 +1,7 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Explicitly stores all the points in a cluster.
@@ -18,7 +18,7 @@ public class BasicBatchCluster<T extends Clusterable<T>> extends AbstractCluster
 	/**
 	 * The set of samples contained in this cluster.
 	 */
-	private Set<T> thePoints = new HashSet<T>();
+	private SortedSet<T> thePoints = new TreeSet<T>();
 
 
 // --------------------------- CONSTRUCTORS ---------------------------
@@ -111,10 +111,10 @@ public class BasicBatchCluster<T extends Clusterable<T>> extends AbstractCluster
 	 */
 	public synchronized void forgetExamples()
 		{
-		thePoints = new HashSet<T>();
+		thePoints = new TreeSet<T>();
 		}
 
-	public synchronized Set<T> getPoints()
+	public synchronized SortedSet<T> getPoints()
 		{
 		return thePoints;
 		}

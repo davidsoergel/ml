@@ -49,9 +49,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Formatter;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 /**
@@ -427,13 +427,13 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		throw new NotImplementedException();
 		}
 
-	Set<T> cachedPoints;
+	SortedSet<T> cachedPoints;
 
-	public synchronized Set<T> getPoints()
+	public synchronized SortedSet<T> getPoints()
 		{
 		if (cachedPoints == null)
 			{
-			cachedPoints = new HashSet<T>();
+			cachedPoints = new TreeSet<T>();
 			for (PhylogenyNode<CentroidCluster<T>> t : getDescendantLeaves())
 				{
 				cachedPoints.add(t.getPayload().getCentroid());

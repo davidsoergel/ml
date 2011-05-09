@@ -1,6 +1,6 @@
 package edu.berkeley.compbio.ml.cluster;
 
-import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
@@ -10,5 +10,5 @@ public interface BatchCluster<T extends Clusterable<T>, H extends BatchCluster<T
 	{
 	void forgetExamples();
 
-	Set<T> getPoints();
+	SortedSet<T> getPoints();
 	}
