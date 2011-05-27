@@ -13,6 +13,7 @@ import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
 import edu.berkeley.compbio.ml.cluster.ProhibitionModel;
 import edu.berkeley.compbio.ml.cluster.PrototypeBasedCentroidClusteringMethod;
+import edu.berkeley.compbio.ml.distancemeasure.DistanceMeasureRuntimeException;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -147,29 +148,39 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 				}
 			else
 				{
-				// Note that different distance measures may need to deal with the priors differently:
-				// if it's probability, multiply; if log probability, add; for other distance types, who knows?
-				// so, just pass the priors in and let the distance measure decide what to do with them
-				final double distance;
-				if (measure instanceof ProbabilisticDissimilarityMeasure)
+				try
 					{
-					distance = ((ProbabilisticDissimilarityMeasure) measure)
-							.distanceFromTo(p, cluster.getCentroid(), clusterPriors.get(cluster));
-					}
-				else
-					{
-					distance = measure.distanceFromTo(p, cluster.getCentroid());
-					}
+					// Note that different distance measures may need to deal with the priors differently:
+					// if it's probability, multiply; if log probability, add; for other distance types, who knows?
+					// so, just pass the priors in and let the distance measure decide what to do with them
+					final double distance;
+					if (measure instanceof ProbabilisticDissimilarityMeasure)
+						{
+						distance = ((ProbabilisticDissimilarityMeasure) measure)
+								.distanceFromTo(p, cluster.getCentroid(), clusterPriors.get(cluster));
+						}
+					else
+						{
+						distance = measure.distanceFromTo(p, cluster.getCentroid());
+						}
 
-				if (distance <= result.bestDistance)
-					{
-					result.secondBestDistance = result.bestDistance;
-					result.bestDistance = distance;
-					result.bestCluster = cluster;
+					if (distance <= result.bestDistance)
+						{
+						result.secondBestDistance = result.bestDistance;
+						result.bestDistance = distance;
+						result.bestCluster = cluster;
+						}
+					else if (distance <= result.secondBestDistance)
+						{
+						result.secondBestDistance = distance;
+						}
 					}
-				else if (distance <= result.secondBestDistance)
+				catch (DistanceMeasureRuntimeException e)
 					{
-					result.secondBestDistance = distance;
+					// unable to compute a distance between the point and this cluster, for some reason.
+					// Too bad, just ignore this cluster and see if we can assign to another one instead.
+					// If the fault lies with the point, we'll end up with bestCluster == null
+					logger.warn("Ignoring cluster " + cluster.getId() + "; couldn't compute distance");
 					}
 				}
 			}
