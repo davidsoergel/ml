@@ -7,7 +7,6 @@ import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidClusteringUtils;
 import edu.berkeley.compbio.ml.cluster.ClusterMove;
-import edu.berkeley.compbio.ml.cluster.ClusterRuntimeException;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
 import edu.berkeley.compbio.ml.cluster.NoGoodClusterException;
 import edu.berkeley.compbio.ml.cluster.PointClusterFilter;
@@ -187,7 +186,7 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 
 		if (result.bestCluster == null)
 			{
-			throw new ClusterRuntimeException(
+			throw new NoGoodClusterException(
 					"None of the " + getNumClusters() + " clusters matched: " + p); // + ", last distance = " + temp);
 			}
 		if (result.bestDistance > unknownDistanceThreshold)
