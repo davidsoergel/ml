@@ -143,9 +143,11 @@ public class ClusteringTestResults<L extends Comparable>
 	public synchronized void addClusterResult(final double bestDistance, final double secondToBestDistanceRatio,
 	                                          final double bestVoteProportion, final double secondToBestVoteRatio)
 		{
+		/*
 		assert !(Double.isNaN(bestDistance) || Double.isInfinite(bestDistance));
 		assert !(Double.isNaN(secondToBestDistanceRatio) || Double.isInfinite(secondToBestDistanceRatio));
 		assert !(Double.isNaN(secondToBestVoteRatio) || Double.isInfinite(secondToBestVoteRatio));
+		*/
 
 		if (Double.isNaN(bestDistance) || Double.isInfinite(bestDistance) || Double.isNaN(secondToBestDistanceRatio)
 		    || Double.isInfinite(secondToBestDistanceRatio) || Double.isNaN(secondToBestVoteRatio) || Double
