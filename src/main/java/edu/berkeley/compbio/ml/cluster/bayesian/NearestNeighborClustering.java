@@ -179,7 +179,7 @@ public abstract class NearestNeighborClustering<T extends AdditiveClusterable<T>
 					// unable to compute a distance between the point and this cluster, for some reason.
 					// Too bad, just ignore this cluster and see if we can assign to another one instead.
 					// If the fault lies with the point, we'll end up with bestCluster == null
-					logger.warn("Ignoring cluster " + cluster.getId() + "; couldn't compute distance");
+					logger.debug("Ignoring cluster " + cluster.getId() + "; couldn't compute distance");
 					}
 				}
 			}
