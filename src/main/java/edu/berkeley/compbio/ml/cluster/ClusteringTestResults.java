@@ -49,6 +49,7 @@ public class ClusteringTestResults<L extends Comparable>
 	//public double correct = 0;
 	//public double wrong = 0;
 	private int unknown = 0;
+	private int error = 0;
 	private int numClusters = 0;
 	private int testSamples;
 	private double trainingSeconds;
@@ -132,7 +133,12 @@ public class ClusteringTestResults<L extends Comparable>
 		return unknown;
 		}
 
-// -------------------------- OTHER METHODS --------------------------
+	public int getError()
+		{
+		return error;
+		}
+
+	// -------------------------- OTHER METHODS --------------------------
 
 	public synchronized void addClusterResult(final double bestDistance, final double secondToBestDistanceRatio,
 	                                          final double bestVoteProportion, final double secondToBestVoteRatio)
@@ -141,10 +147,20 @@ public class ClusteringTestResults<L extends Comparable>
 		assert !(Double.isNaN(secondToBestDistanceRatio) || Double.isInfinite(secondToBestDistanceRatio));
 		assert !(Double.isNaN(secondToBestVoteRatio) || Double.isInfinite(secondToBestVoteRatio));
 
-		computedDistances.add(bestDistance);
-		secondToBestDistanceRatios.add(secondToBestDistanceRatio);
-		bestVoteProportions.add(bestVoteProportion);
-		secondToBestVoteRatios.add(secondToBestVoteRatio);
+		if (Double.isNaN(bestDistance) || Double.isInfinite(bestDistance) || Double.isNaN(secondToBestDistanceRatio)
+		    || Double.isInfinite(secondToBestDistanceRatio) || Double.isNaN(secondToBestVoteRatio) || Double
+				.isInfinite(secondToBestVoteRatio))
+			{
+			error++;
+			}
+		else
+			{
+
+			computedDistances.add(bestDistance);
+			secondToBestDistanceRatios.add(secondToBestDistanceRatio);
+			bestVoteProportions.add(bestVoteProportion);
+			secondToBestVoteRatios.add(secondToBestVoteRatio);
+			}
 		}
 
 	private final Map<String, DistanceBasedMultiClassCrossValidationResults<L>> cvResultMap =
@@ -402,6 +418,8 @@ public class ClusteringTestResults<L extends Comparable>
 				resultsNode.addChild("distanceBinCenters", tr.distanceBinCenters);*/
 
 		innerResults.addChild("unknownCluster", getUnknown());  // as opposed to unknownLabel
+
+		innerResults.addChild("error", getError());  // as opposed to unknownLabel
 		innerResults.addChild("totalTrainingMass", getTotalTrainingMass());
 
 		innerResults.addChild("modelInfo", getInfo());
