@@ -38,7 +38,7 @@
   <artifactId>ml</artifactId>
 
   <name>ml</name>
-  <version>0.911-SNAPSHOT</version>
+  <version>0.912-SNAPSHOT</version>
   <url>http://dev.davidsoergel.com/ml</url>
   <description>Generic implementations of various Machine Learning algorithms. Includes an online clustering framework
     with a K-means implementation, and a Markov Chain Monte Carlo (MCMC) framework with a Metropolis-coupled
