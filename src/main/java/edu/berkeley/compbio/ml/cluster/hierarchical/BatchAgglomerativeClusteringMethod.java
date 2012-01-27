@@ -44,7 +44,7 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 //			new HashMap<T, HierarchicalCentroidCluster<T>>();
 
 	protected final AtomicInteger nextId = new AtomicInteger(0);
-	private Float threshold;
+	private Float threshold = Float.MAX_VALUE;
 
 	public void setThreshold(final float threshold)
 		{

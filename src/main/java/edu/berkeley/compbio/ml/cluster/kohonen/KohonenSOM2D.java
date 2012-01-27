@@ -68,21 +68,18 @@ import java.util.Set;
 /**
  * Kohonen Self Organizing Map implementation for a rectangular grid of two dimensions.
  * <p/>
- * The standard algorithm moves the cells towards the winner cell; in our implementation we also have the option to
- * remove the point from the cell where it was previously assigned, moving the neighbors away from the moved node a
- * bit.
+ * The standard algorithm moves the cells towards the winner cell; in our implementation we also have the option to remove the point from the cell where it was previously assigned, moving the
+ * neighbors away from the moved node a bit.
  * <p/>
- * Note that because this is an "online" method, we can't do PCA or whatever to initialize the grid.  That's OK; we'll
- * just initialize the grid with a uniform prototype; after placing the first incoming point with a neighborhood
- * encompassing the whole grid, all cells will be differentiated.
+ * Note that because this is an "online" method, we can't do PCA or whatever to initialize the grid.  That's OK; we'll just initialize the grid with a uniform prototype; after placing the first
+ * incoming point with a neighborhood encompassing the whole grid, all cells will be differentiated.
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  * @Author David Soergel
  * @Version 1.0
  */
-public class KohonenSOM2D<T extends AdditiveClusterable<T>>
-		extends AbstractUnsupervisedOnlineClusteringMethod<T, KohonenSOMCell<T>> implements KohonenSOM<T>
+public class KohonenSOM2D<T extends AdditiveClusterable<T>> extends AbstractUnsupervisedOnlineClusteringMethod<T, KohonenSOMCell<T>> implements KohonenSOM<T>
 	{
 // ------------------------------ FIELDS ------------------------------
 
@@ -131,13 +128,10 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public KohonenSOM2D(final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins,
-	                    final Map<String, Set<String>> predictLabelSets, final ProhibitionModel<T> prohibitionModel,
-	                    final Set<String> testLabels, @NotNull final Integer[] cellsPerDimension,
-	                    final SimpleFunction moveFactorFunction, final SimpleFunction radiusFunction,
-	                    final SimpleFunction weightFunction, final boolean decrementLosingNeighborhood,
-	                    final boolean edgesWrap, final double minRadius,
-	                    final KohonenSOM2DSearchStrategy<T> searchStrategy)
+	public KohonenSOM2D( final DissimilarityMeasure<T> dm, final Set<String> potentialTrainingBins, final Map<String, Set<String>> predictLabelSets, final ProhibitionModel<T> prohibitionModel,
+	                     final Set<String> testLabels, @NotNull final Integer[] cellsPerDimension, final SimpleFunction moveFactorFunction, final SimpleFunction radiusFunction,
+	                     final SimpleFunction weightFunction, final boolean decrementLosingNeighborhood, final boolean edgesWrap, final double minRadius,
+	                     final KohonenSOM2DSearchStrategy<T> searchStrategy )
 		{
 		super(dm, potentialTrainingBins, predictLabelSets, prohibitionModel, testLabels);
 
@@ -187,7 +181,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		return changed;
 		}
 
-	public void setLabeler(final LabelDiffuser<T, KohonenSOMCell<T>> labeler)
+	public void setLabeler( final LabelDiffuser<T, KohonenSOMCell<T>> labeler )
 		{
 		this.labeler = labeler;
 		}
@@ -206,25 +200,23 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 
 	@Override
-	public String shortClusteringStats()
-		{
-		return CentroidClusteringUtils.shortClusteringStats(getClusters(), measure);
-		}
+	public String shortClusteringStats() {
+	return CentroidClusteringUtils.shortClusteringStats(getClusters(), measure);
+	}
 
-	public void computeClusterStdDevs(final ClusterableIterator<T> theDataPointProvider)
+	public void computeClusterStdDevs( final ClusterableIterator<T> theDataPointProvider )
 		{
 		CentroidClusteringUtils.computeClusterStdDevs(getClusters(), measure, getAssignments(), theDataPointProvider);
 		}
 
 	@Override
-	public String clusteringStats()
-		{
-		final ByteArrayOutputStream b = new ByteArrayOutputStream();
-		CentroidClusteringUtils.writeClusteringStatsToStream(getClusters(), measure, b);
-		return b.toString();
-		}
+	public String clusteringStats() {
+	final ByteArrayOutputStream b = new ByteArrayOutputStream();
+	CentroidClusteringUtils.writeClusteringStatsToStream(getClusters(), measure, b);
+	return b.toString();
+	}
 
-	public void writeClusteringStatsToStream(final OutputStream outf)
+	public void writeClusteringStatsToStream( final OutputStream outf )
 		{
 		CentroidClusteringUtils.writeClusteringStatsToStream(getClusters(), measure, outf);
 		}
@@ -235,7 +227,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	/**
 	 * {@inheritDoc}
 	 */
-	public Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator(final KohonenSOMCell<T> cell)
+	public Iterator<Set<KohonenSOMCell<T>>> getNeighborhoodShellIterator( final KohonenSOMCell<T> cell )
 		{
 		return new NeighborhoodShellIterator(cell);
 		}
@@ -248,7 +240,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	 * @throws ClusterException
 	 * @throws NoGoodClusterException
 	 */
-	public boolean add(final T p) throws NoGoodClusterException
+	public boolean add( final T p ) throws NoGoodClusterException
 		{
 		// ** this is not synchronized!  I think it's OK, but be careful...
 		// that should really only cause trouble if the same point gets added twice and simultaneously, and gets assiged to different clusters.  That seems highly unlikely.
@@ -283,7 +275,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		if (decrementLosingNeighborhood && loser != null)
 			{
 			winner.getMutableWeightedLabels().removeAll(p.getMutableWeightedLabels());
-			for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(loser); i.hasNext();)
+			for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(loser); i.hasNext(); )
 				{
 				final WeightedCell v = i.next();
 				final KohonenSOMCell<T> neighbor = v.theCell;
@@ -299,9 +291,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 				neighbor.recenterByRemovingWeighted(p, motionFactor);
 				}
 			}
-
+		p.doneLabelling();
 		winner.getMutableWeightedLabels().addAll(p.getImmutableWeightedLabels()); //p.getMutableWeightedLabels());
-		for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(winner); i.hasNext();)
+		for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(winner); i.hasNext(); )
 			{
 			final WeightedCell v = i.next();
 			final KohonenSOMCell<T> neighbor = v.theCell;
@@ -362,13 +354,11 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 			  logger.debug("initialized " + k + " clusters");*/
 	//		}
 	@Override
-	public void train(final ClusterableIteratorFactory<T> trainingCollectionIteratorFactory, final int iterations)
-			throws ClusterException
-		{
-		super.train(trainingCollectionIteratorFactory, iterations);
-		labeler.propagateLabels(this);
-		doneLabellingClusters();
-		}
+	public void train( final ClusterableIteratorFactory<T> trainingCollectionIteratorFactory, final int iterations ) throws ClusterException {
+	super.train(trainingCollectionIteratorFactory, iterations);
+	labeler.propagateLabels(this);
+	doneLabellingClusters();
+	}
 
 // --------------------- Interface PrototypeBasedCentroidClusteringMethod ---------------------
 
@@ -379,7 +369,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		 }
  */
 
-	public void setPrototypeFactory(final GenericFactory<T> prototypeFactory) throws GenericFactoryException
+	public void setPrototypeFactory( final GenericFactory<T> prototypeFactory ) throws GenericFactoryException
 		{
 		final int totalCells = cellsPerDimension[0] * cellsPerDimension[1];
 		createClusters(totalCells, prototypeFactory);
@@ -393,7 +383,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	/**
 	 * {@inheritDoc}
 	 */
-	public void initializeWithSamples(final ClusterableIterator<T> initIterator, final int initSamples)
+	public void initializeWithSamples( final ClusterableIterator<T> initIterator, final int initSamples )
 		{
 		//createClusters(prototypeFactory);
 
@@ -412,7 +402,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 // -------------------------- OTHER METHODS --------------------------
 
-	public void addToRandomCell(final T p)
+	public void addToRandomCell( final T p )
 		{
 		final KohonenSOMCell<T> winner = (KohonenSOMCell<T>) chooseRandomCluster();
 
@@ -423,7 +413,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 		// winner.addLabel(p);  // no, this is just for random initialization
 
-		for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(winner); i.hasNext();)
+		for (Iterator<WeightedCell> i = getWeightedMask((int) radius).iterator(winner); i.hasNext(); )
 			{
 			final WeightedCell v = i.next();
 			final KohonenSOMCell<T> neighbor = v.theCell;
@@ -450,10 +440,9 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove(final T p) throws NoGoodClusterException
-		{
-		return searchStrategy.bestClusterMove(p);
-		}
+	public ClusterMove<T, KohonenSOMCell<T>> bestClusterMove( final T p ) throws NoGoodClusterException {
+	return searchStrategy.bestClusterMove(p);
+	}
 
 	/**
 	 * assumes inputs are entirely positive and within the bounds given by cellsPerDimension
@@ -490,8 +479,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 				final CentroidCluster<T> here = clusterAt(x, y);
 
 				final CentroidCluster<T> right = clusterAt(x + 1, y);
-				final double d = measure.distanceFromTo(here.getCentroid(),
-				                                        right.getCentroid());//here.distanceToCentroid(right.getCentroid());
+				final double d = measure.distanceFromTo(here.getCentroid(), right.getCentroid());//here.distanceToCentroid(right.getCentroid());
 
 				result[listIndexFor(x, y)] += d;
 				result[listIndexFor(x + 1, y)] += d;
@@ -516,7 +504,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		return result;//Arrays.asList(ArrayUtils.toObject(result));
 		}
 
-	public KohonenSOMCell<T> clusterAt(final int x, final int y)
+	public KohonenSOMCell<T> clusterAt( final int x, final int y )
 		{
 		return getCluster(listIndexFor(x, y));
 		}
@@ -552,7 +540,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		return result;
 		}
 */
-	private int listIndexFor(int x, int y)//int[] cellposition)
+	private int listIndexFor( int x, int y )//int[] cellposition)
 		{
 		if (edgesWrap)
 			{
@@ -563,15 +551,14 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		return y * cellsPerDimension[0] + x;
 		}
 
-	private int[] cellPositionFor(int listIndex)
+	private int[] cellPositionFor( int listIndex )
 		{
 		int x = listIndex % cellsPerDimension[0];
 		int y = listIndex / cellsPerDimension[0];
-		return new int[]{x, y};
+		return new int[]{ x, y };
 		}
 
-	private void createClusters(final int totalCells, final GenericFactory<T> prototypeFactory)
-			throws GenericFactoryException
+	private void createClusters( final int totalCells, final GenericFactory<T> prototypeFactory ) throws GenericFactoryException
 		{
 		for (int i = 0; i < totalCells; i++)
 			{
@@ -593,7 +580,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		return radius;
 		}
 
-	WeightedMask getShellMask(final int radius)
+	WeightedMask getShellMask( final int radius )
 		{
 		WeightedMask result = shellMasks.get(radius);
 		if (result == null)
@@ -631,7 +618,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		return result;
 		}
 
-	WeightedMask getWeightedMask(final int radius)
+	WeightedMask getWeightedMask( final int radius )
 		{
 		WeightedMask result = weightedMasks.get(radius);
 		if (result == null)
@@ -667,8 +654,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 		changed = 0;
 		}
 
-	public void train(final ClusterableIteratorFactory<T> trainingCollectionIteratorFactory,
-	                  final GenericFactory<T> prototypeFactory, final int trainingEpochs) throws ClusterException
+	public void train( final ClusterableIteratorFactory<T> trainingCollectionIteratorFactory, final GenericFactory<T> prototypeFactory, final int trainingEpochs ) throws ClusterException
 		{
 		train(trainingCollectionIteratorFactory, trainingEpochs);
 		}
@@ -676,13 +662,11 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 // -------------------------- INNER CLASSES --------------------------
 
 	/**
-	 * Iterates over all the cells within a given radius of a center cell, using a fast algorithm from
-	 * http://homepage.smc.edu/kennedy_john/BCIRCLE.PDF
+	 * Iterates over all the cells within a given radius of a center cell, using a fast algorithm from http://homepage.smc.edu/kennedy_john/BCIRCLE.PDF
 	 * <p/>
 	 * We can probably speed this up further by caching the results (circle masks, basically).
 	 * <p/>
-	 * Note we can't just return the cell, because if the edges wrap, then the same cell may be returned up to four times,
-	 * but with different distances; so we need to return the distance too.
+	 * Note we can't just return the cell, because if the edges wrap, then the same cell may be returned up to four times, but with different distances; so we need to return the distance too.
 	 */
 	class WeightedMask
 		{
@@ -708,7 +692,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 			{
 			}
 
-		private WeightedMask(final int radius)
+		private WeightedMask( final int radius )
 			{
 			if (radius == 0)
 				{
@@ -782,7 +766,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 				}
 			}
 
-		private int plot8CirclePoints(int i, int x, final int y, final int radius)
+		private int plot8CirclePoints( int i, int x, final int y, final int radius )
 			{
 			// here we're given x,y pairs around the circumference of the circle; but actually we need to fill it in.
 
@@ -896,8 +880,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 				// don't use x >= y, because then we'd double-count the center
 				for (; x > 0; x--)
 					{
-					final double theWeight =
-							weightFunction == null ? 1 : weightFunction.f((double) x / (double) radius);
+					final double theWeight = weightFunction == null ? 1 : weightFunction.f((double) x / (double) radius);
 					assert theWeight > 0;
 
 					deltaX[i] = x;
@@ -921,7 +904,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 // -------------------------- OTHER METHODS --------------------------
 
-		public boolean containsPoint(final int x, final int y)
+		public boolean containsPoint( final int x, final int y )
 			{
 			//brute force search
 			for (int i = 0; i < deltaX.length; i++)
@@ -934,7 +917,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 			return false;
 			}
 
-		public Iterator<WeightedCell> iterator(final KohonenSOMCell<T> center)
+		public Iterator<WeightedCell> iterator( final KohonenSOMCell<T> center )
 			{
 			return new MaskIterator(center);
 			}
@@ -955,7 +938,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-			public MaskIterator(final KohonenSOMCell<T> center)
+			public MaskIterator( final KohonenSOMCell<T> center )
 				{
 				//this.center = center;
 				// PERF
@@ -966,57 +949,54 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 				}
 
 			@Nullable
-			private WeightedCell findNextCell()
+			private WeightedCell findNextCell() {
+			trav++;
+
+			boolean foundCell = false;
+
+			int realX = -1, realY = -1;// the loop below can't complete without setting these; if there's a bug we'll get ArrayIndexOutOfBoundsException
+
+			// iterate rather than recurse to avoid huge stacks
+			while (!foundCell)
 				{
-				trav++;
-
-				boolean foundCell = false;
-
-				int realX = -1, realY =
-						-1;// the loop below can't complete without setting these; if there's a bug we'll get ArrayIndexOutOfBoundsException
-
-				// iterate rather than recurse to avoid huge stacks
-				while (!foundCell)
+				if (trav >= numCells)
 					{
-					if (trav >= numCells)
+					return null;
+					}
+				else
+					{
+					realX = xCenter + deltaX[trav];
+					realY = yCenter + deltaY[trav];
+
+					if (!edgesWrap && (realX < 0 || realX >= cellsPerDimension[0] || realY < 0 || realY >= cellsPerDimension[1]))
 						{
-						return null;
+						// foundCell still false, try again
+						trav++;
 						}
 					else
 						{
-						realX = xCenter + deltaX[trav];
-						realY = yCenter + deltaY[trav];
-
-						if (!edgesWrap && (realX < 0 || realX >= cellsPerDimension[0] || realY < 0
-						                   || realY >= cellsPerDimension[1]))
+						realX %= cellsPerDimension[0];
+						// avoid negatives too
+						if (realX < 0)
 							{
-							// foundCell still false, try again
-							trav++;
+							realX += cellsPerDimension[0];
 							}
-						else
+
+						realY %= cellsPerDimension[1];
+						// avoid negatives too
+						if (realY < 0)
 							{
-							realX %= cellsPerDimension[0];
-							// avoid negatives too
-							if (realX < 0)
-								{
-								realX += cellsPerDimension[0];
-								}
-
-							realY %= cellsPerDimension[1];
-							// avoid negatives too
-							if (realY < 0)
-								{
-								realY += cellsPerDimension[1];
-								}
-
-							foundCell = true;
+							realY += cellsPerDimension[1];
 							}
+
+						foundCell = true;
 						}
 					}
-
-
-				return new WeightedCell(getCluster(listIndexFor(realX, realY)), weight[trav]);
 				}
+
+
+			return new WeightedCell(getCluster(listIndexFor(realX, realY)), weight[trav]);
+			}
 
 // ------------------------ INTERFACE METHODS ------------------------
 
@@ -1064,7 +1044,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-		private WeightedCell(final KohonenSOMCell<T> theCell, final double weight)
+		private WeightedCell( final KohonenSOMCell<T> theCell, final double weight )
 			{
 			this.theCell = theCell;
 			this.weight = weight;
@@ -1150,7 +1130,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 
 // --------------------------- CONSTRUCTORS ---------------------------
 
-		public NeighborhoodShellIterator(final KohonenSOMCell<T> center)
+		public NeighborhoodShellIterator( final KohonenSOMCell<T> center )
 			{
 			this.center = center;
 			}
@@ -1179,7 +1159,7 @@ public class KohonenSOM2D<T extends AdditiveClusterable<T>>
 			//	currentMask = getWeightedMask(radius);
 
 			final Set<KohonenSOMCell<T>> result = new HashSet<KohonenSOMCell<T>>();
-			for (Iterator<WeightedCell> i = mask.iterator(center); i.hasNext();)
+			for (Iterator<WeightedCell> i = mask.iterator(center); i.hasNext(); )
 				{
 				result.add(i.next().theCell);
 				}

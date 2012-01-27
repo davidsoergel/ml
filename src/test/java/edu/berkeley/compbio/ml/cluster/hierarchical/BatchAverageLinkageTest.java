@@ -38,6 +38,7 @@ import edu.berkeley.compbio.ml.cluster.CentroidCluster;
 import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterableDoubleArray;
 import edu.berkeley.compbio.ml.cluster.ClusterableIterator;
+import edu.berkeley.compbio.ml.cluster.ClusterableIteratorFactory;
 import edu.berkeley.compbio.ml.distancemeasure.EuclideanDistance;
 import org.apache.log4j.Logger;
 import org.testng.annotations.BeforeSuite;
@@ -87,15 +88,16 @@ public class BatchAverageLinkageTest
 		//ci = new MockClusterableIterator().init();
 
 		//	final Object distanceMatrix;
-		final BatchAgglomerativeClusteringMethod<ClusterableDoubleArray> oc =
-				new BatchAgglomerativeClusteringMethod<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null,
-				                                                               null, null, null,
+		final OnlineAgglomerativeClustering<ClusterableDoubleArray> oc =
+				new OnlineAgglomerativeClustering<ClusterableDoubleArray>(EuclideanDistance.getInstance(), null,
+				                                                               null, null, null, 0.001,
 				                                                               new AverageLinkageAgglomerator());
 //BAD test broken here
-//		oc.addAll(new ClusterableIteratorFactory<ClusterableDoubleArray>(points).next());
+		ClusterableIterator<ClusterableDoubleArray> clusterableIterator = new ClusterableIteratorFactory<ClusterableDoubleArray>(points).next();
+		//oc.addAll(clusterableIterator);
 
-
-		oc.train();
+//oc.getDistanceMatrix();
+		oc.train(clusterableIterator );
 
 		final Collection<? extends CentroidCluster<ClusterableDoubleArray>> theClusters = oc.getClusters();
 
