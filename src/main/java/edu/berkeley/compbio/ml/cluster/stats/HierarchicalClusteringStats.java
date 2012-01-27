@@ -6,11 +6,10 @@ import com.davidsoergel.trees.LengthWeightHierarchyNode;
 import com.davidsoergel.trees.PhylogenyNode;
 import com.davidsoergel.trees.TreeException;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
-import edu.berkeley.compbio.ml.cluster.Cluster;
 import edu.berkeley.compbio.ml.cluster.ClusterList;
 import edu.berkeley.compbio.ml.cluster.Clusterable;
 import edu.berkeley.compbio.ml.cluster.ClusteringStats;
-import edu.berkeley.compbio.ml.cluster.SimpleClusterList;
+import edu.berkeley.compbio.ml.cluster.SimpleHierarchicalCentroidClusterList;
 import edu.berkeley.compbio.ml.cluster.hierarchical.HierarchicalCentroidCluster;
 
 import java.util.Collection;
@@ -39,10 +38,10 @@ public class HierarchicalClusteringStats<T extends Clusterable<T>>
 		{
 		final Map<Double, ClusteringStats> result = new HashMap<Double, ClusteringStats>();
 
-		Map<Double, ClusterList<T>> clusterSets = selectOTUs(theClustering, thresholds);
-		Map<Double, ClusterList<T>> referenceSets = selectOTUs(referenceTree, thresholds);
+		Map<Double, SimpleHierarchicalCentroidClusterList<T>> clusterSets = selectOTUs(theClustering, thresholds);
+		Map<Double, SimpleHierarchicalCentroidClusterList<T>> referenceSets = selectOTUs(referenceTree, thresholds);
 
-		for (Map.Entry<Double, ClusterList<T>> entry : clusterSets.entrySet())
+		for (Map.Entry<Double, SimpleHierarchicalCentroidClusterList<T>> entry : clusterSets.entrySet())
 			{
 			Double threshold = entry.getKey();
 			ClusterList clusters = entry.getValue();
@@ -55,24 +54,24 @@ public class HierarchicalClusteringStats<T extends Clusterable<T>>
 		return result;
 		}
 
-	private Map<Double, ClusterList<T>> selectOTUs(final BasicPhylogenyNode tree, Collection<Double> thresholds)
+	public static <R extends Clusterable<R>> Map<Double, SimpleHierarchicalCentroidClusterList<R>> selectOTUs(final BasicPhylogenyNode tree, Collection<Double> thresholds)
 			throws TreeException
 		{
 
-		final Map<Double, ClusterList<T>> results = new HashMap<Double, ClusterList<T>>();
+		final Map<Double, SimpleHierarchicalCentroidClusterList<R>> results = new HashMap<Double, SimpleHierarchicalCentroidClusterList<R>>();
 
 		int i = 0;
 		for (final Double threshold : thresholds)
 			{
-			final DepthFirstTreeIterator<CentroidCluster<T>, PhylogenyNode<CentroidCluster<T>>> it =
+			final DepthFirstTreeIterator<CentroidCluster<R>, PhylogenyNode<CentroidCluster<R>>> it =
 					tree.depthFirstIterator();
 
-			Set<Cluster<T>> result = new HashSet<Cluster<T>>();
+			Set<HierarchicalCentroidCluster<R>> result = new HashSet<HierarchicalCentroidCluster<R>>();
 			final double halfThreshold = threshold / 2.0;
 			//int otuCount = 0;
 			while (it.hasNext())
 				{
-				final HierarchicalCentroidCluster<T> node = (HierarchicalCentroidCluster<T>) it.next();
+				final HierarchicalCentroidCluster<R> node = (HierarchicalCentroidCluster<R>) it.next();
 				final Collection<? extends LengthWeightHierarchyNode> children = node.getChildren();
 				//assert children.isEmpty() || children.size() == 2;
 
@@ -88,7 +87,7 @@ public class HierarchicalClusteringStats<T extends Clusterable<T>>
 					it.skipAllDescendants(node);
 					}
 				}
-			results.put(threshold, new SimpleClusterList<T>(result));
+			results.put(threshold, new SimpleHierarchicalCentroidClusterList<R>(result));
 			i++;
 			}
 		return results;
