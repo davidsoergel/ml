@@ -113,10 +113,12 @@ public class BatchAverageLinkageTest
 		final HierarchicalCentroidCluster<ClusterableDoubleArray> root = oc.getTree();
 		logger.info("\n" + TreePrinter.prettyPrint(root));
 
+		final double largestLengthSpan = oc.getTree().getLargestLengthSpan();
+		logger.info("found n = " + oc.getN());
+		logger.info("found num clusters = " + theClusters.size());
+		logger.info("found largestLengthSpan = " + largestLengthSpan);
 		assert oc.getN() == 6;
 		assert theClusters.size() == 11;
-		final double largestLengthSpan = oc.getTree().getLargestLengthSpan();
-		logger.info("found largestLengthSpan = " + largestLengthSpan);
 		assert MathUtils.equalWithinFPError(largestLengthSpan, 108.56383323669434);
 		//assert MathUtils.equalWithinFPError(largestLengthSpan, 89.15612888336182);
 		}
