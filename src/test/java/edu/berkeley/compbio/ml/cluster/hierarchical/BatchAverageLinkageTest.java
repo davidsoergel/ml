@@ -116,6 +116,7 @@ public class BatchAverageLinkageTest
 		assert oc.getN() == 6;
 		assert theClusters.size() == 11;
 		final double largestLengthSpan = oc.getTree().getLargestLengthSpan();
+		logger.info("found largestLengthSpan = " + largestLengthSpan);
 		assert MathUtils.equalWithinFPError(largestLengthSpan, 108.56383323669434);
 		//assert MathUtils.equalWithinFPError(largestLengthSpan, 89.15612888336182);
 		}
