@@ -70,6 +70,8 @@ public interface CentroidCluster<T extends Clusterable<T>>
 	 */
 	T getCentroid();
 
+//	void setCentroid(T newCentroid);
+
 	/**
 	 * Returns the standard deviation of the distances from each sample to the centroid, if this has already been computed.
 	 * Can be used as a (crude?) measure of clusteredness, in combination with the distances between the cluster centroids

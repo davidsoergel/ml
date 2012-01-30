@@ -38,6 +38,7 @@ import com.davidsoergel.dsutils.collections.MutableWeightedSet;
 import com.davidsoergel.dsutils.collections.WeightedSet;
 import com.davidsoergel.trees.BasicPhylogenyNode;
 import com.davidsoergel.trees.PhylogenyNode;
+import edu.berkeley.compbio.ml.cluster.AdditiveCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.BasicCentroidCluster;
 import edu.berkeley.compbio.ml.cluster.BatchCluster;
 import edu.berkeley.compbio.ml.cluster.CentroidCluster;
@@ -55,23 +56,29 @@ import java.util.TreeSet;
 
 
 /**
- * A tree node representing a hierarchical cluster.  Fakes multiple inheritance by providing a facade to the contained
- * Cluster.  I.e., this is mostly a PhylogenyNode containing a CentroidCluster value, but it can also act like a
- * CentroidCluster directly.
+ * A tree node representing a hierarchical cluster.  Fakes multiple inheritance by providing a facade to the contained Cluster.  I.e., this is mostly a PhylogenyNode containing a CentroidCluster
+ * value, but it can also act like a CentroidCluster directly.
  *
  * @author <a href="mailto:dev@davidsoergel.com">David Soergel</a>
  * @version $Id$
  */
 public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends BasicPhylogenyNode<CentroidCluster<T>>
-		implements CentroidCluster<T>,
-		           BatchCluster<T, HierarchicalCentroidCluster<T>> //, Comparable<HierarchicalCentroidCluster<T>>
+		implements CentroidCluster<T>, BatchCluster<T, HierarchicalCentroidCluster<T>> //, Comparable<HierarchicalCentroidCluster<T>>
 		//,    HierarchyNode<CentroidCluster<T>,HierarchicalCentroidCluster<T>>
 	{
 // --------------------------- CONSTRUCTORS ---------------------------
 
-	public HierarchicalCentroidCluster(final int id, final T sample)
+	public HierarchicalCentroidCluster( final int id, final T sample )
 		{
 		super(new BasicCentroidCluster<T>(id, sample));
+		//getPayload().doneLabelling();
+		//getMutableWeightedLabels().addAll(getPayload().getImmutableWeightedLabels());
+		//doneLabelling();
+		setWeight(1.);
+		}
+	public HierarchicalCentroidCluster(CentroidCluster<T> c )
+		{
+		super(c);
 		//getPayload().doneLabelling();
 		//getMutableWeightedLabels().addAll(getPayload().getImmutableWeightedLabels());
 		//doneLabelling();
@@ -84,10 +91,9 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 * {@inheritDoc}
 	 */
 	@Override
-	public HierarchicalCentroidCluster<T> clone()
-		{
-		return (HierarchicalCentroidCluster<T>) super.clone();
-		}
+	public HierarchicalCentroidCluster<T> clone() {
+	return (HierarchicalCentroidCluster<T>) super.clone();
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -123,13 +129,12 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String toString()
-		{
-		final Formatter f = new Formatter();
-		f.format("l=%.2f w=%.2f %s", length, weight, value);//%[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
+	public String toString() {
+	final Formatter f = new Formatter();
+	f.format("l=%.2f w=%.2f %s", length, weight, value);//%[Cluster %d] n=%d sd=%.2f", id, n, getStdDev());
 
-		return f.out().toString();
-		}
+	return f.out().toString();
+	}
 
 
 // ------------------------ INTERFACE METHODS ------------------------
@@ -141,7 +146,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public void addToSumOfSquareDistances(final double v)
+	public void addToSumOfSquareDistances( final double v )
 		{
 		throw new NotImplementedException();
 		}
@@ -151,7 +156,8 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 */
 	public T getCentroid()
 		{
-		return getPayload().getCentroid();
+		T result = getPayload().getCentroid();
+		return result;
 		}
 
 	/**
@@ -174,7 +180,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setSumOfSquareDistances(final double i)
+	public void setSumOfSquareDistances( final double i )
 		{
 		throw new NotImplementedException();
 		}
@@ -185,7 +191,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean add(final T point)
+	public boolean add( final T point )
 		{
 		throw new NotImplementedException();
 		}
@@ -193,7 +199,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean addAll(final Cluster<T> point)
+	public boolean addAll( final Cluster<T> point )
 		{
 		cachedPoints = null;
 		return getPayload().addAll(point);
@@ -201,8 +207,8 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		}
 
 	/**
-	 * Recomputes the probabilities of labels, based on the actual labels observed in the contained samples.  This must be
-	 * called explicitly to avoid unnecessary recomputation on every sample addition.
+	 * Recomputes the probabilities of labels, based on the actual labels observed in the contained samples.  This must be called explicitly to avoid unnecessary recomputation on every sample
+	 * addition.
 	 */
 	public WeightedSet<String> getDerivedLabelProbabilities()
 		{
@@ -232,11 +238,10 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
 	 */
 	@NotNull
-	public WeightedSet<String> getImmutableWeightedLabels()
-		{
-		return getPayload().getImmutableWeightedLabels();
-		//	throw new NotImplementedException();
-		}
+	public WeightedSet<String> getImmutableWeightedLabels() {
+	return getPayload().getImmutableWeightedLabels();
+	//	throw new NotImplementedException();
+	}
 
 	public void doneLabelling()
 		{
@@ -249,16 +254,15 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	 * @return a Multinomial giving the probabilities of mutually exclusive String labels.
 	 */
 	@NotNull
-	public MutableWeightedSet<String> getMutableWeightedLabels()
-		{
-		return ((Labellable<String>) getPayload()).getMutableWeightedLabels();
-		//	throw new NotImplementedException();
-		}
+	public MutableWeightedSet<String> getMutableWeightedLabels() {
+	return ((Labellable<String>) getPayload()).getMutableWeightedLabels();
+	//	throw new NotImplementedException();
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean remove(final T point)
+	public boolean remove( final T point )
 		{
 		throw new NotImplementedException();
 		}
@@ -266,18 +270,17 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean removeAll(final Cluster<T> point)
+	public boolean removeAll( final Cluster<T> point )
 		{
 		throw new NotImplementedException();
 		}
 
 	/**
-	 * Sets the probabilities of String labels.  The labels need not be mututally exclusive, so the weights need not sum to
-	 * one.
+	 * Sets the probabilities of String labels.  The labels need not be mututally exclusive, so the weights need not sum to one.
 	 *
 	 * @param derivedLabelProbabilities a WeightedSet giving the probabilities of mutually exclusive String labels.
 	 */
-	public void setDerivedLabelProbabilities(final ImmutableHashWeightedSet<String> derivedLabelProbabilities)
+	public void setDerivedLabelProbabilities( final ImmutableHashWeightedSet<String> derivedLabelProbabilities )
 		{
 		throw new NotImplementedException();
 		}
@@ -310,8 +313,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		{
 		throw new NotImplementedException();
 		}*/
-	public void toNewick(final Writer out, String prefix, final String tab, final int minClusterSize,
-	                     final double minLabelProb) throws IOException
+	public void toNewick( final Writer out, String prefix, final String tab, final int minClusterSize, final double minLabelProb ) throws IOException
 		{
 		// (children)name:length
 
@@ -364,7 +366,7 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 			}
 		}
 
-	public int compareTo(@NotNull final HierarchicalCentroidCluster<T> o)
+	public int compareTo( @NotNull final HierarchicalCentroidCluster<T> o )
 		{
 		final int id = getId();
 		final int oid = o.getId();
@@ -373,28 +375,26 @@ public class HierarchicalCentroidCluster<T extends Clusterable<T>> extends Basic
 		}
 
 	@Override
-	public boolean equals(final Object o)
+	public boolean equals( final Object o ) {
+	if (this == o)
 		{
-		if (this == o)
-			{
-			return true;
-			}
-		if (!(o instanceof HierarchicalCentroidCluster))
-			{
-			return false;
-			}
-		if (getId() != ((HierarchicalCentroidCluster) o).getId())
-			{
-			return false;
-			}
 		return true;
 		}
+	if (!(o instanceof HierarchicalCentroidCluster))
+		{
+		return false;
+		}
+	if (getId() != ((HierarchicalCentroidCluster) o).getId())
+		{
+		return false;
+		}
+	return true;
+	}
 
 	@Override
-	public int hashCode()
-		{
-		return getId();
-		}
+	public int hashCode() {
+	return getId();
+	}
 /*
 	public void setParent(HierarchicalCentroidCluster<T> c)
 		{

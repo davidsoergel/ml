@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -197,27 +198,33 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 					// catch up and do them now; too bad about the synchronization
 					for (HierarchicalCentroidCluster<T> b : remainingActiveKeys)
 						{
-						final float d = (float) measure.distanceFromTo(c.getPayload().getCentroid(), b.getPayload().getCentroid());
+						final float d = (float) measure.distanceFromTo(c.getCentroid(), b.getCentroid());
 						theActiveNodeDistanceMatrix.put(c, b, d);
 						}
 
 					// the new node may have various effects, depending on the subclass
 					// it may induce multiple joins, e.g. by acting as a bridge in a single-linkage situation
-
-					while (theActiveNodeDistanceMatrix.getSmallestValue() <= threshold)
+					try
 						{
-						final HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
-						final HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
-						assert theActiveNodeDistanceMatrix.getKeys().contains(a);
-						assert theActiveNodeDistanceMatrix.getKeys().contains(b);
-						assert !theActiveNodeDistanceMatrix.getKeys().contains(a);
-						assert !theActiveNodeDistanceMatrix.getKeys().contains(b);
-						final HierarchicalCentroidCluster<T> composite = agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
-						theActiveNodeDistanceMatrix.remove(a);
-						theActiveNodeDistanceMatrix.remove(b);
-						//agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
-						addCluster(composite);
-						theRoot = composite;  // this will actually be true on the last iteration
+						while (theActiveNodeDistanceMatrix.getSmallestValue() <= threshold)
+							{
+							final HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
+							final HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
+							assert theActiveNodeDistanceMatrix.getKeys().contains(a);
+							assert theActiveNodeDistanceMatrix.getKeys().contains(b);
+							assert !theActiveNodeDistanceMatrix.getKeys().contains(a);
+							assert !theActiveNodeDistanceMatrix.getKeys().contains(b);
+							final HierarchicalCentroidCluster<T> composite = agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
+							theActiveNodeDistanceMatrix.remove(a);
+							theActiveNodeDistanceMatrix.remove(b);
+							//agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
+							addCluster(composite);
+							theRoot = composite;  // this will actually be true on the last iteration
+							}
+						}
+					catch (NoSuchElementException e)
+						{
+						// no problem, the whole thing collapsed to one cluster
 						}
 					}
 				}

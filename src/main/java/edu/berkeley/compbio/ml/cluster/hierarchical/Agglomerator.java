@@ -15,6 +15,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 	                                                           final HierarchicalCentroidCluster<T> otherNode,
 	                                                           final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix);
 
+
 	private void addCompositeToDistanceMatrix(final HierarchicalCentroidCluster<T> a,
 	                                          final HierarchicalCentroidCluster<T> b,
 	                                          final HierarchicalCentroidCluster<T> composite,
@@ -64,9 +65,11 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 		// create a composite node
 
-		final HierarchicalCentroidCluster<T> composite = new HierarchicalCentroidCluster<T>(id,
-		                                                                                    null);  // don't bother storing explicit centroids for composite nodes
+		T centroid = null;  // don't bother storing explicit centroids for composite nodes
 
+		//a.getCentroid().
+
+		final HierarchicalCentroidCluster<T> composite = createComposite(id, centroid);
 		a.setParent(composite);
 		b.setParent(composite);
 
@@ -105,6 +108,11 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		assert composite.getChildren().size() > 0;
 
 		return composite;
+		}
+	protected HierarchicalCentroidCluster<T> createComposite( final int id, final T centroid )
+		{
+		return new HierarchicalCentroidCluster<T>(id,
+		                                   centroid);
 		}
 
 /*	public void removeJoinedNodes(final HierarchicalCentroidCluster<T> a, final HierarchicalCentroidCluster<T> b,

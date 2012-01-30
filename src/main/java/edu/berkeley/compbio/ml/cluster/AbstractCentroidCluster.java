@@ -59,8 +59,11 @@ public abstract class AbstractCentroidCluster<T extends Clusterable<T>> extends 
 	/**
 	 * Field centroid
 	 */
-	protected final T centroid;
-
+	protected  T centroid;
+/*	public void setCentroid( final T centroid )
+		{
+		this.centroid = centroid;
+		}*/
 	/**
 	 * The sum of the squared distances from samples in this cluster to the centroid
 	 */

@@ -33,7 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
-import edu.berkeley.compbio.ml.cluster.Clusterable;
+import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import org.apache.log4j.Logger;
 
 
@@ -42,16 +42,13 @@ import org.apache.log4j.Logger;
  * @version $Id: UPGMA.java 488 2009-07-29 01:05:07Z soergel $
  */
 
-public class AverageLinkageAgglomerator<T extends Clusterable<T>> extends Agglomerator<T>
+public class AverageLinkageAgglomerator<T extends AdditiveClusterable<T>> extends ExplicitAgglomerator<T>
 	{
 	private static final Logger logger = Logger.getLogger(AverageLinkageAgglomerator.class);
 
 
-	protected void addCompositeVsNodeToDistanceMatrix(final HierarchicalCentroidCluster<T> origA,
-	                                                  final HierarchicalCentroidCluster<T> origB,
-	                                                  final HierarchicalCentroidCluster<T> composite,
-	                                                  final HierarchicalCentroidCluster<T> otherNode,
-	                                                  final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix)
+	protected void addCompositeVsNodeToDistanceMatrix( final HierarchicalCentroidCluster<T> origA, final HierarchicalCentroidCluster<T> origB, final HierarchicalCentroidCluster<T> composite,
+	                                                   final HierarchicalCentroidCluster<T> otherNode, final Symmetric2dBiMap<HierarchicalCentroidCluster<T>, Float> theActiveNodeDistanceMatrix )
 		{
 		if (otherNode == origA || otherNode == origB || otherNode == composite)
 			{
@@ -59,9 +56,10 @@ public class AverageLinkageAgglomerator<T extends Clusterable<T>> extends Agglom
 			}
 		else
 			{
-			float d = (float) (
-					(origA.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(origA, otherNode)
-					+ (origB.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(origB, otherNode));
+			float d =
+					(float) ((origA.getWeight() / composite.getWeight()) * theActiveNodeDistanceMatrix.get(origA, otherNode) + (origB.getWeight() / composite.getWeight()) *
+					                                                                                                           theActiveNodeDistanceMatrix
+							.get(origB, otherNode));
 			theActiveNodeDistanceMatrix.put(otherNode, composite, d);
 
 			/*	int numKeys = theActiveNodeDistanceMatrix.getActiveKeys().size();
@@ -73,4 +71,11 @@ public class AverageLinkageAgglomerator<T extends Clusterable<T>> extends Agglom
 			   }*/
 			}
 		}
+/*
+	@Override protected T makeCompositeCentroid( final HierarchicalCentroidCluster<T> origA, final HierarchicalCentroidCluster<T> origB ) {
+	int an = origA.getN();
+	int bn = origB.getN();
+	//return origA.getCentroid().times(an).plus(origB.getCentroid().times(bn)).times((1. / (an + bn)));
+	return origA.getCentroid().weightedMixture(origB.getCentroid(), an, bn);
+	}*/
 	}

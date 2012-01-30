@@ -83,6 +83,7 @@ public class AbstractCluster<T extends Clusterable<T>> extends LabellableImpl<St
 	 */
 	public int getN()
 		{
+        //Since we are carrying a WeightedSet around for the labels anyway, just reuse its itemCount as the cluster weight
 		return getItemCount(); //getMutableWeightedLabels().getItemCount();
 		}
 
