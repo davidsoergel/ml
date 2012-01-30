@@ -60,7 +60,6 @@
     <url>http://dev.davidsoergel.com/ml/</url>
   </issueManagement>
 
-
   <scm>
     <connection>scm:svn:http://svn.davidsoergel.com/repos/ml</connection>
     <developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</developerConnection>

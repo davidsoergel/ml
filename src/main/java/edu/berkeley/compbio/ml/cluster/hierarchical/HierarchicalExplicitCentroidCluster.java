@@ -41,8 +41,5 @@ public class HierarchicalExplicitCentroidCluster<T extends AdditiveClusterable<T
 		return result;
 		}
 
-	@Override public int getN() {
-	return n;
-	}
 
 	}

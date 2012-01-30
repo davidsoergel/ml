@@ -90,7 +90,15 @@ public class AdditiveCentroidCluster<T extends AdditiveClusterable<T>> extends A
 			*/
 
 		final int otherN = otherCluster.getN();
-		centroid.incrementByWeighted(((CentroidCluster<T>) otherCluster).getCentroid(), otherN / (otherN + getN()));
+
+		T otherCentroid = ((CentroidCluster<T>) otherCluster).getCentroid();
+		if(centroid == null)
+			{
+			centroid = otherCentroid;
+			}
+		else {
+			centroid.incrementByWeighted(otherCentroid, otherN / (otherN + getN()));
+		}
 		return true;
 		}
 

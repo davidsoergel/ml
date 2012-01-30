@@ -112,8 +112,10 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 		T s1 = samples.next();
 		T s2 = samples.next();
 		final HierarchicalCentroidCluster<T> s1c = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), s1);
+		s1c.getMutableWeightedLabels().incrementItemCount(1);
 		s1c.doneLabelling();
 		final HierarchicalCentroidCluster<T> s2c = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), s2);
+		s2c.getMutableWeightedLabels().incrementItemCount(1);
 		s2c.doneLabelling();
 
 		float d = (float) measure.distanceFromTo(s1c.getPayload().getCentroid(), s2c.getPayload().getCentroid());
@@ -127,6 +129,7 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 		public Void apply( final T sample )
 			{
 			final HierarchicalCentroidCluster<T> c = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), sample);
+			c.getMutableWeightedLabels().incrementItemCount(1);
 			c.doneLabelling();
 
 			// these is synchronized on the cluster list
