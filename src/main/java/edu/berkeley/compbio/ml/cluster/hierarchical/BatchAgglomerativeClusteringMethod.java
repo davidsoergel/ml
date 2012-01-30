@@ -199,6 +199,9 @@ public class BatchAgglomerativeClusteringMethod<T extends Clusterable<T>> extend
 				theRoot.addAll(remainingKey);
 				}
 			}
+		else {
+		theRoot = remainingKeys.iterator().next();
+		}
 
 		normalizeClusterLabelProbabilities();
 		}

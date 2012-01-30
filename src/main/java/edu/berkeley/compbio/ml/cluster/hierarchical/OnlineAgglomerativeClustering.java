@@ -222,7 +222,6 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 							theActiveNodeDistanceMatrix.remove(b);
 							//agglomerator.removeJoinedNodes(a, b, theActiveNodeDistanceMatrix);
 							addCluster(composite);
-							theRoot = composite;  // this will actually be true on the last iteration
 							}
 						}
 					catch (NoSuchElementException e)

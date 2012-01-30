@@ -33,7 +33,7 @@
 package edu.berkeley.compbio.ml.cluster.hierarchical;
 
 import com.davidsoergel.dsutils.collections.Symmetric2dBiMap;
-import edu.berkeley.compbio.ml.cluster.Clusterable;
+import edu.berkeley.compbio.ml.cluster.AdditiveClusterable;
 import org.apache.log4j.Logger;
 
 
@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
  * @version $Id: UPGMA.java 488 2009-07-29 01:05:07Z soergel $
  */
 
-public class CompleteLinkageAgglomerator<T extends Clusterable<T>> extends Agglomerator<T>
+public class CompleteLinkageAgglomerator<T extends AdditiveClusterable<T>> extends ExplicitAgglomerator<T>
 	{
 	private static final Logger logger = Logger.getLogger(CompleteLinkageAgglomerator.class);
 
