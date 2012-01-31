@@ -128,14 +128,6 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 		{
 		public Void apply( final T sample )
 			{
-			try
-				{
-				Thread.sleep(100);
-				}
-			catch (InterruptedException e)
-				{
-				logger.error("Error", e);
-				}
 			final HierarchicalCentroidCluster<T> c = new HierarchicalCentroidCluster<T>(idCount.getAndIncrement(), sample);
 			c.getMutableWeightedLabels().incrementItemCount(1);
 			c.doneLabelling();
