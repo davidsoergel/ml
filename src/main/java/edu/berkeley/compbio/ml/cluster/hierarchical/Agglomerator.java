@@ -78,7 +78,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 
 		// weight and weightedLabels.getItemCount() are maybe redundant; too bad
 		composite.setWeight(a.getWeight() + b.getWeight());
-		assert composite.getWeight() != null;
+		//assert composite.getWeight() != null;
 
 		composite.doneLabelling();
 
@@ -97,7 +97,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		// and we don't want to synchronize a whole block on theActiveNodeDistancesMatrix here just for the sake of the assertions
 		if (numActive > 2)
 			{
-			assert theActiveNodeDistanceMatrix.numKeys() == numActive + 1;
+			//assert theActiveNodeDistanceMatrix.numKeys() == numActive + 1;
 //			assert theActiveNodeDistanceMatrix.numPairs() == numPairs + numActive;
 			}
 
@@ -105,7 +105,7 @@ public abstract class Agglomerator<T extends Clusterable<T>>
 		// add the composite node to the active list
 		// no longer needed; automatic
 		// theActiveNodeDistanceMatrix.add(composite);
-		assert composite.getChildren().size() > 0;
+		//assert composite.getChildren().size() > 0;
 
 		return composite;
 		}
