@@ -105,7 +105,7 @@ public class RandomOrderedBatchAgglomerativeClusteringMethod<T extends Clusterab
 					theActiveNodeDistanceMatrix.remove((HierarchicalCentroidCluster<T>) ancestor);
 					}
 
-				//assert ancestorChildren.contains(bestCluster);
+				assert ancestorChildren.contains(bestCluster);
 
 				ancestorChildren.removeAll(ancestors);
 				theClusters.removeAll(ancestors);

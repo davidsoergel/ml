@@ -213,10 +213,10 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 							{
 							final HierarchicalCentroidCluster<T> a = theActiveNodeDistanceMatrix.getKey1WithSmallestValue();
 							final HierarchicalCentroidCluster<T> b = theActiveNodeDistanceMatrix.getKey2WithSmallestValue();
-							//assert theActiveNodeDistanceMatrix.getKeys().contains(a);
-							//assert theActiveNodeDistanceMatrix.getKeys().contains(b);
-							//assert !theActiveNodeDistanceMatrix.getKeys().contains(a);
-							//assert !theActiveNodeDistanceMatrix.getKeys().contains(b);
+							assert theActiveNodeDistanceMatrix.getKeys().contains(a);
+							assert theActiveNodeDistanceMatrix.getKeys().contains(b);
+							assert !theActiveNodeDistanceMatrix.getKeys().contains(a);
+							assert !theActiveNodeDistanceMatrix.getKeys().contains(b);
 							final HierarchicalCentroidCluster<T> composite = agglomerator.joinNodes(idCount.getAndIncrement(), a, b, theActiveNodeDistanceMatrix);
 							theActiveNodeDistanceMatrix.remove(a);
 							theActiveNodeDistanceMatrix.remove(b);
