@@ -71,6 +71,7 @@ public class AverageLinkageAgglomerator<T extends AdditiveClusterable<T>> extend
 			   }*/
 			}
 		}
+
 /*
 	@Override protected T makeCompositeCentroid( final HierarchicalCentroidCluster<T> origA, final HierarchicalCentroidCluster<T> origB ) {
 	int an = origA.getN();

@@ -18,10 +18,10 @@
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.13" level="project" />
     <orderEntry type="library" name="Maven: com.intellij:annotations:7.0.3" level="project" />
     <orderEntry type="module" module-name="dsutils" scope="TEST" />
-    <orderEntry type="library" name="Maven: com.davidsoergel:conja:1.06-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.davidsoergel:trees:1.023-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.davidsoergel:stats:0.93-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.davidsoergel:runutils:0.91-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="conja" />
+    <orderEntry type="module" module-name="trees" />
+    <orderEntry type="module" module-name="stats" />
+    <orderEntry type="module" module-name="runutils" />
     <orderEntry type="library" name="Maven: com.martiansoftware:JSAP:2.0a-ds1" level="project" />
     <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.testng:testng:jdk15:5.9" level="project" />
