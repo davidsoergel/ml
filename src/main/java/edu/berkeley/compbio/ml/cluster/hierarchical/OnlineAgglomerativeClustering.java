@@ -133,7 +133,7 @@ public class OnlineAgglomerativeClustering<T extends Clusterable<T>> extends Onl
 			c.doneLabelling();
 
 			// these is synchronized on the cluster list
-			// the cluster list is never used in thes implementation; onle the active list in the distance matrix matters
+			// the cluster list is never used in this implementation; only the active list in the distance matrix matters
 			//addCluster(c);
 
 			//final List<HierarchicalCentroidCluster<T>> allClusters = getClusters();
