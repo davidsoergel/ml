@@ -120,7 +120,7 @@
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>dsutils</artifactId>
 			<version>1.04-SNAPSHOT</version>
-			<classifier>tests</classifier>
+			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
