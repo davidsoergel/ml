@@ -138,7 +138,7 @@ public class DistanceBasedMultiClassCrossValidationResults<L extends Comparable>
 				}
 			}
 
-		resultsNode.addChild("confusionMatrix", DSArrayUtils.toPrimitiveArray(flattenedConfusionMatrix));
+		resultsNode.addChild("confusionMatrix", DSArrayUtils.toPrimitiveIntArray(flattenedConfusionMatrix));
 		/*	for(L label : getLabels())
 		   {
 		   asdf
