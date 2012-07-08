@@ -44,7 +44,7 @@
 	<parent>
 		<groupId>com.davidsoergel</groupId>
 		<artifactId>basepom</artifactId>
-		<version>0.99-SNAPSHOT</version>
+		<version>1.0</version>
 	</parent>
 	<inceptionYear>2006</inceptionYear>
 	<packaging>jar</packaging>
@@ -52,10 +52,11 @@
 		<system>Trac</system>
 		<url>http://dev.davidsoergel.com/ml/</url>
 	</issueManagement>
-	<scm>
-		<connection>scm:svn:http://svn.davidsoergel.com/repos/ml</connection>
-		<developerConnection>scm:svn:svn+ssh://svn.davidsoergel.com/home/svn/repos-compbio/ml</developerConnection>
-	</scm>
+    <scm>
+        <connection>scm:hg:https://hg.davidsoergel.com/ml</connection>
+        <developerConnection>scm:hg:ssh://dev.davidsoergel.com//home/hg/ml</developerConnection>
+        <url>http://hg.davidsoergel.com/ml</url>
+    </scm>
 	<distributionManagement>
 		<site>
 			<id>website</id>
@@ -113,13 +114,13 @@
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>dsutils</artifactId>
-			<version>1.04-SNAPSHOT</version>
+			<version>1.05</version>
 			<!--<scope>compile</scope>-->
 		</dependency>
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>dsutils</artifactId>
-			<version>1.04-SNAPSHOT</version>
+			<version>1.05</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -131,7 +132,7 @@
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>trees</artifactId>
-			<version>1.023-SNAPSHOT</version>
+			<version>1.03</version>
 		</dependency>
 		<!--   <dependency>
           <groupId>edu.berkeley.compbio</groupId>
@@ -146,13 +147,13 @@
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>runutils</artifactId>
-			<version>0.91-SNAPSHOT</version>
+			<version>0.91</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>stats</artifactId>
-			<version>0.93-SNAPSHOT</version>
+			<version>0.93</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
