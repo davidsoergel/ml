@@ -127,7 +127,7 @@
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>conja</artifactId>
-			<version>1.06-SNAPSHOT</version>
+			<version>1.06</version>
 		</dependency>
 		<dependency>
 			<groupId>com.davidsoergel</groupId>

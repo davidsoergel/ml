@@ -20,7 +20,7 @@
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.16" level="project" />
     <orderEntry type="library" name="Maven: com.intellij:annotations:7.0.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.davidsoergel:dsutils:test-jar:tests:1.05" level="project" />
-    <orderEntry type="module" module-name="conja" />
+    <orderEntry type="library" name="Maven: com.davidsoergel:conja:1.06" level="project" />
     <orderEntry type="library" name="Maven: com.davidsoergel:trees:1.03" level="project" />
     <orderEntry type="library" name="Maven: com.davidsoergel:runutils:0.91" level="project" />
     <orderEntry type="library" name="Maven: com.martiansoftware:JSAP:2.0a-ds1" level="project" />
