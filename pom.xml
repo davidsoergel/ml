@@ -132,7 +132,7 @@
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>trees</artifactId>
-			<version>1.03</version>
+			<version>1.031</version>
 		</dependency>
 		<!--   <dependency>
           <groupId>edu.berkeley.compbio</groupId>
@@ -147,13 +147,13 @@
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>runutils</artifactId>
-			<version>0.91</version>
+			<version>0.911</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>stats</artifactId>
-			<version>0.93</version>
+			<version>0.931</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
