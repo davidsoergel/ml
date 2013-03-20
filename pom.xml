@@ -44,7 +44,7 @@
 	<parent>
 		<groupId>com.davidsoergel</groupId>
 		<artifactId>basepom</artifactId>
-		<version>1.0</version>
+		<version>1.01</version>
 	</parent>
 	<inceptionYear>2006</inceptionYear>
 	<packaging>jar</packaging>
@@ -114,13 +114,13 @@
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>dsutils</artifactId>
-			<version>1.05</version>
+			<version>1.051</version>
 			<!--<scope>compile</scope>-->
 		</dependency>
 		<dependency>
 			<groupId>com.davidsoergel</groupId>
 			<artifactId>dsutils</artifactId>
-			<version>1.05</version>
+			<version>1.051</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -159,7 +159,7 @@
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
-			<version>3.2</version>
+			<version>20040616</version>
 			<scope>compile</scope>
 		</dependency>
 		<!--	<dependency>
