@@ -5,9 +5,9 @@ A Java library for machine learning
  * Implements various Monte Carlo methods, including Metropolis-coupled MCMC.
  * Implements various statistical models of strings, e.g. Markov models, variable-memory Markov models and the closely related Probabilistic Suffix Automata (PSAs) and Trees (PSTs),
 
-This project has some goals in common with [http://en.wikipedia.org/wiki/Weka_(machine_learning) Weka] and [http://en.wikipedia.org/wiki/RapidMiner RapidMiner]  (aka YALE), but is far less developed.
+This project has some goals in common with [Weka](http://en.wikipedia.org/wiki/Weka_(machine_learning)) and [RapidMiner](http://en.wikipedia.org/wiki/RapidMiner) (aka YALE), but is far less developed.
 
-(This has nothing to do with the [http://en.wikipedia.org/wiki/ML_programming_language ml programming language])
+(This has nothing to do with the [ml programming language](http://en.wikipedia.org/wiki/ML_programming_language))
  
 Documentation
 -------------
@@ -46,4 +46,4 @@ Download
 </dependencies>
 ```
 
-If you really want just the jar, please see the Releases section above, or get the [latest stable build](http://dev.davidsoergel.com/jenkins/job/ml/lastStableBuild/) from the build server.
+If you really want just the jar, please see the Releases section above, or get the [latest stable build](http://dev.davidsoergel.com/jenkins/job/ml/lastStableBuild/edu.berkeley.compbio$ml/) from the build server.
