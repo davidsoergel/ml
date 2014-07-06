@@ -47,5 +47,5 @@ Download
 </dependencies>
 ```
 
-If you really want just the jar, you can get the [latest release](http://dev.davidsoergel.com/nexus/content/repositories/releases/edu/berkeley/compbio/ml/) from the Maven repo; or get the [latest stable build](http://dev.davidsoergel.com/jenkins/job/dsutils/lastStableBuild/edu.berkeley.compbio$ml/) from the build server.
+If you really want just the jar, you can get the [latest release](http://dev.davidsoergel.com/nexus/content/repositories/releases/edu/berkeley/compbio/ml/) from the Maven repo; or get the [latest stable build](http://dev.davidsoergel.com/jenkins/job/ml/lastStableBuild/edu.berkeley.compbio$ml/) from the build server.
 
