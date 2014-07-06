@@ -1,0 +1,10 @@
+edu.berkeley.compbio.ml
+edu.berkeley.compbio.ml.cluster
+edu.berkeley.compbio.ml.cluster.bayesian
+edu.berkeley.compbio.ml.cluster.hierarchical
+edu.berkeley.compbio.ml.cluster.kmeans
+edu.berkeley.compbio.ml.cluster.kohonen
+edu.berkeley.compbio.ml.cluster.stats
+edu.berkeley.compbio.ml.distancemeasure
+edu.berkeley.compbio.ml.mcmc
+edu.berkeley.compbio.ml.mcmc.mcmcmc
